@@ -1,0 +1,48 @@
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraMQTT",
+      "debug": false,
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",
+            "maxStreams": 2,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30,
+            "mqtt": {
+	          "host":"192.168.178.48",
+	          "port":1883,
+	          "username":"",
+	          "password":"",
+	          "topicPrefix":"yicam",
+	          "topicSuffix":"motion",
+	          "startMessage":"motion_start",
+	          "stopMessage":"motion_stop",
+	          "recordOnMovement": true,
+	          "recordVideoSize": 30
+            }
+          }
+        }
+      ],
+      "notifier":{
+	    "active":true,
+	    "token":"TelegramTokenHere",
+	    "chatID":"TelegramChatIDHere",
+	    "motion_start":"*Motion* detected!",
+	    "motion_stop":"No motion!"
+	  }
+    }
+  ]
+}
