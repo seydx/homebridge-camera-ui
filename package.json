@@ -1,0 +1,40 @@
+{
+  "name": "homebridge-camera-mqtt",
+  "version": "1.0.0",
+  "description": "homebridge-camera-mqtt",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeydX/homebridge-camera-mqtt.git"
+  },
+  "author": "SeydX (https://github.com/SeydX/homebridge-camera-mqtt)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SeydX/homebridge-camera-mqtt/issues"
+  },
+  "homepage": "https://github.com/SeydX/homebridge-camera-mqtt#readme",
+  "keywords": [
+    "camera",
+    "homebridge-plugin",
+    "mqtt",
+    "yi",
+    "yi-camera",
+    "motion",
+    "detection"
+  ],
+  "engines": {
+    "node": "^8.9.1",
+    "homebridge": "^0.4.49"
+  },
+  "dependencies": {
+    "async-mqtt": "^2.2.1",
+    "debug": "^4.1.1",
+    "ip":"^1.1.5",
+    "moment": "^2.24.0",
+    "fakegato-history": "^0.5.3"
+  }
+}
