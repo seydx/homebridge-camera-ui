@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraMQTT');
+const debug = require('debug')('YiCamera');
 const mqtt = require('async-mqtt');
 const ip = require('ip');
 const moment = require('moment');
@@ -165,8 +165,6 @@ class CameraAccessory {
     this.createCameraSensor();
 
     this.handleMQTT();
-
-    this.refreshHistory();
 
   }
 
@@ -734,6 +732,8 @@ class CameraAccessory {
 
     this.services.push(this.motionService);
 
+    this.refreshHistory();
+
   }
  
   createCameraControlService() {
@@ -790,6 +790,7 @@ class CameraAccessory {
       if(message){
 
         form.append('text', message);
+        form.append('parse_mode', 'Markdown');
         request.path = '/bot' + token + '/sendMessage'; 
     
       } else if(!this.mqttConfig.recordOnMovement){

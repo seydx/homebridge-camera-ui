@@ -6,7 +6,7 @@ const LogUtil = require('../lib/LogUtil.js');
 //Accessory
 const Camera = require('./accessories/camera.js');
 
-const platformName = 'CameraMQTT';
+const platformName = 'YiCamera';
 
 var Accessory, Service, Characteristic, UUIDGen;
 
@@ -17,10 +17,10 @@ module.exports = function (homebridge) {
   Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
   
-  return CameraMQTT;
+  return YiCamera;
 };
 
-function CameraMQTT (log, config, api) {
+function YiCamera (log, config, api) {
   
   if (!api || !config) return;
 
@@ -49,7 +49,7 @@ function CameraMQTT (log, config, api) {
     }
     
     this.log('**************************************************************');
-    this.log('CameraMQTT v'+packageFile.version+' by SeydX');
+    this.log('YiCamera v'+packageFile.version+' by SeydX');
     this.log('GitHub: https://github.com/SeydX/homebridge-camera-mqtt');
     this.log('Email: seyd55@outlook.de');
     this.log('**************************************************************');
@@ -61,7 +61,7 @@ function CameraMQTT (log, config, api) {
   }
 }
 
-CameraMQTT.prototype = {
+YiCamera.prototype = {
 
   _initPlatform: async function(){
   

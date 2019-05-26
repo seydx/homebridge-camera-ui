@@ -1,7 +1,7 @@
 /**
  * v1
  *
- * @url https://github.com/SeydX/homebridge-camera-mqtt
+ * @url https://github.com/SeydX/homebridge-yi-camera
  * @author SeydX <seyd55@outlook.de>
  *
 **/
@@ -10,7 +10,7 @@
 
 module.exports = function (homebridge) {
 
-  let CameraMQTT = require('./src/platform.js')(homebridge);
-  homebridge.registerPlatform('homebridge-camera-mqtt', 'CameraMQTT', CameraMQTT, true);
+  let YiCamera = require('./src/platform.js')(homebridge);
+  homebridge.registerPlatform('homebridge-yi-camera', 'YiCamera', YiCamera, true);
 
 };
