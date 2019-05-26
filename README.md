@@ -3,11 +3,11 @@
 </p>
 
 
-# Camera!MQTT v1
+# Yi!Camera v1
 
-[![npm](https://img.shields.io/npm/v/homebridge-camera-mqtt.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-mqtt)
-[![npm](https://img.shields.io/npm/dt/homebridge-camera-mqtt.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-mqtt)
-[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-camera-mqtt.svg?style=flat-square)](https://github.com/SeydX/homebridge-camera-mqtt)
+[![npm](https://img.shields.io/npm/v/homebridge-yi-camera.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-yi-camera)
+[![npm](https://img.shields.io/npm/dt/homebridge-yi-camera.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-yi-camera)
+[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-yi-camera.svg?style=flat-square)](https://github.com/SeydX/homebridge-yi-camera)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
 **Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
@@ -22,7 +22,7 @@ You can also set up the notifier to get a Telegram notification with customized 
 
 After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
--  ```(sudo) npm i -g homebridge-camera-mqtt@latest```
+-  ```(sudo) npm i -g homebridge-yi-camera@latest```
 
 
 ## Basic configuration
@@ -37,7 +37,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
   ],
   "platforms": [
     {
-      "platform": "CameraMQTT",
+      "platform": "YiCamera",
       "debug": false,
       "videoProcessor": "ffmpeg",
       "cameras": [
@@ -65,14 +65,14 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
   ]
 }
  ```
- See [Example Config](https://github.com/SeydX/homebridge-camera-mqtt/blob/master/example-config.json) for more details.
+ See [Example Config](https://github.com/SeydX/homebridge-yi-camera/blob/master/example-config.json) for more details.
 
  
  ## Main Config
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
-| platform | **X** | Must be **CameraMQTT** |
+| platform | **X** | Must be **YiCamera** |
 | debug | | Provides some additional information in the log |
 | videoProcessor | | Is the video processor used to manage videos. eg: ffmpeg (by default) or avconv or /a/path/to/another/ffmpeg. Need to use the same parameters than ffmpeg |
 
@@ -138,8 +138,8 @@ This plugin uses a modified version of the [homebridge-camera-ffmpeg](https://gi
 
 You can contribute to this homebridge plugin in following ways:
 
-- [Report issues](https://github.com/SeydX/homebridge-camera-mqtt/issues) and help verify fixes as they are checked in.
-- Review the [source code changes](https://github.com/SeydX/homebridge-camera-mqtt/pulls).
+- [Report issues](https://github.com/SeydX/homebridge-yi-camera/issues) and help verify fixes as they are checked in.
+- Review the [source code changes](https://github.com/SeydX/homebridge-yi-camera/pulls).
 - Contribute bug fixes.
 - Contribute changes to extend the capabilities
 
