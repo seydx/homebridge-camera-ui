@@ -59,3 +59,13 @@ typings/
 
 # next.js build output
 .next
+
+.github/
+images/
+docs/
+example/
+CHANGELOG.md 
+CONTRIBUTING.md
+FAQ.md  
+README.md
+.eslintrc.json
