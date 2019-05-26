@@ -33,9 +33,9 @@
   "dependencies": {
     "async-mqtt": "^2.2.1",
     "debug": "^4.1.1",
-    "ip":"^1.1.5",
+    "ip": "^1.1.5",
     "moment": "^2.24.0",
     "fakegato-history": "^0.5.3",
-    "axios":"^0.18.0"
+    "axios": "^0.18.0"
   }
 }

@@ -4,11 +4,13 @@ const debug = require('debug')('YiCamera');
 const mqtt = require('async-mqtt');
 const ip = require('ip');
 const moment = require('moment');
+const axios = require('axios');
 
 const crypto = require('crypto');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const FormData = require('form-data');
+const querystring = require('querystring');
 
 const EveTypes = require('../types/eve.js');
 const HomeKitTypes = require('../types/types.js');
@@ -41,6 +43,8 @@ class CameraAccessory {
     this.mqttConfig = accessory.context.mqttConfig;
     
     this.accessory = accessory;
+    
+    this.count = 0;
     
     this.services = [];
     this.streamControllers = [];
@@ -162,6 +166,7 @@ class CameraAccessory {
     
     this.createCameraControlService();
     this.createStreamControllers(options);
+    
     this.createCameraSensor();
 
     this.handleMQTT();
@@ -683,6 +688,160 @@ class CameraAccessory {
 
   }
   
+  async refreshConfig(){
+
+    this.count++;
+    let currCount = this.count;
+
+    try {
+
+      let url = 'http://' + this.accessory.context.cameraHost + '/cgi-bin/get_configs.sh?conf=system';
+
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : GET ' + url);
+
+      let response = await axios(url);
+      
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : OK');
+      
+      this.data = response.data;
+      
+      this.controlService.getCharacteristic(Characteristic.DisableCloud)
+        .updateValue(this.data.DISABLE_CLOUD === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.RecWoCloud)
+        .updateValue(this.data.REC_WITHOUT_CLOUD === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.Proxychains)
+        .updateValue(this.data.PROXYCHAINSNG === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.SSH)
+        .updateValue(this.data.SSHD === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.FTP)
+        .updateValue(this.data.FTPD === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.Telnet)
+        .updateValue(this.data.TELNETD === 'yes' ? true : false);
+      
+      this.controlService.getCharacteristic(Characteristic.NTPD)
+        .updateValue(this.data.NTPD === 'yes' ? true : false);
+    
+    } catch(err){
+
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
+
+      this.logger.error(this.accessory.displayName + ': An error occured whil checking camera config!');
+      debug(err);
+
+    } finally {
+    
+      setTimeout(this.refreshConfig.bind(this),15000);
+    
+    }
+  
+  }
+  
+  async setConfig(data,state,callback){
+  
+    this.count++;
+    let currCount = this.count;
+  
+    try {
+      
+      let url = 'http://' + this.accessory.context.cameraHost + '/cgi-bin/set_configs.sh?conf=system';
+      let formData = querystring.stringify({
+        DISABLE_CLOUD: data === 'DISABLE_CLOUD' ? state : this.data.DISABLE_CLOUD,
+        REC_WITHOUT_CLOUD: data === 'REC_WITHOUT_CLOUD' ? state : this.data.REC_WITHOUT_CLOUD,
+        PROXYCHAINSNG: data === 'PROXYCHAINSNG' ? state : this.data.PROXYCHAINSNG,
+        SSHD: data === 'SSHD' ? state : this.data.SSHD,
+        FTPD: data === 'FTPD' ? state : this.data.FTPD,
+        TELNETD: data === 'TELNETD' ? state : this.data.TELNETD,
+        NTPD: data === 'NTPD' ? state : this.data.NTPD,
+        HTTPD: this.data.HTTPD,
+        HOSTNAME: this.data.HOSTNAME
+      });
+      
+      if(state){
+      
+        state = 'yes';
+    
+        this.logger.info(this.accessory.displayName + ': Enable ' + data);
+      
+      } else {
+    
+        state = 'no';
+    
+        this.logger.info(this.accessory.displayName + ': Disable ' + data);
+    
+      }
+
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : POST ' + formData);
+
+      await axios.post(url, querystring.stringify({
+        DISABLE_CLOUD: data === 'DISABLE_CLOUD' ? state : this.data.DISABLE_CLOUD,
+        REC_WITHOUT_CLOUD: data === 'REC_WITHOUT_CLOUD' ? state : this.data.REC_WITHOUT_CLOUD,
+        PROXYCHAINSNG: data === 'PROXYCHAINSNG' ? state : this.data.PROXYCHAINSNG,
+        SSHD: data === 'SSHD' ? state : this.data.SSHD,
+        FTPD: data === 'FTPD' ? state : this.data.FTPD,
+        TELNETD: data === 'TELNETD' ? state : this.data.TELNETD,
+        NTPD: data === 'NTPD' ? state : this.data.NTPD,
+        HTTPD: this.data.HTTPD,
+        HOSTNAME: this.data.HOSTNAME
+      }), {
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+  
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : OK');
+
+    } catch(err){
+
+      debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
+
+      this.logger.error(this.accessory.displayName + ': An error occured while setting new config!');
+      debug(err);
+
+    } finally{
+
+      callback();
+
+    }
+  
+  }
+  
+  async setReboot(state, callback){
+  
+    try {
+
+      if(state){
+        
+        this.logger.info(this.accessory.displayName + ': Rebooting...');
+        
+        await axios('http://' + this.accessory.context.cameraHost + '/cgi-bin/reboot.sh');
+        
+      }
+
+    } catch(err){
+
+      this.logger.error(this.accessory.displayName + ': An error occured while rebooting camera!');
+      debug(err);
+
+    } finally{
+
+      setTimeout(() => {
+     
+        this.controlService.getCharacteristic(Characteristic.Reboot)
+          .updateValue(false);
+     
+      }, 500);
+
+      callback();
+
+    }
+  
+  }
+  
   refreshHistory(){
     
     let state;
@@ -707,7 +866,7 @@ class CameraAccessory {
   
   createCameraSensor() {
 
-    this.motionService = new Service.MotionSensor();
+    this.motionService = new Service.MotionSensor(this.accessory.displayName + ' Sensor');
 
     this.motionService.addCharacteristic(Characteristic.LastActivation);
     this.motionService.addCharacteristic(Characteristic.AtHome);
@@ -745,6 +904,47 @@ class CameraAccessory {
     //this.controlService.addCharacteristic(Characteristic.GetAssets);
     //this.controlService.addCharacteristic(Characteristic.DeleteAssets);
 
+    this.controlService.addCharacteristic(Characteristic.Reboot);
+    
+    this.controlService.getCharacteristic(Characteristic.Reboot)
+      .on('get', callback => { callback(null, false); })
+      .on('set', this.setReboot.bind(this));
+
+    this.controlService.addCharacteristic(Characteristic.DisableCloud);
+    
+    this.controlService.getCharacteristic(Characteristic.DisableCloud)
+      .on('set', this.setConfig.bind(this, 'DISABLE_CLOUD'));    
+    
+    this.controlService.addCharacteristic(Characteristic.RecWoCloud);
+
+    this.controlService.getCharacteristic(Characteristic.RecWoCloud)
+      .on('set', this.setConfig.bind(this, 'REC_WITHOUT_CLOUD')); 
+
+    this.controlService.addCharacteristic(Characteristic.Proxychains);
+
+    this.controlService.getCharacteristic(Characteristic.Proxychains)
+      .on('set', this.setConfig.bind(this, 'PROXYCHAINSNG')); 
+
+    this.controlService.addCharacteristic(Characteristic.SSH);
+
+    this.controlService.getCharacteristic(Characteristic.SSH)
+      .on('set', this.setConfig.bind(this, 'SSHD')); 
+
+    this.controlService.addCharacteristic(Characteristic.FTP);
+
+    this.controlService.getCharacteristic(Characteristic.FTP)
+      .on('set', this.setConfig.bind(this, 'FTPD')); 
+
+    this.controlService.addCharacteristic(Characteristic.Telnet);
+
+    this.controlService.getCharacteristic(Characteristic.Telnet)
+      .on('set', this.setConfig.bind(this, 'TELNETD')); 
+
+    this.controlService.addCharacteristic(Characteristic.NTPD);
+
+    this.controlService.getCharacteristic(Characteristic.NTPD)
+      .on('set', this.setConfig.bind(this, 'NTPD')); 
+    
     this.services.push(this.controlService);
 
     if(this.videoConfig.audio){
@@ -753,6 +953,8 @@ class CameraAccessory {
       this.services.push(this.microphoneService);
   
     }
+    
+    this.refreshConfig();
 
   } 
   

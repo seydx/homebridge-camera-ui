@@ -124,7 +124,6 @@ YiCamera.prototype = {
   },
   
   refreshContext: function(accessory, object){
-  
       
     object.videoConfig = object.videoConfig||{};
     object.videoConfig.mqtt = object.videoConfig.mqtt||{};
@@ -132,7 +131,7 @@ YiCamera.prototype = {
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
     accessory.context.notifier = this.config.notifier;
-    
+
     accessory.context.mqttConfig = {
       host: object.videoConfig.mqtt.host,
       port: object.videoConfig.mqtt.port||1883,
@@ -193,6 +192,8 @@ YiCamera.prototype = {
     
     if(!accessory.context.videoConfig.source)
       throw 'No source specified for RTSP Stream!';
+    
+    accessory.context.cameraHost = accessory.context.videoConfig.source.split('rtsp://')[1].split('/ch0_0.h264')[0];
     
     return;
     
