@@ -14,6 +14,8 @@
         {
           "name": "Flur",
           "active": true,
+          "gui": true,
+          "secret": "mysupersecretkey",
           "videoConfig": {
             "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
             "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",
