@@ -75,6 +75,8 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | platform | **X** | Must be **YiCamera** |
 | debug | | Provides some additional information in the log |
 | videoProcessor | | Is the video processor used to manage videos. eg: ffmpeg (by default) or avconv or /a/path/to/another/ffmpeg. Need to use the same parameters than ffmpeg |
+| gui | | Enables web access for cameras |
+| secret | | Secret key for camera web access |
 
 
  ## Camera Config
