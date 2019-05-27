@@ -5,6 +5,7 @@ const LogUtil = require('../lib/LogUtil.js');
 
 //Accessory
 const Camera = require('./accessories/camera.js');
+const GUI = require('../lib/GUI.js');
 
 const platformName = 'YiCamera';
 
@@ -30,6 +31,7 @@ function YiCamera (log, config, api) {
   
   this.config = config;  
   this.config.cameras = config.cameras||[];
+  this.configPath = api.user.storagePath();
   
   this.config.notifier = {
     active: this.config.notifier.active||false,
@@ -111,7 +113,9 @@ YiCamera.prototype = {
        
       let cameraSource = new Camera(this, accessory);
       accessory.configureCameraSource(cameraSource);      
-  
+      
+      new GUI(this, accessory);
+      
       this.api.publishCameraAccessories(platformName, [accessory]);
   
     } catch(err) {
@@ -131,6 +135,9 @@ YiCamera.prototype = {
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
     accessory.context.notifier = this.config.notifier;
+    
+    accessory.context.gui = object.gui||false;
+    accessory.context.secret = object.secret||'mysecretcode';
 
     accessory.context.mqttConfig = {
       host: object.videoConfig.mqtt.host,

@@ -1,0 +1,19 @@
+html, body {
+  background-color: #111;
+  text-align: center;
+  color: white;
+}
+
+body {
+  padding: 20px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+canvas.video {
+  border: 8px solid white;
+  border-radius: 10px;
+}
