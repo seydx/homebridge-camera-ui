@@ -8,7 +8,7 @@
   "platforms": [
     {
       "platform": "YiCamera",
-      "debug":false,
+      "debug": false,
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
@@ -21,27 +21,27 @@
             "maxWidth": 1920,
             "maxHeight": 1080,
             "maxFPS": 30
+          },
+          "mqtt": {
+            "active": true,
+            "host": "192.168.178.123",
+            "port": 1883,
+            "username": "",
+            "password": "",
+            "topicPrefix": "yicam",
+            "topicSuffix": "motion",
+            "startMessage": "motion_start",
+            "stopMessage": "motion_stop",
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          },
+          "gui": {
+            "active": true,
+            "username": "MyUsername",
+            "password": "supersecretpassword",
+            "port": 3000,
+            "wsport": 8100
           }
-        },
-        "mqtt": {
-	      "active":true,
-	      "host":"192.168.178.123",
-	      "port":1883,
-	      "username":"",
-	      "password":"",
-	      "topicPrefix":"yicam",
-	      "topicSuffix":"motion",
-	      "startMessage":"motion_start",
-	      "stopMessage":"motion_stop",
-	      "recordOnMovement": true,
-	      "recordVideoSize": 30
-        },
-        "gui":{
-	      "active":true,
-	      "username":"MyUsername",
-	      "password":"supersecretpassword",
-	      "port":3000,
-	      "wsport":8100
         }
       ]
     }
