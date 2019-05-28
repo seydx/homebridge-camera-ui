@@ -130,6 +130,11 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | motion_start |  | Own message when motion sensor triggers on (if you dont want to get this notification, just remove from config) |
 | motion_stop |  | Own message when motion sensor triggers off (if you dont want to get this notification, just remove from config) |
 
+<p align="center">
+    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/HomeKit_Overview.PNG" height="500">
+    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/Eve_Overview_1.PNG" height="500">
+    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/Eve_Overview_2.PNG" height="500">
+</p>
 
 ## Supported clients
 
