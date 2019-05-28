@@ -111,8 +111,8 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
 | active |  | Activate/Deactivate GUI (default: false) |
-| username |  | Username for GUI access (default: admin) |
-| password |  | Password for GUI access |
+| username | **X** | Username for GUI access (default: admin) |
+| password | **X** | Password for GUI access |
 | port |  | Port for the GUI to listen (default: 3000) |
 | wsport |  | Port for the websocket (default:8100-8900) |
 
@@ -142,7 +142,7 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 
 * iOS 12
 * Apple Home
-* All 3rd party apps like Elgato Eve etc.
+* All 3rd party apps like Elgato Eve etc (recommended for custom characteristics)
 * Homebridge v0.4.49
 
 
