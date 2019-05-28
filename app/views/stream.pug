@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  h1= title
+
+  p#clock.clock
+
+  canvas#video-canvas.video Your browser doesn't support canvas tag!
+  p.unauthorized <a href="/logout">logout</a>
+  script(type='text/javascript' src='/javascripts/jsmpeg.min.js')
+  script(type='text/javascript').
+    var canvas = document.getElementById('video-canvas');
+    var url = 'ws://'+document.location.hostname+':#{port}/';
+    var player = new JSMpeg.Player(url, {canvas: canvas});
+    (function () {
+    var clockElement = document.getElementById( "clock" );
+    function updateClock ( clock ) {
+    clock.innerHTML = new Date().toLocaleString();
+    }
+    setInterval(function () {
+    updateClock( clockElement );
+    }, 1000);
+    }());

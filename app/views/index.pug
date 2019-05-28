@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .main
+    img.logo(src='/images/yi_logo.png')
+    h1 Login
+    .row
+      .form-p
+        form(method='post')
+          input.text(type='text', placeholder='Username', name='username', required='')
+          input.text(type='password', placeholder='Password', name='password', required='')
+          input(type='submit', value='Submit')
+    each message in flash
+      h4.flash #{message}

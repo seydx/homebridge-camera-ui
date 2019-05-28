@@ -1,11 +1,11 @@
 'use strict';
 
+const debug = require('debug')('YiCamera');
 const packageFile = require('../package.json');
 const LogUtil = require('../lib/LogUtil.js');
 
 //Accessory
 const Camera = require('./accessories/camera.js');
-const GUI = require('../lib/GUI.js');
 
 const platformName = 'YiCamera';
 
@@ -69,7 +69,7 @@ YiCamera.prototype = {
   
     if(this.config.cameras.length){
   
-      this.logger.info('Found ' + this.config.cameras.length + ' camera in config.json');
+      debug('Found ' + this.config.cameras.length + ' camera in config.json');
   
       for(const camera of this.config.cameras)      
         if(camera.active)
@@ -114,8 +114,6 @@ YiCamera.prototype = {
       let cameraSource = new Camera(this, accessory);
       accessory.configureCameraSource(cameraSource);      
       
-      new GUI(this, accessory);
-      
       this.api.publishCameraAccessories(platformName, [accessory]);
   
     } catch(err) {
@@ -130,26 +128,35 @@ YiCamera.prototype = {
   refreshContext: function(accessory, object){
       
     object.videoConfig = object.videoConfig||{};
-    object.videoConfig.mqtt = object.videoConfig.mqtt||{};
-  
+    object.mqtt = object.mqtt||{};
+    object.gui = object.gui||{};
+    
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
     accessory.context.notifier = this.config.notifier;
     
-    accessory.context.gui = object.gui||false;
-    accessory.context.secret = object.secret||'mysecretcode';
+    accessory.context.gui = {
+      active: object.gui.active||false,
+      username: object.gui.username||'admin',
+      password: object.gui.password,
+      port: object.gui.port||3000,
+      wsport: object.gui.wsport
+    };
+    
+    accessory.context.gui.secret = accessory.context.gui.username + accessory.context.gui.password;
 
     accessory.context.mqttConfig = {
-      host: object.videoConfig.mqtt.host,
-      port: object.videoConfig.mqtt.port||1883,
-      username: object.videoConfig.mqtt.username||'',
-      password: object.videoConfig.mqtt.password||'',
-      topicPrefix: object.videoConfig.mqtt.topicPrefix||'yicam',
-      topicSuffix: object.videoConfig.mqtt.topicSuffix||'motion',
-      startMessage: object.videoConfig.mqtt.startMessage||'motion_start',
-      stopMessage: object.videoConfig.mqtt.stopMessage||'motion_stop',
-      recordOnMovement: object.videoConfig.mqtt.recordOnMovement||false,
-      recordVideoSize: object.videoConfig.mqtt.recordVideoSize||30
+      active: object.mqtt.active||false,
+      host: object.mqtt.host,
+      port: object.mqtt.port||1883,
+      username: object.mqtt.username||'',
+      password: object.mqtt.password||'',
+      topicPrefix: object.mqtt.topicPrefix||'yicam',
+      topicSuffix: object.mqtt.topicSuffix||'motion',
+      startMessage: object.mqtt.startMessage||'motion_start',
+      stopMessage: object.mqtt.stopMessage||'motion_stop',
+      recordOnMovement: object.mqtt.recordOnMovement||false,
+      recordVideoSize: object.mqtt.recordVideoSize||30
     };
     
     accessory.context.mqttConfig.options = {
@@ -168,9 +175,6 @@ YiCamera.prototype = {
       },
       rejectUnauthorized: false
     };
-    
-    if(!accessory.context.mqttConfig.host)
-      throw 'No host specified for MQTT!';
     
     accessory.context.videoConfig = {
       source: object.videoConfig.source,

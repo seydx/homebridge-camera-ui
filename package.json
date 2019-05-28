@@ -42,6 +42,9 @@
     "http-errors": "^1.7.2",
     "morgan": "^1.9.1",
     "pug": "^2.0.3",
-    "express-basic-auth": "^1.2.0"
+    "serve-favicon": "^2.5.0",
+    "express-session": "^1.16.1",
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1"
   }
 }

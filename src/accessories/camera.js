@@ -12,6 +12,7 @@ const spawn = require('child_process').spawn;
 const FormData = require('form-data');
 const querystring = require('querystring');
 
+const GUI = require('../../app/GUI.js');
 const EveTypes = require('../types/eve.js');
 const HomeKitTypes = require('../types/types.js');
 
@@ -166,10 +167,22 @@ class CameraAccessory {
     
     this.createCameraControlService();
     this.createStreamControllers(options);
-    
-    this.createCameraSensor();
 
-    this.handleMQTT();
+    if(this.accessory.context.mqttConfig.active && this.accessory.context.mqttConfig.host){
+    
+      this.createCameraSensor();
+      this.handleMQTT();
+    
+    }
+    
+    if(this.accessory.context.gui.active && this.accessory.context.gui.password)
+      new GUI(this.platform, this.accessory);
+
+    process.on('SIGTERM', async () => {
+      
+      this.logger.info(this.accessory.displayName + ': Got SIGTERM. Cleaning up...')
+    
+    });
 
   }
 
@@ -183,64 +196,64 @@ class CameraAccessory {
     
     this.client.on('error', err => {
     
-      this.logger.error(this.accessory.displayName + ': Error event on MQTT');
+      this.logger.error(this.accessory.displayName + ' (MQTT): Error event on MQTT');
       debug(err);
     
     });
     
     this.client.on('close', () => {
     
-      this.logger.info(this.accessory.displayName + ': MQTT disconnected');
+      debug(this.accessory.displayName + ' (MQTT): MQTT disconnected');
     
     });
     
     this.client.on('Offline', () => {
     
-      this.logger.info(this.accessory.displayName + ': MQTT Offline');
+      debug(this.accessory.displayName + ' (MQTT): MQTT Offline');
     
     });
     
     this.client.on('reconnect', () => {
     
-      this.logger.info(this.accessory.displayName + ': MQTT Reconnecting...');
+      debug(this.accessory.displayName + ' (MQTT): MQTT Reconnecting...');
     
     });
     
     this.client.on('end', () => {
     
-      this.logger.info(this.accessory.displayName + ': MQTT closed!');
+      debug(this.accessory.displayName + ' (MQTT): MQTT closed!');
     
     });
     
     process.on('SIGTERM', async () => {
-    
-      this.logger.info(this.accessory.displayName + ': Got SIGTERM. Closing MQTT');
-      await this.client.end();
+      
+      if(this.client)
+        await this.client.end();
     
     });
     
-    this.logger.info(this.accessory.displayName + ': Connecting..');
+    debug(this.accessory.displayName + ' (MQTT): Connecting MQTT..');
     this.client.on('connect', this.connectMQTT.bind(this));
   
   }
   
   async connectMQTT(){
 
-    this.logger.info(this.accessory.displayName + ': Connected!');
-
     try {
         
-      this.logger.info(this.accessory.displayName + ': Subscribing to topics...');
+      debug(this.accessory.displayName + ' (MQTT): Subscribing to topics...');
         
       await this.client.subscribe(this.mqttConfig.topicPrefix + '/' + this.mqttConfig.topicSuffix);
         
-      this.logger.info(this.accessory.displayName + ': Subscribed!');
+      debug(this.accessory.displayName + ' (MQTT): Subscribed!');
+      
+      this.logger.info(this.accessory.displayName + ' (MQTT): MQTT connected and listening on port ' + this.accessory.context.mqttConfig.port);
       
       this.handleMessages();
         
     } catch(err) {
 
-      this.logger.error(this.accessory.displayName + ': An error occured on connecting/subscribing to MQTT!');
+      this.logger.error(this.accessory.displayName + ' (MQTT): An error occured on connecting/subscribing to MQTT!');
       debug(err);
 
     }
@@ -255,7 +268,7 @@ class CameraAccessory {
 
         let original = Buffer.from(state.payload).toString('utf8');
 
-        this.logger.info(this.accessory.displayName + ': Received new message: ' + original);
+        this.logger.info(this.accessory.displayName + ' (MQTT): Received new message: ' + original);
 
         if(original === this.mqttConfig.startMessage){
     
@@ -291,7 +304,7 @@ class CameraAccessory {
 
       } catch(err){
 
-        this.logger.info(this.accessory.displayName + ': An error occured while handling message!');
+        this.logger.info(this.accessory.displayName + ' (MQTT): An error occured while handling message!');
         debug(err);
 
       }
@@ -311,19 +324,19 @@ class CameraAccessory {
     
       if(!this.mqttConfig.recordOnMovement){
     
-        this.logger.info(this.accessory.displayName + ': Capturing imgage...');
+        this.logger.info(this.accessory.displayName + ' (MQTT): Capturing imgage...');
         img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t 1 -frames: 1 -s '+ resolution + ' -f image2 -y ' + this.configPath + '/out.jpg').split(' '), {env: process.env});  
     
       } else {
     
-        this.logger.info(this.accessory.displayName + ': Capturing video...');
+        this.logger.info(this.accessory.displayName + ' (MQTT): Capturing video...');
         img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + this.mqttConfig.recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});  
     
       }
     
       img.stdout.on('error', error => {
     
-        this.logger.error(this.accessory.displayName + ': An error occured while fetching img');
+        this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while fetching img');
         debug(error);
     
       });
@@ -337,7 +350,7 @@ class CameraAccessory {
         
         } catch(err){
     
-          this.logger.error(this.accessory.displayName + ': An error occured while sending notification via Telegram');    
+          this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while sending notification via Telegram');    
           debug(err);
         
         }    
@@ -346,7 +359,7 @@ class CameraAccessory {
   
     } catch(err) {
   
-      this.logger.error(this.accessory.displayName + ': An error occured while capturing img!');
+      this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while capturing img!');
       debug(err);
   
     }
@@ -728,7 +741,7 @@ class CameraAccessory {
     
     } catch(err){
 
-      debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
+      //debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
 
       this.logger.error(this.accessory.displayName + ': An error occured whil checking camera config!');
       debug(err);
@@ -797,7 +810,7 @@ class CameraAccessory {
 
     } catch(err){
 
-      debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
+      //debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
 
       this.logger.error(this.accessory.displayName + ': An error occured while setting new config!');
       debug(err);
