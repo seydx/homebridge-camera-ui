@@ -104,6 +104,8 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
 | recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
 
+![HomeKit](images/homebridge-yi-cam-homekit.png)
+
 ## GUI Config
 
 | **Attributes** | **Required** | **Usage** |
@@ -113,6 +115,10 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | password |  | Password for GUI access |
 | port |  | Port for the GUI to listen (default: 3000) |
 | wsport |  | Port for the websocket (default:8100-8900) |
+
+![Login](images/homebridge-yi-cam-login.png)
+
+![Stream](images/homebridge-yi-cam-stream.png)
 
 ## Notifier Config
 
