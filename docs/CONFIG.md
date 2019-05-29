@@ -197,12 +197,12 @@ Below you can see which parameters are recommend or optional.
         }
       ],
       "notifier":{
-	      "active":true,
-	      "token":"TelegramToken",
-	      "chatID":"TelegramChatID",
-	      "motion_start":"Motion *detected*",
-	      "motion_stop":"*No* motion"
-	    }
+        "active":true,
+        "token":"TelegramToken",
+        "chatID":"TelegramChatID",
+        "motion_start":"Motion *detected*",
+        "motion_stop":"*No* motion"
+      }
     }
   ]
 }
