@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.3 -2019-05-29
+- Bugfixes (websocket and ffmpeg)
+- Added viewport scale for web app
 
 ## 1.1.1 - 2019-05-29
 - Added Web Application support to GUI
