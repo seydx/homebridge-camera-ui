@@ -46,9 +46,11 @@ class GUI {
       if(this.server)
         this.server.close();
  
-      if(this.ffmpeg)
+      if(this.ffmpeg){
         this.ffmpeg.kill();
-
+        this.ffmpeg = false;
+      }
+    
     }); 
     
     this.startApp();
@@ -56,7 +58,7 @@ class GUI {
   }
   
   createStreamSocket(){
-  
+    
     this.STREAM_SECRET = this.accessory.context.gui.secret;
     this.STREAM_PORT = this.generateRandomInteger(8100,8900);
     this.WEBSOCKET_PORT = this.accessory.context.gui.wsport||this.generateRandomInteger(8100,8900);
@@ -64,23 +66,45 @@ class GUI {
 
     // Websocket Server
     this.socketServer = new WebSocket.Server({port: this.WEBSOCKET_PORT, perMessageDeflate: false});
-
-    this.socketServer.connectionCount = 0;
+    
+    this.socketServer.connectionCount = [];
 
     this.socketServer.on('connection', (socket, upgradeReq) => {
   
-      this.socketServer.connectionCount++;
+      if(!this.socketServer.connectionCount.includes((upgradeReq || socket.upgradeReq).socket.remoteAddress))
+        this.socketServer.connectionCount.push((upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
-      debug('New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount+' total)');
+      debug('New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount.length+' total)');
+      //debug(this.accessory.displayName + ' (GUI): Connected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
-      this.spawnCamera();
+      if(!this.ffmpeg)
+        this.spawnCamera();
 
       socket.on('close', (code, message) => {
-  
-        this.socketServer.connectionCount--;
-        debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');
-        debug(this.accessory.displayName + ' (GUI): Code: ' + code + ' - Message: ' + message);
 
+        let i = this.socketServer.connectionCount.indexOf((upgradeReq || socket.upgradeReq).socket.remoteAddress);
+        
+        if(i != -1) {
+          this.socketServer.connectionCount.splice(i, 1);
+        }
+
+        //debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');        
+        debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
+        debug(this.accessory.displayName + ' (GUI): Code: ' + code + ' - Message: ' + message);
+        
+        if(!this.socketServer.connectionCount.length){
+        
+          if(this.ffmpeg){
+        
+            debug(this.accessory.displayName + ': No connections with websocket. Closing stream.');
+        
+            this.ffmpeg.kill();
+            this.ffmpeg = false;
+        
+          }
+        
+        }
+     
       });
   
     });
@@ -119,10 +143,6 @@ class GUI {
 
       response.connection.setTimeout(0);
   
-      debug('Stream Connected: ' + request.socket.remoteAddress + ':' + request.socket.remotePort);
-  
-      this.logger.info(this.accessory.displayName + ' (GUI): Stream loaded!');
-  
       request.on('data', data => {
     
         this.socketServer.broadcast(data);
@@ -134,8 +154,6 @@ class GUI {
 
       request.on('end',() => {
 
-        debug(this.accessory.displayName + ' (GUI): Stream Server closed');
-    
         if(request.socket.recording)
           request.socket.recording.close();
 
@@ -150,6 +168,18 @@ class GUI {
       }
 
     }).listen(this.STREAM_PORT);
+    
+    this.streamServer.on('connection', socket => {
+
+      debug(this.accessory.displayName + ' (GUI): Stream Server Connected: ' + socket.remoteAddress + ':' + socket.remotePort);
+
+    });
+    
+    this.streamServer.on('close', () => {
+
+      debug(this.accessory.displayName + ' (GUI): Stream Server closed');
+
+    });
 
     debug(this.accessory.displayName + ' (GUI): Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + this.STREAM_PORT + '/<secret>');
     debug(this.accessory.displayName + ' (GUI): Awaiting WebSocket connections on ws://127.0.0.1:' + this.WEBSOCKET_PORT + '/');
@@ -205,7 +235,8 @@ class GUI {
     
         this.logger.info(this.accessory.displayName + ' (GUI): Successfully logged in! Loading stream...');
     
-        this.createStreamSocket();
+        if(!this.socketServer)
+          this.createStreamSocket();
     
         req.session.authenticated = true;
         res.redirect('/stream');
@@ -226,23 +257,7 @@ class GUI {
       delete req.session.authenticated;
 
       this.logger.info(this.accessory.displayName + ' (GUI): Logging out..');
-
-      if(this.socketServer){
-        
-        this.socketServer.clients.forEach(ws => {
-          ws.terminate();
-        });
       
-        this.socketServer.close();
-      
-      }
-      
-      if(this.streamServer)
-        this.streamServer.close();
- 
-      if(this.ffmpeg)
-        this.ffmpeg.kill();
-
       res.redirect('/');
     
     });
