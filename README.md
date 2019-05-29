@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://i.imgur.com/JBi2C86.png" height="200">
+    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/github_logo.png" height="200">
 </p>
 
 
@@ -11,6 +11,8 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
 **Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
+
+<img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/hbyicamera.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
 This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your YI Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. It is designed for the [YI-HACK v4](https://github.com/TheCrypt0/yi-hack-v4) and offers 100% support. Also, most switches that are otherwise only accessible via Web Interfae can be switched via third-party apps, for example Elgato EVE App.
 
@@ -130,11 +132,19 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | motion_start |  | Own message when motion sensor triggers on (if you dont want to get this notification, just remove from config) |
 | motion_stop |  | Own message when motion sensor triggers off (if you dont want to get this notification, just remove from config) |
 
-<p align="center">
-    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/HomeKit_Overview.PNG" height="500">
-    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/Eve_Overview_1.PNG" height="500">
-    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/Eve_Overview_2.PNG" height="500">
-</p>
+## GUI Access
+
+After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password.
+
+## iOS Web Application
+
+- Open Safari. Other browsers, such as Chrome, won’t work for this.
+- Navigate to ```http://localhost:<port_config.json>```
+- Tap the Share button at the bottom of the page.
+- On the bottom row of icons, scroll over until you see Add to Home Screen and tap this.
+- On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
+- Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
+
 
 ## Supported clients
 
