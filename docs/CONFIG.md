@@ -4,7 +4,8 @@ Below you can see which parameters are recommend or optional.
 
  
  ## Main Config
- 
+
+```
 {
   "bridge": {
     ...
@@ -31,6 +32,7 @@ Below you can see which parameters are recommend or optional.
     }
   ]
 }
+```
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
@@ -64,6 +66,7 @@ Below you can see which parameters are recommend or optional.
 
 ## MQTT Config
 
+```
 {
   "bridge": {
     ...
@@ -103,6 +106,7 @@ Below you can see which parameters are recommend or optional.
     }
   ]
 }
+```
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
@@ -118,6 +122,7 @@ Below you can see which parameters are recommend or optional.
 
 ## GUI Config
 
+```
 {
   "bridge": {
     ...
@@ -151,6 +156,7 @@ Below you can see which parameters are recommend or optional.
     }
   ]
 }
+```
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
@@ -166,6 +172,7 @@ Below you can see which parameters are recommend or optional.
 
 ## Notifier Config
 
+```
 {
   "bridge": {
     ...
@@ -199,6 +206,7 @@ Below you can see which parameters are recommend or optional.
     }
   ]
 }
+```
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
