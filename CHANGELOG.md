@@ -1,7 +1,7 @@
 # Changelog
 
 
-# 1.1.1 - 2019-05-29
+## 1.1.1 - 2019-05-29
 - Added Web Application support to GUI
 - Refactored GUI (now responsive)
 - Bugfixes
