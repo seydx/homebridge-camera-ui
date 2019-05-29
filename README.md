@@ -28,6 +28,9 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
 -  ```(sudo) npm i -g homebridge-yi-camera@latest```
 
+You also need a programm to handle the stream. I recommend to use [FFmpeg](https://github.com/FFmpeg/FFmpeg)
+
+See [OS instructions]() for detailed installation instruction regarding to your OS
 
 ## Basic configuration
 
@@ -164,6 +167,34 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 **Note:** Maybe othe cameras than yi will also work with this plugin, but you need at least disable MQTT. Because MQTT is a function especially for the hack!
 
 _(see [Yi-Hack v4 Supported Cameras](https://github.com/TheCrypt0/yi-hack-v4/wiki/Supported-Camera-Models))_
+
+## OS instructions (FFmpeg)
+
+**Mac OS:** 
+
+To install this utility on OS X, just head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-mac), download the release relative to your Macs architecture. Then put the application into an accessible directory and run it from command line. Another way is using [HomeBrew](https://www.howtogeek.com/211541/homebrew-for-os-x-easily-installs-desktop-apps-and-terminal-utilities/)
+
+For example
+
+```brew install ffmpeg --with-fdk-aac --with-ffplay --with-libass --with-libvorbis --with-libvpx --with-rtmpdump --with-openh264 --with-tools```
+
+**Windows:** 
+
+To install this utility on Windows, head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-windows) and follow the download link, using your architecture. Then place the downloaded software into an accessible directory and run from command line. 
+
+**Linux:** 
+
+To install this utility on Unix, just follow the instructions found at [ffmpeg.org](https://www.ffmpeg.org/download.html#build-linux) 
+
+To check if ffmpeg is installed correctly and see a list of available commands try running the following command in the command line:
+
+```ffmpeg -help```
+
+**Homebridge Docker:** 
+
+Add FFmpeg to packages
+
+```PACKAGES=ffmpeg```
 
 ## Supported clients
 
