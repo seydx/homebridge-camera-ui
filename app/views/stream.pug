@@ -2,23 +2,24 @@ extends layout
 
 block content
   .mainvideo
-    h1.title= title
-
+    h1.title
     p#clock.clock
-
     canvas#video-canvas.video Your browser doesn't support canvas tag!
-    p.unauthorized <a href="/logout">logout</a>
-    script(type='text/javascript' src='/javascripts/jsmpeg.min.js')
+    p.unauthorized
+      a(href='/logout') logout
+    script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
       var canvas = document.getElementById('video-canvas');
-      var url = 'ws://'+document.location.hostname+':#{port}/';
-      var player = new JSMpeg.Player(url, {canvas: canvas});
-      (function () {
-      var clockElement = document.getElementById( "clock" );
-      function updateClock ( clock ) {
+      var url = 'ws://' + document.location.hostname + ':/';
+      var player = new JSMpeg.Player(url, {
+      canvas: canvas
+      });
+      (function() {
+      var clockElement = document.getElementById("clock");
+      function updateClock(clock) {
       clock.innerHTML = new Date().toLocaleString();
       }
-      setInterval(function () {
-      updateClock( clockElement );
+      setInterval(function() {
+      updateClock(clockElement);
       }, 1000);
       }());

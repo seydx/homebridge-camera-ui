@@ -1,6 +1,6 @@
 {
   "name": "homebridge-yi-camera",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "homebridge-yi-camera",
   "main": "index.js",
   "devDependencies": {},
@@ -44,7 +44,6 @@
     "pug": "^2.0.3",
     "serve-favicon": "^2.5.0",
     "express-session": "^1.16.1",
-    "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1"
   }
 }

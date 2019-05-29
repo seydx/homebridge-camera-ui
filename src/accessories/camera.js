@@ -180,7 +180,7 @@ class CameraAccessory {
 
     process.on('SIGTERM', async () => {
       
-      this.logger.info(this.accessory.displayName + ': Got SIGTERM. Cleaning up...')
+      this.logger.info(this.accessory.displayName + ': Got SIGTERM. Cleaning up...');
     
     });
 

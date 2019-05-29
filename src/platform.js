@@ -210,9 +210,9 @@ YiCamera.prototype = {
     
   },
 
-  configureAccessory: function(accessory){
+  configureAccessory: function(accessory){ // eslint-disable-line no-unused-vars
 
-    //
+    //not invoked
   
   }
 

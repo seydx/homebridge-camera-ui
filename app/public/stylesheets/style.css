@@ -48,6 +48,7 @@ body {
 .notFound {
   text-align: center;
   color: #ffffff;
+  margin-bottom: 20px;
 }
 
 .unauthorized a{
@@ -56,8 +57,11 @@ body {
 }
 
 .unauthorized a:any-link{
-  color: #e42148;
+  color: #ffffff;
   text-decoration: none;
+  background: #e42148;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 img.logo {

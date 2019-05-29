@@ -13,7 +13,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 
 //ws
@@ -80,6 +79,7 @@ class GUI {
   
         this.socketServer.connectionCount--;
         debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');
+        debug(this.accessory.displayName + ' (GUI): Code: ' + code + ' - Message: ' + message);
 
       });
   
@@ -172,7 +172,8 @@ class GUI {
 
     app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
-    app.use(logger('dev'));
+    if(this.accessory.context.debug)
+      app.use(logger('dev'));
     
     app.use(express.json());
     
@@ -185,12 +186,6 @@ class GUI {
       resave: false,
       saveUninitialized: true
     }));
-    app.use(bodyParser.json({
-      extended: true
-    }));
-    app.use(bodyParser.urlencoded({
-      extended: true
-    }));
     
     app.use(express.static(path.join(__dirname, 'public')));
     
@@ -200,11 +195,11 @@ class GUI {
 
     app.use('/', indexRouter);
 
-    app.get('/stream', (req, res, next) => { 
+    app.get('/stream', (req, res, next) => { // eslint-disable-line no-unused-vars
       res.render('stream', {title: this.accessory.displayName, port: this.WEBSOCKET_PORT});
     });
     
-    app.post('/', (req, res, next) => {
+    app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
 
       if (req.body.username && req.body.username === this.accessory.context.gui.username && req.body.password && req.body.password === this.accessory.context.gui.password) {
     
@@ -226,7 +221,7 @@ class GUI {
 
     });
 
-    app.get('/logout', (req, res, next) => {
+    app.get('/logout', (req, res, next) => { // eslint-disable-line no-unused-vars
     
       delete req.session.authenticated;
 
@@ -260,7 +255,7 @@ class GUI {
     });
 
     // error handler
-    app.use((err, req, res, next) => {
+    app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   
       // set locals, only providing error in development
       res.locals.message = err.message;
