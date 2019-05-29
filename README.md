@@ -113,7 +113,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
 | active |  | Activate/Deactivate GUI (default: false) |
-| username | **X** | Username for GUI access (default: admin) |
+| username |  | Username for GUI access (default: admin) |
 | password | **X** | Password for GUI access |
 | port |  | Port for the GUI to listen (default: 3000) |
 | wsport |  | Port for the websocket (default:8100-8900) |
