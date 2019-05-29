@@ -2,7 +2,7 @@ extends layout
 
 block content
   .mainvideo
-    h1.title
+    h1.title= title
     p#clock.clock
     canvas#video-canvas.video Your browser doesn't support canvas tag!
     p.unauthorized
@@ -10,7 +10,7 @@ block content
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
       var canvas = document.getElementById('video-canvas');
-      var url = 'ws://' + document.location.hostname + ':/';
+      var url = 'ws://' + document.location.hostname + ':#{port}/';
       var player = new JSMpeg.Player(url, {
       canvas: canvas
       });
