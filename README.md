@@ -20,7 +20,7 @@ This Plugin creates one accessory with two services. A camera service to access 
 
 You can also set up the notifier to get a Telegram notification with customized messages and markdown capability when motion detected/undetected.
 
-Last but not least, you can activate "GUI" to access the Stream via webbrowser on any device!
+Last but not least, you can activate "GUI" to access the Stream via webbrowser on any device! On iOS devices you have also the possibility to save the website as a web application to your home screen.
 
 ## Installation instructions
 
@@ -145,6 +145,25 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 - On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
 - Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
 
+## Supported Cameras
+
+- Yi Home 720p (17CN)
+- Yi Home 720p (27US)
+- Yi Home 720p (47CN)
+- Yi Dome 720p (Generic)
+- Yi Dome 720p (43US)
+- Yi Dome 720p (63US)
+- Yi Dome 1080p (Generic)
+- Yi Dome 1080p (45US)
+- Yi Dome 1080p (65US)
+- Yi Home 1080p (version 1)
+- Yi Home 1080p	(6FUS, Work in progress)
+- Yi Cloud Dome 1080p
+- Yi Outdoor
+
+**Note:** Maybe othe cameras than yi will also work with this plugin, but you need at least disable MQTT. Because MQTT is a function especially for the hack!
+
+_(see [Yi-Hack v4 Supported Cameras](https://github.com/TheCrypt0/yi-hack-v4/wiki/Supported-Camera-Models))_
 
 ## Supported clients
 
@@ -158,9 +177,9 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 
 ## Contributing
 
-This plugin uses a modified version of the [homebridge-camera-ffmpeg](https://github.com/KhaosT/homebridge-camera-ffmpeg) plugin from [@KhaosT](https://github.com/KhaosT)
+- This plugin uses a modified version of the [homebridge-camera-ffmpeg](https://github.com/KhaosT/homebridge-camera-ffmpeg) plugin from [@KhaosT](https://github.com/KhaosT)
 
-Credits goes also to [@phoboslab](https://github.com/phoboslab/jsmpeg) for the wonderful decoder!
+- Credits goes also to [@phoboslab](https://github.com/phoboslab) for the wonderful decoder AND [@TheCrypt0](https://github.com/TheCrypt0) for the awesome hack!
 
 You can contribute to this homebridge plugin in following ways:
 
