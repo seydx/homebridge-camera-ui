@@ -1,9 +1,12 @@
 body {
   font-family: "trebuchet ms";
   background: #1d1d1d;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
-h1 {
+.title {
   font-family: "trebuchet ms";
   text-align: center;
   font-size: 3em;
@@ -12,7 +15,29 @@ h1 {
 }
 
 .main {
-  margin-top: 5%;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: 420px;
+  max-height: 450px;
+  width: 100%;
+  height: 100%;
+}
+
+.mainvideo {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: 700px;
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
 }
 
 .unauthorized {
@@ -22,7 +47,7 @@ h1 {
 
 .notFound {
   text-align: center;
-  color: #e42148;
+  color: #ffffff;
 }
 
 .unauthorized a{
@@ -37,13 +62,13 @@ h1 {
 
 img.logo {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   width: 98px;
   height: 98px;
+  margin: auto;
   -webkit-transition: 0.5s all;
   -ms-transition: 0.5s all;
   transition: 0.5s all;
+  margin-bottom: 10px;
 }
 
 img.logo:hover {
@@ -61,14 +86,23 @@ img.logo:hover {
 h4.flash {
   text-align: center;
   color: #ffffff;
+  background: #e42148;
+  padding: 20px;
+  font-size: 1em;
+  max-width: 350px;
+  margin: 10px auto;
+  border-radius: 10px;
 }
 
 .row {
-  width: 420px;
-  height: 250px;
-  padding: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 30px;
   margin: auto;
-  border-top: 3px solid #e42148;
+  max-width: 420px;
+  max-height: 260px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .form-p {
@@ -78,7 +112,7 @@ h4.flash {
 input[type="text"],
 input[type="password"] {
   display: block;
-  width: 90%;
+  width: 100%;
   border: none;
   border-bottom: solid 1px #fff;
   border-radius: 10px;
@@ -114,6 +148,7 @@ input[type="submit"] {
   text-align: center;
   letter-spacing: 1px;
   border-radius: 5px;
+  margin-top: 25px;
 }
 
 input[type="submit"]:hover {
@@ -138,11 +173,14 @@ input[type="submit"],
 }
 
 .form-p {
+  width: 100%;
   margin-top: 5px;
   font-size: 1.1em;
   color: #fff;
   letter-spacing: 3px;
   text-align: center;
+  border-top: 3px solid #e42148;
+  padding-top: 20px;
 }
 
 .form-p a {
@@ -168,6 +206,9 @@ canvas.video {
   display: block;
   left: 0;
   right: 0;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 650px;
 }
 
 p.clock {

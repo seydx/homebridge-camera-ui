@@ -1,5 +1,8 @@
 extends layout
 
 block content
-  h1= message
-  h2.notFound= error.status
+  .main
+    img.logo(src='/images/yi_logo.png')
+    h1.title= message
+    h2.notFound= error.status
+    p.unauthorized <a href="/">back</a>

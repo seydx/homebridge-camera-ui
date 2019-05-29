@@ -1,0 +1,12 @@
+{
+   "name": "Yi Camera",
+   "short_name": "Camera",
+   "display": "standalone",
+   "icons": [{
+      "src": "/images/icon-hd.png",
+      "sizes": "192x192"},
+   {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512"}
+   ]
+}
