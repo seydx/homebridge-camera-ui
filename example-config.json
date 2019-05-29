@@ -43,7 +43,14 @@
             "wsport": 8100
           }
         }
-      ]
+      ],
+      "notifier":{
+	      "active":true,
+	      "token":"TelegramToken",
+	      "chatID":"TelegramChatID",
+	      "motion_start":"Motion *detected*",
+	      "motion_stop":"*No* motion"
+	    }
     }
   ]
 }
