@@ -30,7 +30,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
 You also need a programm to handle the stream. I recommend to use [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
-See [OS instructions]() for detailed installation instruction regarding to your OS
+See [OS instructions](https://github.com/SeydX/homebridge-yi-camera/blob/master/README.md#os-instructions-ffmpeg) for detailed installation instruction regarding to your OS
 
 ## Basic configuration
 
