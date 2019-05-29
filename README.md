@@ -22,6 +22,26 @@ You can also set up the notifier to get a Telegram notification with customized 
 
 Last but not least, you can activate "GUI" to access the Stream via webbrowser on any device! On iOS devices you have also the possibility to save the website as a web application to your home screen.
 
+## Documentation
+
+- <u>Installation<u>
+   * [Installation NPM](https://github.com/SeydX/homebridge-yi-camera#installation-instructions)
+   * [OS instructions FFmpeg](https://github.com/SeydX/homebridge-yi-camera#os-instructions-ffmpeg)
+- Configuration
+   * [Explanation](https://github.com/SeydX/homebridge-yi-camera/blob/master/docs/CONFIG.md)
+   * [Basic Config.json](https://github.com/SeydX/homebridge-yi-camera#basic-configuration)
+   * [Extended Config.json](https://github.com/SeydX/homebridge-yi-camera/blob/master/example-config.json)
+- <u>GUI<u>
+   * [Web Access](https://github.com/SeydX/homebridge-yi-camera/blob/master/docs/CONFIG.md)
+   * [iOS Web Application](https://github.com/SeydX/homebridge-yi-camera#ios-web-application)
+- <u>Supported apps<u>
+    * [Supported clients](https://github.com/SeydX/homebridge-yi-camera#supported-clients)
+    * [Supported cameras](https://github.com/SeydX/homebridge-yi-camera#supported-cameras)
+    
+## Changelog
+
+See the [changelog](https://github.com/SeydX/homebridge-yi-camera/blob/master/CHANGELOG.md) for changes between versions of this package.
+
 ## Installation instructions
 
 After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
@@ -64,110 +84,6 @@ See [OS instructions](https://github.com/SeydX/homebridge-yi-camera/blob/master/
  ```
  See [Example Config](https://github.com/SeydX/homebridge-yi-camera/blob/master/example-config.json) for more detailsand options!
 
- 
- ## Main Config
-
-| **Attributes** | **Required** | **Usage** |
-|------------|----------|-------|
-| platform | **X** | Must be **YiCamera** |
-| debug | | Provides some additional information in the log |
-| videoProcessor | | Is the video processor used to manage videos. eg: ffmpeg (by default) or avconv or /a/path/to/another/ffmpeg. Need to use the same parameters than ffmpeg |
-
-
- ## Camera Config
-
-| **Attributes** | **Required** | **Usage** |
-|------------|----------|-------|
-| name | **X** | Unique Camera Name |
-| active |  | Activates the camera and exposes to HomeKit (default: false) |
-| source | **X** | Source of the stream |
-| stillImageSource |  | Source of the latest image (default: source) |
-| maxStreams |  | Is the maximum number of streams that will be generated for this camera, default 2 |
-| maxWidth |  | Is the maximum width reported to HomeKit, default 1280 |
-| maxHeight |  | Is the maximum height reported to HomeKit, default 720 |
-| maxFPS |  | Is the maximum frame rate of the stream, default 10 |
-| maxBitrate |  | Is the maximum bit rate of the stream in kbit/s, default 300 |
-| vcodec |  | If you're running on a RPi with the omx version of ffmpeg installed, you can change to the hardware accelerated video codec with this option, default libx264 |
-| audio |  | can be set to true to enable audio streaming from camera. To use audio ffmpeg must be compiled with --enable-libfdk-aac, default false |
-| packetSize |  | If audio or video is choppy try a smaller value, set to a multiple of 188, default 1316 |
-| vflip |  | Flips the stream vertically, default false |
-| hflip |  | Flips the stream horizontally, default false |
-| mapvideo |  | Select the stream used for video, default 0:0 |
-| mapaudio |  | Select the stream used for audio, default 0:1 |
-| videoFilter |  | Allows a custom video filter to be passed to FFmpeg via -vf, defaults to scale=1280:720 |
-| additionalCommandline |  | Allows additional of extra command line options to FFmpeg, for example '-loglevel verbose' |
-
-## MQTT Config
-
-| **Attributes** | **Required** | **Usage** |
-|------------|----------|-------|
-| active |  | Activate/Deactivate MQTT Service (default: false) |
-| host | **X** | Address of your MQTT Service |
-| port |  | Port of your MQTT Service (default: 1883) |
-| username |  | Username for the MQTT Service (If no username setted up, just leave blank) |
-| password |  |  Password for the MQTT Service (If no password setted up, just leave blank) |
-| recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
-| recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
-
-![HomeKit](images/homebridge-yi-cam-homekit.png)
-
-## GUI Config
-
-| **Attributes** | **Required** | **Usage** |
-|------------|----------|-------|
-| active |  | Activate/Deactivate GUI (default: false) |
-| username |  | Username for GUI access (default: admin) |
-| password | **X** | Password for GUI access |
-| port |  | Port for the GUI to listen (default: 3000) |
-| wsport |  | Port for the websocket (default:8100-8900) |
-
-![Login](images/homebridge-yi-cam-login.png)
-
-![Stream](images/homebridge-yi-cam-stream.png)
-
-## Notifier Config
-
-| **Attributes** | **Required** | **Usage** |
-|------------|----------|-------|
-| active | | Activates/Deactivates notifier
-| token | **X** | Telegram Bot Token |
-| chatID | **X** | Telegram Chat ID |
-| motion_start |  | Own message when motion sensor triggers on (if you dont want to get this notification, just remove from config) |
-| motion_stop |  | Own message when motion sensor triggers off (if you dont want to get this notification, just remove from config) |
-
-## GUI Access
-
-After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password.
-
-## iOS Web Application
-
-- Open Safari. Other browsers, such as Chrome, won’t work for this.
-- Navigate to ```http://localhost:<port_config.json>```
-- Tap the Share button at the bottom of the page.
-- On the bottom row of icons, scroll over until you see Add to Home Screen and tap this.
-- On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
-- Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
-
-## Supported Cameras
-
-- Yi Home 720p (17CN)
-- Yi Home 720p (27US)
-- Yi Home 720p (47CN)
-- Yi Dome 720p (Generic)
-- Yi Dome 720p (43US)
-- Yi Dome 720p (63US)
-- Yi Dome 1080p (Generic)
-- Yi Dome 1080p (45US)
-- Yi Dome 1080p (65US)
-- Yi Home 1080p (version 1)
-- Yi Home 1080p	(6FUS, Work in progress)
-- Yi Cloud Dome 1080p
-- Yi Outdoor
-
-**Note:** Maybe othe cameras than yi will also work with this plugin, but you need at least disable MQTT. Because MQTT is a function especially for the hack!
-
-_(see [Yi-Hack v4 Supported Cameras](https://github.com/TheCrypt0/yi-hack-v4/wiki/Supported-Camera-Models))_
-
 ## OS instructions (FFmpeg)
 
 **Mac OS:** 
@@ -196,6 +112,28 @@ Add FFmpeg to packages
 
 ```PACKAGES=ffmpeg```
 
+
+## GUI Access
+
+After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password.
+
+![Login](images/homebridge-yi-cam-login.png)
+
+![Stream](images/homebridge-yi-cam-stream.png)
+
+## iOS Web Application
+
+- Open Safari. Other browsers, such as Chrome, won’t work for this.
+- Navigate to ```http://localhost:<port_config.json>```
+- Tap the Share button at the bottom of the page.
+- On the bottom row of icons, scroll over until you see Add to Home Screen and tap this.
+- On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
+- Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
+
+**Note:** Maybe othe cameras than yi will also work with this plugin, but you need at least disable MQTT. Because MQTT is a function especially for the hack!
+
+_(see [Yi-Hack v4 Supported Cameras](https://github.com/TheCrypt0/yi-hack-v4/wiki/Supported-Camera-Models))_
+
 ## Supported clients
 
 This plugin has been verified to work with the following apps on iOS 12.2 and iOS 12.3 Beta:
@@ -205,6 +143,21 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 * All 3rd party apps like Elgato Eve etc (recommended for custom characteristics)
 * Homebridge v0.4.49
 
+## Supported Cameras
+
+- Yi Home 720p (17CN)
+- Yi Home 720p (27US)
+- Yi Home 720p (47CN)
+- Yi Dome 720p (Generic)
+- Yi Dome 720p (43US)
+- Yi Dome 720p (63US)
+- Yi Dome 1080p (Generic)
+- Yi Dome 1080p (45US)
+- Yi Dome 1080p (65US)
+- Yi Home 1080p (version 1)
+- Yi Home 1080p	(6FUS, Work in progress)
+- Yi Cloud Dome 1080p
+- Yi Outdoor
 
 ## Contributing
 
