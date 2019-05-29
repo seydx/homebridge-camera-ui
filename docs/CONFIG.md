@@ -4,6 +4,33 @@ Below you can see which parameters are recommend or optional.
 
  
  ## Main Config
+ 
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "YiCamera",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          }
+        }
+      ]
+    }
+  ]
+}
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
@@ -37,6 +64,46 @@ Below you can see which parameters are recommend or optional.
 
 ## MQTT Config
 
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "YiCamera",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "mqtt": {
+            "active": true,
+            "host": "192.168.178.123",
+            "port": 1883,
+            "username": "",
+            "password": "",
+            "topicPrefix": "yicam",
+            "topicSuffix": "motion",
+            "startMessage": "motion_start",
+            "stopMessage": "motion_stop",
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          }
+        }
+      ]
+    }
+  ]
+}
+
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
 | active |  | Activate/Deactivate MQTT Service (default: false) |
@@ -51,6 +118,40 @@ Below you can see which parameters are recommend or optional.
 
 ## GUI Config
 
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "YiCamera",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "gui": {
+            "active": true,
+            "username": "MyUsername",
+            "password": "MySuperSecretPassword",
+            "port": 3000,
+            "wsport": 8100
+          }
+        }
+      ]
+    }
+  ]
+}
+
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
 | active |  | Activate/Deactivate GUI (default: false) |
@@ -64,6 +165,40 @@ Below you can see which parameters are recommend or optional.
 ![Stream](/images/homebridge-yi-cam-stream.png)
 
 ## Notifier Config
+
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "YiCamera",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          }
+        }
+      ],
+      "notifier":{
+	      "active":true,
+	      "token":"TelegramToken",
+	      "chatID":"TelegramChatID",
+	      "motion_start":"Motion *detected*",
+	      "motion_stop":"*No* motion"
+	    }
+    }
+  ]
+}
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
