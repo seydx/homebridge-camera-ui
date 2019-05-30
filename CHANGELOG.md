@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.4 - 2019-05-30
+- Bugfixes
+- GUI: Better scale & redesigned UI
+- GUI: Added last movement timestamp
+
 ## 1.1.3 -2019-05-29
 - Bugfixes (websocket and ffmpeg)
 - Added viewport scale for web app
