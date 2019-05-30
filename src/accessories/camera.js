@@ -18,6 +18,8 @@ const HomeKitTypes = require('../types/types.js');
 
 var Service, Characteristic, StreamController, uuid, FakeGatoHistoryService;
 
+const timeout = ms => new Promise(res => setTimeout(res, ms));
+
 class CameraAccessory {
   constructor (platform, accessory) {
 
@@ -176,7 +178,7 @@ class CameraAccessory {
     }
     
     if(this.accessory.context.gui.active && this.accessory.context.gui.password)
-      new GUI(this.platform, this.accessory);
+      this.handleGUI();
 
     process.on('SIGTERM', async () => {
       
@@ -189,6 +191,15 @@ class CameraAccessory {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
   // Services
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+  async handleGUI(){
+  
+    if(this.accessory.context.mqttConfig.active && this.accessory.context.mqttConfig.host)
+      await timeout(2000); //wait for historyService
+    
+    new GUI(this.platform, this.accessory, this.historyService);
+  
+  }
 
   handleMQTT(){
 
@@ -883,8 +894,11 @@ class CameraAccessory {
 
     this.motionService.addCharacteristic(Characteristic.LastActivation);
     this.motionService.addCharacteristic(Characteristic.AtHome);
-
+    
+    this.accessory.context.athome = true;
+       
     this.motionService.getCharacteristic(Characteristic.AtHome)
+      .updateValue(this.accessory.context.athome)
       .on('set', (state, callback) => {
       
         this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'at home\'');

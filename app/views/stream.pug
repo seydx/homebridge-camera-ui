@@ -2,15 +2,20 @@ extends layout
 
 block content
   .mainvideo
-    h1.title= title
+    h1.titleStream
+      | #
+      span.pinkTitle Flur
+    p.logout
+      a.logoutButton(href='/logout')= logout
     p#clock.clock
+    p.movement
+      | Last Movement: 
+      span.movementClock= lastmovement
     canvas#video-canvas.video Your browser doesn't support canvas tag!
-    p.unauthorized
-      a(href='/logout') logout
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
       var canvas = document.getElementById('video-canvas');
-      var url = 'ws://' + document.location.hostname + ':#{port}/';
+      var url = 'ws://' + document.location.hostname + ':8100/';
       var player = new JSMpeg.Player(url, {
       canvas: canvas
       });

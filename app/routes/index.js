@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-module.exports = function(name){
+module.exports = function(version){
 
   router.get('/', function(req, res, next) { // eslint-disable-line no-unused-vars
   
-    res.render('index', { title: name, flash: req.flash()});
+    res.render('index', { version: 'homebridge-yi-camera v' + version + ' by ', flash: req.flash()});
  
   });
   

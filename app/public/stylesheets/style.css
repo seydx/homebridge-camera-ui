@@ -9,22 +9,74 @@ body {
 .title {
   font-family: "trebuchet ms";
   text-align: center;
-  font-size: 3em;
+  font-size: 2.8em;
   color: #fff;
   font-weight: 100;
 }
 
-.main {
+.outwrap {
   position: absolute;
   margin: auto;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  max-width: 420px;
-  max-height: 450px;
+  max-width: 450px;
+  max-height: 500px;
   width: 100%;
   height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.main {
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  padding-top: 40px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+}
+
+.mainNext {
+  margin: auto;
+  width: 100%;
+  height: auto;
+  padding-top: 40px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  padding-bottom: 30px
+}
+
+.version {
+  color: #515151;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.pink {
+  color: #e42148;
+}
+
+a.logoutButton a:any-link{
+  color: #ffffff;
+  text-decoration: none;
+  background: #e42148;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+a.logoutButton {
+  color: #ffffff;
+  text-decoration: none;
+  background: #e42148;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.movementClock {
+  color: #6c6969;
 }
 
 .mainvideo {
@@ -35,9 +87,12 @@ body {
   bottom: 0;
   left: 0;
   max-height: 700px;
+  max-width: 670px;
   width: 100%;
   height: 100%;
   color: #ffffff;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .unauthorized {
@@ -204,7 +259,7 @@ a {
 }
 
 canvas.video {
-  border: 8px solid white;
+  border: 8px solid #505050;
   border-radius: 10px;
   margin: auto;
   display: block;
@@ -213,9 +268,91 @@ canvas.video {
   margin-bottom: 30px;
   width: 100%;
   max-width: 650px;
+  clear: both;
 }
 
-p.clock {
-  color: #ffffff;
+@media screen and (min-width: 605px) {
+ 
+.titleStream {
+  font-family: "trebuchet ms";
+  text-align: left;
+  font-size: 3em;
+  color: #fff;
+  font-weight: 100;
+  float: left; 
+}
+  
+.pinkTitle {
+  color: #e42148;
+  display: block;
+  width: 400px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  float: right;
+}
+
+.logout {
   text-align: center;
+  color: #ffffff;
+  float: right;
+  margin-top: 17px;
+  margin-bottom: 0;
+}
+  
+p.clock {
+  color: #6c6969;
+  text-align: left;
+  padding-left: 10px;
+  clear: left;
+  float: left;
+}
+  
+.movement {
+  float: right; 
+  margin-right: 10px;
+}
+  
+}
+
+@media screen and (max-width: 604px) {
+ 
+  .titleStream {
+    font-family: "trebuchet ms";
+    text-align: center;
+    font-size: 3em;
+    color: #fff;
+    font-weight: 100;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  .pinkTitle {
+    color: #e42148;
+  }
+  
+  .logout {
+
+    text-align: center;
+    color: #ffffff;
+    margin-top: 17px;
+
+  }
+  
+  p.clock {
+
+    color: #6c6969;
+    text-align: center;
+    margin-bottom: 0px;
+
+  }
+  
+  .movement {
+
+    text-align: center;
+
+  }
+  
 }

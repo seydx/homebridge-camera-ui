@@ -4,6 +4,7 @@ const debug = require('debug')('GUI');
 const http = require('http');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
+const packageFile = require('../package.json');
 
 //express
 const favicon = require('serve-favicon');
@@ -14,17 +15,19 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
+const moment = require('moment');
 
 //ws
 const WebSocket = require('ws');
 
 class GUI {
-  constructor (platform, accessory) {
-
+  constructor (platform, accessory, history) {
+    
     this.logger = platform.logger;
     this.configPath = platform.configPath;
 
     this.accessory = accessory;
+    this.historyService = history;
     
     debug.enabled = accessory.context.debug;
     
@@ -188,7 +191,9 @@ class GUI {
   
   startApp(){
 
-    const indexRouter = require('./routes/index')(this.accessory.displayName);
+    let lastMovement = 'Last Movement not available';
+
+    const indexRouter = require('./routes/index')(packageFile.version);
 
     const app = express();
 
@@ -226,7 +231,24 @@ class GUI {
     app.use('/', indexRouter);
 
     app.get('/stream', (req, res, next) => { // eslint-disable-line no-unused-vars
-      res.render('stream', {title: this.accessory.displayName, port: this.WEBSOCKET_PORT});
+      
+      if(this.historyService){
+        
+        let detectedArray = [];
+        
+        this.historyService.history.map(entry => {
+        
+          if(entry.status)
+            detectedArray.push(entry);
+        
+        });
+        
+        lastMovement = moment.unix(detectedArray[detectedArray.length-1].time).format('YYYY-MM-DD HH:mm');
+
+      }
+      
+      res.render('stream', {title: this.accessory.displayName, port: this.WEBSOCKET_PORT, lastmovement: lastMovement, logout: 'Sign out, ' + this.accessory.context.gui.username});
+    
     });
     
     app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
