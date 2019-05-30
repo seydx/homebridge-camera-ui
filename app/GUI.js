@@ -243,7 +243,8 @@ class GUI {
         
         });
         
-        lastMovement = moment.unix(detectedArray[detectedArray.length-1].time).format('YYYY-MM-DD HH:mm');
+        if(detectedArray.length)
+          lastMovement = moment.unix(detectedArray[detectedArray.length-1].time).format('YYYY-MM-DD HH:mm');
 
       }
       
