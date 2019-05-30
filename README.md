@@ -12,7 +12,7 @@
 
 **Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
 
-<img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/hbyicamera.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
+<img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/hbyicamera2.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
 This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your YI Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. It is designed for the [YI-HACK v4](https://github.com/TheCrypt0/yi-hack-v4) and offers 100% support. Also, most switches that are otherwise only accessible via Web Interfae can be switched via third-party apps, for example Elgato EVE App.
 
