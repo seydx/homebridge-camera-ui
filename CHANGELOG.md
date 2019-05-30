@@ -1,7 +1,9 @@
 # Changelog
 
+## 1.1.5 -2019-05-30
+- Bugfixes (GUI)
+
 ## 1.1.4 - 2019-05-30
-- Bugfixes
 - GUI: Better scale & redesigned UI
 - GUI: Added last movement timestamp
 
