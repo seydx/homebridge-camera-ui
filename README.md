@@ -119,6 +119,8 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 
 ![Login](images/homebridge-yi-cam-login.png)
 
+![Cameras](images/homebridge-yi-cam-cameras.png)
+
 ![Stream](images/homebridge-yi-cam-stream.png)
 
 ## iOS Web Application
