@@ -2,8 +2,9 @@
 
 ## 1.1.6 -2019-05-30
 - GUI: Added "Cameras" section
+- GUI: Refactored GUI
 
-Now it is possible to view all cameras at once over the GUI
+Now it is possible to view all cameras at once over the GUI and GUI will not create a new websocket for every camera. It will set up once at start and will load the cameras from storage. (if updating from < v1.1.6 , you need to adjust your config.json (the gui part))
 
 ## 1.1.5 -2019-05-30
 - Bugfixes (GUI)
