@@ -34,16 +34,16 @@
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
             "recordVideoSize": 30
-          },
-          "gui": {
-            "active": true,
-            "username": "MyUsername",
-            "password": "supersecretpassword",
-            "port": 3000,
-            "wsport": 8100
           }
         }
       ],
+      "gui": {
+        "active": true,
+        "username": "MyUsername",
+        "password": "MySuperSecretPassword",
+        "port": 3000,
+        "wsport": 8100
+      },
       "notifier":{
         "active":true,
         "token":"TelegramToken",
