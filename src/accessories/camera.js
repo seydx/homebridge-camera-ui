@@ -45,6 +45,8 @@ class CameraAccessory {
     this.videoConfig = accessory.context.videoConfig;
     this.mqttConfig = accessory.context.mqttConfig;
     
+    this.accessories = platform.accessories;
+    
     this.accessory = accessory;
     
     this.count = 0;
@@ -197,7 +199,7 @@ class CameraAccessory {
     if(this.accessory.context.mqttConfig.active && this.accessory.context.mqttConfig.host)
       await timeout(2000); //wait for historyService
     
-    new GUI(this.platform, this.accessory, this.historyService);
+    new GUI(this.platform, this.accessory);
   
   }
 
@@ -295,7 +297,7 @@ class CameraAccessory {
           this.motionService.getCharacteristic(Characteristic.MotionDetected)
             .updateValue(1);
             
-          let lastActivation = moment().unix() - this.historyService.getInitialTime();
+          let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
         
           this.motionService.getCharacteristic(Characteristic.LastActivation)
             .updateValue(lastActivation);
@@ -311,7 +313,7 @@ class CameraAccessory {
         }
         
         let motionState = original === this.mqttConfig.startMessage ? 1 : 0;      
-        this.historyService.addEntry({time: moment().unix(), status: motionState});
+        this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState});
 
       } catch(err){
 
@@ -870,13 +872,13 @@ class CameraAccessory {
     
     let state;
     
-    if(Array.isArray(this.historyService.history) && this.historyService.history.length > 1){
+    if(Array.isArray(this.accessory.context.historyService.history) && this.accessory.context.historyService.history.length > 1){
 
-      state = this.historyService.history[this.historyService.history.length-1].status||0;
+      state = this.accessory.context.historyService.history[this.accessory.context.historyService.history.length-1].status||0;
 
       debug(this.accessory.displayName + ': Adding new entry to avoid gaps - Entry: ' + state);
       
-      this.historyService.addEntry({time: moment().unix(), status: state});
+      this.accessory.context.historyService.addEntry({time: moment().unix(), status: state});
       
       setTimeout(this.refreshHistory.bind(this), 10 * 60 * 1000);
     
@@ -913,8 +915,8 @@ class CameraAccessory {
 
       });
  
-    this.historyService = new FakeGatoHistoryService('motion', this.accessory, {storage:'fs',path:this.HBpath, disableTimer: false, disableRepeatLastData:false});
-    this.historyService.log = this.log;
+    this.accessory.context.historyService = new FakeGatoHistoryService('motion', this.accessory, {storage:'fs',path:this.HBpath, disableTimer: false, disableRepeatLastData:false});
+    this.accessory.context.historyService.log = this.log;
 
     this.services.push(this.motionService);
 

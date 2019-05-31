@@ -21,13 +21,13 @@ const moment = require('moment');
 const WebSocket = require('ws');
 
 class GUI {
-  constructor (platform, accessory, history) {
+  constructor (platform, accessory) {
     
     this.logger = platform.logger;
     this.configPath = platform.configPath;
 
+    this.accessories = platform.accessories;
     this.accessory = accessory;
-    this.historyService = history;
     
     debug.enabled = accessory.context.debug;
     
@@ -229,40 +229,15 @@ class GUI {
     app.use(flash());
 
     app.use('/', indexRouter);
-
-    app.get('/stream', (req, res, next) => { // eslint-disable-line no-unused-vars
-      
-      if(this.historyService){
-        
-        let detectedArray = [];
-        
-        this.historyService.history.map(entry => {
-        
-          if(entry.status)
-            detectedArray.push(entry);
-        
-        });
-        
-        if(detectedArray.length)
-          lastMovement = moment.unix(detectedArray[detectedArray.length-1].time).format('YYYY-MM-DD HH:mm');
-
-      }
-      
-      res.render('stream', {title: this.accessory.displayName, port: this.WEBSOCKET_PORT, lastmovement: lastMovement, logout: 'Sign out, ' + this.accessory.context.gui.username});
-    
-    });
     
     app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
 
       if (req.body.username && req.body.username === this.accessory.context.gui.username && req.body.password && req.body.password === this.accessory.context.gui.password) {
     
-        this.logger.info(this.accessory.displayName + ' (GUI): Successfully logged in! Loading stream...');
-    
-        if(!this.socketServer)
-          this.createStreamSocket();
+        this.logger.info(this.accessory.displayName + ' (GUI): Successfully logged in!');
     
         req.session.authenticated = true;
-        res.redirect('/stream');
+        res.redirect('/cameras');
     
       } else {
     
@@ -274,6 +249,43 @@ class GUI {
       }
 
     });
+    
+    app.get('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars      
+    
+      if(!this.socketServer)
+        this.createStreamSocket();
+      
+      let wsport;
+      
+      this.accessories.map( accessory => {
+      
+        if(accessory.displayName + req.params.name){
+          
+          wsport = accessory.context.gui.wsport;
+            
+          if(accessory.context.historyService){
+            
+            let detectedArray = [];
+              
+            accessory.context.historyService.history.map(entry => {
+              
+              if(entry.time && entry.status)
+                detectedArray.push(entry);
+              
+            });
+              
+            if(detectedArray.length)
+              lastMovement = moment.unix(detectedArray[detectedArray.length-1].time).format('YYYY-MM-DD HH:mm');
+            
+          }
+          
+        }
+      
+      });
+      
+      res.render('stream', {title: req.params.name, port: wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.accessory.context.gui.username});
+    
+    });
 
     app.get('/logout', (req, res, next) => { // eslint-disable-line no-unused-vars
     
@@ -282,6 +294,21 @@ class GUI {
       this.logger.info(this.accessory.displayName + ' (GUI): Logging out..');
       
       res.redirect('/');
+    
+    });
+    
+    app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
+    
+      let cameras = [];
+      
+      this.accessories.map( accessory => {
+      
+        if(accessory.context.gui.active && accessory.context.gui.password)
+          cameras.push(accessory);
+      
+      });
+      
+      res.render('cameras', {cameras: cameras, logout: 'Sign out, ' + this.accessory.context.gui.username});
     
     });
 
@@ -366,7 +393,7 @@ class GUI {
 
     debug('checkAuth ' + req.url);
 
-    if (req.url === '/stream' && (!req.session || !req.session.authenticated)) {
+    if ((req.url.includes('/stream')||req.url === '/cameras') && (!req.session || !req.session.authenticated)) {
     
       res.render('unauthorised', { status: 403 });
       return;
@@ -387,11 +414,11 @@ class GUI {
   
     this.ffmpeg = spawn('ffmpeg', cmd.split(' '), {env: process.env});
     
-    this.ffmpeg.stderr.on('data', data => {
+    /*this.ffmpeg.stderr.on('data', data => {
 
       debug(data.toString());
     
-    });
+    });*/
     
     this.ffmpeg.on('error', error => {
     

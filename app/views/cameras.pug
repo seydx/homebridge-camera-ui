@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  .outwrap
+    h1.titleStream
+      | #
+      span.camerasTitle Cameras
+    p.logout
+      a.logoutButton(href='/logout')= logout
+    .cameraList
+      each camera in cameras
+        a.cameraItem(href='/stream/' + camera.displayName)= camera.displayName

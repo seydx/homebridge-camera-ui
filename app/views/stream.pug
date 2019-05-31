@@ -4,7 +4,7 @@ block content
   .mainvideo
     h1.titleStream
       | #
-      span.pinkTitle Flur
+      span.pinkTitle= title
     p.logout
       a.logoutButton(href='/logout')= logout
     p#clock.clock
@@ -12,6 +12,7 @@ block content
       | Last Movement: 
       span.movementClock= lastmovement
     canvas#video-canvas.video Your browser doesn't support canvas tag!
+    a.displayCameras(href='/cameras') Show all Cameras
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
       var canvas = document.getElementById('video-canvas');

@@ -75,6 +75,16 @@ a.logoutButton {
   border-radius: 10px;
 }
 
+a.displayCameras {
+  color: #ffffff;
+  text-decoration: none;
+  background: #e42148;
+  padding: 10px;
+  border-radius: 10px;
+  display: block;
+  text-align: center;
+}
+
 .movementClock {
   color: #6c6969;
 }
@@ -272,47 +282,175 @@ canvas.video {
 }
 
 @media screen and (min-width: 605px) {
- 
-.titleStream {
-  font-family: "trebuchet ms";
-  text-align: left;
-  font-size: 3em;
-  color: #fff;
-  font-weight: 100;
-  float: left; 
-}
+
+  .camerasTitle {
+    color: #e42148;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: right;
+  }
   
-.pinkTitle {
-  color: #e42148;
-  display: block;
-  width: 400px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  float: right;
+  .cameraList {
+    max-height: 416px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  
+  a.cameraItem {
+    text-align: center;
+    color: #e42148;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 47.5%;
+    height: 200px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    vertical-align: middle;
+    text-decoration: none;
+  }
+  
+  a.cameraItem a:any-link{
+    text-align: center;
+    color: #e42148;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 47.5%;
+    height: 200px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    vertical-align: middle;
+    text-decoration: none;
+  }
+ 
+  .titleStream {
+    font-family: "trebuchet ms";
+    text-align: left;
+    font-size: 3em;
+    color: #fff;
+    font-weight: 100;
+    float: left; 
+  }
+  
+  .pinkTitle {
+    color: #e42148;
+    display: block;
+    width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: right;
+  }
+
+  .logout {
+    text-align: center;
+    color: #ffffff;
+    float: right;
+    margin-top: 17px;
+    margin-bottom: 0;
+  }
+  
+  p.clock {
+    color: #6c6969;
+    text-align: left;
+    padding-left: 10px;
+    clear: left;
+    float: left;
+  }
+  
+  .movement {
+    float: right; 
+    margin-right: 10px;
+  }
+  
 }
 
-.logout {
-  text-align: center;
-  color: #ffffff;
-  float: right;
-  margin-top: 17px;
-  margin-bottom: 0;
-}
+
+@media screen and (min-width: 400px) {
+
+ 
+  .camerasTitle {
+    color: #e42148
+  }
   
-p.clock {
-  color: #6c6969;
-  text-align: left;
-  padding-left: 10px;
-  clear: left;
-  float: left;
-}
+  .cameraList {
+    max-height: 446px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+    padding-top: 10px;
+  }
   
-.movement {
-  float: right; 
-  margin-right: 10px;
-}
+  a.cameraItem {
+    text-align: center;
+    color: #e42148;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 98%;
+    height: 100px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+  }
   
+  a.cameraItem a:any-link{
+    text-decoration: none;
+  }
+
+}
+
+@media screen and (max-width: 399px) {
+  
+  .camerasTitle {
+    color: #e42148
+  }
+  
+  .cameraList {
+    max-height: 446px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+    padding-top: 10px;
+  }
+  
+  a.cameraItem {
+    text-align: center;
+    color: #e42148;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 98%;
+    height: 100px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  a.cameraItem a:any-link{
+    text-decoration: none;
+  }
+
 }
 
 @media screen and (max-width: 604px) {

@@ -1,6 +1,5 @@
 'use strict';
 
-const debug = require('debug')('YiCamera');
 const packageFile = require('../package.json');
 const LogUtil = require('../lib/LogUtil.js');
 
@@ -28,6 +27,8 @@ function YiCamera (log, config, api) {
   // HB
   this.log = log;
   this.logger = new LogUtil(null, log);
+  
+  this.accessories = [];
   
   this.config = config;  
   this.config.cameras = config.cameras||[];
@@ -66,14 +67,32 @@ function YiCamera (log, config, api) {
 YiCamera.prototype = {
 
   _initPlatform: async function(){
-  
-    if(this.config.cameras.length){
-  
-      debug('Found ' + this.config.cameras.length + ' camera in config.json');
-  
-      for(const camera of this.config.cameras)      
-        if(camera.active)
-          this.addAccessory(camera);
+    
+    try {
+    
+      if(this.config.cameras.length){
+    
+        this.logger.info('Found ' + this.config.cameras.length + ' camera in config.json');
+    
+        for(const camera of this.config.cameras)     
+          if(camera.active)
+            this.accessories.push(await this.addAccessory(camera));
+       
+        this.accessories.map(accessory => {
+        
+          let cameraSource = new Camera(this, accessory);
+          accessory.configureCameraSource(cameraSource);   
+        
+        });
+       
+        this.api.publishCameraAccessories(platformName, this.accessories);
+      
+      }
+    
+    } catch(err){
+    
+      this.logger.error('An error occured while initalising accessory!');
+      this.logger.error(err);
     
     }
   
@@ -109,17 +128,13 @@ YiCamera.prototype = {
         this.logger.info(accessory.displayName + ': Hi!');
         callback();
     
-      });
-       
-      let cameraSource = new Camera(this, accessory);
-      accessory.configureCameraSource(cameraSource);      
+      }); 
       
-      this.api.publishCameraAccessories(platformName, [accessory]);
+      return accessory;
   
     } catch(err) {
     
-      this.logger.error('An error occured while creating accessory!');
-      this.logger.error(err);
+      throw err;
     
     } 
 
