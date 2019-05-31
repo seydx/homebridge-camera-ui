@@ -12,13 +12,10 @@ const spawn = require('child_process').spawn;
 const FormData = require('form-data');
 const querystring = require('querystring');
 
-const GUI = require('../../app/GUI.js');
 const EveTypes = require('../types/eve.js');
 const HomeKitTypes = require('../types/types.js');
 
 var Service, Characteristic, StreamController, uuid, FakeGatoHistoryService;
-
-const timeout = ms => new Promise(res => setTimeout(res, ms));
 
 class CameraAccessory {
   constructor (platform, accessory) {
@@ -178,9 +175,6 @@ class CameraAccessory {
       this.handleMQTT();
     
     }
-    
-    if(this.accessory.context.gui.active && this.accessory.context.gui.password)
-      this.handleGUI();
 
     process.on('SIGTERM', async () => {
       
@@ -193,15 +187,6 @@ class CameraAccessory {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
   // Services
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-
-  async handleGUI(){
-  
-    if(this.accessory.context.mqttConfig.active && this.accessory.context.mqttConfig.host)
-      await timeout(2000); //wait for historyService
-    
-    new GUI(this.platform, this.accessory);
-  
-  }
 
   handleMQTT(){
 

@@ -21,15 +21,16 @@ const moment = require('moment');
 const WebSocket = require('ws');
 
 class GUI {
-  constructor (platform, accessory) {
+  constructor (platform, guiConfig) {
     
     this.logger = platform.logger;
     this.configPath = platform.configPath;
 
     this.accessories = platform.accessories;
-    this.accessory = accessory;
     
-    debug.enabled = accessory.context.debug;
+    this.config = guiConfig;
+    
+    debug.enabled = this.config.debug;
     
     process.on('SIGTERM', () => {
 
@@ -62,9 +63,9 @@ class GUI {
   
   createStreamSocket(){
     
-    this.STREAM_SECRET = this.accessory.context.gui.secret;
+    this.STREAM_SECRET = this.config.secret;
     this.STREAM_PORT = this.generateRandomInteger(8100,8900);
-    this.WEBSOCKET_PORT = this.accessory.context.gui.wsport||this.generateRandomInteger(8100,8900);
+    this.WEBSOCKET_PORT = this.config.wsport||this.generateRandomInteger(8100,8900);
     let RECORD_STREAM = false;
 
     // Websocket Server
@@ -77,8 +78,8 @@ class GUI {
       if(!this.socketServer.connectionCount.includes((upgradeReq || socket.upgradeReq).socket.remoteAddress))
         this.socketServer.connectionCount.push((upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
-      debug('New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount.length+' total)');
-      //debug(this.accessory.displayName + ' (GUI): Connected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
+      debug(this.currentPlayer + ': New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount.length+' total)');
+      //debug(this.accessory.displayName + ': Connected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
       if(!this.ffmpeg)
         this.spawnCamera();
@@ -91,15 +92,15 @@ class GUI {
           this.socketServer.connectionCount.splice(i, 1);
         }
 
-        //debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');        
-        debug(this.accessory.displayName + ' (GUI): Disconnected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
-        debug(this.accessory.displayName + ' (GUI): Code: ' + code + ' - Message: ' + message);
+        //debug(this.accessory.displayName + ': Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');        
+        debug(this.currentPlayer + ': Disconnected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
+        debug(this.currentPlayer + ': Code: ' + code + ' - Message: ' + message);
         
         if(!this.socketServer.connectionCount.length){
         
           if(this.ffmpeg){
         
-            debug(this.accessory.displayName + ': No connections with websocket. Closing stream.');
+            debug(this.currentPlayer + ': No connections with websocket. Closing stream.');
         
             this.ffmpeg.kill();
             this.ffmpeg = false;
@@ -114,7 +115,7 @@ class GUI {
     
     this.socketServer.on('close', () => {
 
-      debug(this.accessory.displayName + ' (GUI): Websocket closed');
+      debug(this.currentPlayer + ': Websocket closed');
   
     });
   
@@ -138,7 +139,7 @@ class GUI {
 
       if (params[0] !== this.STREAM_SECRET) {
   
-        this.logger.info(this.accessory.displayName + ' (GUI): Failed Stream Connection: '+ request.socket.remoteAddress + ':' + request.socket.remotePort + ' - wrong secret.');
+        this.logger.info(this.currentPlayer + ' (GUI): Failed Stream Connection: '+ request.socket.remoteAddress + ':' + request.socket.remotePort + ' - wrong secret.');
 
         response.end();
 
@@ -174,30 +175,28 @@ class GUI {
     
     this.streamServer.on('connection', socket => {
 
-      debug(this.accessory.displayName + ' (GUI): Stream Server Connected: ' + socket.remoteAddress + ':' + socket.remotePort);
+      debug(this.currentPlayer + ': Stream Server Connected: ' + socket.remoteAddress + ':' + socket.remotePort);
 
     });
     
     this.streamServer.on('close', () => {
 
-      debug(this.accessory.displayName + ' (GUI): Stream Server closed');
+      debug(this.currentPlayer + ': Stream Server closed');
 
     });
 
-    debug(this.accessory.displayName + ' (GUI): Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + this.STREAM_PORT + '/<secret>');
-    debug(this.accessory.displayName + ' (GUI): Awaiting WebSocket connections on ws://127.0.0.1:' + this.WEBSOCKET_PORT + '/');
+    debug(this.currentPlayer + ': Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + this.STREAM_PORT + '/<secret>');
+    debug(this.currentPlayer + ': Awaiting WebSocket connections on ws://127.0.0.1:' + this.WEBSOCKET_PORT + '/');
    
   }
   
   startApp(){
 
-    let lastMovement = 'Last Movement not available';
-
     const indexRouter = require('./routes/index')(packageFile.version);
 
     const app = express();
 
-    let port = this.normalizePort(this.accessory.context.gui.port);
+    let port = this.normalizePort(this.config.port);
     app.set('port', port);
 
     // view engine setup
@@ -207,7 +206,7 @@ class GUI {
 
     app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
-    if(this.accessory.context.debug)
+    if(this.config.debug)
       app.use(logger('dev'));
     
     app.use(express.json());
@@ -232,16 +231,16 @@ class GUI {
     
     app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
 
-      if (req.body.username && req.body.username === this.accessory.context.gui.username && req.body.password && req.body.password === this.accessory.context.gui.password) {
+      if (req.body.username && req.body.username === this.config.username && req.body.password && req.body.password === this.config.password) {
     
-        this.logger.info(this.accessory.displayName + ' (GUI): Successfully logged in!');
+        this.logger.info(req.body.username + ': Successfully logged in!');
     
         req.session.authenticated = true;
         res.redirect('/cameras');
     
       } else {
     
-        this.logger.warn(this.accessory.displayName + ' (GUI): Username and/or password are incorrect!');
+        this.logger.warn('GUI: Username and/or password are incorrect!');
     
         req.flash('error', 'Username and/or password are incorrect!');
         res.redirect('/');
@@ -251,19 +250,23 @@ class GUI {
     });
     
     app.get('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars      
-    
-      if(!this.socketServer)
-        this.createStreamSocket();
       
-      let wsport;
+      let lastMovement = 'Last Movement not available';
+      
+      this.currentPlayer = false;
+      this.currentSource = false;
       
       this.accessories.map( accessory => {
       
-        if(accessory.displayName + req.params.name){
-          
-          wsport = accessory.context.gui.wsport;
-            
-          if(accessory.context.historyService){
+        if(accessory.displayName + req.params.name){ 
+        
+          this.currentPlayer = req.params.name;
+          this.currentSource = 'rtsp://' + accessory.context.videoConfig.source.split('rtsp://')[1];
+        
+          if(!this.socketServer)
+            this.createStreamSocket();
+
+          if(accessory.context.mqttConfig.active && accessory.context.mqttConfig.host && accessory.context.historyService){
             
             let detectedArray = [];
               
@@ -283,7 +286,7 @@ class GUI {
       
       });
       
-      res.render('stream', {title: req.params.name, port: wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.accessory.context.gui.username});
+      res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username});
     
     });
 
@@ -291,24 +294,15 @@ class GUI {
     
       delete req.session.authenticated;
 
-      this.logger.info(this.accessory.displayName + ' (GUI): Logging out..');
+      this.logger.info('GUI: Logging out..');
       
       res.redirect('/');
     
     });
     
     app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
-    
-      let cameras = [];
       
-      this.accessories.map( accessory => {
-      
-        if(accessory.context.gui.active && accessory.context.gui.password)
-          cameras.push(accessory);
-      
-      });
-      
-      res.render('cameras', {cameras: cameras, logout: 'Sign out, ' + this.accessory.context.gui.username});
+      res.render('cameras', {cameras: this.accessories, logout: 'Sign out, ' + this.config.username});
     
     });
 
@@ -350,13 +344,13 @@ class GUI {
     
         case 'EACCES':
       
-          err = this.accessory.displayName + ' (GUI): ' + bind + ' requires elevated privileges';
+          err = 'GUI: ' + bind + ' requires elevated privileges';
       
           break;
     
         case 'EADDRINUSE':
       
-          err = this.accessory.displayName + ' (GUI): ' + bind + ' is already in use';
+          err = 'GUI: ' + bind + ' is already in use';
       
           break;
     
@@ -377,13 +371,13 @@ class GUI {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
   
-      this.logger.info(this.accessory.displayName + ' (GUI): GUI listening on ' + bind);
+      this.logger.info('GUI: GUI listening on ' + bind);
 
     });
 
     this.server.on('close', () => {
 
-      debug(this.accessory.displayName + ' (GUI): GUI closed');
+      debug('Close GUI');
 
     });
 
@@ -406,11 +400,9 @@ class GUI {
 
   spawnCamera(){
 
-    debug(this.accessory.displayName + ' (GUI): Spawning camera...');
+    debug('Start streaming for ' + this.currentPlayer + ' - Source: ' + this.currentSource);
 
-    let source = 'rtsp://' + this.accessory.context.videoConfig.source.split('rtsp://')[1];
-
-    let cmd = '-i ' + source + ' -r 30 -f mpegts -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.accessory.context.gui.secret + ' -loglevel error';
+    let cmd = '-i ' + this.currentSource + ' -r 30 -f mpegts -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
   
     this.ffmpeg = spawn('ffmpeg', cmd.split(' '), {env: process.env});
     
@@ -422,26 +414,14 @@ class GUI {
     
     this.ffmpeg.on('error', error => {
     
-      this.logger.info(this.accessory.displayName + ' (GUI): An error occured while spawning camera!');
+      this.logger.info(this.currentPlayer + ' (GUI): An error occured while spawning camera!');
       debug(error);
     
     });
   
     this.ffmpeg.on('close', code => {
     
-      debug(this.accessory.displayName + ' (GUI): FFMPEG closed with code ' + code);
-    
-    });
-    
-    this.ffmpeg.on('disconnect', () => {
-    
-      debug(this.accessory.displayName + ' (GUI): FFMPEG disconnected');
-    
-    });
- 
-    this.ffmpeg.on('exit', code => {
-    
-      debug(this.accessory.displayName + ' (GUI): FFMPEG exit with code ' + code);
+      debug(this.currentPlayer + ': Stream closed (' + code + ')');
     
     });
 

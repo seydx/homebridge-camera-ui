@@ -5,6 +5,7 @@ const LogUtil = require('../lib/LogUtil.js');
 
 //Accessory
 const Camera = require('./accessories/camera.js');
+const GUI = require('../app/GUI.js');
 
 const platformName = 'YiCamera';
 
@@ -42,6 +43,17 @@ function YiCamera (log, config, api) {
     motion_stop: this.config.notifier.motion_stop||''
   };
   
+  this.config.gui = {
+    active: this.config.gui.active||false,
+    username: this.config.gui.username||'admin',
+    password: this.config.gui.password,
+    port: this.config.gui.port||3000,
+    wsport: this.config.gui.wsport,
+    debug: this.config.debug||false
+  };
+  
+  this.config.gui.secret = this.config.gui.username + this.config.gui.password; 
+  
   if(!this.config.notifier.token||!this.config.notifier.chatID)
     this.config.notifier.active = false;
   
@@ -77,6 +89,9 @@ YiCamera.prototype = {
         for(const camera of this.config.cameras)     
           if(camera.active)
             this.accessories.push(await this.addAccessory(camera));
+       
+        if(this.accessories.length && this.config.gui.active && this.config.gui.password)
+          new GUI(this, this.config.gui);
        
         this.accessories.map(accessory => {
         
@@ -149,16 +164,6 @@ YiCamera.prototype = {
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
     accessory.context.notifier = this.config.notifier;
-    
-    accessory.context.gui = {
-      active: object.gui.active||false,
-      username: object.gui.username||'admin',
-      password: object.gui.password,
-      port: object.gui.port||3000,
-      wsport: object.gui.wsport
-    };
-    
-    accessory.context.gui.secret = accessory.context.gui.username + accessory.context.gui.password;
 
     accessory.context.mqttConfig = {
       active: object.mqtt.active||false,
