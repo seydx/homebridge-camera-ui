@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.6 -2019-05-30
+- GUI: Added "Cameras" section
+
+Now it is possible to view all cameras at once over the GUI
+
 ## 1.1.5 -2019-05-30
 - Bugfixes (GUI)
 
