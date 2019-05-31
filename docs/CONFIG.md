@@ -143,16 +143,16 @@ Below you can see which parameters are recommend or optional.
             "maxWidth": 1920,
             "maxHeight": 1080,
             "maxFPS": 30
-          },
-          "gui": {
-            "active": true,
-            "username": "MyUsername",
-            "password": "MySuperSecretPassword",
-            "port": 3000,
-            "wsport": 8100
           }
         }
-      ]
+      ],
+      "gui": {
+        "active": true,
+        "username": "MyUsername",
+        "password": "MySuperSecretPassword",
+        "port": 3000,
+        "wsport": 8100
+      }
     }
   ]
 }
