@@ -347,10 +347,18 @@ class GUI {
       debug('Record: ' + req.body.recordVideo);
        
       if(req.body.recordVideo === 'true'){
+         
+        if(!this.writeStream){
+         
+          this.logger.info('GUI: Recording stream...');
+          this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+         
+        } else {
 
-        this.logger.info('GUI: Recording stream...');
-        this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
-       
+          this.logger.warn('GUI: Ignoring record request, someone already at recording stream!');
+
+        }
+
       } else {
        
         this.logger.info('GUI: Stop recording stream. Storing video...');
