@@ -53,8 +53,8 @@ input.streamRecord {
 .main {
   margin: auto;
   width: 100%;
-  height: 100%;
   padding-top: 40px;
+  padding-bottom: 20px;
   background: rgba(255,255,255,0.05);
   border-radius: 20px;
 }
@@ -80,7 +80,12 @@ input.streamRecord {
   color: #e42148;
 }
 
-a.logoutButton a:any-link{
+a.pink:any-link {
+  color: #e42148;
+  text-decoration: none;
+}
+
+a.logoutButton:any-link{
   text-decoration: none;
 }
 
@@ -152,7 +157,7 @@ a.displayCameras:hover {
   text-decoration: none;
 }
 
-.unauthorized a:any-link{
+.unauthorized:any-link{
   text-decoration: none;
 }
 
@@ -346,7 +351,7 @@ canvas.video {
     transition: 0.5s all;
   }
   
-  a.cameraItem a:any-link{
+  a.cameraItem:any-link{
     text-decoration: none;
   }
   
@@ -437,7 +442,7 @@ canvas.video {
     transition: 0.5s all;
   }
   
-  a.cameraItem a:any-link{
+  a.cameraItem:any-link{
     text-decoration: none;
   }
   
@@ -486,7 +491,7 @@ canvas.video {
     transition: 0.5s all;
   }
   
-  a.cameraItem a:any-link{
+  a.cameraItem:any-link{
     text-decoration: none;
   }
   

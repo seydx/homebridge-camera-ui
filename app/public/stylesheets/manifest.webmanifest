@@ -2,8 +2,6 @@
    "name": "Yi Camera",
    "short_name": "Yi Camera",
    "display": "standalone",
-   "description": "Web Application for your YI-Cameras",
-   ​​"orientation": "portrait-primary",
    "icons": [{
       "src": "/images/icon-hd.png",
       "sizes": "192x192"},
