@@ -10,7 +10,7 @@ block content
           form(method='post')
             input.text(type='text', placeholder='Username', name='username', required='')
             input.text(type='password', placeholder='Password', name='password', required='')
-            input(type='submit', value='Submit')
+            input.submit(type='submit', value='Submit')
     h4.version= version
       span.pink seydx
     each message in flash

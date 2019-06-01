@@ -11,21 +11,89 @@ block content
     p.movement
       | Last Movement: 
       span.movementClock= lastmovement
-    canvas#video-canvas.video Your browser doesn't support canvas tag!
+    .videoWrap
+      form#rec.streamForm(method='post', action='/stream/' + title)
+        input#recordVideo.streamRecord(type='submit', value='Record')
+      canvas#video-canvas.video Your browser doesn't support canvas tag!
     a.displayCameras(href='/cameras') Show all Cameras
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
-      var canvas = document.getElementById('video-canvas');
-      var url = 'ws://' + document.location.hostname + ':8100/';
-      var player = new JSMpeg.Player(url, {
-      canvas: canvas
+      
+      let timer;
+      let isVideoPreload = false;
+      
+      $('#rec').submit(function(e) {
+        
+        e.preventDefault();
+      
+        if(isVideoPreload){
+      
+          if($('#recordVideo').val() === 'Record'){
+           
+            $.post('/stream/!{title}',{recordVideo:true}); 
+            
+            let secs = 0,
+              mins = 0,
+              hours = 0;
+    
+            $('#recordVideo').val(0 + 's');
+    
+            timer = setInterval(function(){
+    
+              secs++;
+       
+              if (secs >= 60) {
+                secs = 0;
+                mins++;
+                if (mins >= 60) {
+                  mins = 0;
+                  hours++;
+                }
+              }
+    
+              $('#recordVideo').val((hours ? hours + 'h ' : '') +  (mins ? mins + 'm ' : '') + secs + 's');
+    
+            },1000);
+             
+          } else {
+            
+            if(timer)
+              clearInterval(timer);
+    
+            $.post('/stream/!{title}',{recordVideo:false}); 
+    
+            $('#recordVideo').val('Record');
+            
+          }
+        
+        } else {
+        
+          alert("Stream is loading, please wait!");
+        
+        }
+      
       });
+      
+      var canvas = document.getElementById('video-canvas');
+      
+      var url = 'ws://' + document.location.hostname + ':8100/';
+      
+      var player = new JSMpeg.Player(url, {canvas: canvas, onSourceEstablished: function (player) { isVideoPreload = true; } });
+      
       (function() {
-      var clockElement = document.getElementById("clock");
-      function updateClock(clock) {
-      clock.innerHTML = new Date().toLocaleString();
-      }
-      setInterval(function() {
-      updateClock(clockElement);
-      }, 1000);
+        
+        var clockElement = document.getElementById("clock");
+        
+        function updateClock(clock) {
+        
+          clock.innerHTML = new Date().toLocaleString();
+        
+        }
+        
+        setInterval(function() {
+        
+          updateClock(clockElement);
+        
+        }, 1000);
+      
       }());

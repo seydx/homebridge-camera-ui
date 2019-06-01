@@ -1,7 +1,7 @@
 'use strict';
 
 const debug = require('debug')('GUI');
-const http = require('http');
+const http = require('http'); 
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const packageFile = require('../package.json');
@@ -10,6 +10,7 @@ const packageFile = require('../package.json');
 const favicon = require('serve-favicon');
 const createError = require('http-errors');
 const express = require('express');
+const helmet = require('helmet');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -50,6 +51,11 @@ class GUI {
       if(this.server)
         this.server.close();
  
+      if(this.writeStream){
+        this.writeStream.close();
+        this.writeStream = false;
+      }
+ 
       if(this.ffmpeg){
         this.ffmpeg.kill();
         this.ffmpeg = false;
@@ -66,7 +72,6 @@ class GUI {
     this.STREAM_SECRET = this.config.secret;
     this.STREAM_PORT = this.generateRandomInteger(8100,8900);
     this.WEBSOCKET_PORT = this.config.wsport||this.generateRandomInteger(8100,8900);
-    let RECORD_STREAM = false;
 
     // Websocket Server
     this.socketServer = new WebSocket.Server({port: this.WEBSOCKET_PORT, perMessageDeflate: false});
@@ -98,6 +103,15 @@ class GUI {
         
         if(!this.socketServer.connectionCount.length){
         
+          if(this.writeStream){
+          
+            debug(this.currentPlayer + ': No connections with websocket. Stop recording stream.');
+          
+            this.writeStream.close();
+            this.writeStream = false;
+         
+          }
+        
           if(this.ffmpeg){
         
             debug(this.currentPlayer + ': No connections with websocket. Closing stream.');
@@ -106,6 +120,8 @@ class GUI {
             this.ffmpeg = false;
         
           }
+          
+          
         
         }
      
@@ -151,25 +167,19 @@ class GUI {
     
         this.socketServer.broadcast(data);
   
-        if(request.socket.recording)
-          request.socket.recording.write(data);
-
+        if(this.writeStream)
+          this.writeStream.write(data);
+        
       });
 
       request.on('end',() => {
 
-        if(request.socket.recording)
-          request.socket.recording.close();
-
+        if(this.writeStream){
+          this.writeStream.close();
+          this.writeStream = false;
+        }
+      
       });
-
-      // Record the stream to a local file?
-      if (RECORD_STREAM) {
-    
-        let path = this.configPath + '/' + Date.now() + '.js';
-        request.socket.recording = fs.createWriteStream(path);
-  
-      }
 
     }).listen(this.STREAM_PORT);
     
@@ -192,10 +202,10 @@ class GUI {
   
   startApp(){
 
-    const indexRouter = require('./routes/index')(packageFile.version);
-
     const app = express();
-
+    
+    app.use(helmet());
+        
     let port = this.normalizePort(this.config.port);
     app.set('port', port);
 
@@ -216,9 +226,12 @@ class GUI {
     app.use(cookieParser());
     
     app.use(session({
-      secret: 'keyboard cat',
+      secret: this.config.username + this.config.password,
       resave: false,
-      saveUninitialized: true
+      saveUninitialized: true,
+      cookie: {
+        secure: 'auto'
+      }
     }));
     
     app.use(express.static(path.join(__dirname, 'public')));
@@ -226,16 +239,35 @@ class GUI {
     app.use(this.checkAuth);
 
     app.use(flash());
-
-    app.use('/', indexRouter);
+    
+    app.get('/', function(req, res, next) { // eslint-disable-line no-unused-vars
+      
+      if(req.session && req.session.authenticated){
+      
+        res.redirect('/cameras');
+      
+      } else {
+      
+        res.render('index', { version: 'homebridge-yi-camera v' + packageFile.version + ' by ', flash: req.flash()});
+      
+      }
+ 
+    });
     
     app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
 
       if (req.body.username && req.body.username === this.config.username && req.body.password && req.body.password === this.config.password) {
     
         this.logger.info(req.body.username + ': Successfully logged in!');
-    
+        this.logger.info(req.body.username + ': You will automatically be logged out in one hour');
+        
         req.session.authenticated = true;
+        
+        let hour = 3600000;
+        req.session.cookie.expires = new Date(Date.now() + hour);
+        req.session.cookie.maxAge = hour;
+        req.session.cookie.secure = 'auto';
+       
         res.redirect('/cameras');
     
       } else {
@@ -249,16 +281,16 @@ class GUI {
 
     });
     
-    app.get('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars      
-      
-      let lastMovement = 'Last Movement not available';
-      
-      this.currentPlayer = false;
-      this.currentSource = false;
+    app.get('/stream/:name', (req, res, next) => {
       
       this.accessories.map( accessory => {
       
-        if(accessory.displayName + req.params.name){ 
+        if(accessory.displayName === req.params.name){ 
+        
+          let lastMovement = 'Last Movement not available';
+      
+          this.currentPlayer = false;
+          this.currentSource = false;
         
           this.currentPlayer = req.params.name;
           this.currentSource = 'rtsp://' + accessory.context.videoConfig.source.split('rtsp://')[1];
@@ -282,11 +314,15 @@ class GUI {
             
           }
           
+          res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username});
+          
+        } else {
+         
+          next(createError(404));
+         
         }
       
       });
-      
-      res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username});
     
     });
 
@@ -294,7 +330,7 @@ class GUI {
     
       delete req.session.authenticated;
 
-      this.logger.info('GUI: Logging out..');
+      this.logger.info(this.config.username + ': Logging out..');
       
       res.redirect('/');
     
@@ -303,6 +339,39 @@ class GUI {
     app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
       
       res.render('cameras', {cameras: this.accessories, logout: 'Sign out, ' + this.config.username});
+    
+    });
+    
+    app.post('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars
+       
+      debug('Record: ' + req.body.recordVideo);
+       
+      if(req.body.recordVideo === 'true'){
+
+        this.logger.info('GUI: Recording stream...');
+        this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+       
+      } else {
+       
+        this.logger.info('GUI: Stop recording stream. Storing video...');
+       
+        this.writeStream.close();
+        this.writeStream = false;
+       
+        debug('Converting raw data to video format...');
+       
+        let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
+       
+        convert.on('close', code => {
+
+          debug('Converting finished! (' + code + ')');
+          this.logger.info('File saved to ' + this.configPath + '/video.mp4');
+
+        });
+       
+      }
+       
+      res.sendStatus(200);
     
     });
 
@@ -316,6 +385,8 @@ class GUI {
     // error handler
     app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   
+      debug(err);
+  
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -325,7 +396,7 @@ class GUI {
       res.render('error');
 
     });
-
+    
     this.server = http.createServer(app);
     this.server.listen(port);
 

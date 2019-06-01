@@ -29,6 +29,27 @@ body {
   padding-right: 10px;
 }
 
+.videoWrap {
+  clear: both;
+  position: relative;
+}
+
+form.streamForm {
+  position: absolute;
+  right: 5%;
+  bottom: 6%;
+}
+
+input.streamRecord {
+  background: #e42148;
+  color: #fff;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  border: none;
+  cursor: pointer;
+}
+
 .main {
   margin: auto;
   width: 100%;
@@ -60,11 +81,7 @@ body {
 }
 
 a.logoutButton a:any-link{
-  color: #ffffff;
   text-decoration: none;
-  background: #e42148;
-  padding: 10px;
-  border-radius: 10px;
 }
 
 a.logoutButton {
@@ -76,13 +93,28 @@ a.logoutButton {
 }
 
 a.displayCameras {
-  color: #ffffff;
+  color: #929292;
   text-decoration: none;
-  background: #e42148;
+  background: #383838;
   padding: 10px;
   border-radius: 10px;
   display: block;
   text-align: center;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
+}
+
+a.displayCameras:any-link {
+  text-decoration: none;
+}
+
+a.displayCameras:hover {
+  color: #ffffff;
+  background: #e42148;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
 }
 
 .movementClock {
@@ -101,8 +133,7 @@ a.displayCameras {
   width: 100%;
   height: 100%;
   color: #ffffff;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 20px;
 }
 
 .unauthorized {
@@ -122,11 +153,7 @@ a.displayCameras {
 }
 
 .unauthorized a:any-link{
-  color: #ffffff;
   text-decoration: none;
-  background: #e42148;
-  padding: 10px;
-  border-radius: 10px;
 }
 
 img.logo {
@@ -178,8 +205,7 @@ h4.flash {
   padding: 5px;
 }
 
-input[type="text"],
-input[type="password"] {
+input.text {
   display: block;
   width: 100%;
   border: none;
@@ -201,7 +227,7 @@ input[type="password"] {
   font-family: 'Dosis', sans-serif;
 }
 
-input[type="submit"] {
+input.submit {
   font-size: 1em;
   background-color: #e42148;
   color: #fff;
@@ -220,7 +246,7 @@ input[type="submit"] {
   margin-top: 25px;
 }
 
-input[type="submit"]:hover {
+input.submit:hover {
   background-color: #7b0c22;
   -webkit-tranform: translateY(9px);
   -ms-tranform: translateY(9px);
@@ -301,7 +327,7 @@ canvas.video {
   
   a.cameraItem {
     text-align: center;
-    color: #e42148;
+    color: #ffffff;
     font-family: "trebuchet ms";
     font-size: 1.5em;
     text-decoration: none;
@@ -315,24 +341,22 @@ canvas.video {
     align-items: center;
     vertical-align: middle;
     text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
   
   a.cameraItem a:any-link{
-    text-align: center;
-    color: #e42148;
-    font-family: "trebuchet ms";
-    font-size: 1.5em;
     text-decoration: none;
-    width: 47.5%;
-    height: 200px;
-    float: left;
-    background: #383838;
-    border-radius: 10px;
-    margin: 5px;
-    display: grid;
-    align-items: center;
-    vertical-align: middle;
+  }
+  
+  a.cameraItem:hover{
     text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
  
   .titleStream {
@@ -395,7 +419,7 @@ canvas.video {
   
   a.cameraItem {
     text-align: center;
-    color: #e42148;
+    color: #ffffff;
     font-family: "trebuchet ms";
     font-size: 1.5em;
     text-decoration: none;
@@ -408,10 +432,22 @@ canvas.video {
     display: grid;
     align-items: center;
     text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
   
   a.cameraItem a:any-link{
     text-decoration: none;
+  }
+  
+  a.cameraItem:hover{
+    text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
 
 }
@@ -432,7 +468,7 @@ canvas.video {
   
   a.cameraItem {
     text-align: center;
-    color: #e42148;
+    color: #ffffff;
     font-family: "trebuchet ms";
     font-size: 1.5em;
     text-decoration: none;
@@ -445,10 +481,22 @@ canvas.video {
     display: grid;
     align-items: center;
     text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
   
   a.cameraItem a:any-link{
     text-decoration: none;
+  }
+  
+  a.cameraItem:hover{
+    text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
   }
 
 }
