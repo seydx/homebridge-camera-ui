@@ -53,10 +53,8 @@ class GUI {
       if(this.server)
         this.server.close();
  
-      if(this.writeStream){
-        this.writeStream.close();
-        this.writeStream = false;
-      }
+      if(this.writeStream)
+        this.closeAndStoreStream();
  
       if(this.ffmpeg){
         this.ffmpeg.kill();
@@ -101,7 +99,7 @@ class GUI {
 
         //debug(this.accessory.displayName + ': Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');        
         debug(this.currentPlayer + ': Disconnected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
-        debug(this.currentPlayer + ': Code: ' + code + ' - Message: ' + message);
+        debug(this.currentPlayer + ': Code: ' + code + ' - Message: ' + (message||'No message'));
         
         if(!this.socketServer.connectionCount.length){
         
@@ -109,8 +107,7 @@ class GUI {
           
             debug(this.currentPlayer + ': No connections with websocket. Stop recording stream.');
           
-            this.writeStream.close();
-            this.writeStream = false;
+            this.closeAndStoreStream();
          
           }
         
@@ -181,19 +178,7 @@ class GUI {
             
             this.logger.warn('Recording time reached (1h) - Storing video..');
             
-            this.writeStream.close();
-            this.writeStream = false;
-            
-            debug('Converting raw data to video format...');
-       
-            let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
-       
-            convert.on('close', code => {
-
-              debug('Converting finished! (' + code + ')');
-              this.logger.info('File saved to ' + this.configPath + '/video.mp4');
-
-            });
+            this.closeAndStoreStream();
             
           }
         
@@ -203,10 +188,8 @@ class GUI {
 
       request.on('end',() => {
 
-        if(this.writeStream){
-          this.writeStream.close();
-          this.writeStream = false;
-        }
+        if(this.writeStream)
+          this.closeAndStoreStream();
       
       });
 
@@ -377,26 +360,12 @@ class GUI {
 
       if(req.body.recordVideo === 'true'){
          
-        if(!this.recordRequest.length||this.recordRequest.includes(req._remoteAddress)){
+        if(!this.recordRequest.length){
          
-          if(!this.recordRequest.length ){
-            
-            this.recordRequest.push(req._remoteAddress);
+          this.recordRequest.push(req._remoteAddress);
 
-            this.logger.info('GUI: Recording stream...');
-            this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
-            
-          } else {
-              
-            if(this.writeStream){
-              this.writeStream.close();
-              this.writeStream = false;
-            }
-              
-            this.logger.info('GUI: Previous recording deleted! Recording stream again...');
-            this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
-
-          }
+          this.logger.info('GUI: Recording stream...');
+          this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
             
           this.recordTime = new moment().unix();
           res.sendStatus(200);
@@ -418,19 +387,7 @@ class GUI {
         
             this.logger.info('GUI: Stop recording stream. Storing video...');
        
-            this.writeStream.close();
-            this.writeStream = false;
-       
-            debug('Converting raw data to video format...');
-       
-            let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
-       
-            convert.on('close', code => {
-
-              debug('Converting finished! (' + code + ')');
-              this.logger.info('File saved to ' + this.configPath + '/video.mp4');
-
-            });
+            this.closeAndStoreStream();
             
           } else {
 
@@ -543,6 +500,30 @@ class GUI {
 
     next();
   
+  }
+  
+  closeAndStoreStream(){
+    
+    this.recordRequest = [];
+    
+    if(this.writeStream){
+    
+      this.writeStream.close();
+      this.writeStream = false;
+    
+      debug('Converting raw data to video format...');
+       
+      let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
+       
+      convert.on('close', code => {
+
+        debug('Converting finished! (' + code + ')');
+        this.logger.info('File saved to ' + this.configPath + '/video.mp4');
+
+      });
+    
+    }
+    
   }
 
   spawnCamera(){
