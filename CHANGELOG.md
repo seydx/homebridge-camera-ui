@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.1.6 -2019-05-30
+
+## 1.1.7 - 2019-05-31
+- GUI: Added "Record" Button over Stream
+- GUI: Added helmet to express
+- GUI: Bugfixes
+
+## 1.1.6 - 2019-05-30
 - GUI: Added "Cameras" section
 - GUI: Refactored GUI
 
