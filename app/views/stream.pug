@@ -28,43 +28,53 @@ block content
       
         if(isVideoPreload){
       
-          if($('#recordVideo').val() === 'Record'){
+          let recordVideo = false;
+          
+          if($('#recordVideo').val() === 'Record')
+            recordVideo = true;
+            
+          $.post('/stream/!{title}',{recordVideo:recordVideo})
+          .always(function(data, textStatus, jqXHR){
            
-            $.post('/stream/!{title}',{recordVideo:true}); 
-            
-            let secs = 0,
-              mins = 0,
-              hours = 0;
+            if(jqXHR.status === 200){
+           
+              if(recordVideo){
+	           
+                let secs = 0,
+                    mins = 0,
+                    hours = 0;
     
-            $('#recordVideo').val(0 + 's');
+                $('#recordVideo').val(0 + 's');
     
-            timer = setInterval(function(){
+                timer = setInterval(function(){
     
-              secs++;
+                  secs++;
        
-              if (secs >= 60) {
-                secs = 0;
-                mins++;
-                if (mins >= 60) {
-                  mins = 0;
-                  hours++;
-                }
+                  if (secs >= 60) {
+                    secs = 0;
+                    mins++;
+                    if (mins >= 60) {
+                      mins = 0;
+                      hours++;
+                    }
+                  }
+    
+                  $('#recordVideo').val((hours ? hours + 'h ' : '') +  (mins ? mins + 'm ' : '') + secs + 's');
+    
+                },1000);
+	             
+              } else {
+               
+                if(timer)
+                  clearInterval(timer);
+     
+                $('#recordVideo').val('Record');
+               
               }
-    
-              $('#recordVideo').val((hours ? hours + 'h ' : '') +  (mins ? mins + 'm ' : '') + secs + 's');
-    
-            },1000);
              
-          } else {
-            
-            if(timer)
-              clearInterval(timer);
-    
-            $.post('/stream/!{title}',{recordVideo:false}); 
-    
-            $('#recordVideo').val('Record');
-            
-          }
+            }
+           
+          });
         
         } else {
         

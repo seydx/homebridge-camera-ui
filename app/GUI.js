@@ -33,6 +33,8 @@ class GUI {
     
     debug.enabled = this.config.debug;
     
+    this.recordRequest = [];
+    
     process.on('SIGTERM', () => {
 
       if(this.socketServer){
@@ -166,10 +168,37 @@ class GUI {
       request.on('data', data => {
     
         this.socketServer.broadcast(data);
+        
+        let now = new moment().unix();
   
-        if(this.writeStream)
+        if(this.writeStream && (this.recordTime && ((now-this.recordTime) <= 3600))){
+        
           this.writeStream.write(data);
         
+        } else {
+        
+          if(this.writeStream && ((now-this.recordTime) > 3600)){
+            
+            this.logger.warn('Recording time reached (1h) - Storing video..');
+            
+            this.writeStream.close();
+            this.writeStream = false;
+            
+            debug('Converting raw data to video format...');
+       
+            let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
+       
+            convert.on('close', code => {
+
+              debug('Converting finished! (' + code + ')');
+              this.logger.info('File saved to ' + this.configPath + '/video.mp4');
+
+            });
+            
+          }
+        
+        }
+      
       });
 
       request.on('end',() => {
@@ -285,12 +314,12 @@ class GUI {
       
       this.accessories.map( accessory => {
       
-        if(accessory.displayName === req.params.name){ 
-        
-          let lastMovement = 'Last Movement not available';
+        let lastMovement = 'Last Movement not available';
       
-          this.currentPlayer = false;
-          this.currentSource = false;
+        this.currentPlayer = false;
+        this.currentSource = false;
+      
+        if(accessory.displayName === req.params.name){ 
         
           this.currentPlayer = req.params.name;
           this.currentSource = 'rtsp://' + accessory.context.videoConfig.source.split('rtsp://')[1];
@@ -345,41 +374,80 @@ class GUI {
     app.post('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars
        
       debug('Record: ' + req.body.recordVideo);
-       
+
       if(req.body.recordVideo === 'true'){
          
-        if(!this.writeStream){
+        if(!this.recordRequest.length||this.recordRequest.includes(req._remoteAddress)){
          
-          this.logger.info('GUI: Recording stream...');
-          this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+          if(!this.recordRequest.length ){
+            
+            this.recordRequest.push(req._remoteAddress);
+
+            this.logger.info('GUI: Recording stream...');
+            this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+            
+          } else {
+              
+            if(this.writeStream){
+              this.writeStream.close();
+              this.writeStream = false;
+            }
+              
+            this.logger.info('GUI: Previous recording deleted! Recording stream again...');
+            this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+
+          }
+            
+          this.recordTime = new moment().unix();
+          res.sendStatus(200);
+          
+        } else {
          
+          this.logger.warn('GUI: Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
+          res.status(500).send('Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
+            
+        }
+        
+      } else {
+        
+        if(this.recordRequest.includes(req._remoteAddress)){
+        
+          if(this.writeStream){
+
+            this.recordRequest = [];
+        
+            this.logger.info('GUI: Stop recording stream. Storing video...');
+       
+            this.writeStream.close();
+            this.writeStream = false;
+       
+            debug('Converting raw data to video format...');
+       
+            let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
+       
+            convert.on('close', code => {
+
+              debug('Converting finished! (' + code + ')');
+              this.logger.info('File saved to ' + this.configPath + '/video.mp4');
+
+            });
+            
+          } else {
+
+            this.logger.info('GUI: Ignoring request. Stream already reached max time (1h) and was stored in ' + this.configPath + '/video.mp4');   
+
+          }
+            
+          res.sendStatus(200);
+          
         } else {
 
-          this.logger.warn('GUI: Ignoring record request, someone already at recording stream!');
-
+          this.logger.warn('GUI: Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
+          res.status(500).send('Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
+   
         }
-
-      } else {
-       
-        this.logger.info('GUI: Stop recording stream. Storing video...');
-       
-        this.writeStream.close();
-        this.writeStream = false;
-       
-        debug('Converting raw data to video format...');
-       
-        let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
-       
-        convert.on('close', code => {
-
-          debug('Converting finished! (' + code + ')');
-          this.logger.info('File saved to ' + this.configPath + '/video.mp4');
-
-        });
        
       }
-       
-      res.sendStatus(200);
     
     });
 
