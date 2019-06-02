@@ -180,7 +180,7 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 
 ## Supported Cameras
 
-- Every camera with an RTSP stream
+- Every camera with an RTSP stream and MPEG2 capability
 
 ## Contributing
 
