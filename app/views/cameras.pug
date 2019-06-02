@@ -1,12 +1,15 @@
 extends layout
 
 block content
-  .outwrap
-    h1.titleStream
-      | #
-      span.camerasTitle Cameras
-    p.logout
-      a.logoutButton(href='/logout')= logout
-    .cameraList
-      each camera in cameras
-        a.cameraItem(href='/stream/' + camera.displayName)= camera.displayName
+  body(style='height:auto;margin-top:30px;')
+    .container-fluid.d-flex.h-100
+      .d-flex.justify-content-center.align-self-center.margin-center.innerBG.flex-column
+        .d-flex.flex-row
+          .p-2
+            h1
+              | #
+              b.pink Cameras
+          .ml-auto.p-2.align-self-center
+            a.shortbutton(href='/logout')= logout
+        each camera in cameras
+          a.p-4.cameraItems(href='/stream/' + camera.displayName)= camera.displayName

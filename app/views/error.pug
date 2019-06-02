@@ -1,9 +1,11 @@
 extends layout
 
 block content
-  .outwrap
-    .mainNext
-      img.logo(src='/images/yi_logo.png')
-      h1.title= message
-      h2.notFound= error.status
-      p.unauthorized <a href="/">back</a>
+  body
+    .container-fluid.d-flex.h-100
+      .row.justify-content-center.align-self-center.margin-center.flex-column
+        .p-4.login
+          img(src='/images/yi_logo.png')
+          h1= message
+          h2= error.status
+          a.shortbutton(href='/') Back

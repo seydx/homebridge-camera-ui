@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('YiCamera');
+const debug = require('debug')('CameraUI');
 const mqtt = require('async-mqtt');
 const ip = require('ip');
 const moment = require('moment');
@@ -918,46 +918,50 @@ class CameraAccessory {
     //this.controlService.addCharacteristic(Characteristic.GetAssets);
     //this.controlService.addCharacteristic(Characteristic.DeleteAssets);
 
-    this.controlService.addCharacteristic(Characteristic.Reboot);
+    if(this.accessory.context.yihack){
+   
+      this.controlService.addCharacteristic(Characteristic.Reboot);
     
-    this.controlService.getCharacteristic(Characteristic.Reboot)
-      .on('get', callback => { callback(null, false); })
-      .on('set', this.setReboot.bind(this));
+      this.controlService.getCharacteristic(Characteristic.Reboot)
+        .on('get', callback => { callback(null, false); })
+        .on('set', this.setReboot.bind(this));
 
-    this.controlService.addCharacteristic(Characteristic.DisableCloud);
+      this.controlService.addCharacteristic(Characteristic.DisableCloud);
     
-    this.controlService.getCharacteristic(Characteristic.DisableCloud)
-      .on('set', this.setConfig.bind(this, 'DISABLE_CLOUD'));    
+      this.controlService.getCharacteristic(Characteristic.DisableCloud)
+        .on('set', this.setConfig.bind(this, 'DISABLE_CLOUD'));    
     
-    this.controlService.addCharacteristic(Characteristic.RecWoCloud);
+      this.controlService.addCharacteristic(Characteristic.RecWoCloud);
 
-    this.controlService.getCharacteristic(Characteristic.RecWoCloud)
-      .on('set', this.setConfig.bind(this, 'REC_WITHOUT_CLOUD')); 
+      this.controlService.getCharacteristic(Characteristic.RecWoCloud)
+        .on('set', this.setConfig.bind(this, 'REC_WITHOUT_CLOUD')); 
 
-    this.controlService.addCharacteristic(Characteristic.Proxychains);
+      this.controlService.addCharacteristic(Characteristic.Proxychains);
 
-    this.controlService.getCharacteristic(Characteristic.Proxychains)
-      .on('set', this.setConfig.bind(this, 'PROXYCHAINSNG')); 
+      this.controlService.getCharacteristic(Characteristic.Proxychains)
+        .on('set', this.setConfig.bind(this, 'PROXYCHAINSNG')); 
 
-    this.controlService.addCharacteristic(Characteristic.SSH);
+      this.controlService.addCharacteristic(Characteristic.SSH);
 
-    this.controlService.getCharacteristic(Characteristic.SSH)
-      .on('set', this.setConfig.bind(this, 'SSHD')); 
+      this.controlService.getCharacteristic(Characteristic.SSH)
+        .on('set', this.setConfig.bind(this, 'SSHD')); 
 
-    this.controlService.addCharacteristic(Characteristic.FTP);
+      this.controlService.addCharacteristic(Characteristic.FTP);
 
-    this.controlService.getCharacteristic(Characteristic.FTP)
-      .on('set', this.setConfig.bind(this, 'FTPD')); 
+      this.controlService.getCharacteristic(Characteristic.FTP)
+        .on('set', this.setConfig.bind(this, 'FTPD')); 
 
-    this.controlService.addCharacteristic(Characteristic.Telnet);
+      this.controlService.addCharacteristic(Characteristic.Telnet);
 
-    this.controlService.getCharacteristic(Characteristic.Telnet)
-      .on('set', this.setConfig.bind(this, 'TELNETD')); 
+      this.controlService.getCharacteristic(Characteristic.Telnet)
+        .on('set', this.setConfig.bind(this, 'TELNETD')); 
 
-    this.controlService.addCharacteristic(Characteristic.NTPD);
+      this.controlService.addCharacteristic(Characteristic.NTPD);
 
-    this.controlService.getCharacteristic(Characteristic.NTPD)
-      .on('set', this.setConfig.bind(this, 'NTPD')); 
+      this.controlService.getCharacteristic(Characteristic.NTPD)
+        .on('set', this.setConfig.bind(this, 'NTPD')); 
+    
+    }
     
     this.services.push(this.controlService);
 

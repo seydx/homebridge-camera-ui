@@ -1,7 +1,7 @@
 /**
- * v1
+ * v2
  *
- * @url https://github.com/SeydX/homebridge-yi-camera
+ * @url https://github.com/SeydX/homebridge-camera-ui
  * @author SeydX <seyd55@outlook.de>
  *
 **/
@@ -10,7 +10,7 @@
 
 module.exports = function (homebridge) {
 
-  let YiCamera = require('./src/platform.js')(homebridge);
-  homebridge.registerPlatform('homebridge-yi-camera', 'YiCamera', YiCamera, true);
+  let CameraUI = require('./src/platform.js')(homebridge);
+  homebridge.registerPlatform('homebridge-camera-ui', 'CameraUI', CameraUI, true);
 
 };

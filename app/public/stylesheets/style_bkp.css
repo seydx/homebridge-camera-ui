@@ -1,0 +1,578 @@
+body {
+  font-family: "trebuchet ms";
+  background: #1d1d1d;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.title {
+  font-family: "trebuchet ms";
+  text-align: center;
+  font-size: 2.8em;
+  color: #fff;
+  font-weight: 100;
+}
+
+.outwrap {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: 450px;
+  max-height: 500px;
+  width: 100%;
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.videoWrap {
+  clear: both;
+  position: relative;
+}
+
+form.streamForm {
+  position: absolute;
+  right: 5%;
+  bottom: 6%;
+}
+
+input.streamRecord {
+  background: #e42148;
+  color: #fff;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  border: none;
+  cursor: pointer;
+}
+
+.main {
+  margin: auto;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+}
+
+.mainNext {
+  margin: auto;
+  width: 100%;
+  height: auto;
+  padding-top: 40px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  padding-bottom: 30px
+}
+
+.version {
+  color: #515151;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.pink {
+  color: #e42148;
+}
+
+a.pink:any-link {
+  color: #e42148;
+  text-decoration: none;
+}
+
+a.logoutButton:any-link{
+  text-decoration: none;
+}
+
+a.logoutButton {
+  color: #ffffff;
+  text-decoration: none;
+  background: #e42148;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+a.displayCameras {
+  color: #929292;
+  text-decoration: none;
+  background: #383838;
+  padding: 10px;
+  border-radius: 10px;
+  display: block;
+  text-align: center;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
+  margin-bottom: 10px;
+}
+
+a.displayCameras:any-link {
+  text-decoration: none;
+}
+
+a.displayCameras:hover {
+  color: #ffffff;
+  background: #e42148;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
+}
+
+.movementClock {
+  color: #6c6969;
+}
+
+.mainvideo {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: 700px;
+  max-width: 670px;
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+  padding: 20px;
+}
+
+.unauthorized {
+  text-align: center;
+  color: #ffffff;
+}
+
+.notFound {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.unauthorized a{
+  color: #e42148;
+  text-decoration: none;
+}
+
+.unauthorized:any-link{
+  text-decoration: none;
+}
+
+img.logo {
+  display: block;
+  width: 98px;
+  height: 98px;
+  margin: auto;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
+  margin-bottom: 10px;
+}
+
+img.logo:hover {
+  -webkit-tranform: translateY(9px);
+  -ms-tranform: translateY(9px);
+  -o-tranform: translateY(9px);
+  transform: translateY(9px);
+  -webkit-transition: .5s all;
+  -ms-transition: .5s all;
+  transition: .5s all;
+  -webkit-filter: brightness(50%);
+  filter: brightness(50%);
+}
+
+h4.flash {
+  text-align: center;
+  color: #ffffff;
+  background: #e42148;
+  padding: 20px;
+  font-size: 1em;
+  max-width: 350px;
+  margin: 10px auto;
+  border-radius: 10px;
+}
+
+.row {
+  width: 100%;
+  height: 100%;
+  padding: 30px;
+  margin: auto;
+  max-width: 420px;
+  max-height: 260px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.form-p {
+  padding: 5px;
+}
+
+input.text {
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: solid 1px #fff;
+  border-radius: 10px;
+  padding: 1em;
+  font-size: 1em;
+  color: #141414;
+  margin: 10px 0 0;
+  outline: none;
+  -webkit-transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+  transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+  background-color: #ededed;
+  
+}
+
+::-webkit-input-placeholder {
+  color: #141414;
+  font-family: 'Dosis', sans-serif;
+}
+
+input.submit {
+  font-size: 1em;
+  background-color: #e42148;
+  color: #fff;
+  width: 100%;
+  height: 50px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  margin: 2em 0;
+  -webkit-transition: 0.5s all;
+  -ms-transition: 0.5s all;
+  transition: 0.5s all;
+  text-align: center;
+  letter-spacing: 1px;
+  border-radius: 5px;
+  margin-top: 25px;
+}
+
+input.submit:hover {
+  background-color: #7b0c22;
+  -webkit-tranform: translateY(9px);
+  -ms-tranform: translateY(9px);
+  -o-tranform: translateY(9px);
+  transform: translateY(9px);
+}
+
+textarea,
+input.text,
+input[type="text"],
+input[type="button"],
+input[type="submit"],
+.input-checkbox {
+  -webkit-appearance: none;
+}
+
+.text {
+  color: #141414;
+}
+
+.form-p {
+  width: 100%;
+  margin-top: 5px;
+  font-size: 1.1em;
+  color: #fff;
+  letter-spacing: 3px;
+  text-align: center;
+  border-top: 3px solid #e42148;
+  padding-top: 20px;
+}
+
+.form-p a {
+  color: #fff;
+  text-decoration: none;
+  -webkit-transition: .5s all;
+  -ms-transition: .5s all;
+  transition: .5s all;
+}
+
+.form-p a:hover {
+  color: #1abc9c;
+}
+
+a {
+  color: #00B7FF;
+}
+
+canvas.video {
+  border: 8px solid #505050;
+  border-radius: 10px;
+  margin: auto;
+  display: block;
+  left: 0;
+  right: 0;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 650px;
+  clear: both;
+}
+
+.settingLine {
+  width: 100%;
+  height: 54px;
+  padding: 10px;
+  border-bottom: 1px solid #3a3a3a;
+  background: #292929;
+  border-top: 1px solid #1f1f1f;
+}
+
+.settingLine:hover {
+  background: #333333;
+}
+
+.settingTitle {
+  color: #ffffff;
+  font-size: 0.8em;
+  float: left;
+  line-height: 2.6;
+  font-weight: 500;
+  font-family: "Helvetica";
+}
+
+.settingInnerStyle {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 1.5em;
+}
+
+@media screen and (min-width: 605px) {
+
+  .camerasTitle {
+    color: #e42148;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: right;
+  }
+  
+  .cameraList {
+    max-height: 333px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  
+  a.cameraItem {
+    text-align: center;
+    color: #ffffff;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 47.5%;
+    height: 200px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    vertical-align: middle;
+    text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+  
+  a.cameraItem:any-link{
+    text-decoration: none;
+  }
+  
+  a.cameraItem:hover{
+    text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+ 
+  .titleStream {
+    font-family: "trebuchet ms";
+    text-align: left;
+    font-size: 3em;
+    color: #fff;
+    font-weight: 100;
+    float: left; 
+  }
+  
+  .pinkTitle {
+    color: #e42148;
+    display: block;
+    width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: right;
+  }
+
+  .logout {
+    text-align: center;
+    color: #ffffff;
+    float: right;
+    margin-top: 17px;
+    margin-bottom: 0;
+  }
+  
+  p.clock {
+    color: #6c6969;
+    text-align: left;
+    padding-left: 10px;
+    clear: left;
+    float: left;
+  }
+  
+  .movement {
+    float: right; 
+    margin-right: 10px;
+  }
+  
+}
+
+
+@media screen and (min-width: 400px) {
+
+ 
+  .camerasTitle {
+    color: #e42148
+  }
+  
+  .cameraList {
+    max-height: 333px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+    padding-top: 10px;
+  }
+  
+  a.cameraItem {
+    text-align: center;
+    color: #ffffff;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 98%;
+    height: 100px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+  
+  a.cameraItem:any-link{
+    text-decoration: none;
+  }
+  
+  a.cameraItem:hover{
+    text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+
+}
+
+@media screen and (max-width: 399px) {
+  
+  .camerasTitle {
+    color: #e42148
+  }
+  
+  .cameraList {
+    max-height: 333px;
+    clear: both;
+    overflow: auto;
+    scrollbar-width: none;
+    padding-top: 10px;
+  }
+  
+  a.cameraItem {
+    text-align: center;
+    color: #ffffff;
+    font-family: "trebuchet ms";
+    font-size: 1.5em;
+    text-decoration: none;
+    width: 98%;
+    height: 100px;
+    float: left;
+    background: #383838;
+    border-radius: 10px;
+    margin: 5px;
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+  
+  a.cameraItem:any-link{
+    text-decoration: none;
+  }
+  
+  a.cameraItem:hover{
+    text-decoration: none;
+    background: #e54548;
+    color: #ffffff;
+    -webkit-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+  }
+
+}
+
+@media screen and (max-width: 604px) {
+ 
+  .titleStream {
+    font-family: "trebuchet ms";
+    text-align: center;
+    font-size: 3em;
+    color: #fff;
+    font-weight: 100;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  .pinkTitle {
+    color: #e42148;
+  }
+  
+  .logout {
+
+    text-align: center;
+    color: #ffffff;
+    margin-top: 17px;
+
+  }
+  
+  p.clock {
+
+    color: #6c6969;
+    text-align: center;
+    margin-bottom: 0px;
+
+  }
+  
+  .movement {
+
+    text-align: center;
+
+  }
+  
+}

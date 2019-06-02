@@ -1,9 +1,11 @@
 extends layout
 
 block content
-  .outwrap
-    .mainNext
-      img.logo(src='/images/yi_logo.png')
-      h1.title Unauthorised
-      p.unauthorized You're unauthorised to view this page.
-      p.unauthorized Please <a href="/">login</a> to continue
+  body
+    .container-fluid.d-flex.h-100
+      .row.justify-content-center.align-self-center.margin-center.flex-column
+        .p-4.login
+          img(src='/images/yi_logo.png')
+          h1 Unauthorised
+          h4 You're unauthorised to view this page.
+          h6 Please <a href="/" class="shortbutton">login</a> to continue

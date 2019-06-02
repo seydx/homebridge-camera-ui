@@ -1,109 +1,78 @@
 extends layout
 
 block content
-  .mainvideo
-    h1.titleStream
-      | #
-      span.pinkTitle= title
-    p.logout
-      a.logoutButton(href='/logout')= logout
-    p#clock.clock
-    p.movement
-      | Last Movement: 
-      span.movementClock= lastmovement
-    .videoWrap
-      form#rec.streamForm(method='post', action='/stream/' + title)
-        input#recordVideo.streamRecord(type='submit', value='Record')
-      canvas#video-canvas.video Your browser doesn't support canvas tag!
-    a.displayCameras(href='/cameras') Show all Cameras
+  body(style='height:auto;margin-top:30px;')
+    .container-fluid.d-flex.h-100
+      .d-flex.justify-content-center.align-self-center.margin-center.innerBG.flex-column
+        .d-flex.flex-row
+          .p-2
+            h1
+              | #
+              b.pink= title
+          .ml-auto.p-2.align-self-center
+            a.shortbutton(href='/logout')= logout
+        .d-flex.flex-row
+          p#clock.p-2.text-white.mb-0
+          p.mb-0.ml-auto.p-2.text-muted
+            b.text-white Last Movements: 
+            | !{lastmovement}
+        .p-2.videoBG
+          form#rec.streamForm(method='post', action='/stream/' + title)
+            input#recordVideo.streamRecord(type='submit', value='Record')
+          canvas#video-canvas.video Your browser doesn't support canvas tag!
+        if yihack
+          a.p-2.mb-2.ml-2.mr-2.longbutton(href='/stream/' + title + '/settings') Show Settings
+        a.p-2.mb-3.ml-2.mr-2.longbutton(href='/cameras') All cameras
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
-      
       let timer;
       let isVideoPreload = false;
-      
       $('#rec').submit(function(e) {
-        
-        e.preventDefault();
-      
-        if(isVideoPreload){
-      
-          let recordVideo = false;
-          
-          if($('#recordVideo').val() === 'Record')
-            recordVideo = true;
-            
-          $.post('/stream/!{title}',{recordVideo:recordVideo})
-          .always(function(data, textStatus, jqXHR){
-           
-            if(jqXHR.status === 200){
-           
-              if(recordVideo){
-	           
-                let secs = 0,
-                    mins = 0,
-                    hours = 0;
-    
-                $('#recordVideo').val(0 + 's');
-    
-                timer = setInterval(function(){
-    
-                  secs++;
-       
-                  if (secs >= 60) {
-                    secs = 0;
-                    mins++;
-                    if (mins >= 60) {
-                      mins = 0;
-                      hours++;
-                    }
-                  }
-    
-                  $('#recordVideo').val((hours ? hours + 'h ' : '') +  (mins ? mins + 'm ' : '') + secs + 's');
-    
-                },1000);
-	             
-              } else {
-               
-                if(timer)
-                  clearInterval(timer);
-     
-                $('#recordVideo').val('Record');
-               
-              }
-             
-            }
-           
-          });
-        
-        } else {
-        
-          alert("Stream is loading, please wait!");
-        
-        }
-      
+      e.preventDefault();
+      if(isVideoPreload){
+      let recordVideo = false;
+      if($('#recordVideo').val() === 'Record')
+      recordVideo = true;
+      $.post('/stream/!{title}',{recordVideo:recordVideo})
+      .always(function(data, textStatus, jqXHR){
+      if(jqXHR.status === 200){
+      if(recordVideo){
+      let secs = 0,
+      mins = 0,
+      hours = 0;
+      $('#recordVideo').val(0 + 's');
+      timer = setInterval(function(){
+      secs++;
+      if (secs >= 60) {
+      secs = 0;
+      mins++;
+      if (mins >= 60) {
+      mins = 0;
+      hours++;
+      }
+      }
+      $('#recordVideo').val((hours ? hours + 'h ' : '') +  (mins ? mins + 'm ' : '') + secs + 's');
+      },1000);
+      } else {
+      if(timer)
+      clearInterval(timer);
+      $('#recordVideo').val('Record');
+      }
+      }
       });
-      
+      } else {
+      alert("Stream is loading, please wait!");
+      }
+      });
       var canvas = document.getElementById('video-canvas');
-      
       var url = 'ws://' + document.location.hostname + ':8100/';
-      
       var player = new JSMpeg.Player(url, {canvas: canvas, onSourceEstablished: function (player) { isVideoPreload = true; } });
-      
       (function() {
-        
-        var clockElement = document.getElementById("clock");
-        
-        function updateClock(clock) {
-        
-          clock.innerHTML = new Date().toLocaleString();
-        
-        }
-        
-        setInterval(function() {
-        
-          updateClock(clockElement);
-        
-        }, 1000);
-      
+      var clockElement = document.getElementById("clock");
+      function updateClock(clock) {
+      clock.innerHTML = new Date().toLocaleString();
+      }
+      setInterval(function() {
+      updateClock(clockElement);
+      }, 1000);
       }());

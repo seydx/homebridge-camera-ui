@@ -7,7 +7,7 @@ const LogUtil = require('../lib/LogUtil.js');
 const Camera = require('./accessories/camera.js');
 const GUI = require('../app/GUI.js');
 
-const platformName = 'YiCamera';
+const platformName = 'CameraUI';
 
 var Accessory, Service, Characteristic, UUIDGen;
 
@@ -18,10 +18,10 @@ module.exports = function (homebridge) {
   Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
   
-  return YiCamera;
+  return CameraUI;
 };
 
-function YiCamera (log, config, api) {
+function CameraUI (log, config, api) {
   
   if (!api || !config) return;
 
@@ -64,7 +64,7 @@ function YiCamera (log, config, api) {
     }
     
     this.log('**************************************************************');
-    this.log('YiCamera v'+packageFile.version+' by SeydX');
+    this.log('CameraUI v'+packageFile.version+' by SeydX');
     this.log('GitHub: https://github.com/SeydX/homebridge-camera-mqtt');
     this.log('Email: seyd55@outlook.de');
     this.log('**************************************************************');
@@ -76,7 +76,7 @@ function YiCamera (log, config, api) {
   }
 }
 
-YiCamera.prototype = {
+CameraUI.prototype = {
 
   _initPlatform: async function(){
     
@@ -90,9 +90,6 @@ YiCamera.prototype = {
           if(camera.active)
             this.accessories.push(await this.addAccessory(camera));
        
-        if(this.accessories.length && this.config.gui.active && this.config.gui.password)
-          new GUI(this, this.config.gui);
-       
         this.accessories.map(accessory => {
         
           let cameraSource = new Camera(this, accessory);
@@ -101,6 +98,9 @@ YiCamera.prototype = {
         });
        
         this.api.publishCameraAccessories(platformName, this.accessories);
+        
+        if(this.accessories.length && this.config.gui.active && this.config.gui.password)
+          new GUI(this, this.config.gui);
       
       }
     
@@ -163,6 +163,7 @@ YiCamera.prototype = {
     
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
+    accessory.context.yihack = object.yihackv4||false;
     accessory.context.notifier = this.config.notifier;
 
     accessory.context.mqttConfig = {

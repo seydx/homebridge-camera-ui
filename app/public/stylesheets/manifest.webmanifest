@@ -1,6 +1,6 @@
 {
-   "name": "Yi Camera",
-   "short_name": "Yi Camera",
+   "name": "Camera UI",
+   "short_name": "Camera UI",
    "display": "standalone",
    "icons": [{
       "src": "/images/icon-hd.png",

@@ -1,7 +1,7 @@
 {
-  "name": "homebridge-yi-camera",
-  "version": "1.1.7",
-  "description": "homebridge-yi-camera",
+  "name": "homebridge-camera-ui",
+  "version": "2.0.0",
+  "description": "homebridge-camera-ui",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SeydX/homebridge-yi-camera.git"
+    "url": "git+https://github.com/SeydX/homebridge-camera-ui.git"
   },
-  "author": "SeydX (https://github.com/SeydX/homebridge-yi-camera)",
+  "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SeydX/homebridge-yi-camera/issues"
+    "url": "https://github.com/SeydX/homebridge-camera-ui/issues"
   },
-  "homepage": "https://github.com/SeydX/homebridge-yi-camera#readme",
+  "homepage": "https://github.com/SeydX/homebridge-camera-ui#readme",
   "keywords": [
     "camera",
     "homebridge-plugin",

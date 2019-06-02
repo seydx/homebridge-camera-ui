@@ -5,6 +5,7 @@ const http = require('http');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const packageFile = require('../package.json');
+const HomeKitTypes = require('../src/types/types.js');
 
 //express
 const favicon = require('serve-favicon');
@@ -21,8 +22,15 @@ const moment = require('moment');
 //ws
 const WebSocket = require('ws');
 
+var Service, Characteristic;
+
 class GUI {
   constructor (platform, guiConfig) {
+  
+    Service = platform.api.hap.Service;
+    Characteristic = platform.api.hap.Characteristic;
+
+    HomeKitTypes.registerWith(platform.api.hap);
     
     this.logger = platform.logger;
     this.configPath = platform.configPath;
@@ -293,15 +301,15 @@ class GUI {
 
     });
     
-    app.get('/stream/:name', (req, res, next) => {
+    app.get('/stream/:name', async (req, res, next) => {
       
-      this.accessories.map( accessory => {
+      for(const accessory of this.accessories){
       
         let lastMovement = 'Last Movement not available';
       
         this.currentPlayer = false;
         this.currentSource = false;
-      
+        
         if(accessory.displayName === req.params.name){ 
         
           this.currentPlayer = req.params.name;
@@ -326,15 +334,132 @@ class GUI {
             
           }
           
-          res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username});
+          res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username, yihack: accessory.context.yihack});
           
-        } else {
-         
-          next(createError(404));
-         
+          return;
+          
         }
       
-      });
+      }
+        
+      next(createError(404));
+    
+    });
+
+    app.get('/stream/:name/settings', async (req, res, next) => {
+      
+      for(const accessory of this.accessories){
+        
+        if(accessory.displayName === req.params.name && accessory.context.yihack){ 
+        
+          let conf = {};
+      
+          let service = accessory.getService(Service.CameraControl);
+      
+          conf = {
+            disablecloud: service.getCharacteristic(Characteristic.DisableCloud).value||false,
+            recwocloud: service.getCharacteristic(Characteristic.RecWoCloud).value||false,
+            proxychains: service.getCharacteristic(Characteristic.Proxychains).value||false,
+            ssh: service.getCharacteristic(Characteristic.SSH).value||false,
+            ftp: service.getCharacteristic(Characteristic.FTP).value||false,
+            telnet: service.getCharacteristic(Characteristic.Telnet).value||false,
+            ntpd: service.getCharacteristic(Characteristic.NTPD).value||false
+          };
+          
+          res.render('settings', {title: req.params.name, logout: 'Sign out, ' + this.config.username, config: JSON.stringify(conf)});
+          
+          return;
+          
+        }
+      
+      }
+        
+      next(createError(404));
+    
+    });
+    
+    app.post('/stream/:name/settings', async (req, res, next) => {
+      
+      for(const accessory of this.accessories){
+        
+        if(accessory.displayName === req.params.name && accessory.context.yihack){ 
+        
+          let service = accessory.getService(Service.CameraControl);  
+        
+          switch(req.body.dest){
+  
+            case 'disablecloud':
+    
+              service.getCharacteristic(Characteristic.DisableCloud)
+                .setValue(req.body.val === 'true' ? true : false);
+    
+              break;
+    
+            case 'recwocloud':
+
+              service.getCharacteristic(Characteristic.RecWoCloud)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+    
+            case 'proxychains':
+
+              service.getCharacteristic(Characteristic.Proxychains)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+    
+            case 'ssh':
+
+              service.getCharacteristic(Characteristic.SSH)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+        
+            case 'ftp':
+
+              service.getCharacteristic(Characteristic.FTP)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+    
+            case 'telnet':
+
+              service.getCharacteristic(Characteristic.Telnet)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+    
+            case 'ntpd':
+
+              service.getCharacteristic(Characteristic.NTPD)
+                .setValue(req.body.val === 'true' ? true : false);
+
+              break;
+      
+          }
+      
+          let conf = {};
+      
+          conf = {
+            disablecloud: service.getCharacteristic(Characteristic.DisableCloud).value||false,
+            recwocloud: service.getCharacteristic(Characteristic.RecWoCloud).value||false,
+            proxychains: service.getCharacteristic(Characteristic.Proxychains).value||false,
+            ssh: service.getCharacteristic(Characteristic.SSH).value||false,
+            ftp: service.getCharacteristic(Characteristic.FTP).value||false,
+            telnet: service.getCharacteristic(Characteristic.Telnet).value||false,
+            ntpd: service.getCharacteristic(Characteristic.NTPD).value||false
+          };
+          
+          res.render('settings', {title: req.params.name, logout: 'Sign out, ' + this.config.username, config: JSON.stringify(conf)});
+          
+          return;
+          
+        }
+      
+      }
+        
+      next(createError(404));
     
     });
 
