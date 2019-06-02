@@ -7,8 +7,9 @@
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "debug": false,
+      "yihackv4": false,
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
