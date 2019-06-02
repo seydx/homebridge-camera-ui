@@ -15,7 +15,7 @@ Below you can see which parameters are recommend or optional.
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
@@ -36,7 +36,7 @@ Below you can see which parameters are recommend or optional.
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
-| platform | **X** | Must be **YiCamera** |
+| platform | **X** | Must be **CameraUI** |
 | debug | | Provides some additional information in the log |
 | videoProcessor | | Is the video processor used to manage videos. eg: ffmpeg (by default) or avconv or /a/path/to/another/ffmpeg. Need to use the same parameters than ffmpeg |
 
@@ -76,7 +76,7 @@ Below you can see which parameters are recommend or optional.
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
@@ -132,7 +132,7 @@ Below you can see which parameters are recommend or optional.
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
@@ -182,7 +182,7 @@ Below you can see which parameters are recommend or optional.
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
