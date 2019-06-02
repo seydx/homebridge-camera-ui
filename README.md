@@ -123,6 +123,41 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 
 ![Stream](images/homebridge-yi-cam-stream.png)
 
+
+## YI Cameras with YI-HACK-V4
+
+For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "settings" page where you can change some settings like Enable/Disable SSH, FTP, Telnet etc. To use this, u need to pass "yihackv4" into your config.json, ie.
+
+ ```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "yihackv4": true,
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          }
+        }
+      ]
+    }
+  ]
+}
+ ```
+
 ![Settings](images/homebridge-yi-cam-settings.png)
 
 ## iOS Web Application
