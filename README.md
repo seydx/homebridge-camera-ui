@@ -14,9 +14,9 @@
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/hbyicamera2.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
-This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your YI Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. It is designed for the [YI-HACK v4](https://github.com/TheCrypt0/yi-hack-v4) and offers 100% support. Also, most switches that are otherwise only accessible via Web Interfae can be switched via third-party apps, for example Elgato EVE App.
+This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your RTSP Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. 
 
-This Plugin creates one accessory with two services. A camera service to access your camera via RTSP and a Motion Sensor service with FakeGato functionality to check the last movement and more. It creates also some custom characteristics to switch camera settings, eg SSH, FTP, Telnet etc within 3rd party apps like Elgato EVE.
+This Plugin creates one accessory with two services. A camera service to access your camera via RTSP and a Motion Sensor service with FakeGato functionality to check the last movement and more. It creates also some custom characteristics to switch camera settings, eg SSH, FTP, Telnet etc within 3rd party apps like Elgato EVE. _(Custom Characteristics only for YI Cameras with YI-HACK v4)_
 
 You can also set up the notifier to get a Telegram notification with customized messages and markdown capability when motion detected/undetected.
 
@@ -132,10 +132,6 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 - On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
 - Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
 
-**Note:** Maybe othe cameras than yi will also work with this plugin, but you need at least disable MQTT. Because MQTT is a function especially for the hack!
-
-_(see [Yi-Hack v4 Supported Cameras](https://github.com/TheCrypt0/yi-hack-v4/wiki/Supported-Camera-Models))_
-
 ## Supported clients
 
 This plugin has been verified to work with the following apps on iOS 12.2 and iOS 12.3 Beta:
@@ -147,19 +143,7 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 
 ## Supported Cameras
 
-- Yi Home 720p (17CN)
-- Yi Home 720p (27US)
-- Yi Home 720p (47CN)
-- Yi Dome 720p (Generic)
-- Yi Dome 720p (43US)
-- Yi Dome 720p (63US)
-- Yi Dome 1080p (Generic)
-- Yi Dome 1080p (45US)
-- Yi Dome 1080p (65US)
-- Yi Home 1080p (version 1)
-- Yi Home 1080p	(6FUS, Work in progress)
-- Yi Cloud Dome 1080p
-- Yi Outdoor
+- Every camera with an RTSP stream
 
 ## Contributing
 
