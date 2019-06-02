@@ -21,11 +21,13 @@ Below you can see which parameters are recommend or optional.
         {
           "name": "Living Room Camera",
           "active": true,
+          "yihackv4": true,
           "videoConfig": {
             "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
             "maxWidth": 1920,
             "maxHeight": 1080,
-            "maxFPS": 30
+            "maxFPS": 30,
+            "transport": "tcp"
           }
         }
       ]
@@ -41,12 +43,14 @@ Below you can see which parameters are recommend or optional.
 | videoProcessor | | Is the video processor used to manage videos. eg: ffmpeg (by default) or avconv or /a/path/to/another/ffmpeg. Need to use the same parameters than ffmpeg |
 
 
+
  ## Camera Config
 
 | **Attributes** | **Required** | **Usage** |
 |------------|----------|-------|
 | name | **X** | Unique Camera Name |
 | active |  | Activates the camera and exposes to HomeKit (default: false) |
+| yihackv4 |  | If you are using a YI Camera with YI-HACK-v4 set this true (default: false) |
 | source | **X** | Source of the stream |
 | stillImageSource |  | Source of the latest image (default: source) |
 | maxStreams |  | Is the maximum number of streams that will be generated for this camera, default 2 |
@@ -63,6 +67,7 @@ Below you can see which parameters are recommend or optional.
 | mapaudio |  | Select the stream used for audio, default 0:1 |
 | videoFilter |  | Allows a custom video filter to be passed to FFmpeg via -vf, defaults to scale=1280:720 |
 | additionalCommandline |  | Allows additional of extra command line options to FFmpeg, for example '-loglevel verbose' |
+| transport |  | RTSP Transport method (default: "tcp") |
 
 ## MQTT Config
 
