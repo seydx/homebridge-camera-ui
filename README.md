@@ -123,6 +123,8 @@ After setting up the gui part in config.json, just open ```http://localhost:<por
 
 ![Stream](images/homebridge-yi-cam-stream.png)
 
+![Settings](images/homebridge-yi-cam-settings.png)
+
 ## iOS Web Application
 
 - Open Safari. Other browsers, such as Chrome, won’t work for this.
