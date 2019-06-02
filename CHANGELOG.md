@@ -1,6 +1,16 @@
 # Changelog
 
 
+## 2.0.0 -2019-05-31
+- The plugin is called now **homebridge-camera-ui**
+- Refactored code to support ALL RTSP cameras
+- Redesigned GUI
+- Added new functions to GUI
+- Bugfixes
+
+**Note:** If you are updating from v1.X to v2.X you need to remove your camera from homekit and adjust your config.json
+
+
 ## 1.1.7 - 2019-05-31
 - GUI: Added "Record" Button over Stream
 - GUI: Added helmet to express
