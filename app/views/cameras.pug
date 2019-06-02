@@ -10,6 +10,8 @@ block content
               | #
               b.pink Cameras
           .ml-auto.p-2.align-self-center
-            a.shortbutton(href='/logout')= logout
+            a.shortbutton(href='/logout')
+              | Sign out, 
+              b= user
         each camera in cameras
           a.p-4.cameraItems(href='/stream/' + camera.displayName)= camera.displayName

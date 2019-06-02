@@ -10,7 +10,9 @@ block content
               | #
               b.pink= title
           .ml-auto.p-2.align-self-center
-            a.shortbutton(href='/logout')= logout
+            a.shortbutton(href='/logout')
+              | Sign out, 
+              b= user
         h5.p-2.text-white.mb-0 Settings
         .d-flex.flex-column
           .d-flex.flex-row.listItem.rounded-top

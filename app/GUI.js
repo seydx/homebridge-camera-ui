@@ -334,7 +334,7 @@ class GUI {
             
           }
           
-          res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, logout: 'Sign out, ' + this.config.username, yihack: accessory.context.yihack});
+          res.render('stream', {title: req.params.name, port: this.config.wsport, lastmovement: lastMovement, user: this.config.username, yihack: accessory.context.yihack});
           
           return;
           
@@ -366,7 +366,7 @@ class GUI {
             ntpd: service.getCharacteristic(Characteristic.NTPD).value||false
           };
           
-          res.render('settings', {title: req.params.name, logout: 'Sign out, ' + this.config.username, config: JSON.stringify(conf)});
+          res.render('settings', {title: req.params.name, user: this.config.username, config: JSON.stringify(conf)});
           
           return;
           
@@ -451,7 +451,7 @@ class GUI {
             ntpd: service.getCharacteristic(Characteristic.NTPD).value||false
           };
           
-          res.render('settings', {title: req.params.name, logout: 'Sign out, ' + this.config.username, config: JSON.stringify(conf)});
+          res.render('settings', {title: req.params.name, user: this.config.username, config: JSON.stringify(conf)});
           
           return;
           
@@ -475,7 +475,7 @@ class GUI {
     
     app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
       
-      res.render('cameras', {cameras: this.accessories, logout: 'Sign out, ' + this.config.username});
+      res.render('cameras', {cameras: this.accessories, user: this.config.username});
     
     });
     

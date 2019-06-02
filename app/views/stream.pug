@@ -10,10 +10,12 @@ block content
               | #
               b.pink= title
           .ml-auto.p-2.align-self-center
-            a.shortbutton(href='/logout')= logout
+            a.shortbutton(href='/logout')
+              | Sign out, 
+              b= user
         .d-flex.flex-row
-          p#clock.p-2.text-white.mb-0
-          p.mb-0.ml-auto.p-2.text-muted
+          p#clock.p-2.text-white.mb-0.resptext
+          p.mb-0.ml-auto.p-2.text-muted.resptext
             b.text-white Last Movements: 
             | !{lastmovement}
         .p-2.videoBG

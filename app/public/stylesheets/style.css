@@ -32,7 +32,7 @@ a.shortbutton {
     padding: 8px;
     border-radius: 10px;
     display: inline-block;
-    font-size: calc(6px + 1vw);
+    font-size: calc(8px + 0.5vw);
 }
 
 a.shortbutton:any-link {
@@ -242,4 +242,10 @@ input.streamRecord {
 
 .listItem:hover {
 	background: #333333;
+}
+
+@media screen and (max-width: 720px) {
+    .resptext {
+        font-size: 12px;
+    }
 }
