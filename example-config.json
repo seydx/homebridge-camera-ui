@@ -9,19 +9,20 @@
     {
       "platform": "CameraUI",
       "debug": false,
-      "yihackv4": false,
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
-          "name": "Flur",
+          "name": "Flur YI Dome",
           "active": true,
+          "yihackv4": true,
           "videoConfig": {
             "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
             "stillImageSource": "-i rtsp://192.168.178.31/ch0_0.h264",
             "maxStreams": 3,
             "maxWidth": 1920,
             "maxHeight": 1080,
-            "maxFPS": 30
+            "maxFPS": 30,
+            "transport": "tcp"
           },
           "mqtt": {
             "active": true,
@@ -35,6 +36,19 @@
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
             "recordVideoSize": 30
+          }
+        },
+        {
+          "name": "Wohnzimmer Kamera",
+          "active": true,
+          "videoConfig": {
+            "source": "-re -i rtsp://192.168.178.31/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.178.31/ch0_0.h264",
+            "maxStreams": 3,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30,
+            "transport": "udp"
           }
         }
       ],
