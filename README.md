@@ -1,18 +1,18 @@
 <p align="center">
-    <img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/github_logo.png" height="200">
+    <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/github_logo.png" height="200">
 </p>
 
 
-# Yi!Camera v1
+# Camera!UI v2
 
-[![npm](https://img.shields.io/npm/v/homebridge-yi-camera.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-yi-camera)
-[![npm](https://img.shields.io/npm/dt/homebridge-yi-camera.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-yi-camera)
-[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-yi-camera.svg?style=flat-square)](https://github.com/SeydX/homebridge-yi-camera)
+[![npm](https://img.shields.io/npm/v/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
+[![npm](https://img.shields.io/npm/dt/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
+[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-camera-ui.svg?style=flat-square)](https://github.com/SeydX/homebridge-camera-ui)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
 **Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
 
-<img src="https://github.com/SeydX/homebridge-yi-camera/blob/master/images/hbyicamera2.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/hbyicamera2.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
 This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your YI Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. It is designed for the [YI-HACK v4](https://github.com/TheCrypt0/yi-hack-v4) and offers 100% support. Also, most switches that are otherwise only accessible via Web Interfae can be switched via third-party apps, for example Elgato EVE App.
 
@@ -25,32 +25,32 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
 ## Documentation
 
 - <u>Installation<u>
-   * [Installation NPM](https://github.com/SeydX/homebridge-yi-camera#installation-instructions)
-   * [OS instructions FFmpeg](https://github.com/SeydX/homebridge-yi-camera#os-instructions-ffmpeg)
+   * [Installation NPM](https://github.com/SeydX/homebridge-camera-ui#installation-instructions)
+   * [OS instructions FFmpeg](https://github.com/SeydX/homebridge-camera-ui#os-instructions-ffmpeg)
 - Configuration
-   * [Explanation](https://github.com/SeydX/homebridge-yi-camera/blob/master/docs/CONFIG.md)
-   * [Basic Config.json](https://github.com/SeydX/homebridge-yi-camera#basic-configuration)
-   * [Extended Config.json](https://github.com/SeydX/homebridge-yi-camera/blob/master/example-config.json)
+   * [Explanation](https://github.com/SeydX/homebridge-camera-ui/blob/master/docs/CONFIG.md)
+   * [Basic Config.json](https://github.com/SeydX/homebridge-camera-ui#basic-configuration)
+   * [Extended Config.json](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json)
 - <u>GUI<u>
-   * [Web Access](https://github.com/SeydX/homebridge-yi-camera/blob/master/docs/CONFIG.md)
-   * [iOS Web Application](https://github.com/SeydX/homebridge-yi-camera#ios-web-application)
+   * [Web Access](https://github.com/SeydX/homebridge-camera-ui/blob/master/docs/CONFIG.md)
+   * [iOS Web Application](https://github.com/SeydX/homebridge-camera-ui#ios-web-application)
 - <u>Supported apps<u>
-    * [Supported clients](https://github.com/SeydX/homebridge-yi-camera#supported-clients)
-    * [Supported cameras](https://github.com/SeydX/homebridge-yi-camera#supported-cameras)
+    * [Supported clients](https://github.com/SeydX/homebridge-camera-ui#supported-clients)
+    * [Supported cameras](https://github.com/SeydX/homebridge-camera-ui#supported-cameras)
     
 ## Changelog
 
-See the [changelog](https://github.com/SeydX/homebridge-yi-camera/blob/master/CHANGELOG.md) for changes between versions of this package.
+See the [changelog](https://github.com/SeydX/homebridge-camera-ui/blob/master/CHANGELOG.md) for changes between versions of this package.
 
 ## Installation instructions
 
 After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
--  ```(sudo) npm i -g homebridge-yi-camera@latest```
+-  ```(sudo) npm i -g homebridge-camera-ui@latest```
 
 You also need a programm to handle the stream. I recommend to use [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
-See [OS instructions](https://github.com/SeydX/homebridge-yi-camera/blob/master/README.md#os-instructions-ffmpeg) for detailed installation instruction regarding to your OS
+See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/README.md#os-instructions-ffmpeg) for detailed installation instruction regarding to your OS
 
 ## Basic configuration
 
@@ -64,7 +64,7 @@ See [OS instructions](https://github.com/SeydX/homebridge-yi-camera/blob/master/
   ],
   "platforms": [
     {
-      "platform": "YiCamera",
+      "platform": "CameraUI",
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
@@ -82,7 +82,7 @@ See [OS instructions](https://github.com/SeydX/homebridge-yi-camera/blob/master/
   ]
 }
  ```
- See [Example Config](https://github.com/SeydX/homebridge-yi-camera/blob/master/example-config.json) for more detailsand options!
+ See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more detailsand options!
 
 ## OS instructions (FFmpeg)
 
@@ -169,8 +169,8 @@ This plugin has been verified to work with the following apps on iOS 12.2 and iO
 
 You can contribute to this homebridge plugin in following ways:
 
-- [Report issues](https://github.com/SeydX/homebridge-yi-camera/issues) and help verify fixes as they are checked in.
-- Review the [source code changes](https://github.com/SeydX/homebridge-yi-camera/pulls).
+- [Report issues](https://github.com/SeydX/homebridge-camera-ui/issues) and help verify fixes as they are checked in.
+- Review the [source code changes](https://github.com/SeydX/homebridge-camera-ui/pulls).
 - Contribute bug fixes.
 - Contribute changes to extend the capabilities
 
