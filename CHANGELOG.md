@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2.0.1 - 2019-06-03
+- Bugfixes
 
 ## 2.0.0 - 2019-06-03
 - The plugin is called now **homebridge-camera-ui**
