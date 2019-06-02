@@ -73,6 +73,14 @@ a.longbutton:hover {
 	text-align: left;
 }
 
+.flash {
+    font-size: 1em;
+    text-align: center;
+    background: #e42148;
+    border-radius: 10px;
+    color: #fff;
+}
+
 .login {
 	background: rgba(255,255,255,0.05);
     border-radius: 20px;

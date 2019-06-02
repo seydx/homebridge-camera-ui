@@ -741,7 +741,7 @@ class CameraAccessory {
 
       //debug(this.accessory.displayName + ': api request ' + currCount + ' : Error');
 
-      this.logger.error(this.accessory.displayName + ': An error occured whil checking camera config!');
+      this.logger.error(this.accessory.displayName + ': An error occured while checking camera config!');
       debug(err);
 
     } finally {
@@ -960,6 +960,8 @@ class CameraAccessory {
 
       this.controlService.getCharacteristic(Characteristic.NTPD)
         .on('set', this.setConfig.bind(this, 'NTPD')); 
+        
+      this.refreshConfig();
     
     }
     
@@ -971,8 +973,6 @@ class CameraAccessory {
       this.services.push(this.microphoneService);
   
     }
-    
-    this.refreshConfig();
 
   } 
   

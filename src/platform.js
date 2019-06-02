@@ -215,8 +215,11 @@ CameraUI.prototype = {
       mapaudio: object.videoConfig.mapaudio||'0:1',
       videoFilter: object.videoConfig.videoFilter||'',
       additionalCommandline: object.videoConfig.additionalCommandline||'-tune zerolatency', 
-      videoProcessor: this.config.videoProcessor||'ffmpeg'
+      videoProcessor: this.config.videoProcessor||'ffmpeg',
+      transport: object.videoConfig.transport||'tcp'
     };
+    
+    accessory.context.videoConfig.transport = '-rtsp_transport ' + accessory.context.videoConfig.transport;
     
     accessory.context.videoConfig.maxFPS > 30 
       ? accessory.context.videoConfig.maxFPS = 30 
@@ -225,7 +228,7 @@ CameraUI.prototype = {
     if(!accessory.context.videoConfig.source)
       throw 'No source specified for RTSP Stream!';
     
-    accessory.context.cameraHost = accessory.context.videoConfig.source.split('rtsp://')[1].split('/ch0_0.h264')[0];
+    accessory.context.cameraHost = accessory.context.videoConfig.source.split('rtsp://')[1].split('/')[0];
     
     return;
     

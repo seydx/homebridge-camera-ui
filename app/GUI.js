@@ -292,7 +292,7 @@ class GUI {
     
       } else {
     
-        this.logger.warn('GUI: Username and/or password are incorrect!');
+        this.logger.warn('GUI: Username and/or password incorrect!');
     
         req.flash('error', 'Username and/or password are incorrect!');
         res.redirect('/');
@@ -308,12 +308,12 @@ class GUI {
         let lastMovement = 'Last Movement not available';
       
         this.currentPlayer = false;
-        this.currentSource = false;
+        this.currentVideoConfig = false;
         
         if(accessory.displayName === req.params.name){ 
         
           this.currentPlayer = req.params.name;
-          this.currentSource = 'rtsp://' + accessory.context.videoConfig.source.split('rtsp://')[1];
+          this.currentVideoConfig = accessory.context.videoConfig;
         
           if(!this.socketServer)
             this.createStreamSocket();
@@ -653,9 +653,11 @@ class GUI {
 
   spawnCamera(){
 
-    debug('Start streaming for ' + this.currentPlayer + ' - Source: ' + this.currentSource);
+    debug('Start streaming for ' + this.currentPlayer + ' - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
 
-    let cmd = '-i ' + this.currentSource + ' -r 30 -f mpegts -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
+    let cmd = this.currentVideoConfig.transport + ' -i ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1] + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
+  
+    debug(cmd);
   
     this.ffmpeg = spawn('ffmpeg', cmd.split(' '), {env: process.env});
     
