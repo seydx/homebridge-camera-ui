@@ -274,7 +274,7 @@ class CameraAccessory {
             
             this.getSnap();
           
-            if(this.config.notifier.active && this.config.notifier.motion_start)
+            if(this.config.notifier && this.config.notifier.motion_start)
               await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
           
           }
@@ -289,7 +289,7 @@ class CameraAccessory {
     
         } else {
   
-          if(this.config.notifier.active && this.config.notifier.motion_stop)
+          if(this.config.notifier && this.config.notifier.motion_stop)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
   
           this.motionService.getCharacteristic(Characteristic.MotionDetected)
@@ -343,7 +343,7 @@ class CameraAccessory {
         
         try {
         
-          if(this.config.notifier.active)
+          if(this.config.notifier)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
         
         } catch(err){
