@@ -481,7 +481,7 @@ class GUI {
     
     app.post('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars
        
-      debug('Record: ' + req.body.recordVideo);
+      debug(this.currentPlayer + ' Record: ' + req.body.recordVideo);
 
       if(req.body.recordVideo === 'true'){
          
@@ -489,15 +489,15 @@ class GUI {
          
           this.recordRequest.push(req._remoteAddress);
 
-          this.logger.info('GUI: Recording stream...');
-          this.writeStream = fs.createWriteStream(this.configPath + '/video.js');
+          this.logger.info(this.currentPlayer + ': Recording stream...');
+          this.writeStream = fs.createWriteStream(this.configPath + '/' + this.currentPlayer + '.js');
             
           this.recordTime = new moment().unix();
           res.sendStatus(200);
           
         } else {
          
-          this.logger.warn('GUI: Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
+          this.logger.warn(this.currentPlayer + ': Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
           res.status(500).send('Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
             
         }
@@ -510,13 +510,13 @@ class GUI {
 
             this.recordRequest = [];
         
-            this.logger.info('GUI: Stop recording stream. Storing video...');
+            this.logger.info(this.currentPlayer + ': Stop recording stream. Storing video...');
        
             this.closeAndStoreStream();
             
           } else {
 
-            this.logger.info('GUI: Ignoring request. Stream already reached max time (1h) and was stored in ' + this.configPath + '/video.mp4');   
+            this.logger.info(this.currentPlayer + ': Ignoring request. Stream already reached max time (1h) and was stored in ' + this.configPath + '/' + this.currentPlayer + '.mp4');   
 
           }
             
@@ -524,7 +524,7 @@ class GUI {
           
         } else {
 
-          this.logger.warn('GUI: Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
+          this.logger.warn(this.currentPlayer + ': Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
           res.status(500).send('Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
    
         }
@@ -636,14 +636,14 @@ class GUI {
       this.writeStream.close();
       this.writeStream = false;
     
-      debug('Converting raw data to video format...');
+      debug(this.currentPlayer + ': Converting raw data to video format...');
        
-      let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/video.js', this.configPath + '/video.mp4'], {env: process.env});
+      let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/' + this.currentPlayer + '.js', this.configPath + '/' + this.currentPlayer + '.mp4'], {env: process.env});
        
       convert.on('close', code => {
 
-        debug('Converting finished! (' + code + ')');
-        this.logger.info('File saved to ' + this.configPath + '/video.mp4');
+        debug(this.currentPlayer + ': Converting finished! (' + code + ')');
+        this.logger.info(this.currentPlayer + ': File saved to ' + this.configPath + '/' + this.currentPlayer + '.mp4');
 
       });
     
@@ -653,7 +653,7 @@ class GUI {
 
   spawnCamera(){
 
-    debug('Start streaming for ' + this.currentPlayer + ' - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
+    debug(this.currentPlayer + ': Start streaming for - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
     
     let source = 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1];    
     
