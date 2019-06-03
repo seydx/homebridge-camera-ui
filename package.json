@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "homebridge-camera-ui",
   "main": "index.js",
   "devDependencies": {},

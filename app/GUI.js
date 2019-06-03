@@ -305,7 +305,7 @@ class GUI {
       
       for(const accessory of this.accessories){
       
-        let lastMovement = 'Last Movement not available';
+        let lastMovement;
       
         this.currentPlayer = false;
         this.currentVideoConfig = false;
@@ -654,8 +654,10 @@ class GUI {
   spawnCamera(){
 
     debug('Start streaming for ' + this.currentPlayer + ' - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
-
-    let cmd = this.currentVideoConfig.transport + ' -i ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1] + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
+    
+    let source = 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1];    
+    
+    let cmd = this.currentVideoConfig.transport + ' -i ' + source + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
   
     debug(cmd);
   

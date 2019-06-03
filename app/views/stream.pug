@@ -15,9 +15,10 @@ block content
               b= user
         .d-flex.flex-row
           p#clock.p-2.text-white.mb-0.resptext
-          p.mb-0.ml-auto.p-2.text-muted.resptext
-            b.text-white Last Movements: 
-            | !{lastmovement}
+          if lastmovement  
+            p.mb-0.ml-auto.p-2.text-muted.resptext
+              b.text-white Last Movements: 
+              | !{lastmovement}
         .p-2.videoBG
           form#rec.streamForm(method='post', action='/stream/' + title)
             input#recordVideo.streamRecord(type='submit', value='Record')
