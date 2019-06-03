@@ -653,7 +653,7 @@ class GUI {
 
   spawnCamera(){
 
-    debug(this.currentPlayer + ': Start streaming for - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
+    debug(this.currentPlayer + ': Start streaming - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
     
     let source = 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1];    
     
