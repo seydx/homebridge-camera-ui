@@ -58,7 +58,7 @@ function CameraUI (log, config, api) {
   this.config.gui.secret = this.config.gui.username + this.config.gui.password; 
   
   if(!this.config.notifier.active||!this.config.notifier.token||!this.config.notifier.chatID)
-    this.config.notifier.active = false;
+    this.config.notifier = false;
     
   if(!this.config.gui.password||!this.config.gui.active)
     this.config.gui = false;
