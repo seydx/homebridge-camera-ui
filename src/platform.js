@@ -57,8 +57,11 @@ function CameraUI (log, config, api) {
   
   this.config.gui.secret = this.config.gui.username + this.config.gui.password; 
   
-  if(!this.config.notifier.token||!this.config.notifier.chatID)
+  if(!this.config.notifier.active||!this.config.notifier.token||!this.config.notifier.chatID)
     this.config.notifier.active = false;
+    
+  if(!this.config.gui.password||!this.config.gui.active)
+    this.config.gui = false;
   
   if (api) {
   
@@ -102,7 +105,7 @@ CameraUI.prototype = {
        
         this.api.publishCameraAccessories(platformName, this.accessories);
         
-        if(this.accessories.length && this.config.gui.active && this.config.gui.password)
+        if(this.accessories.length && this.config.gui)
           new GUI(this, this.config.gui);
       
       }
