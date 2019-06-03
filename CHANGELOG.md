@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.3 - 2019-06-03
+- Fixed a bug with empty notifier/gui in config.json
+
 ## 2.0.2 - 2019-06-03
 -Bugfixes
 
