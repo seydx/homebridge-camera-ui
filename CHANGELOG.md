@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.5 - 2019-06-05
+- Bugfixes
+
 ## 2.0.4 - 2019-06-05
 - Bugfixes
 - Added Record and Download Button for Streams
