@@ -234,24 +234,28 @@ CameraUI.prototype = {
     if(!accessory.context.videoConfig.source)
       throw 'No source specified for RTSP Stream!';
     
-    let protocol = accessory.context.videoConfig.source.split('-i ')[1].split('://')[0] + '://';
+    if(accessory.context.yihack){
+  
+      let protocol = accessory.context.videoConfig.source.split('-i ')[1].split('://')[0] + '://';
+  
+      accessory.context.cameraHost = accessory.context.videoConfig.source.split(protocol)[1];
+
+      if(accessory.context.cameraHost.includes('@')){
+
+        accessory.context.cameraHost = accessory.context.cameraHost.split('@')[1].split('/')[0];
+  
+        if(accessory.context.cameraHost.includes(':'))
+          accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
     
-    accessory.context.cameraHost = accessory.context.videoConfig.source.split(protocol)[1];
+      } else {
 
-    if(accessory.context.cameraHost.includes('@')){
-
-      accessory.context.cameraHost = accessory.context.cameraHost.split('@')[1].split('/')[0];
+        accessory.context.cameraHost = accessory.context.cameraHost.split('/')[0];
   
-      if(accessory.context.cameraHost.includes(':'))
-        accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
+        if(accessory.context.cameraHost.includes(':'))
+          accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
+  
+      }
     
-    } else {
-
-      accessory.context.cameraHost = accessory.context.cameraHost.split('/')[0];
-  
-      if(accessory.context.cameraHost.includes(':'))
-        accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
-  
     }
 
     return;
