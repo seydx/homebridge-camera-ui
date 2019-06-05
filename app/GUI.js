@@ -691,15 +691,10 @@ class GUI {
   }
 
   spawnCamera(){
-
-    let protocol = this.currentVideoConfig.source.split('-i ')[1].split('://')[0] + '://';
-    let output = this.currentVideoConfig.source.split(protocol)[1];
     
-    let source = protocol + output;
-    
-    debug(this.currentPlayer + ': Start streaming - Source: ' + source);
+    debug(this.currentPlayer + ': Start streaming - Source: ' + this.currentVideoConfig.source);
  
-    let cmd = this.currentVideoConfig.transport + ' -i ' + source + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
+    let cmd = this.currentVideoConfig.source + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
   
     debug('Streaming command: ' + cmd);
   
