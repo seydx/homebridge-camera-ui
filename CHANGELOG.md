@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.4 - 2019-06-05
+- Bugfixes
+- Added Record and Download Button for Streams
+- Better Debug
+- Faster storing
+
 ## 2.0.3 - 2019-06-03
 - Fixed a bug with empty notifier/gui in config.json
 
