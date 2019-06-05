@@ -234,8 +234,26 @@ CameraUI.prototype = {
     if(!accessory.context.videoConfig.source)
       throw 'No source specified for RTSP Stream!';
     
-    accessory.context.cameraHost = accessory.context.videoConfig.source.split('rtsp://')[1].split('/')[0];
+    let protocol = accessory.context.videoConfig.source.split('-i ')[1].split('://')[0] + '://';
     
+    accessory.context.cameraHost = accessory.context.videoConfig.source.split(protocol)[1];
+
+    if(accessory.context.cameraHost.includes('@')){
+
+      accessory.context.cameraHost = accessory.context.cameraHost.split('@')[1].split('/')[0];
+  
+      if(accessory.context.cameraHost.includes(':'))
+        accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
+    
+    } else {
+
+      accessory.context.cameraHost = accessory.context.cameraHost.split('/')[0];
+  
+      if(accessory.context.cameraHost.includes(':'))
+        accessory.context.cameraHost = accessory.context.cameraHost.split(':')[0];
+  
+    }
+
     return;
     
   },
