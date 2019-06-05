@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 2.0.6 - 2019-06-05
+- Bugfixes
+
 ## 2.0.5 - 2019-06-05
 - Bugfixes
 
