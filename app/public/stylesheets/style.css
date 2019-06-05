@@ -26,6 +26,16 @@ html {
 	font-family: "trebuchet ms", sans-serif;
 }
 
+.shortbutton {
+    background: #d23f49;
+    color: #ffffff;
+    padding: 8px;
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 1em;
+    border: none;
+}
+
 a.shortbutton {
     background: #d23f49;
     color: #ffffff;

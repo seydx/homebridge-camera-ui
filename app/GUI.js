@@ -33,7 +33,6 @@ class GUI {
     HomeKitTypes.registerWith(platform.api.hap);
     
     this.logger = platform.logger;
-    this.configPath = platform.configPath;
 
     this.accessories = platform.accessories;
     
@@ -55,14 +54,11 @@ class GUI {
       
       }
       
-      if(this.streamServer)
+      if(this.streamServer) 
         this.streamServer.close();
 
       if(this.server)
         this.server.close();
- 
-      if(this.writeStream)
-        this.closeAndStoreStream();
  
       if(this.ffmpeg){
         this.ffmpeg.kill();
@@ -92,7 +88,6 @@ class GUI {
         this.socketServer.connectionCount.push((upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
       debug(this.currentPlayer + ': New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount.length+' total)');
-      //debug(this.accessory.displayName + ': Connected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
       if(!this.ffmpeg)
         this.spawnCamera();
@@ -105,31 +100,33 @@ class GUI {
           this.socketServer.connectionCount.splice(i, 1);
         }
 
-        //debug(this.accessory.displayName + ': Disconnected WebSocket (' + this.socketServer.connectionCount + ' total)');        
         debug(this.currentPlayer + ': Disconnected WebSocket with ', (upgradeReq || socket.upgradeReq).socket.remoteAddress);
         debug(this.currentPlayer + ': Code: ' + code + ' - Message: ' + (message||'No message'));
         
+        //no clients watching stream
         if(!this.socketServer.connectionCount.length){
         
           if(this.writeStream){
           
-            debug(this.currentPlayer + ': No connections with websocket. Stop recording stream.');
+            debug('No connections with websocket. Stop recording stream.');
           
-            this.closeAndStoreStream();
+            this.stopRecord = true;
+            this.endWrite = true;
+            
+            this.writeStream.end();
+            this.writeStream = false;
          
           }
         
           if(this.ffmpeg){
         
-            debug(this.currentPlayer + ': No connections with websocket. Closing stream.');
+            debug('No connections with websocket. Closing stream.');
         
             this.ffmpeg.kill();
             this.ffmpeg = false;
         
           }
           
-          
-        
         }
      
       });
@@ -138,7 +135,7 @@ class GUI {
     
     this.socketServer.on('close', () => {
 
-      debug(this.currentPlayer + ': Websocket closed');
+      debug('GUI: Websocket closed');
   
     });
   
@@ -162,7 +159,7 @@ class GUI {
 
       if (params[0] !== this.STREAM_SECRET) {
   
-        this.logger.info(this.currentPlayer + ' (GUI): Failed Stream Connection: '+ request.socket.remoteAddress + ':' + request.socket.remotePort + ' - wrong secret.');
+        this.logger.info('GUI: Failed Stream Connection: '+ request.socket.remoteAddress + ':' + request.socket.remotePort + ' - wrong secret.');
 
         response.end();
 
@@ -174,20 +171,30 @@ class GUI {
     
         this.socketServer.broadcast(data);
         
-        let now = new moment().unix();
-  
-        if(this.writeStream && (this.recordTime && ((now-this.recordTime) <= 3600))){
+        let now = new moment().unix();        
         
-          this.writeStream.write(data);
+        if(this.writeStream && !this.endWrite){
         
-        } else {
-        
-          if(this.writeStream && ((now-this.recordTime) > 3600)){
+          if((this.recordTime && ((now-this.recordTime) >= 3600)) || this.stopRecord){
+          
+            if(this.recordTime && ((now-this.recordTime) >= 3600)){
             
-            this.logger.warn('Recording time reached (1h) - Storing video..');
+              this.logger.warn(this.currentPlayer + ': Max recording time reached (1h)');
             
-            this.closeAndStoreStream();
+            } else {
             
+              this.logger.warn(this.currentPlayer + ': Recording stopped');
+            
+            }
+            
+            this.endWrite = true;
+            
+            this.writeStream.end(data);
+          
+          } else {
+          
+            this.writeStream.write(data);
+          
           }
         
         }
@@ -196,27 +203,40 @@ class GUI {
 
       request.on('end',() => {
 
-        if(this.writeStream)
-          this.closeAndStoreStream();
-      
+        debug(this.currentPlayer + ': Stream end');
+
+        if(this.writeStream){
+          this.stopRecord = true;
+          this.endWrite = true;
+          this.writeStream.end();
+          this.writeStream = false;
+        }
+        
       });
 
     }).listen(this.STREAM_PORT);
     
     this.streamServer.on('connection', socket => {
 
-      debug(this.currentPlayer + ': Stream Server Connected: ' + socket.remoteAddress + ':' + socket.remotePort);
+      debug('Stream Server Connected: ' + socket.remoteAddress + ':' + socket.remotePort);
 
     });
     
     this.streamServer.on('close', () => {
 
-      debug(this.currentPlayer + ': Stream Server closed');
+      debug('Stream Server closed');
+      
+      if(this.writeStream){
+        this.stopRecord = true;
+        this.endWrite = true;
+        this.writeStream.end();
+        this.writeStream = false;
+      }
 
     });
 
-    debug(this.currentPlayer + ': Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + this.STREAM_PORT + '/<secret>');
-    debug(this.currentPlayer + ': Awaiting WebSocket connections on ws://127.0.0.1:' + this.WEBSOCKET_PORT + '/');
+    debug('Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + this.STREAM_PORT + '/<secret>');
+    debug('Awaiting WebSocket connections on ws://127.0.0.1:' + this.WEBSOCKET_PORT + '/');
    
   }
   
@@ -279,7 +299,7 @@ class GUI {
       if (req.body.username && req.body.username === this.config.username && req.body.password && req.body.password === this.config.password) {
     
         this.logger.info(req.body.username + ': Successfully logged in!');
-        this.logger.info(req.body.username + ': You will automatically be logged out in one hour');
+        this.logger.info(req.body.username + ': Your session expires in one hour.');
         
         req.session.authenticated = true;
         
@@ -299,6 +319,12 @@ class GUI {
     
       }
 
+    });
+    
+    app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
+      
+      res.render('cameras', {cameras: this.accessories, user: this.config.username});
+    
     });
     
     app.get('/stream/:name', async (req, res, next) => {
@@ -343,6 +369,68 @@ class GUI {
       }
         
       next(createError(404));
+    
+    });
+    
+    app.post('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars
+       
+      debug(this.currentPlayer + ' Record: ' + req.body.recordVideo);
+
+      if(req.body.recordVideo === 'true'){
+      
+        if(!this.recordRequest.length){
+         
+          this.recordRequest.push(req._remoteAddress);
+          
+          this.stopRecord = false;
+          this.endWrite = false;
+          this.recordTime = new moment().unix();
+
+          this.logger.info(this.currentPlayer + ': Recording stream...');
+          this.writeStream = fs.createWriteStream(__dirname + '/public/recordings/' + this.currentPlayer + '.js', {mode: 0o777});
+            
+          res.sendStatus(200);
+          
+        } else {
+         
+          this.logger.warn(this.currentPlayer + ': Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
+          res.status(500).send('Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
+            
+        }
+        
+      } else {
+        
+        if(this.recordRequest.includes(req._remoteAddress)){
+        
+          if(this.writeStream){
+
+            this.logger.info(this.currentPlayer + ': Recording stopped.');
+     
+            this.stopRecord = true;
+            this.recordTime = false;
+            
+            this.closeAndStoreStream(() => {
+            
+              res.sendStatus(200);
+            
+            });
+            
+          }
+          
+        } else {
+
+          this.logger.warn(this.currentPlayer + ': Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
+          res.status(500).send('Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
+   
+        }
+       
+      }
+    
+    });
+    
+    app.get('/stream/:name/download', (req, res, next) => { // eslint-disable-line no-unused-vars
+       
+      res.render('download', {title: req.params.name, filePath: '/recordings/' + this.currentFile, file: this.currentFile, port: this.config.port});
     
     });
 
@@ -472,66 +560,6 @@ class GUI {
       res.redirect('/');
     
     });
-    
-    app.get('/cameras', (req, res, next) => { // eslint-disable-line no-unused-vars
-      
-      res.render('cameras', {cameras: this.accessories, user: this.config.username});
-    
-    });
-    
-    app.post('/stream/:name', (req, res, next) => { // eslint-disable-line no-unused-vars
-       
-      debug(this.currentPlayer + ' Record: ' + req.body.recordVideo);
-
-      if(req.body.recordVideo === 'true'){
-         
-        if(!this.recordRequest.length){
-         
-          this.recordRequest.push(req._remoteAddress);
-
-          this.logger.info(this.currentPlayer + ': Recording stream...');
-          this.writeStream = fs.createWriteStream(this.configPath + '/' + this.currentPlayer + '.js');
-            
-          this.recordTime = new moment().unix();
-          res.sendStatus(200);
-          
-        } else {
-         
-          this.logger.warn(this.currentPlayer + ': Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
-          res.status(500).send('Ignoring \'start record\' request. ' + this.recordRequest.toString() + ' already recording stream!');
-            
-        }
-        
-      } else {
-        
-        if(this.recordRequest.includes(req._remoteAddress)){
-        
-          if(this.writeStream){
-
-            this.recordRequest = [];
-        
-            this.logger.info(this.currentPlayer + ': Stop recording stream. Storing video...');
-       
-            this.closeAndStoreStream();
-            
-          } else {
-
-            this.logger.info(this.currentPlayer + ': Ignoring request. Stream already reached max time (1h) and was stored in ' + this.configPath + '/' + this.currentPlayer + '.mp4');   
-
-          }
-            
-          res.sendStatus(200);
-          
-        } else {
-
-          this.logger.warn(this.currentPlayer + ': Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
-          res.status(500).send('Ignoring \'stop record\' request. ' + this.recordRequest.toString() + ' is recording the stream!');
-   
-        }
-       
-      }
-    
-    });
 
     // catch 404 and forward to error handler
     app.use((req, res, next) => {
@@ -627,23 +655,34 @@ class GUI {
   
   }
   
-  closeAndStoreStream(){
+  closeAndStoreStream(callback){
     
     this.recordRequest = [];
     
     if(this.writeStream){
-    
-      this.writeStream.close();
+      
+      this.logger.info(this.currentPlayer + ': Storing...');
+      
       this.writeStream = false;
-    
+      
       debug(this.currentPlayer + ': Converting raw data to video format...');
-       
-      let convert = spawn('ffmpeg', ['-y', '-i', this.configPath + '/' + this.currentPlayer + '.js', this.configPath + '/' + this.currentPlayer + '.mp4'], {env: process.env});
+      
+      this.currentFile = this.currentPlayer + '.mp4';
+        
+      let cmd = '-y -i ' + __dirname + '/public/recordings/' + this.currentPlayer + '.js -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ' + __dirname + '/public/recordings/' + this.currentFile;
+        
+      debug('Convert command: ' + cmd);
+        
+      let convert = spawn('ffmpeg', cmd.split(' '), {env: process.env});
        
       convert.on('close', code => {
 
         debug(this.currentPlayer + ': Converting finished! (' + code + ')');
-        this.logger.info(this.currentPlayer + ': File saved to ' + this.configPath + '/' + this.currentPlayer + '.mp4');
+          
+        this.logger.info(this.currentPlayer + ': File saved to ' + __dirname + '/public/recordings/' + this.currentFile);
+        
+        if(callback)
+          callback();
 
       });
     
@@ -653,13 +692,16 @@ class GUI {
 
   spawnCamera(){
 
-    debug(this.currentPlayer + ': Start streaming - Source: ' + 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1]);
+    let protocol = this.currentVideoConfig.source.split('-i ')[1].split('://')[0] + '://';
+    let output = this.currentVideoConfig.source.split(protocol)[1];
     
-    let source = 'rtsp://' + this.currentVideoConfig.source.split('rtsp://')[1];    
+    let source = protocol + output;
     
+    debug(this.currentPlayer + ': Start streaming - Source: ' + source);
+ 
     let cmd = this.currentVideoConfig.transport + ' -i ' + source + ' -r ' + this.currentVideoConfig.maxFPS + ' -f mpegts -codec:v mpeg1video -s 640x480 -b:v ' + this.currentVideoConfig.maxBitrate + 'k -bf 0 http://localhost:' + this.STREAM_PORT + '/' + this.config.secret + ' -loglevel error';
   
-    debug(cmd);
+    debug('Streaming command: ' + cmd);
   
     this.ffmpeg = spawn('ffmpeg', cmd.split(' '), {env: process.env});
     

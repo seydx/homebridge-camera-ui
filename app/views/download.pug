@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  body
+    .container-fluid.d-flex.h-100
+      .row.justify-content-center.align-self-center.margin-center.flex-column
+        .p-4.login
+          img(src='/images/yi_logo.png')
+          h1 Download
+          h2= file
+          button#dlVideo.shortbutton Download
+    script(type='text/javascript').
+      $('#dlVideo').click(function(){
+        $('#dlVideo').innerHTML = 'Downloading...'
+        let port = '!{port}'
+        let path = '!{filePath}'
+        let url = window.location.protocol + '//' + window.location.hostname + ':' + port + path;
+        window.open(url, '_self')
+      });
+    

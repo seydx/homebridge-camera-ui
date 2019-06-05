@@ -33,8 +33,8 @@ function CameraUI (log, config, api) {
   
   this.config = config;  
   this.config.cameras = config.cameras||[];
-  this.config.notifier = this.config.notifier||{}
-  this.config.gui = this.config.gui||{}
+  this.config.notifier = this.config.notifier||{};
+  this.config.gui = this.config.gui||{};
   
   this.configPath = api.user.storagePath();
   
