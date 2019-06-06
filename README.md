@@ -139,12 +139,13 @@ For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "
   "platforms": [
     {
       "platform": "CameraUI",
-      "yihackv4": true,
+      "debug": false,
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
           "name": "Flur",
           "active": true,
+          "yihackv4": true,
           "videoConfig": {
             "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
             "maxWidth": 1920,
