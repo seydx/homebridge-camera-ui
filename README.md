@@ -84,6 +84,17 @@ See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/
  ```
  See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more detailsand options!
 
+## Todo
+- [x] Record and download recorded videos (GUI)
+- [x] Combine multiple streams (not possible with websocket)
+- [ ] Standalone mode (only GUI)
+- [ ] More options (email/ftp) for movement detection
+- [ ] Combine last movement (movement detection) with recording videos (GUI)
+- [ ] Access recordings over GUI (+ for movement detection)
+- [ ] Accounts and register option for GUI
+- [ ] Enable/Disable Telegram
+
+
 ## OS instructions (FFmpeg)
 
 **Mac OS:** 
@@ -112,6 +123,21 @@ Add FFmpeg to packages
 
 ```PACKAGES=ffmpeg```
 
+## Not responsive or choppy streams
+
+There are a few factors involved. To know why the stream arrives delayed or choppy, the following points should be considered.
+
+### What kind of system is it?
+
+It seems, the slower the system, the slower the stream
+ 
+### If it runs on a weak system like Raspi, what could you do to reduce the required processing power of FFMPEG?
+
+For example, you could lower the resolution here, make bitrate (maxBitrate) less, define rtsp transport (-rtsp_transport), change packet size (packetSize> multiplier x188) etc
+
+### What to do if that does not help and the picture still stops or is greatly delayed?
+
+See if the stream is running well on eg VLC. If, for example, everything is good on VLC then it depends mostly because the processing power is much larger. If the stream also delayed or choppy on eg VLC, then you should try to fix the camera
 
 ## GUI Access
 
