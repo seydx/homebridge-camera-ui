@@ -37,7 +37,7 @@ module.exports = (platform) => {
     
         platform.logger.info(req.body.username + ': Session timed out.');
     
-        platform.cleanProcess('EXPIRED');
+        platform.cleanProcess();
       
       }, hour);
        

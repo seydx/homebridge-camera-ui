@@ -182,6 +182,7 @@ class GUI {
     this.server.on('close', () => {
 
       debug('Close GUI');
+      this.server = false;
 
     });
 
@@ -204,9 +205,6 @@ class GUI {
         this.socketServer.connectionCount.push((upgradeReq || socket.upgradeReq).socket.remoteAddress);
 
       debug(this.currentPlayer + ': New WebSocket Connection: ', (upgradeReq || socket.upgradeReq).socket.remoteAddress, (upgradeReq || socket.upgradeReq).headers['user-agent'], '('+this.socketServer.connectionCount.length+' total)');
-
-      //if(!this.ffmpeg)
-      //this.spawnCamera();
 
       socket.on('close', (code, message) => {
 
@@ -241,24 +239,23 @@ class GUI {
   
     });
     
-    this.socketServer.on('close', () => {
+    if(this.socketServer){
+    
+      this.socketServer.broadcast = (data) => {
+  
+        this.socketServer.clients.forEach(client => {
+  
+          if (client.readyState === WebSocket.OPEN) {
+  
+            client.send(data);
 
-      debug('GUI: Websocket closed');
-  
-    });
-  
-    this.socketServer.broadcast = (data) => {
-  
-      this.socketServer.clients.forEach(client => {
-  
-        if (client.readyState === WebSocket.OPEN) {
-  
-          client.send(data);
+          }
+      
+        });
 
-        }
-      });
+      };
 
-    };
+    }
 
     // HTTP Server to accept incomming MPEG-TS Stream from ffmpeg
     this.streamServer = http.createServer((request, response) => {
@@ -276,8 +273,9 @@ class GUI {
       response.connection.setTimeout(0);
   
       request.on('data', data => {
-    
-        this.socketServer.broadcast(data);
+        
+        if(this.socketServer)
+          this.socketServer.broadcast(data);
         
         let now = new moment().unix();        
         
@@ -326,7 +324,9 @@ class GUI {
     this.streamServer.on('close', () => {
 
       debug('Stream Server closed');
-
+      this.streamServer = false;
+      this.socketServer = false;
+     
     });
     
     this.streamServer.on('error', err => {
@@ -431,6 +431,7 @@ class GUI {
       this.ffmpeg.on('close', code => {
     
         debug('Stream closed (' + code + ')');
+        this.ffmpeg = false;
     
       });
       
@@ -495,21 +496,22 @@ class GUI {
   cleanProcess(code){
 
     debug('Cleaning process...');
-
+    
     if(this.socketServer){
        
       this.socketServer.clients.forEach(ws => {
         ws.terminate();
       });
       
+      this.socketServer.close();
+      
     }
     
-    if(this.ffmpeg){
+    if(this.streamServer)
+      this.streamServer.close();
     
+    if(this.ffmpeg)
       this.ffmpeg.kill();
-      this.ffmpeg = false;
-    
-    }
     
     if(this.writeStream){
           
@@ -521,13 +523,7 @@ class GUI {
          
     }
     
-    if(code === 'SIGTERM'||code === 'EXPIRED'){
-  
-      if(this.socketServer)
-        this.socketServer.close();
-
-      if(this.streamServer)
-        this.streamServer.close();
+    if(code === 'SIGTERM'){
       
       if(this.server && code === 'SIGTERM')
         this.server.close(); 
