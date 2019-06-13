@@ -5,6 +5,7 @@ const mqtt = require('async-mqtt');
 const ip = require('ip');
 const moment = require('moment');
 const axios = require('axios');
+const ftp = require('basic-ftp');
 
 const crypto = require('crypto');
 const fs = require('fs');
@@ -169,10 +170,15 @@ class CameraAccessory {
     this.createCameraControlService();
     this.createStreamControllers(options);
 
-    if(this.accessory.context.mqttConfig.active && this.accessory.context.mqttConfig.host){
+    if(this.accessory.context.mqttConfig){
     
       this.createCameraSensor();
       this.handleMQTT();
+    
+    } else if (this.accessory.context.ftp){
+    
+      this.createCameraSensor();
+      this.handleFTP();
     
     }
 
@@ -187,6 +193,134 @@ class CameraAccessory {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
   // Services
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+  
+  async handleFTP(){
+  
+    const client = new ftp.Client();
+    
+    client.ftp.verbose = false;
+    
+    let refresh = 10;
+    let motionState = 0;
+    let ftpLogged = false;
+    
+    try {
+      
+      await client.access({
+        host: this.accessory.context.ftp.host,
+        user: this.accessory.context.ftp.username,
+        password: this.accessory.context.ftp.password,
+        secure: this.accessory.context.ftp.secure
+      });
+      
+      ftpLogged = true;
+        
+      await client.cd(this.accessory.context.ftp.absolutePath);
+        
+      let files = await client.list();
+      let allFiles = [];
+        
+      for(const file of files){
+          
+        if(file.type === 1){
+                                           
+          let birthtime = await client.lastMod(file.name);
+          let newBirthtime = moment(birthtime).format('x');
+            
+          allFiles.push(newBirthtime);
+        
+        }
+          
+      }
+        
+      if(allFiles.length){
+          
+        allFiles = allFiles.sort((a, b) => a - b);
+        
+        let lastMovement = allFiles[allFiles.length-1];
+        
+        if(this.accessory.context.lastMovement){
+        
+          if(lastMovement > this.accessory.context.lastMovement){
+            
+            //motion detected
+            //check again in 20s
+            
+            this.logger.info(this.accessory.displayName + ' (FTP): Received new image (movement detected)');
+            
+            refresh = this.accessory.context.movementDuration;
+            
+            this.accessory.context.lastMovement = lastMovement;
+            
+            if(!this.motionService.getCharacteristic(Characteristic.AtHome).value){
+            
+              this.getSnap();
+          
+              if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+                await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
+          
+            }
+            
+            motionState = 1;
+    
+            this.motionService.getCharacteristic(Characteristic.MotionDetected)
+              .updateValue(1);
+            
+            let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
+        
+            this.motionService.getCharacteristic(Characteristic.LastActivation)
+              .updateValue(lastActivation);
+          
+          } else {
+          
+            if(this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
+          
+              //refresh 10s default
+              //motion undetected
+              
+              this.logger.info(this.accessory.displayName + ' (FTP): No new image since last update (no movement)');
+            
+              motionState = 0;
+            
+              if(this.config.notifier && this.config.notifier.motion_stop && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+                await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
+  
+              this.motionService.getCharacteristic(Characteristic.MotionDetected)
+                .updateValue(0);
+              
+            }
+          
+          }
+        
+        } else {
+        
+          //store last value to accessory.context and check again with refresh 5s
+        
+          refresh = 5;
+          
+          this.accessory.context.lastMovement = lastMovement;
+        
+        }
+        
+      }
+         
+      this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState});
+         
+    } catch(err) {
+     
+      this.logger.error(this.accessory.displayName + ' (FTP): An error occured with FTP Server!');
+      debug(err);
+    
+    } finally {
+    
+      if(client && ftpLogged)
+        client.close();
+      
+      setTimeout(this.handleFTP.bind(this), refresh * 1000);
+    
+    }
+  
+  }
 
   handleMQTT(){
 
@@ -328,7 +462,7 @@ class CameraAccessory {
       } else {
     
         this.logger.info(this.accessory.displayName + ' (MQTT): Capturing video...');
-        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + this.mqttConfig.recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});  
+        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + this.mqttConfig.recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});
     
       }
     

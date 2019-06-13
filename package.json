@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "2.0.8",
+  "version": "2.1.0",
   "description": "homebridge-camera-ui",
   "main": "index.js",
   "devDependencies": {},
@@ -46,6 +46,7 @@
     "express-session": "^1.16.1",
     "connect-flash": "^0.1.1",
     "helmet": "^3.18.0",
-    "tcp-ping": "^0.1.1"
+    "tcp-ping": "^0.1.1",
+    "basic-ftp": "^3.6.0"
   }
 }

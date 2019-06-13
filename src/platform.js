@@ -166,6 +166,7 @@ CameraUI.prototype = {
       
     object.videoConfig = object.videoConfig||{};
     object.mqtt = object.mqtt||{};
+    object.ftp = object.ftp||{};
     object.gui = object.gui||{};
     
     accessory.reachable = true;
@@ -187,22 +188,39 @@ CameraUI.prototype = {
       recordVideoSize: object.mqtt.recordVideoSize||30
     };
     
-    accessory.context.mqttConfig.options = {
-      keepalive: 60,
-      clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
-      protocolId: 'MQTT',
-      protocolVersion: 4,
-      clean: true,
-      reconnectPeriod: 1000,
-      connectTimeout: 30 * 1000,
-      will: {
-        topic: 'WillMsg',
-        payload: 'Connection Closed abnormally..!',
-        qos: 0,
-        retain: false
-      },
-      rejectUnauthorized: false
+    if(!accessory.context.mqttConfig.active||!accessory.context.mqttConfig.host)
+      accessory.context.mqttConfig = false;
+    
+    if(accessory.context.mqttConfig)
+      accessory.context.mqttConfig.options = {
+        keepalive: 60,
+        clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
+        protocolId: 'MQTT',
+        protocolVersion: 4,
+        clean: true,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000,
+        will: {
+          topic: 'WillMsg',
+          payload: 'Connection Closed abnormally..!',
+          qos: 0,
+          retain: false
+        },
+        rejectUnauthorized: false
+      };
+      
+    accessory.context.ftp = {
+      active: object.ftp.active||false,
+      host: object.ftp.host,
+      username: object.ftp.username,
+      password: object.ftp.password,
+      secure: object.ftp.secure||false,
+      absolutePath: object.ftp.absolutePath||'/',
+      movementDuration: object.ftp.movementDuration||20,  
     };
+    
+    if(!accessory.context.ftp.active||!accessory.context.ftp.host||!accessory.context.ftp.username||!accessory.context.ftp.password)
+      accessory.context.ftp = false;
     
     accessory.context.videoConfig = {
       source: object.videoConfig.source,
