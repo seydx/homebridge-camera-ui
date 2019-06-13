@@ -9,6 +9,7 @@
 - Added "Recordings" page
 - Redesigned GUI to standalone (you dont need to activate cameras anymore)
 - Now it is possible to watch/download recordings over GUI and/or remove stored recordings
+- Removed "transport" from config
 
 ## 2.0.6 - 2019-06-05
 - Bugfixes
