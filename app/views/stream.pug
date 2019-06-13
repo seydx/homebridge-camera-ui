@@ -24,8 +24,9 @@ block content
             input#recordVideo.streamRecord(type='submit', value='Record')
           canvas#video-canvas.video Your browser doesn't support canvas tag!
         if yihack
-          a.p-2.mb-2.ml-2.mr-2.longbutton(href='/stream/' + title + '/settings') Show Settings
-        a.p-2.mb-3.ml-2.mr-2.longbutton(href='/cameras') All cameras
+          a.p-2.mb-2.ml-2.mr-2.longbutton(href='/settings/' + title) Show Settings
+        a.p-2.mb-2.ml-2.mr-2.longbutton(href='/recordings/' + title) Recordings
+        a.p-2.mb-3.ml-2.mr-2.longbutton(href='/cameras') All Cameras
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
       let timer;

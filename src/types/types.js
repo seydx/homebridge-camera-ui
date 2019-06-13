@@ -75,6 +75,20 @@ module.exports = {
     };
     inherits(Characteristic.AtHome, Characteristic);
     Characteristic.AtHome.UUID = '67a36c3e-5488-4223-8c47-89d3bb7a9d5f';
+    
+    /// /////////////////////////////////////////////////////////////////////////
+    // Telegram Characteristic
+    /// ///////////////////////////////////////////////////////////////////////// 
+    Characteristic.Telegram = function() {
+      Characteristic.call(this, 'Telegram', 'ac063f66-ee68-4426-8f20-af3b7fbebef2');
+      this.setProps({
+        format: Characteristic.Formats.BOOL,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+      }); 
+      this.value = this.getDefaultValue();
+    };
+    inherits(Characteristic.Telegram, Characteristic);
+    Characteristic.Telegram.UUID = 'ac063f66-ee68-4426-8f20-af3b7fbebef2';
 
     /// /////////////////////////////////////////////////////////////////////////
     // DisableCloud Characteristic

@@ -13,5 +13,10 @@ block content
             a.shortbutton(href='/logout')
               | Sign out, 
               b= user
-        each camera in cameras
-          a.p-4.cameraItems(href='/stream/' + camera.displayName)= camera.displayName
+        each camera in cameras.length ? cameras : [{name: 'No Cameras', url: '/cameras/#', ping: false}]
+          if camera.ping
+            a.p-4.cameraItems(href=camera.url)= camera.name 
+              span.circleGreen
+          else 
+            a.p-4.cameraItems(href=camera.url)= camera.name + ' (Offline)'
+              span.circleRed

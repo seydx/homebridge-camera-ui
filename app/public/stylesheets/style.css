@@ -28,7 +28,7 @@ html {
 }
 
 .shortbutton {
-    background: #d23f49;
+    background: #e42148;
     color: #ffffff;
     padding: 8px;
     border-radius: 10px;
@@ -37,8 +37,22 @@ html {
     border: none;
 }
 
+a.shortbuttonBlock {
+    background: #e42148;
+    color: #ffffff;
+    padding: 8px;
+    border-radius: 10px;
+    display: block;
+    font-size: 1em;
+    border: none;
+}
+
+a.shortbuttonBlock:any-link {
+    text-decoration: none;
+}
+
 a.shortbutton {
-    background: #d23f49;
+    background: #e42148;
     color: #ffffff;
     padding: 8px;
     border-radius: 10px;
@@ -253,6 +267,68 @@ input.streamRecord {
 
 .listItem:hover {
 	background: #333333;
+}
+
+a.vidList {
+  background: #232323;
+  border-radius: 3px;
+  height: 67px;
+  width: 100px;
+  min-width: 32%;
+  text-align: center;
+  align-content: center;
+  display: grid;
+  transition: all 0.5s;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: calc(8px + 0.3vw);
+}
+
+a.vidList:hover {
+  background: #e42148;
+}
+
+a.vidList span {
+  color: #4a4a4a;
+}
+
+a.vidList:any-link {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+a.removeButton {
+  color: #e54548;
+  font-size: 14px;
+  line-height: 1.8em;
+}
+
+a.removeButton:any-link {
+  text-decoration: none;
+}
+
+.circleGreen {
+  width: 10px;
+  height: 10px;
+  background: #4ddb1d;
+  display: block;
+  border-radius: 50%;
+  float: right;
+  margin-top: 7px;
+}
+
+.circleRed {
+  width: 10px;
+  height: 10px;
+  background: #ed1010;
+  display: block;
+  border-radius: 50%;
+  float: right;
+  margin-top: 7px;
+}
+
+.videoBackground {
+  background: rgba(0,0,0,0.25);
 }
 
 @media screen and (max-width: 720px) {

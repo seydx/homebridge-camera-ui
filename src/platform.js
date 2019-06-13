@@ -5,7 +5,7 @@ const LogUtil = require('../lib/LogUtil.js');
 
 //Accessory
 const Camera = require('./accessories/camera.js');
-const GUI = require('../app/GUI.js');
+const GUI = require('../app/app.js');
 
 const platformName = 'CameraUI';
 
@@ -90,11 +90,11 @@ CameraUI.prototype = {
     
       if(this.config.cameras.length){
     
-        this.logger.info('Found ' + this.config.cameras.length + ' camera in config.json');
-    
         for(const camera of this.config.cameras)     
           if(camera.active)
             this.accessories.push(await this.addAccessory(camera));
+       
+        this.logger.info('Found ' + this.accessories.length + ' active camera(s) in config.json');
        
         this.accessories.map(accessory => {
         
@@ -104,16 +104,17 @@ CameraUI.prototype = {
         });
        
         this.api.publishCameraAccessories(platformName, this.accessories);
-        
-        if(this.accessories.length && this.config.gui)
-          new GUI(this, this.config.gui);
       
       }
+      
+      if(this.config.gui)
+        new GUI(this, this.config);
     
     } catch(err){
     
       this.logger.error('An error occured while initalising accessory!');
-      this.logger.error(err);
+      //this.logger.error(err);
+      console.log(err);
     
     }
   
@@ -221,11 +222,8 @@ CameraUI.prototype = {
       mapaudio: object.videoConfig.mapaudio||'0:1',
       videoFilter: object.videoConfig.videoFilter||'',
       additionalCommandline: object.videoConfig.additionalCommandline||'-tune zerolatency', 
-      videoProcessor: this.config.videoProcessor||'ffmpeg',
-      transport: object.videoConfig.transport||'tcp'
+      videoProcessor: this.config.videoProcessor||'ffmpeg'
     };
-    
-    accessory.context.videoConfig.transport = '-rtsp_transport ' + accessory.context.videoConfig.transport;
     
     accessory.context.videoConfig.maxFPS > 30 
       ? accessory.context.videoConfig.maxFPS = 30 

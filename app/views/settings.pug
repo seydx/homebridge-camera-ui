@@ -43,7 +43,8 @@ block content
             .p-2 NTPD
             .ml-auto.p-2
               input.checkbox-switch-ntpd(type='checkbox')
-        a.p-2.longbutton.mb-3.mt-3(href='/stream/' + title) Back
+        a.p-2.longbutton.mb-2.mt-3(href='/stream/' + title) Back to Stream
+        a.p-2.longbutton.mb-3(href='/cameras') All Cameras
     script(type='text/javascript', src='/javascripts/jsmpeg.min.js')
     script(type='text/javascript').
      
@@ -58,7 +59,7 @@ block content
            this.dcState = disablecloud.getChecked();    
          },
          onChange: function(){
-           if(disablecloud.getChecked() !== this.dcState && !loaded){
+           if(disablecloud.getChecked() !== this.dcState && loaded){
              $.post('/stream/!{title}/settings',{dest:'disablecloud', val: disablecloud.getChecked()})
              conf.disablecloud = disablecloud.getChecked();
            }
@@ -73,7 +74,7 @@ block content
            this.rwcState = recwocloud.getChecked();    
          },
          onChange: function(){
-           if(recwocloud.getChecked() !== this.rwcState && !loaded){
+           if(recwocloud.getChecked() !== this.rwcState && loaded){
              $.post('/stream/!{title}/settings',{dest:'recwocloud', val: recwocloud.getChecked()})
              conf.recwocloud = recwocloud.getChecked();
            }
@@ -88,7 +89,7 @@ block content
            this.pcState = proxychains.getChecked();    
          },
          onChange: function(){
-           if(proxychains.getChecked() !== this.pcState && !loaded){
+           if(proxychains.getChecked() !== this.pcState && loaded){
              $.post('/stream/!{title}/settings',{dest:'proxychains', val: proxychains.getChecked()})
              conf.proxychains = proxychains.getChecked();
            }
@@ -103,7 +104,7 @@ block content
            this.sshState = ssh.getChecked();    
          },
          onChange: function(){
-           if(ssh.getChecked() !== this.sshState && !loaded){
+           if(ssh.getChecked() !== this.sshState && loaded){
              $.post('/stream/!{title}/settings',{dest:'ssh', val: ssh.getChecked()})
              conf.ssh = ssh.getChecked();
            }
@@ -118,7 +119,7 @@ block content
            this.ftpState = ftp.getChecked();    
          },
          onChange: function(){
-           if(ftp.getChecked() !== this.ftpState && !loaded){
+           if(ftp.getChecked() !== this.ftpState && loaded){
              $.post('/stream/!{title}/settings',{dest:'ftp', val: ftp.getChecked()})
              conf.ftp = ftp.getChecked();
            }
@@ -133,7 +134,7 @@ block content
            this.tnState = telnet.getChecked();    
          },
          onChange: function(){
-           if(telnet.getChecked() !== this.tnState && !loaded){
+           if(telnet.getChecked() !== this.tnState && loaded){
              $.post('/stream/!{title}/settings',{dest:'telnet', val: telnet.getChecked()})
              conf.telnet = telnet.getChecked();
            }
@@ -148,7 +149,7 @@ block content
            this.ntpdState = ntpd.getChecked();    
          },
          onChange: function(){
-           if(ntpd.getChecked() !== this.ntpdState && !loaded){
+           if(ntpd.getChecked() !== this.ntpdState && loaded){
              $.post('/stream/!{title}/settings',{dest:'ntpd', val: ntpd.getChecked()})
              conf.ntpd = ntpd.getChecked();
            }
@@ -199,16 +200,13 @@ block content
          ntpd.off(); 
         }
         
-        setTimeout(function(){
-            loaded = false;
-            refreshConfig();
-        }, 15000);
-        
       }
       $(document).ready(function () {    
-         
-         loaded = true;
-         
+
          refreshConfig();
+         
+         setTimeout(function(){
+           loaded = true;
+         },1000);
           
       });

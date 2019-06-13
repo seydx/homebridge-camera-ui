@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  body(style='height:auto;margin-top:30px;')
+    .container-fluid.d-flex.h-100
+      .d-flex.justify-content-center.align-self-center.margin-center.innerBG.flex-column
+        .d-flex.flex-row
+          .p-2
+            h1
+              | #
+              b.pink= title
+          .ml-auto.p-2.align-self-center
+            a.shortbutton(href='/logout')
+              | Sign out, 
+              b= user
+        h5.p-2.text-white.mb-0 Recordings
+        .d-flex.flex-wrap.p-1.mb-2
+          each video in videos.length ? videos : [{title: 'No recordings', url: '#'}]
+            a.m-1.bd-highlight.flex-fill.vidList(href='/recordings/' + title + '/video/' + video.url)= video.title
+              span= video.ctime
+        a.p-2.mb-2.ml-2.mr-2.longbutton(href='/stream/' + title) Back to Stream
+        if yihack
+          a.p-2.mb-2.ml-2.mr-2.longbutton(href='/settings/' + title) Show Settings
+        a.p-2.mb-3.ml-2.mr-2.longbutton(href='/cameras') All Cameras

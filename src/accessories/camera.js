@@ -274,7 +274,7 @@ class CameraAccessory {
             
             this.getSnap();
           
-            if(this.config.notifier && this.config.notifier.motion_start)
+            if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
               await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
           
           }
@@ -289,7 +289,7 @@ class CameraAccessory {
     
         } else {
   
-          if(this.config.notifier && this.config.notifier.motion_stop)
+          if(this.config.notifier && this.config.notifier.motion_stop && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
   
           this.motionService.getCharacteristic(Characteristic.MotionDetected)
@@ -343,7 +343,7 @@ class CameraAccessory {
         
         try {
         
-          if(this.config.notifier)
+          if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
         
         } catch(err){
@@ -365,6 +365,14 @@ class CameraAccessory {
   }
 
   handleCloseConnection(connectionID){
+  
+    debug('Closing connection.');
+      
+    if(this.currentStreaming)
+      this.currentStreaming.kill('SIGTERM');
+        
+    if(this.pendingSessions.length)
+      this.pendingSessions = [];
   
     this.streamControllers.forEach( controller => {
     
@@ -510,8 +518,8 @@ class CameraAccessory {
       
         if (sessionInfo) {
         
-          let width = 1280;
-          let height = 720;
+          let width = this.videoConfig.maxWidth;
+          let height = this.videoConfig.maxHeight;
           let fps = this.videoConfig.maxFPS;
           let vbitrate = this.videoConfig.maxBitrate;
           let abitrate = 32;
@@ -560,6 +568,9 @@ class CameraAccessory {
           let vf = [];
 
           let videoFilter = ((this.videoConfig.videoFilter === '') ? ('scale=' + width + ':' + height + '') : (this.videoConfig.videoFilter)); // empty string indicates default
+
+          if(vcodec === 'copy' && videoFilter.includes('scale='))
+            videoFilter = null;
         
           // In the case of null, skip entirely
           if (videoFilter !== null){
@@ -577,25 +588,25 @@ class CameraAccessory {
           let fcmd = this.videoConfig.source;
 
           let ffmpegVideoArgs = ' -map ' + mapvideo +
-          ' -vcodec ' + vcodec +
-          ' -pix_fmt yuv420p' +
-          ' -r ' + fps +
-          ' -f rawvideo' +
-          ' ' + additionalCommandline +
-          ((vf.length > 0) ? (' -vf ' + vf.join(',')) : ('')) +
-          ' -b:v ' + vbitrate + 'k' +
-          ' -bufsize ' + vbitrate+ 'k' +
-          ' -maxrate '+ vbitrate + 'k' +
-          ' -payload_type 99';
+            ' -vcodec ' + vcodec +
+            ' -pix_fmt yuv420p' +
+            ' -r ' + fps +
+            ' -f rawvideo' +
+            ' ' + additionalCommandline +
+            ((vf.length > 0) ? (' -vf ' + vf.join(',')) : ('')) +
+            ' -b:v ' + vbitrate + 'k' +
+            ' -bufsize ' + vbitrate+ 'k' +
+            ' -maxrate '+ vbitrate + 'k' +
+            ' -payload_type 99';
 
           let ffmpegVideoStream = ' -ssrc ' + videoSsrc +
-          ' -f rtp' +
-          ' -srtp_out_suite AES_CM_128_HMAC_SHA1_80' +
-          ' -srtp_out_params ' + videoKey.toString('base64') +
-          ' srtp://' + targetAddress + ':' + targetVideoPort +
-          '?rtcpport=' + targetVideoPort +
-          '&localrtcpport=' + targetVideoPort +
-          '&pkt_size=' + packetsize;
+            ' -f rtp' +
+            ' -srtp_out_suite AES_CM_128_HMAC_SHA1_80' +
+            ' -srtp_out_params ' + videoKey.toString('base64') +
+            ' srtp://' + targetAddress + ':' + targetVideoPort +
+            '?rtcpport=' + targetVideoPort +
+            '&localrtcpport=' + targetVideoPort +
+            '&pkt_size=' + packetsize;
 
           // build required video arguments
           fcmd += ffmpegVideoArgs;
@@ -633,7 +644,7 @@ class CameraAccessory {
             fcmd += ' -loglevel debug';
 
           // start the process
-          let ffmpeg = spawn(this.videoConfig.videoProcessor, fcmd.split(' '), {env: process.env});
+          this.currentStreaming = spawn(this.videoConfig.videoProcessor, fcmd.split(' '), {env: process.env});
         
           this.logger.info('Start streaming video from ' + this.accessory.displayName + ' with ' + width + 'x' + height + '@' + vbitrate + 'kBit');
         
@@ -641,21 +652,21 @@ class CameraAccessory {
 
           // Always setup hook on stderr.
           // Without this streaming stops within one to two minutes.
-          ffmpeg.stderr.on('data', data => {
+          this.currentStreaming.stderr.on('data', data => {
           
             // Do not log to the console if debugging is turned off
             debug(data.toString());
         
           });
 
-          ffmpeg.on('error', error => {
+          this.currentStreaming.on('error', error => {
         
             this.logger.error(this.accessory.displayName + ': An error occurs while making stream request');
             debug(error);
         
           });
         
-          ffmpeg.on('close', code => {
+          this.currentStreaming.on('close', code => {
           
             if(code == null || code == 0 || code == 255){
             
@@ -678,7 +689,7 @@ class CameraAccessory {
         
           });
         
-          this.ongoingSessions[sessionIdentifier] = ffmpeg;
+          //this.ongoingSessions[sessionIdentifier] = ffmpeg;
       
         }
 
@@ -686,12 +697,20 @@ class CameraAccessory {
     
       } else if (requestType === 'stop') {
       
-        let ffmpegProcess = this.ongoingSessions[sessionIdentifier];
+        debug('Received stop request. Killing FFMPEG process.');
+      
+        if(this.currentStreaming)
+          this.currentStreaming.kill('SIGTERM');
+        
+        if(this.pendingSessions.length)
+          this.pendingSessions = [];
+        
+        /*let ffmpegProcess = this.ongoingSessions[sessionIdentifier];
       
         if (ffmpegProcess)
           ffmpegProcess.kill('SIGTERM');
 
-        delete this.ongoingSessions[sessionIdentifier];
+        delete this.ongoingSessions[sessionIdentifier];*/
     
       }
   
@@ -881,8 +900,10 @@ class CameraAccessory {
 
     this.motionService.addCharacteristic(Characteristic.LastActivation);
     this.motionService.addCharacteristic(Characteristic.AtHome);
+    this.motionService.addCharacteristic(Characteristic.Telegram);
     
     this.accessory.context.athome = true;
+    this.accessory.context.telegram = true;
        
     this.motionService.getCharacteristic(Characteristic.AtHome)
       .updateValue(this.accessory.context.athome)
@@ -897,6 +918,22 @@ class CameraAccessory {
       .on('get', callback => {
 
         callback(null, this.accessory.context.athome||false);  
+
+      });
+      
+    this.motionService.getCharacteristic(Characteristic.Telegram)
+      .updateValue(this.accessory.context.telegram)
+      .on('set', (state, callback) => {
+      
+        this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'telegram\'');
+      
+        this.accessory.context.telegram = state;
+        callback();
+      
+      })
+      .on('get', callback => {
+
+        callback(null, this.accessory.context.telegram||false);  
 
       });
  
