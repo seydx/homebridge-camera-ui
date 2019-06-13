@@ -407,9 +407,9 @@ class GUI {
     
     } else {
 
-      debug(this.currentPlayer + ': Start streaming - Source: -i ' + this.currentVideoConfig.source.split('-i ')[1]);
+      debug(this.currentPlayer + ': Start streaming - Source: ' + this.currentVideoConfig.source);
  
-      let cmd = '-i ' + this.currentVideoConfig.source.split('-i ')[1] + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.config.gui.secret + ' -loglevel quiet';
+      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.config.gui.secret + ' -loglevel quiet';
   
       debug('Streaming command: ' + cmd);
   
