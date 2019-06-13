@@ -88,7 +88,7 @@ See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/
 - [x] Record and download recorded videos (GUI)
 - [x] Combine multiple streams (not possible with websocket)
 - [x] Standalone mode (only GUI)
-- [ ] More options (email/ftp) for movement detection
+- [x] More options (ftp) for movement detection
 - [ ] Combine last movement (movement detection) with recording videos (GUI)
 - [x] Access recordings over GUI (+ for movement detection)
 - [ ] Accounts and register option for GUI
