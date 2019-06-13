@@ -21,8 +21,7 @@
             "maxStreams": 3,
             "maxWidth": 1920,
             "maxHeight": 1080,
-            "maxFPS": 30,
-            "transport": "tcp"
+            "maxFPS": 30
           },
           "mqtt": {
             "active": true,
@@ -47,8 +46,7 @@
             "maxStreams": 3,
             "maxWidth": 1920,
             "maxHeight": 1080,
-            "maxFPS": 30,
-            "transport": "udp"
+            "maxFPS": 30
           }
         }
       ],
