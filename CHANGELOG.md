@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.7 -2019-06-13
+- Bugfixes
+- Added possibility to add "vcodec copy" to stream params
+- Refactored code (GUI)
+- Added Custom Characteristic for enable/disable telegram
+- Added "current state (green/red indicator)" for cameras (GUI)
+- Added "Recordings" page
+- Redesigned GUI to standalone (you dont need to activate cameras anymore)
+- Now it is possible to watch/download recordings over GUI and/or remove stored recordings
 
 ## 2.0.6 - 2019-06-05
 - Bugfixes
