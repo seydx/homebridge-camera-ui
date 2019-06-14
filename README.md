@@ -360,7 +360,7 @@ pre-formatted fixed-width code block
         "chatID":"TelegramChatID",
         "motion_start":"Motion *detected*",
         "motion_stop":"*No* motion",
-	"interval":0
+        "interval":0
       }
     }
   ]
