@@ -195,6 +195,59 @@ class CameraAccessory {
   // Services
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
   
+  async handleMotionTrigger(motionState){
+
+    try {
+    
+      if(motionState){
+
+        if(!this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
+           
+          this.logger.info(this.accessory.displayName + ': Motion Detected'); 
+            
+          this.getSnap();
+          
+          if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
+          
+          let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
+        
+          this.motionService.getCharacteristic(Characteristic.LastActivation)
+            .updateValue(lastActivation);
+        
+        }
+
+      } else {
+
+        if(this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
+              
+          this.logger.info(this.accessory.displayName + ': No Motion');
+            
+          if(this.config.notifier && this.config.notifier.motion_stop && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
+  
+          this.motionService.getCharacteristic(Characteristic.MotionDetected)
+            .updateValue(0);
+              
+        }
+ 
+      }
+    
+      this.motionService.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(motionState);
+   
+      this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState}); 
+    
+      return;  
+    
+    } catch(err){
+      
+      throw err;
+      
+    }
+
+  }
+  
   async handleFTP(){
   
     const client = new ftp.Client();
@@ -202,7 +255,7 @@ class CameraAccessory {
     client.ftp.verbose = false;
     
     let refresh = 10;
-    let motionState = 0;
+    //let motionState = 0;
     let ftpLogged = false;
     
     try {
@@ -247,51 +300,22 @@ class CameraAccessory {
             //motion detected
             //check again in 20s
             
-            this.logger.info(this.accessory.displayName + ' (FTP): Received new image (movement detected)');
-            
             refresh = this.ftpConfig.movementDuration;
             
             this.accessory.context.lastMovement = lastMovement;
             
-            if(!this.motionService.getCharacteristic(Characteristic.AtHome).value){
+            debug(this.accessory.displayName + ' (FTP): Received new data');
             
-              this.getSnap();
-          
-              if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-                await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
-          
-            }
-            
-            motionState = 1;
-    
-            this.motionService.getCharacteristic(Characteristic.MotionDetected)
-              .updateValue(1);
-            
-            let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
-        
-            this.motionService.getCharacteristic(Characteristic.LastActivation)
-              .updateValue(lastActivation);
+            await this.handleMotionTrigger(1);
           
           } else {
           
+            //no motion detected
+            //check again in 10s default
+          
             this.accessory.context.lastMovement = lastMovement;
           
-            if(this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
-          
-              //refresh 10s default
-              //motion undetected
-              
-              this.logger.info(this.accessory.displayName + ' (FTP): No new image since last update (no movement)');
-            
-              motionState = 0;
-            
-              if(this.config.notifier && this.config.notifier.motion_stop && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-                await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
-  
-              this.motionService.getCharacteristic(Characteristic.MotionDetected)
-                .updateValue(0);
-              
-            }
+            await this.handleMotionTrigger(0);
           
           }
         
@@ -308,8 +332,6 @@ class CameraAccessory {
         }
         
       }
-         
-      this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState});
          
     } catch(err) {
      
@@ -405,39 +427,17 @@ class CameraAccessory {
 
         let original = Buffer.from(state.payload).toString('utf8');
 
-        this.logger.info(this.accessory.displayName + ' (MQTT): Received new message: ' + original);
+        debug(this.accessory.displayName + ' (MQTT): Received new message: ' + original);
 
         if(original === this.mqttConfig.startMessage){
     
-          if(!this.motionService.getCharacteristic(Characteristic.AtHome).value){
-            
-            this.getSnap();
-          
-            if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-              await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
-          
-          }
-    
-          this.motionService.getCharacteristic(Characteristic.MotionDetected)
-            .updateValue(1);
-            
-          let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
-        
-          this.motionService.getCharacteristic(Characteristic.LastActivation)
-            .updateValue(lastActivation);
+          await this.handleMotionTrigger(1);
     
         } else {
   
-          if(this.config.notifier && this.config.notifier.motion_stop && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
-  
-          this.motionService.getCharacteristic(Characteristic.MotionDetected)
-            .updateValue(0);
+          await this.handleMotionTrigger(0);
   
         }
-        
-        let motionState = original === this.mqttConfig.startMessage ? 1 : 0;      
-        this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState});
 
       } catch(err){
 
@@ -454,6 +454,7 @@ class CameraAccessory {
   
     try {
       
+      let now = moment().unix();
       let resolution = this.videoConfig.maxWidth + 'x' + this.videoConfig.maxHeight;
       let imageSource = this.videoConfig.stillImageSource;
     
@@ -485,8 +486,19 @@ class CameraAccessory {
         
         try {
         
-          if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
+          if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value){
+            
+            if(!(this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > now)){
+            
+              await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false, true);
+            
+            } else {
+        
+              debug(this.accessory.displayName + ': Prevent sending captured video, interval not reached!');
+            
+            }
+          
+          }
             
           if(recordOnMovement){
           
@@ -573,7 +585,7 @@ class CameraAccessory {
   }
   
   prepareStream(request, callback){
-  
+
     let sessionInfo = {};
 
     let sessionID = request.sessionID;
@@ -841,8 +853,6 @@ class CameraAccessory {
             }
         
           });
-        
-          //this.ongoingSessions[sessionIdentifier] = ffmpeg;
       
         }
 
@@ -857,13 +867,6 @@ class CameraAccessory {
         
         if(this.pendingSessions.length)
           this.pendingSessions = [];
-        
-        /*let ffmpegProcess = this.ongoingSessions[sessionIdentifier];
-      
-        if (ffmpegProcess)
-          ffmpegProcess.kill('SIGTERM');
-
-        delete this.ongoingSessions[sessionIdentifier];*/
     
       }
   
@@ -1052,27 +1055,9 @@ class CameraAccessory {
     this.motionService = new Service.MotionSensor(this.accessory.displayName + ' Sensor');
 
     this.motionService.addCharacteristic(Characteristic.LastActivation);
-    this.motionService.addCharacteristic(Characteristic.AtHome);
     this.motionService.addCharacteristic(Characteristic.Telegram);
     
-    this.accessory.context.athome = true;
     this.accessory.context.telegram = true;
-       
-    this.motionService.getCharacteristic(Characteristic.AtHome)
-      .updateValue(this.accessory.context.athome)
-      .on('set', (state, callback) => {
-      
-        this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'at home\'');
-      
-        this.accessory.context.athome = state;
-        callback();
-      
-      })
-      .on('get', callback => {
-
-        callback(null, this.accessory.context.athome||false);  
-
-      });
       
     this.motionService.getCharacteristic(Characteristic.Telegram)
       .updateValue(this.accessory.context.telegram)
@@ -1179,7 +1164,7 @@ class CameraAccessory {
 
   }
   
-  sendTelegram(token,chatID,message){
+  sendTelegram(token,chatID,message,origin){
 
     debug(this.accessory.displayName + ': Sending message...');
     
@@ -1207,7 +1192,9 @@ class CameraAccessory {
     
       } else {
     
-        if((this.mqttConfig && this.mqttConfig.recordOnMovement) || (this.ftpConfig && this.ftpConfig.recordOnMovement)){
+        let recordOnMovement = this.mqttConfig ? this.mqttConfig.recordOnMovement : this.ftpConfig.recordOnMovement;
+    
+        if(recordOnMovement){
 
           form.append('video', fs.createReadStream(this.configPath + '/out.mp4'));  
           request.path = '/bot' + token + '/sendVideo';
@@ -1221,18 +1208,32 @@ class CameraAccessory {
     
       }
       
-      form.submit(request, (err, res) => {
-     
-        if(err) reject(err);
-     
-        if(res.statusCode < 200 || res.statusCode > 200)
-          reject('Error! Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
-     
-        debug(this.accessory.displayName + ': Successfully send!');
-     
-        resolve(res);
+      let now = moment().unix();
       
-      });
+      if(!origin && this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > now){
+
+        debug(this.accessory.displayName + ': Prevent sending new message, interval not reached!');
+
+        resolve(true);
+
+      } else {
+
+        form.submit(request, (err, res) => {
+     
+          if(err) reject(err);
+     
+          if(res.statusCode < 200 || res.statusCode > 200)
+            reject('Error! Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
+     
+          debug(this.accessory.displayName + ': Successfully send!');
+     
+          this.lastNotification = moment().unix();
+     
+          resolve(res);
+      
+        });
+
+      }
       
     });
 

@@ -43,7 +43,8 @@ function CameraUI (log, config, api) {
     token: this.config.notifier.token, 
     chatID: this.config.notifier.chatID,
     motion_start: this.config.notifier.motion_start||'',
-    motion_stop: this.config.notifier.motion_stop||''
+    motion_stop: this.config.notifier.motion_stop||'',
+    interval: this.config.notifier.interval||0
   };
   
   this.config.gui = {
@@ -167,7 +168,6 @@ CameraUI.prototype = {
     object.videoConfig = object.videoConfig||{};
     object.mqtt = object.mqtt||{};
     object.ftp = object.ftp||{};
-    object.gui = object.gui||{};
     
     accessory.reachable = true;
     accessory.context.debug = this.config.debug||false;
