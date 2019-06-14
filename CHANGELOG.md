@@ -4,6 +4,7 @@
 - Bugfixes
 - Added FTP as a new possibility for movement detection
 - GUI improvements
+- Combined last movement (movement detection) with recording videos (GUI)
 
 ## 2.0.7 -2019-06-13
 - Bugfixes
