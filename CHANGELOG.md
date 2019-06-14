@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1 - 2019-06-14
+- Added interval for telegram notifications
+- Refactored motion trigger
+- Bugfixes
+
 ## 2.1.0 - 2019-06-14
 - Bugfixes
 - Added FTP as a new possibility for movement detection
