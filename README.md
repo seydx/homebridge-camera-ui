@@ -40,6 +40,8 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
    * [Basic Camera Config + GUI](https://github.com/SeydX/homebridge-camera-ui#gui-access)
    * [Basic Camera Config + GUI for hacked YI Cameras](https://github.com/SeydX/homebridge-camera-ui#yi-cameras-with-yi-hack-v4)
    * [iOS Web Application](https://github.com/SeydX/homebridge-camera-ui#ios-web-application)
+- <u>Notifier<u>
+   * [Basic Camera Config + MQTT + Notifier](https://github.com/SeydX/homebridge-camera-ui#gui-access)
 - <u>FAQ<u>
    * [Choppy Streams](https://github.com/SeydX/homebridge-camera-ui#not-responsive-or-choppy-streams)
 - <u>Supported apps<u>
@@ -252,6 +254,8 @@ You don't need to "activate" the camera(s) if you want only access the camera ov
 
 For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "settings" page where you can change some settings like Enable/Disable SSH, FTP, Telnet etc. To use this, u need to pass "yihackv4" into your config.json, ie.
 
+### Yi Camera Config
+
  ```
 {
   "bridge": {
@@ -293,6 +297,75 @@ For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "
 - On the bottom row of icons, scroll over until you see Add to Home Screen and tap this.
 - On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
 - Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
+
+## Notifier
+
+In regarding to movement detection, this pluggin offers also a notification system via Telegram. You can set up movement detection/no movement in config.json. This plugin sends also captured images/videos (if setted up in config.json) via Telegram.
+
+It supports also markdown
+
+
+```
+*bold text*
+_italic text_
+[inline URL](http://www.example.com/)
+[inline mention of a user](tg://user?id=123456789)
+`inline fixed-width code`
+block_language
+pre-formatted fixed-width code block
+```
+
+
+### Notifier Config
+
+  ```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "mqtt": {
+            "active": true,
+            "host": "192.168.178.123",
+            "port": 1883,
+            "username": "",
+            "password": "",
+            "topicPrefix": "yicam",
+            "topicSuffix": "motion",
+            "startMessage": "motion_start",
+            "stopMessage": "motion_stop",
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          }
+        }
+      ],
+      "notifier":{
+        "active":true,
+        "token":"TelegramToken",
+        "chatID":"TelegramChatID",
+        "motion_start":"Motion *detected*",
+        "motion_stop":"*No* motion"
+      }
+    }
+  ]
+}
+```
 
 ## OS instructions (FFmpeg)
 
