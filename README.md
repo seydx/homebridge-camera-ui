@@ -12,7 +12,7 @@
 
 **Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/hbcameraui.GIF" align="right" alt="HomeKit Overview" width="270px" height="541px">
+<img src="https://raw.githubusercontent.com/SeydX/homebridge-camera-ui/master/images/hbyicamera3.gif" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
 This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your RTSP Cameras with MQTT (motion), FTP (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. 
 
