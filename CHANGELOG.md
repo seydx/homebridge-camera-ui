@@ -4,6 +4,7 @@
 - Added interval for telegram notifications
 - Refactored motion trigger
 - Bugfixes
+- Removed "AtHome" Characteristics (duplicate with Telegram Characteristic)
 
 ## 2.1.0 - 2019-06-14
 - Bugfixes
