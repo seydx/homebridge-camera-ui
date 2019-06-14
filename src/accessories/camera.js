@@ -487,10 +487,21 @@ class CameraAccessory {
         
           if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
+            
+          if(recordOnMovement){
+          
+            let fileName = this.accessory.displayName + '_' + Date.now() + '.mp4';
+            let destDir = __dirname.split('/src/accessories')[0] + '/app/public/recordings/';
+          
+            fs.copyFileSync(this.configPath + '/out.mp4', destDir + fileName);
+            
+            debug(this.accessory.displayName + ': Recorded video copied to ' + destDir + fileName);
+          
+          }
         
         } catch(err){
     
-          this.logger.error(this.accessory.displayName + ': An error occured while sending notification via Telegram');    
+          this.logger.error(this.accessory.displayName + ': An error occured while closing img spawn process');    
           debug(err);
         
         }    
