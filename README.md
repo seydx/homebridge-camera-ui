@@ -54,6 +54,7 @@ See the [changelog](https://github.com/SeydX/homebridge-camera-ui/blob/master/CH
 
 ## Todo
 - [ ] Accounts and register option for GUI
+- [ ] Change Color
 
 ## Installation instructions
 
