@@ -12,7 +12,20 @@
       "videoProcessor": "ffmpeg",
       "cameras": [
         {
-          "name": "Flur YI Dome",
+          "name": "Flur YI Home",
+          "active": true,
+          "yihackv4": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.21/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.178.21/ch0_0.h264",
+            "maxStreams": 3,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          }
+        },
+        {
+          "name": "Schlafzimmer YI Dome",
           "active": true,
           "yihackv4": true,
           "videoConfig": {
@@ -38,7 +51,7 @@
           }
         },
         {
-          "name": "Wohnzimmer Kamera",
+          "name": "Wohnzimmer IP Kamera",
           "active": true,
           "videoConfig": {
             "source": "-re -i rtsp://192.168.178.31/ch0_0.h264",
