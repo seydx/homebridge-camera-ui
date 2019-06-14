@@ -47,6 +47,17 @@
             "maxWidth": 1920,
             "maxHeight": 1080,
             "maxFPS": 30
+          },
+          "ftp":{
+            "active":true,
+            "host":"192.168.178.1",
+            "username":"MyUsername",
+            "password":"MyPassword",
+            "secure":false,
+            "absolutePath":"Recordings",
+            "movementDuration":20,
+            "recordOnMovement": true,
+            "recordVideoSize": 30
           }
         }
       ],
