@@ -52,7 +52,9 @@ You also need a programm to handle the stream. I recommend to use [FFmpeg](https
 
 See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/README.md#os-instructions-ffmpeg) for detailed installation instruction regarding to your OS
 
-## Basic configuration
+## Camera
+
+### Basic Configuration
 
  ```
 {
@@ -82,17 +84,109 @@ See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/
   ]
 }
  ```
- See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more detailsand options!
+ 
+See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more details and options!
+ 
+ ## Movement Detection
+ 
+This plugin offers two possibilities to get movement detection on your camera. MQTT and FTP.
+
+- For MQTT, the camera need to have this capability, otherwise it is not possible to use MQTT for movement detection. The plugin listen to the server for the start and stop message setted up in config.json.
+
+- For FTP, the camera need to have the capability to upload images to a FTP server by movement detection. If your camera has this ability, the plugin can scan the folder where the images are uploaded. The plugin compare all images and take the latest uploaded image and use the timestamp for movement detection. (Only if the latest image is newer than the image before stored in accessory cache). You can also set up a "duration" to hold the "movement detected" state.
+ 
+ ### Movement Configuration MQTT
+ 
+  ```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "mqtt": {
+            "active": true,
+            "host": "192.168.178.123",
+            "port": 1883,
+            "username": "",
+            "password": "",
+            "topicPrefix": "yicam",
+            "topicSuffix": "motion",
+            "startMessage": "motion_start",
+            "stopMessage": "motion_stop",
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+ 
+ ### Movement Configuration FTP
+ 
+
+ ```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "ftp":{
+            "active":true,
+	        "host":"192.168.178.1",
+	        "username":"MyUsername",
+	        "password":"MyPassword",
+	        "secure":false,
+	        "absolutePath":"Recordings",
+            "movementDuration":20,
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+ 
+See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more details and options!
 
 ## Todo
-- [x] Record and download recorded videos (GUI)
-- [x] Combine multiple streams (not possible with websocket)
-- [x] Standalone mode (only GUI)
-- [x] More options (ftp) for movement detection
 - [ ] Combine last movement (movement detection) with recording videos (GUI)
-- [x] Access recordings over GUI (+ for movement detection)
 - [ ] Accounts and register option for GUI
-- [x] Enable/Disable Telegram
 
 
 ## OS instructions (FFmpeg)
@@ -141,7 +235,48 @@ See if the stream is running well on eg VLC. If, for example, everything is good
 
 ## GUI Access
 
-After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password.
+After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password. _(Maybe you need to replace localhost with the ip address where the plugin/homebridge runs)_
+
+You don't need to "activate" the camera(s) if you want only access the camera over GUI.
+
+### GUI Config
+
+ ```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Flur",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.31/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          }
+        }
+      ],
+      "gui": {
+        "active": true,
+        "username": "MyUsername",
+        "password": "MySuperSecretPassword",
+        "port": 3000,
+        "wsport": 8100
+      }
+    }
+  ]
+}
+ ```
+ See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more details and options!
 
 ![Login](images/homebridge-yi-cam-login.png)
 
