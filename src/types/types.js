@@ -63,6 +63,20 @@ module.exports = {
     Characteristic.DeleteAssets.UUID = '3982EB69-1ECE-463E-96C6-E5A7DF2FA1CD';
     
     /// /////////////////////////////////////////////////////////////////////////
+    // Record Characteristic
+    /// ///////////////////////////////////////////////////////////////////////// 
+    Characteristic.Record = function() {
+      Characteristic.call(this, 'Record', '67a36c3e-5488-4223-8c47-89d3bb7a9d5f');
+      this.setProps({
+        format: Characteristic.Formats.BOOL,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+      }); 
+      this.value = this.getDefaultValue();
+    };
+    inherits(Characteristic.Record, Characteristic);
+    Characteristic.Record.UUID = '67a36c3e-5488-4223-8c47-89d3bb7a9d5f';
+    
+    /// /////////////////////////////////////////////////////////////////////////
     // Telegram Characteristic
     /// ///////////////////////////////////////////////////////////////////////// 
     Characteristic.Telegram = function() {

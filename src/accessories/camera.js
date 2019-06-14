@@ -202,18 +202,33 @@ class CameraAccessory {
       if(motionState){
 
         if(!this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
+          
+          this.now = moment().unix();
            
           this.logger.info(this.accessory.displayName + ': Motion Detected'); 
+          
+          if(this.motionService.getCharacteristic(Characteristic.Record).value){
+                                          
+            this.getSnap();
             
-          this.getSnap();
+          } else {
+          
+            debug(this.accessory.displayName + ': Skip capturing video. At Home is activated.');
+          
+          }
           
           if(this.config.notifier && this.config.notifier.motion_start && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_start);
           
-          let lastActivation = moment().unix() - this.accessory.context.historyService.getInitialTime();
+          let lastActivation = this.now - this.accessory.context.historyService.getInitialTime();
         
           this.motionService.getCharacteristic(Characteristic.LastActivation)
             .updateValue(lastActivation);
+            
+          this.motionService.getCharacteristic(Characteristic.MotionDetected)
+            .updateValue(motionState);
+            
+          this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState}); 
         
         }
 
@@ -227,16 +242,13 @@ class CameraAccessory {
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, this.config.notifier.motion_stop);
   
           this.motionService.getCharacteristic(Characteristic.MotionDetected)
-            .updateValue(0);
+            .updateValue(motionState);
+            
+          this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState}); 
               
         }
  
       }
-    
-      this.motionService.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(motionState);
-   
-      this.accessory.context.historyService.addEntry({time: moment().unix(), status: motionState}); 
     
       return;  
     
@@ -255,7 +267,6 @@ class CameraAccessory {
     client.ftp.verbose = false;
     
     let refresh = 10;
-    //let motionState = 0;
     let ftpLogged = false;
     
     try {
@@ -454,7 +465,6 @@ class CameraAccessory {
   
     try {
       
-      let now = moment().unix();
       let resolution = this.videoConfig.maxWidth + 'x' + this.videoConfig.maxHeight;
       let imageSource = this.videoConfig.stillImageSource;
     
@@ -486,19 +496,8 @@ class CameraAccessory {
         
         try {
         
-          if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value){
-            
-            if(!(this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > now)){
-            
-              await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false, true);
-            
-            } else {
-        
-              debug(this.accessory.displayName + ': Prevent sending captured video, interval not reached!');
-            
-            }
-          
-          }
+          if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false, true);
             
           if(recordOnMovement){
           
@@ -638,7 +637,7 @@ class CameraAccessory {
 
       let audioResp = {
         port: targetPort,
-        ssrc: ssrc,
+        ssrc: ssrc,                                                  
         srtp_key: srtp_key,
         srtp_salt: srtp_salt
       };
@@ -1055,28 +1054,81 @@ class CameraAccessory {
     this.motionService = new Service.MotionSensor(this.accessory.displayName + ' Sensor');
 
     this.motionService.addCharacteristic(Characteristic.LastActivation);
-    this.motionService.addCharacteristic(Characteristic.Telegram);
+  
+    this.motionService.addCharacteristic(Characteristic.Record);
+ 
+    this.accessory.context.record = true;
     
-    this.accessory.context.telegram = true;
-      
-    this.motionService.getCharacteristic(Characteristic.Telegram)
-      .updateValue(this.accessory.context.telegram)
+    this.motionService.getCharacteristic(Characteristic.Record)
+      .updateValue(this.accessory.context.record)
       .on('set', (state, callback) => {
       
-        this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'telegram\'');
+        this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'record\'');
       
-        this.accessory.context.telegram = state;
+        this.accessory.context.record = state;
         callback();
       
       })
       .on('get', callback => {
 
-        callback(null, this.accessory.context.telegram||false);  
+        callback(null, this.accessory.context.record||false);  
 
       });
+    
+    if(this.config.notifier){
+      
+      this.motionService.addCharacteristic(Characteristic.Telegram);
+    
+      this.accessory.context.telegram = true;
+    
+      this.motionService.getCharacteristic(Characteristic.Telegram)
+        .updateValue(this.accessory.context.telegram)
+        .on('set', (state, callback) => {
+      
+          this.logger.info(this.accessory.displayName + ': Turn ' + (state ? 'on' : 'off') + ' \'telegram\'');
+      
+          this.accessory.context.telegram = state;
+          callback();
+      
+        })
+        .on('get', callback => {
+
+          callback(null, this.accessory.context.telegram||false);  
+
+        });
+        
+    }
  
     this.accessory.context.historyService = new FakeGatoHistoryService('motion', this.accessory, {storage:'fs',path:this.HBpath, disableTimer: false, disableRepeatLastData:false});
     this.accessory.context.historyService.log = this.log;
+    
+    setTimeout(() => {
+    
+      if(Array.isArray(this.accessory.context.historyService.history) && this.accessory.context.historyService.history.length > 1){
+
+        let lastMovements = [];
+        
+        this.accessory.context.historyService.history.map(entry => {
+        
+          if(entry.time && entry.status === 1)
+            lastMovements.push(entry.time);
+        
+        });
+
+        if(lastMovements.length){
+
+          lastMovements = lastMovements.sort((a, b) => a - b);       
+        
+          let lastMovement = lastMovements[lastMovements.length-1] - this.accessory.context.historyService.getInitialTime();
+        
+          this.motionService.getCharacteristic(Characteristic.LastActivation)
+            .updateValue(lastMovement);
+      
+        } 
+    
+      }
+    
+    }, 2000);
 
     this.services.push(this.motionService);
 
@@ -1165,8 +1217,6 @@ class CameraAccessory {
   }
   
   sendTelegram(token,chatID,message,origin){
-
-    debug(this.accessory.displayName + ': Sending message...');
     
     return new Promise((resolve,reject) => {
   
@@ -1184,7 +1234,11 @@ class CameraAccessory {
     
       if(message){
       
+        debug(this.accessory.displayName + ': Sending message...');
+      
         message = this.accessory.displayName + ': ' + message;
+
+        this.allowVideo = true;
 
         form.append('text', message);
         form.append('parse_mode', 'Markdown');
@@ -1195,11 +1249,15 @@ class CameraAccessory {
         let recordOnMovement = this.mqttConfig ? this.mqttConfig.recordOnMovement : this.ftpConfig.recordOnMovement;
     
         if(recordOnMovement){
+        
+          debug(this.accessory.displayName + ': Sending captured video...');
 
           form.append('video', fs.createReadStream(this.configPath + '/out.mp4'));  
           request.path = '/bot' + token + '/sendVideo';
          
         } else {
+        
+          debug(this.accessory.displayName + ': Sending captured image...');
         
           form.append('photo', fs.createReadStream(this.configPath + '/out.jpg'));
           request.path = '/bot' + token + '/sendPhoto';
@@ -1208,26 +1266,43 @@ class CameraAccessory {
     
       }
       
-      let now = moment().unix();
-      
-      if(!origin && this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > now){
+      if(!origin && this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > this.now){
 
         debug(this.accessory.displayName + ': Prevent sending new message, interval not reached!');
+
+        if(message)
+          this.allowVideo = false;
 
         resolve(true);
 
       } else {
+      
+        if(origin && !this.allowVideo){
+        
+          debug(this.accessory.displayName + ': Prevent sending captured file, interval not reached!');
+        
+          return resolve(true);
+        
+        }
 
         form.submit(request, (err, res) => {
      
           if(err) reject(err);
-     
-          if(res.statusCode < 200 || res.statusCode > 200)
-            reject('Error! Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
-     
-          debug(this.accessory.displayName + ': Successfully send!');
-     
+          
+          if(origin && this.allowVideo)
+            this.allowVideo = false;
+            
           this.lastNotification = moment().unix();
+     
+          if(res.statusCode < 200 || res.statusCode > 200){
+          
+            this.allowVideo = false;
+          
+            reject('Error! Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
+          
+          }
+          
+          debug(this.accessory.displayName + ': Successfully send!');
      
           resolve(res);
       
