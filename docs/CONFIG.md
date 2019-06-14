@@ -272,3 +272,4 @@ Below you can see which parameters are recommend or optional.
 | chatID | **X** | Telegram Chat ID |
 | motion_start |  | Own message when motion sensor triggers on (if you dont want to get this notification, just remove from config) |
 | motion_stop |  | Own message when motion sensor triggers off (if you dont want to get this notification, just remove from config) |
+| interval |  | The interval in seconds to prevent plugin to send new notifications (default: 0 = false) |
