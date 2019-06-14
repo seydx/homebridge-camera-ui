@@ -29,18 +29,27 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
    * [OS instructions FFmpeg](https://github.com/SeydX/homebridge-camera-ui#os-instructions-ffmpeg)
 - Configuration
    * [Explanation](https://github.com/SeydX/homebridge-camera-ui/blob/master/docs/CONFIG.md)
-   * [Basic Config.json](https://github.com/SeydX/homebridge-camera-ui#basic-configuration)
+   * [Basic Camera Config](https://github.com/SeydX/homebridge-camera-ui#basic-configuration)
+   * [Basic Camera Config + MQTT](https://github.com/SeydX/homebridge-camera-ui#movement-configuration-mqtt)
+   * [Basic Camera Config + FTP](https://github.com/SeydX/homebridge-camera-ui#movement-configuration-ftp)
    * [Extended Config.json](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json)
 - <u>GUI<u>
-   * [Web Access](https://github.com/SeydX/homebridge-camera-ui/blob/master/docs/CONFIG.md)
+   * [Basic Camera Config + GUI](https://github.com/SeydX/homebridge-camera-ui#gui-access)
+   * [Basic Camera Config + GUI for hacked YI Cameras](https://github.com/SeydX/homebridge-camera-ui#yi-cameras-with-yi-hack-v4)
    * [iOS Web Application](https://github.com/SeydX/homebridge-camera-ui#ios-web-application)
+- <u>FAQ<u>
+   * [Choppy Streams](https://github.com/SeydX/homebridge-camera-ui#not-responsive-or-choppy-streams)
 - <u>Supported apps<u>
-    * [Supported clients](https://github.com/SeydX/homebridge-camera-ui#supported-clients)
-    * [Supported cameras](https://github.com/SeydX/homebridge-camera-ui#supported-cameras)
+    * [Supported Clients](https://github.com/SeydX/homebridge-camera-ui#supported-clients)
+    * [Supported Cameras](https://github.com/SeydX/homebridge-camera-ui#supported-cameras)
     
 ## Changelog
 
 See the [changelog](https://github.com/SeydX/homebridge-camera-ui/blob/master/CHANGELOG.md) for changes between versions of this package.
+
+## Todo
+- [ ] Combine last movement (movement detection) with recording videos (GUI)
+- [ ] Accounts and register option for GUI
 
 ## Installation instructions
 
@@ -184,55 +193,6 @@ This plugin offers two possibilities to get movement detection on your camera. M
  
 See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json) for more details and options!
 
-## Todo
-- [ ] Combine last movement (movement detection) with recording videos (GUI)
-- [ ] Accounts and register option for GUI
-
-
-## OS instructions (FFmpeg)
-
-**Mac OS:** 
-
-To install this utility on OS X, just head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-mac), download the release relative to your Macs architecture. Then put the application into an accessible directory and run it from command line. Another way is using [HomeBrew](https://www.howtogeek.com/211541/homebrew-for-os-x-easily-installs-desktop-apps-and-terminal-utilities/)
-
-For example
-
-```brew install ffmpeg --with-fdk-aac --with-ffplay --with-libass --with-libvorbis --with-libvpx --with-rtmpdump --with-openh264 --with-tools```
-
-**Windows:** 
-
-To install this utility on Windows, head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-windows) and follow the download link, using your architecture. Then place the downloaded software into an accessible directory and run from command line. 
-
-**Linux:** 
-
-To install this utility on Unix, just follow the instructions found at [ffmpeg.org](https://www.ffmpeg.org/download.html#build-linux) 
-
-To check if ffmpeg is installed correctly and see a list of available commands try running the following command in the command line:
-
-```ffmpeg -help```
-
-**Homebridge Docker:** 
-
-Add FFmpeg to packages
-
-```PACKAGES=ffmpeg```
-
-## Not responsive or choppy streams
-
-There are a few factors involved. To know why the stream arrives delayed or choppy, the following points should be considered.
-
-### What kind of system is it?
-
-It seems, the slower the system, the slower the stream
- 
-### If it runs on a weak system like Raspi, what could you do to reduce the required processing power of FFMPEG?
-
-For example, you could lower the resolution here, make bitrate (maxBitrate) less, define rtsp transport (-rtsp_transport), change packet size (packetSize> multiplier x188) etc
-
-### What to do if that does not help and the picture still stops or is greatly delayed?
-
-See if the stream is running well on eg VLC. If, for example, everything is good on VLC then it depends mostly because the processing power is much larger. If the stream also delayed or choppy on eg VLC, then you should try to fix the camera
-
 ## GUI Access
 
 After setting up the gui part in config.json, just open ```http://localhost:<port_config.json>``` and you are ready. Credentials are these setted up in config.json as username and password. _(Maybe you need to replace localhost with the ip address where the plugin/homebridge runs)_
@@ -331,11 +291,57 @@ For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "
 - On the next screen, choose a name for the link on your home screen. You’ll see the link so you can confirm it, as well as the site’s favicon that becomes its “app” icon.
 - Now just tap the new app on your home screen, and it will open the website in its own navigation window, independent of Safari.
 
+## OS instructions (FFmpeg)
+
+### Mac OS:
+
+To install this utility on OS X, just head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-mac), download the release relative to your Macs architecture. Then put the application into an accessible directory and run it from command line. Another way is using [HomeBrew](https://www.howtogeek.com/211541/homebrew-for-os-x-easily-installs-desktop-apps-and-terminal-utilities/)
+
+For example
+
+```brew install ffmpeg --with-fdk-aac --with-ffplay --with-libass --with-libvorbis --with-libvpx --with-rtmpdump --with-openh264 --with-tools```
+
+### Windows:
+
+To install this utility on Windows, head over to [ffmpeg.org](https://www.ffmpeg.org/download.html#build-windows) and follow the download link, using your architecture. Then place the downloaded software into an accessible directory and run from command line. 
+
+### Linux:
+
+To install this utility on Unix, just follow the instructions found at [ffmpeg.org](https://www.ffmpeg.org/download.html#build-linux) 
+
+To check if ffmpeg is installed correctly and see a list of available commands try running the following command in the command line:
+
+```ffmpeg -help```
+
+**Homebridge Docker:** 
+
+Add FFmpeg to packages
+
+```PACKAGES=ffmpeg```
+
+## FAQ
+
+### Not responsive or choppy streams
+
+There are a few factors involved. To know why the stream arrives delayed or choppy, the following points should be considered.
+
+**What kind of system is it?**
+
+It seems, the slower the system, the slower the stream
+ 
+**If it runs on a weak system like Raspi, what could you do to reduce the required processing power of FFMPEG?**
+
+For example, you could lower the resolution here, make bitrate (maxBitrate) less, define rtsp transport (-rtsp_transport), change packet size (packetSize> multiplier x188) etc
+
+**What to do if that does not help and the picture still stops or is greatly delayed?**
+
+See if the stream is running well on eg VLC. If, for example, everything is good on VLC then it depends mostly because the processing power is much larger. If the stream also delayed or choppy on eg VLC, then you should try to fix the camera
+
 ## Supported clients
 
-This plugin has been verified to work with the following apps on iOS 12.2 and iOS 12.3 Beta:
+This plugin has been verified to work with the following apps on iOS 12/13:
 
-* iOS 12
+* iOS 12/13
 * Apple Home
 * All 3rd party apps like Elgato Eve etc (recommended for custom characteristics)
 * Homebridge v0.4.49
