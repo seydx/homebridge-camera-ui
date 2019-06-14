@@ -41,7 +41,7 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
    * [Basic Camera Config + GUI for hacked YI Cameras](https://github.com/SeydX/homebridge-camera-ui#yi-cameras-with-yi-hack-v4)
    * [iOS Web Application](https://github.com/SeydX/homebridge-camera-ui#ios-web-application)
 - <u>Notifier<u>
-   * [Basic Camera Config + MQTT + Notifier](https://github.com/SeydX/homebridge-camera-ui#gui-access)
+   * [Basic Camera Config + MQTT + Notifier](https://github.com/SeydX/homebridge-camera-ui#notifier)
 - <u>FAQ<u>
    * [Choppy Streams](https://github.com/SeydX/homebridge-camera-ui#not-responsive-or-choppy-streams)
 - <u>Supported apps<u>
