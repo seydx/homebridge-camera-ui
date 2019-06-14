@@ -121,6 +121,60 @@ Below you can see which parameters are recommend or optional.
 | recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
 | recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
 
+## FTP Config
+
+```
+{
+  "bridge": {
+    ...
+  },
+  "accessories": [
+    ...
+  ],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "videoProcessor": "ffmpeg",
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "active": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -re -i rtsp://192.168.178.11/ch0_0.h264",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 30
+          },
+          "ftp":{
+            "active":true,
+            "host":"192.168.178.1",
+            "username":"MyUsername",
+            "password":"MyPassword",
+            "secure":false,
+            "absolutePath":"Recordings",
+            "movementDuration":20,
+            "recordOnMovement": true,
+            "recordVideoSize": 30
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+| **Attributes** | **Required** | **Usage** |
+|------------|----------|-------|
+| active |  | Activate/Deactivate FTP Service (default: false) |
+| host | **X** | Address of your FTP Service |
+| username | **X** | Username for the MQTT Service |
+| password | **X** |  Password for the MQTT Service |
+| secure |  | Explicit FTPS over TLS (default: false) |
+| absolutePath |  | Absolute path to folder where you store the snapshots on movement detection (default: '/') |
+| movementDuration |  | Time in seconds to hold the sensor on "movement detected" (default: 20s) |
+| recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
+| recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
+
 ![HomeKit](/images/homebridge-yi-cam-homekit.png)
 
 ## GUI Config
