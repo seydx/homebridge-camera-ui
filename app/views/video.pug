@@ -13,7 +13,7 @@ block content
             a.shortbutton(href='/logout')
               | Sign out, 
               b= user
-        .d-flex.p-2.mb-0.flex-row
+        .d-flex.m-2.pb-2.flex-row.border-bottom.border-danger
           h5.text-white.mb-0= fileName
           a.removeButton.ml-auto(href="#remove" onClick="postdata()") Remove
         .d-flex.flex-wrap.p-1.mb-2
@@ -28,6 +28,7 @@ block content
     script(type='text/javascript').
     
       function postdata(){
+      
         
         $.post('/recordings/!{title}/video/!{fileName}')
         .always(function(data, textStatus, jqXHR){

@@ -15,7 +15,9 @@ block content
               b= user
         each camera in cameras.length ? cameras : [{name: 'No Cameras', url: '/cameras/#', ping: false}]
           if camera.ping
-            a.p-4.cameraItems(href=camera.url)= camera.name 
+            a.p-4.cameraItems(href=camera.url)
+              img(src='/images/yi_logo.png', style='margin-top: -4px;margin-right: 5px;', width='20px')
+              | !{camera.name} 
               span.circleGreen
           else 
             a.p-4.cameraItems(href=camera.url)= camera.name + ' (Offline)'

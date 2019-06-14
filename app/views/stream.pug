@@ -13,10 +13,10 @@ block content
             a.shortbutton(href='/logout')
               | Sign out, 
               b= user
-        .d-flex.flex-row
-          p#clock.p-2.text-white.mb-0.resptext
+        .d-flex.flex-row.m-2.pb-2.border-bottom.border-danger
+          p#clock.text-white.mb-0.resptext
           if lastmovement  
-            p.mb-0.ml-auto.p-2.text-muted.resptext
+            p.mb-0.ml-auto.text-muted.resptext
               b.text-white Last Movements: 
               | !{lastmovement}
         .p-2.videoBG

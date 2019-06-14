@@ -55,6 +55,58 @@ module.exports = (platform) => {
     next(createError(404));
     
   });
+  
+  router.post('/:name', async (req, res, next) => { // eslint-disable-line no-unused-vars
+      
+    for(const camera of platform.cameras){
+        
+      if(camera.name === req.params.name){
+
+        const directoryPath = path.join(__dirname.split('/routes')[0] + '/public', 'recordings');
+        
+        fs.readdir(directoryPath, (err, files) => {
+          
+          if (err) {
+          
+            platform.logger.error(req.params.name + ': An error occured while removing all files!');
+            platform.debug(err);
+          
+            return res.status(500).send(err);
+          
+          }
+          
+          for (const file of files) {
+           
+            fs.unlink(path.join(directoryPath, file), err => {
+           
+              if (err) {
+          
+                platform.logger.error(req.params.name + ': An error occured while removing ' + file);
+                platform.debug(err);
+          
+                return res.status(500).send(err);
+          
+              }
+            
+            });
+         
+          }
+          
+          platform.logger.info(req.params.name + ': All files in ' + directoryPath + ' were removed!');
+          
+          res.sendStatus(200);
+        
+        });
+    
+        return;
+        
+      }
+      
+    }
+      
+    next(createError(404));
+    
+  });
     
   router.get('/:name/video/:url', async (req, res, next) => { // eslint-disable-line no-unused-vars
       
@@ -96,7 +148,7 @@ module.exports = (platform) => {
           
           }
 
-          platform.logger.info(req.params.name + ': Removing ' + req.params.url);
+          platform.logger.info(req.params.name + ': ' + req.params.url + ' were removed!');
           res.sendStatus(200);
         
         });
