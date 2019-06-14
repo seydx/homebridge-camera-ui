@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2.1.3 - 2019-06-15
+- GUI Improvements
+- Added Remove All option for recordings
+
 ## 2.1.2 - 2019-06-14
 - Added "Record" Characteristic (for allow/decline recordings attempts)
 - Bugfixes
