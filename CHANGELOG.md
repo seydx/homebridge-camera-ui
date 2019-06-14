@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 2.1.2 - 2019-06-14
+- Added "Record" Characteristic (for allow/decline recordings attempts)
+- Bugfixes
+
 ## 2.1.1 - 2019-06-14
 - Added interval for telegram notifications
 - Refactored motion trigger
