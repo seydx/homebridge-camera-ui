@@ -53,7 +53,6 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
 See the [changelog](https://github.com/SeydX/homebridge-camera-ui/blob/master/CHANGELOG.md) for changes between versions of this package.
 
 ## Todo
-- [ ] Combine last movement (movement detection) with recording videos (GUI)
 - [ ] Accounts and register option for GUI
 
 ## Installation instructions
