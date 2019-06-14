@@ -258,7 +258,8 @@ Below you can see which parameters are recommend or optional.
         "token":"TelegramToken",
         "chatID":"TelegramChatID",
         "motion_start":"Motion *detected*",
-        "motion_stop":"*No* motion"
+        "motion_stop":"*No* motion",
+        "interval":60
       }
     }
   ]
