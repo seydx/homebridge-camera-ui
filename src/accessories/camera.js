@@ -42,6 +42,7 @@ class CameraAccessory {
     this.config = platform.config;
     this.videoConfig = accessory.context.videoConfig;
     this.mqttConfig = accessory.context.mqttConfig;
+    this.ftpConfig = accessory.context.ftpConfig;
     
     this.accessories = platform.accessories;
     
@@ -170,12 +171,12 @@ class CameraAccessory {
     this.createCameraControlService();
     this.createStreamControllers(options);
 
-    if(this.accessory.context.mqttConfig){
+    if(this.mqttConfig){
     
       this.createCameraSensor();
       this.handleMQTT();
     
-    } else if (this.accessory.context.ftp){
+    } else if (this.ftpConfig){
     
       this.createCameraSensor();
       this.handleFTP();
@@ -207,15 +208,15 @@ class CameraAccessory {
     try {
       
       await client.access({
-        host: this.accessory.context.ftp.host,
-        user: this.accessory.context.ftp.username,
-        password: this.accessory.context.ftp.password,
-        secure: this.accessory.context.ftp.secure
+        host: this.ftpConfig.host,
+        user: this.ftpConfig.username,
+        password: this.ftpConfig.password,
+        secure: this.ftpConfig.secure
       });
       
       ftpLogged = true;
         
-      await client.cd(this.accessory.context.ftp.absolutePath);
+      await client.cd(this.ftpConfig.absolutePath);
         
       let files = await client.list();
       let allFiles = [];
@@ -239,7 +240,7 @@ class CameraAccessory {
         
         let lastMovement = allFiles[allFiles.length-1];
         
-        if(this.accessory.context.lastMovement){
+        if(this.accessory.context.lastMovement !== undefined){
         
           if(lastMovement > this.accessory.context.lastMovement){
             
@@ -248,7 +249,7 @@ class CameraAccessory {
             
             this.logger.info(this.accessory.displayName + ' (FTP): Received new image (movement detected)');
             
-            refresh = this.accessory.context.movementDuration;
+            refresh = this.ftpConfig.movementDuration;
             
             this.accessory.context.lastMovement = lastMovement;
             
@@ -272,6 +273,8 @@ class CameraAccessory {
               .updateValue(lastActivation);
           
           } else {
+          
+            this.accessory.context.lastMovement = lastMovement;
           
             if(this.motionService.getCharacteristic(Characteristic.MotionDetected).value){
           
@@ -297,6 +300,8 @@ class CameraAccessory {
           //store last value to accessory.context and check again with refresh 5s
         
           refresh = 5;
+          
+          debug(this.accessory.displayName + ': Init movement detection');
           
           this.accessory.context.lastMovement = lastMovement;
         
@@ -379,7 +384,7 @@ class CameraAccessory {
         
       debug(this.accessory.displayName + ' (MQTT): Subscribed!');
       
-      this.logger.info(this.accessory.displayName + ' (MQTT): MQTT connected and listening on port ' + this.accessory.context.mqttConfig.port);
+      this.logger.info(this.accessory.displayName + ' (MQTT): MQTT connected and listening on port ' + this.mqttConfig.port);
       
       this.handleMessages();
         
@@ -453,22 +458,25 @@ class CameraAccessory {
       let imageSource = this.videoConfig.stillImageSource;
     
       let img;
-    
-      if(!this.mqttConfig.recordOnMovement){
-    
-        this.logger.info(this.accessory.displayName + ' (MQTT): Capturing imgage...');
-        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t 1 -frames: 1 -s '+ resolution + ' -f image2 -y ' + this.configPath + '/out.jpg').split(' '), {env: process.env});  
-    
+      
+      let recordOnMovement = this.mqttConfig ? this.mqttConfig.recordOnMovement : this.ftpConfig.recordOnMovement;
+      let recordVideoSize = this.mqttConfig ? this.mqttConfig.recordVideoSize : this.ftpConfig.recordVideoSize;
+      
+      if(recordOnMovement){
+        
+        this.logger.info(this.accessory.displayName + ': Capturing video...');
+        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});
+        
       } else {
-    
-        this.logger.info(this.accessory.displayName + ' (MQTT): Capturing video...');
-        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + this.mqttConfig.recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});
-    
+        
+        this.logger.info(this.accessory.displayName + ': Capturing imgage...');
+        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t 1 -frames: 1 -s '+ resolution + ' -f image2 -y ' + this.configPath + '/out.jpg').split(' '), {env: process.env});  
+        
       }
     
       img.stdout.on('error', error => {
     
-        this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while fetching img');
+        this.logger.error(this.accessory.displayName + ': An error occured while fetching img');
         debug(error);
     
       });
@@ -482,7 +490,7 @@ class CameraAccessory {
         
         } catch(err){
     
-          this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while sending notification via Telegram');    
+          this.logger.error(this.accessory.displayName + ': An error occured while sending notification via Telegram');    
           debug(err);
         
         }    
@@ -491,7 +499,7 @@ class CameraAccessory {
   
     } catch(err) {
   
-      this.logger.error(this.accessory.displayName + ' (MQTT): An error occured while capturing img!');
+      this.logger.error(this.accessory.displayName + ': An error occured while capturing img!');
       debug(err);
   
     }
@@ -1179,20 +1187,26 @@ class CameraAccessory {
       form.append('chat_id', chatID);
     
       if(message){
+      
+        message = this.accessory.displayName + ': ' + message;
 
         form.append('text', message);
         form.append('parse_mode', 'Markdown');
         request.path = '/bot' + token + '/sendMessage'; 
     
-      } else if(!this.mqttConfig.recordOnMovement){
-    
-        form.append('photo', fs.createReadStream(this.configPath + '/out.jpg'));
-        request.path = '/bot' + token + '/sendPhoto';
-    
       } else {
     
-        form.append('video', fs.createReadStream(this.configPath + '/out.mp4'));  
-        request.path = '/bot' + token + '/sendVideo';
+        if((this.mqttConfig && this.mqttConfig.recordOnMovement) || (this.ftpConfig && this.ftpConfig.recordOnMovement)){
+
+          form.append('video', fs.createReadStream(this.configPath + '/out.mp4'));  
+          request.path = '/bot' + token + '/sendVideo';
+         
+        } else {
+        
+          form.append('photo', fs.createReadStream(this.configPath + '/out.jpg'));
+          request.path = '/bot' + token + '/sendPhoto';
+        
+        }
     
       }
       

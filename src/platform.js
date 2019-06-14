@@ -209,18 +209,20 @@ CameraUI.prototype = {
         rejectUnauthorized: false
       };
       
-    accessory.context.ftp = {
+    accessory.context.ftpConfig = {
       active: object.ftp.active||false,
       host: object.ftp.host,
       username: object.ftp.username,
       password: object.ftp.password,
       secure: object.ftp.secure||false,
       absolutePath: object.ftp.absolutePath||'/',
-      movementDuration: object.ftp.movementDuration||20,  
+      movementDuration: object.ftp.movementDuration||20, 
+      recordOnMovement: object.ftp.recordOnMovement||false,
+      recordVideoSize: object.ftp.recordVideoSize||30
     };
     
-    if(!accessory.context.ftp.active||!accessory.context.ftp.host||!accessory.context.ftp.username||!accessory.context.ftp.password)
-      accessory.context.ftp = false;
+    if(!accessory.context.ftpConfig.active||!accessory.context.ftpConfig.host||!accessory.context.ftpConfig.username||!accessory.context.ftpConfig.password)
+      accessory.context.ftpConfig = false;
     
     accessory.context.videoConfig = {
       source: object.videoConfig.source,
