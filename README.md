@@ -14,7 +14,7 @@
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/hbcameraui.GIF" align="right" alt="HomeKit Overview" width="270px" height="541px">
 
-This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your RTSP Cameras with MQTT (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. 
+This is a dynamic platform plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your RTSP Cameras with MQTT (motion), FTP (motion), GUI (Access to stream via http), Telegram notification and FakeGato Support. 
 
 This Plugin creates one accessory with two services. A camera service to access your camera via RTSP and a Motion Sensor service with FakeGato functionality to check the last movement and more. It creates also some custom characteristics to switch camera settings, eg SSH, FTP, Telnet etc within 3rd party apps like Elgato EVE. _(Custom Characteristics only for YI Cameras with YI-HACK v4)_
 
@@ -26,8 +26,11 @@ Last but not least, you can activate "GUI" to access the Stream via webbrowser o
 
 - <u>Installation<u>
    * [Installation NPM](https://github.com/SeydX/homebridge-camera-ui#installation-instructions)
-   * [OS instructions FFmpeg](https://github.com/SeydX/homebridge-camera-ui#os-instructions-ffmpeg)
-- Configuration
+- <u>OS Instructions for FFMPEG<u>
+   * [Mac OS](https://github.com/SeydX/homebridge-camera-ui#mac-os)
+   * [Window](https://github.com/SeydX/homebridge-camera-ui#windows)
+   * [Linux](https://github.com/SeydX/homebridge-camera-ui#linux)
+- <u>Configuration<u>
    * [Explanation](https://github.com/SeydX/homebridge-camera-ui/blob/master/docs/CONFIG.md)
    * [Basic Camera Config](https://github.com/SeydX/homebridge-camera-ui#basic-configuration)
    * [Basic Camera Config + MQTT](https://github.com/SeydX/homebridge-camera-ui#movement-configuration-mqtt)
@@ -325,7 +328,7 @@ Add FFmpeg to packages
 
 There are a few factors involved. To know why the stream arrives delayed or choppy, the following points should be considered.
 
-**What kind of system is it?**
+**What kind of system is it?** 
 
 It seems, the slower the system, the slower the stream
  
