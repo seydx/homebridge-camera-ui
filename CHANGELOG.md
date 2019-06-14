@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 - 2019-06-14
+- Bugfixes
+- Added FTP as a new possibility for movement detection
+- GUI improvements
+
 ## 2.0.7 -2019-06-13
 - Bugfixes
 - Added possibility to add "vcodec copy" to stream params
