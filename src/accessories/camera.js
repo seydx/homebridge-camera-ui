@@ -179,7 +179,12 @@ class CameraAccessory {
     } else if (this.ftpConfig){
     
       this.createCameraSensor();
-      this.handleFTP();
+      
+      setTimeout(() => {
+      
+        this.handleFTP();
+      
+      }, this.randomIntInc(4,11) * 1000);  //to avoid multiple connections on the same time if same ftp server
     
     }
 
@@ -351,13 +356,17 @@ class CameraAccessory {
     
     } finally {
     
-      if(client && ftpLogged)
+      if(ftpLogged)
         client.close();
       
       setTimeout(this.handleFTP.bind(this), refresh * 1000);
     
     }
   
+  }
+  
+  randomIntInc(low, high) {
+    return Math.floor(Math.random() * (high - low + 1) + low);
   }
 
   handleMQTT(){
@@ -1317,6 +1326,3 @@ class CameraAccessory {
 }
 
 module.exports = CameraAccessory;
-
-
-
