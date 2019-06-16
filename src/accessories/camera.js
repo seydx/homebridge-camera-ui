@@ -332,9 +332,13 @@ class CameraAccessory {
       }
          
     } catch(err) {
-     
-      this.logger.error(this.accessory.displayName + ' (FTP): An error occured with FTP Server!');
-      debug(err);
+
+      if(!(err.message && err.message.includes('421'))){
+
+        this.logger.error(this.accessory.displayName + ' (FTP): An error occured with FTP Server!');
+        debug(err);
+
+      }
     
     } finally {
     
@@ -1236,7 +1240,9 @@ class CameraAccessory {
       
         debug(this.accessory.displayName + ': Sending text message...');
       
-        message = this.accessory.displayName + ': ' + message;
+        let name = this.accessory.displayName.replace(/_/g,' ');
+
+        message = name + ': ' + message;
 
         form.append('text', message);
         form.append('parse_mode', 'Markdown');
