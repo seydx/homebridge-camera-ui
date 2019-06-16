@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.7 - 2019-06-17
+- Notifier Bugfix
+- Ignore error 421
+- Added auto remove of captured files (if setted up in config.json)
 
 ## 2.1.6 - 2019-06-16
 - GUI Bugfix (Recordings)
