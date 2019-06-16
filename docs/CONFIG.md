@@ -102,7 +102,8 @@ Below you can see which parameters are recommend or optional.
             "startMessage": "motion_start",
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
+            "interval": 120
           }
         }
       ]
@@ -120,6 +121,7 @@ Below you can see which parameters are recommend or optional.
 | password |  |  Password for the MQTT Service (If no password setted up, just leave blank) |
 | recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
 | recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
+| interval |  | The interval in seconds to prevent plugin to send new notifications (default: 0 = false) |
 
 ## FTP Config
 
@@ -154,7 +156,8 @@ Below you can see which parameters are recommend or optional.
             "absolutePath":"Recordings",
             "movementDuration":20,
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
+            "interval": 120
           }
         }
       ]
@@ -174,6 +177,7 @@ Below you can see which parameters are recommend or optional.
 | movementDuration |  | Time in seconds to hold the sensor on "movement detected" (default: 20s) |
 | recordOnMovement |  | Capture video if movement detected and store to eg /var/homebridge/out.mp4 (default: out.jpg) |
 | recordVideoSize |  | Video size in seconds for 'recordOnMovement' |
+| interval |  | The interval in seconds to prevent plugin to send new notifications (default: 0 = false) |
 
 ![HomeKit](/images/homebridge-yi-cam-homekit.png)
 
@@ -258,8 +262,7 @@ Below you can see which parameters are recommend or optional.
         "token":"TelegramToken",
         "chatID":"TelegramChatID",
         "motion_start":"Motion *detected*",
-        "motion_stop":"*No* motion",
-        "interval":60
+        "motion_stop":"*No* motion"
       }
     }
   ]
@@ -273,4 +276,3 @@ Below you can see which parameters are recommend or optional.
 | chatID | **X** | Telegram Chat ID |
 | motion_start |  | Own message when motion sensor triggers on (if you dont want to get this notification, just remove from config) |
 | motion_stop |  | Own message when motion sensor triggers off (if you dont want to get this notification, just remove from config) |
-| interval |  | The interval in seconds to prevent plugin to send new notifications (default: 0 = false) |
