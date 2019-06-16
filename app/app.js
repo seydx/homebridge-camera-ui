@@ -74,7 +74,7 @@ class GUI {
     
     app.use(helmet());
         
-    let port = this.normalizePort(this.gui    .port);
+    let port = this.normalizePort(this.gui.port);
     app.set('port', port);
 
     // view engine setup
@@ -92,7 +92,7 @@ class GUI {
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(flash());
     app.use(session({
-      secret: this.gui    .username + this.gui    .password,
+      secret: this.gui.username + this.gui.password,
       resave: false,
       saveUninitialized: true,
       cookie: {
@@ -199,9 +199,9 @@ class GUI {
   
   createStreamSocket(){
     
-    this.STREAM_SECRET = this.gui    .secret;
+    this.STREAM_SECRET = this.gui.secret;
     this.STREAM_PORT = this.generateRandomInteger(8100,8900);
-    this.WEBSOCKET_PORT = this.gui    .wsport||this.generateRandomInteger(8100,8900);
+    this.WEBSOCKET_PORT = this.gui.wsport||this.generateRandomInteger(8100,8900);
 
     // Websocket Server
     this.socketServer = new WebSocket.Server({port: this.WEBSOCKET_PORT, perMessageDeflate: false});
@@ -418,7 +418,7 @@ class GUI {
 
       debug(this.currentPlayer + ': Start streaming - Source: ' + this.currentVideoConfig.source);
  
-      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.gui    .secret + ' -loglevel quiet';
+      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.gui.secret + ' -loglevel quiet';
   
       debug('Streaming command: ' + cmd);
   
