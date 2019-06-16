@@ -68,7 +68,7 @@ module.exports = (platform) => {
           
           if (err) {
           
-            platform.logger.error(req.params.name + ': An error occured while removing all files!');
+            platform.logger.error(req.params.name + ': An error occured while reading directory to remove all files!');
             platform.debug(err);
           
             return res.status(500).send(err);
@@ -76,19 +76,23 @@ module.exports = (platform) => {
           }
           
           for (const file of files) {
-           
-            fs.unlink(path.join(directoryPath, file), err => {
-           
-              if (err) {
-          
-                platform.logger.error(req.params.name + ': An error occured while removing ' + file);
-                platform.debug(err);
-          
-                return res.status(500).send(err);
-          
-              }
             
-            });
+            if(file.includes(camera.name)){
+              
+              fs.unlink(path.join(directoryPath, file), err => {
+           
+                if (err) {
+          
+                  platform.logger.error(req.params.name + ': An error occured while removing ' + file);
+                  platform.debug(err);
+          
+                  return res.status(500).send(err);
+          
+                }
+            
+              });
+              
+            }
          
           }
           
