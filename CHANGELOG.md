@@ -5,6 +5,7 @@
 - FTP Bugfix
 - Improved recording (movement detection)
 - Telegram Bugfix
+- "Interval" (prevent sending new notifications) was moved from Notifier to MQTT/FTP (see [Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/example-config.json#L75)). Now it is possible to add interval for each camera instead of for all together
 
 ## 2.1.4 - 2019-06-15
 - FTP Bugfix
