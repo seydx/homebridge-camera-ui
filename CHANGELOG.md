@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 2.1.5 - 2019-06-16
+- FTP Bugfix
+- Improved recording (movement detection)
+- Telegram Bugfix
+
 ## 2.1.4 - 2019-06-15
 - FTP Bugfix
 
