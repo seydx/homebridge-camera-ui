@@ -145,6 +145,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
             "recordVideoSize": 30
+            "interval": 120
           }
         }
       ]
@@ -188,6 +189,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
             "movementDuration":20,
             "recordOnMovement": true,
             "recordVideoSize": 30
+            "interval": 120
           }
         }
       ]
@@ -352,6 +354,7 @@ pre-formatted fixed-width code block
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
             "recordVideoSize": 30
+            "interval": 120
           }
         }
       ],
@@ -360,8 +363,7 @@ pre-formatted fixed-width code block
         "token":"TelegramToken",
         "chatID":"TelegramChatID",
         "motion_start":"Motion *detected*",
-        "motion_stop":"*No* motion",
-        "interval":0
+        "motion_stop":"*No* motion"
       }
     }
   ]
