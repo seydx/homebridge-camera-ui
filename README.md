@@ -237,7 +237,8 @@ You don't need to "activate" the camera(s) if you want only access the camera ov
         "username": "MyUsername",
         "password": "MySuperSecretPassword",
         "port": 3000,
-        "wsport": 8100
+        "wsport": 8100,
+        "removeAfter": 1440
       }
     }
   ]
