@@ -52,7 +52,8 @@ function CameraUI (log, config, api) {
     password: this.config.gui.password,
     port: this.config.gui.port||3000,
     wsport: this.config.gui.wsport,
-    debug: this.config.debug||false
+    debug: this.config.debug||false,
+    removeAfter: this.config.gui.removeAfter||false
   };
   
   this.config.gui.secret = this.config.gui.username + this.config.gui.password; 
@@ -184,7 +185,8 @@ CameraUI.prototype = {
       startMessage: object.mqtt.startMessage||'motion_start',
       stopMessage: object.mqtt.stopMessage||'motion_stop',
       recordOnMovement: object.mqtt.recordOnMovement||false,
-      recordVideoSize: object.mqtt.recordVideoSize||30
+      recordVideoSize: object.mqtt.recordVideoSize||30,
+      interval: object.mqtt.interval||0
     };
     
     if(!accessory.context.mqttConfig.active||!accessory.context.mqttConfig.host)

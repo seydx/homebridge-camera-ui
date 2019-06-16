@@ -3,6 +3,7 @@
 const debug = require('debug')('GUI');
 const http = require('http');
 const spawn = require('child_process').spawn;
+const fs = require('fs');
 
 //express
 const favicon = require('serve-favicon');
@@ -22,6 +23,7 @@ const WebSocket = require('ws');
 const timeout = ms => new Promise(res => setTimeout(res, ms));
 
 class GUI {
+  
   constructor (platform, config) {
     
     debug.enabled = config.debug;
@@ -72,7 +74,7 @@ class GUI {
     
     app.use(helmet());
         
-    let port = this.normalizePort(this.config.gui.port);
+    let port = this.normalizePort(this.gui    .port);
     app.set('port', port);
 
     // view engine setup
@@ -90,7 +92,7 @@ class GUI {
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(flash());
     app.use(session({
-      secret: this.config.gui.username + this.config.gui.password,
+      secret: this.gui    .username + this.gui    .password,
       resave: false,
       saveUninitialized: true,
       cookie: {
@@ -176,6 +178,11 @@ class GUI {
         : 'port ' + addr.port;
   
       this.logger.info('GUI: Listening on ' + bind);
+      
+      this.stopRemove = false;
+      
+      if(this.gui.removeAfter)
+        this.removeHandler();
 
     });
 
@@ -183,6 +190,8 @@ class GUI {
 
       debug('Close GUI');
       this.server = false;
+      
+      this.stopRemove = true;
 
     });
 
@@ -190,9 +199,9 @@ class GUI {
   
   createStreamSocket(){
     
-    this.STREAM_SECRET = this.config.gui.secret;
+    this.STREAM_SECRET = this.gui    .secret;
     this.STREAM_PORT = this.generateRandomInteger(8100,8900);
-    this.WEBSOCKET_PORT = this.config.gui.wsport||this.generateRandomInteger(8100,8900);
+    this.WEBSOCKET_PORT = this.gui    .wsport||this.generateRandomInteger(8100,8900);
 
     // Websocket Server
     this.socketServer = new WebSocket.Server({port: this.WEBSOCKET_PORT, perMessageDeflate: false});
@@ -409,7 +418,7 @@ class GUI {
 
       debug(this.currentPlayer + ': Start streaming - Source: ' + this.currentVideoConfig.source);
  
-      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.config.gui.secret + ' -loglevel quiet';
+      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.gui    .secret + ' -loglevel quiet';
   
       debug('Streaming command: ' + cmd);
   
@@ -439,6 +448,103 @@ class GUI {
         callback();
 
     }
+
+  }
+  
+  async removeHandler(){
+
+    try {
+
+      const directoryPath = path.join(__dirname + '/public', 'recordings');
+      
+      let files = await this.readDir(directoryPath);
+      
+      for(const file of files){
+
+        if(file.includes('.mp4')){
+
+          let stats = await this.readFile(directoryPath, file);
+        
+          let birthtime = moment(stats.birthtime).unix();
+          let now = moment().unix();
+          let removeAfter = this.gui.removeAfter * 60;
+          
+          if((now - birthtime) >= removeAfter){
+          
+            debug('GUI: ' + file + ' reached max time of ' + (removeAfter/60) + ' minutes! Removing..');
+            
+            await this.removeFile(directoryPath, file);
+          
+            debug('GUI: ' + file + ' removed');
+          
+          }
+        
+        }
+
+      }
+
+    } catch(err){
+	
+      this.logger.error('GUI: An error occured with remove handler!');
+      debug(err);
+	
+    } finally {
+
+      if(!this.stopRemove)
+        setTimeout(this.removeHandler.bind(this), 10 * 60 * 1000);
+
+    }
+
+  }
+  
+  readDir(dir){
+
+    return new Promise((resolve, reject) => {
+      
+      fs.readdir(dir, (err, files) => {
+            
+        if (err)
+          return reject(err);
+    
+        resolve(files);
+        
+      });
+
+    });
+
+  }
+  
+  readFile(dir, file){
+
+    return new Promise((resolve, reject) => {
+
+      fs.stat(dir + '/' + file, function(err,stats){
+    
+        if(err) 
+          return reject(err);
+      
+        resolve(stats);
+      
+      });
+
+    });
+
+  }
+  
+  removeFile(dir, file){
+
+    return new Promise((resolve, reject) => {
+
+      fs.unlink(path.join(dir, file), err => {
+   
+        if (err)
+          return reject(err);
+          
+        resolve(true);
+    
+      });
+
+    });
 
   }
   

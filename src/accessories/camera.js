@@ -492,7 +492,7 @@ class CameraAccessory {
           if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
             
-          if(recordOnMovement){
+          if(recordOnMovement && this.config.gui){
           
             let fileName = this.accessory.displayName + '_' + Date.now() + '.mp4';
             let destDir = __dirname.split('/src/accessories')[0] + '/app/public/recordings/';
@@ -1274,8 +1274,10 @@ class CameraAccessory {
         this.allowFile = true;
       
       let interval = this.mqttConfig ? this.mqttConfig.interval : this.ftpConfig.interval;
-
+      
       if(interval && this.lastNotification){
+      
+        debug(this.accessory.displayName + ': Interval: ' + interval + 's');
       
         if((this.lastNotification + interval) > this.now){
 
@@ -1306,25 +1308,17 @@ class CameraAccessory {
      
         if(err) reject(err);
      
-        if(res.statusCode < 200 || res.statusCode > 200){
-          
-          if(!message)
-            this.allowFile = false;
-          
-          reject(this.accessory.displayName + ':Error - Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
-          
-        } else {
-          
-          this.lastNotification = moment().unix();
-              
-          debug(this.accessory.displayName + ': Successfully send!');
+        if(!message)
+          this.allowFile = false;
      
-          if(!message)
-            this.allowFile = false;
-     
-          resolve(res);
+        if(res.statusCode < 200 || res.statusCode > 200)
+          return reject(this.accessory.displayName + ':Error - Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
+          
+        this.lastNotification = moment().unix();
               
-        }
+        debug(this.accessory.displayName + ': Successfully send!');
+     
+        resolve(res);
       
       });
       
