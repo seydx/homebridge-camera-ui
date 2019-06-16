@@ -81,7 +81,8 @@
         "username": "MyUsername",
         "password": "MySuperSecretPassword",
         "port": 3000,
-        "wsport": 8100
+        "wsport": 8100,
+        "removeAfter": 1440
       },
       "notifier":{
         "active":true,
