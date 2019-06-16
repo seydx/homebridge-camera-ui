@@ -43,8 +43,7 @@ function CameraUI (log, config, api) {
     token: this.config.notifier.token, 
     chatID: this.config.notifier.chatID,
     motion_start: this.config.notifier.motion_start||'',
-    motion_stop: this.config.notifier.motion_stop||'',
-    interval: this.config.notifier.interval||0
+    motion_stop: this.config.notifier.motion_stop||''
   };
   
   this.config.gui = {
@@ -218,7 +217,8 @@ CameraUI.prototype = {
       absolutePath: object.ftp.absolutePath||'/',
       movementDuration: object.ftp.movementDuration||20, 
       recordOnMovement: object.ftp.recordOnMovement||false,
-      recordVideoSize: object.ftp.recordVideoSize||30
+      recordVideoSize: object.ftp.recordVideoSize||30,
+      interval: object.ftp.interval||0
     };
     
     if(!accessory.context.ftpConfig.active||!accessory.context.ftpConfig.host||!accessory.context.ftpConfig.username||!accessory.context.ftpConfig.password)

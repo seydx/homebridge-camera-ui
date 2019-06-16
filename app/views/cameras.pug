@@ -17,8 +17,10 @@ block content
           if camera.ping
             a.p-4.cameraItems(href=camera.url)
               img(src='/images/yi_logo.png', style='margin-top: -4px;margin-right: 5px;', width='20px')
-              | !{camera.name} 
+              | !{camera.name}
               span.circleGreen
           else 
-            a.p-4.cameraItems(href=camera.url)= camera.name + ' (Offline)'
+            a.p-4.cameraItems(href=camera.url)
+              img(src='/images/yi_logo.png', style='margin-top: -4px;margin-right: 5px;', width='20px')
+              | !{camera.name} (Offline)
               span.circleRed

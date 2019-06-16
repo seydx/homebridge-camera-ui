@@ -171,22 +171,8 @@ class CameraAccessory {
     this.createCameraControlService();
     this.createStreamControllers(options);
 
-    if(this.mqttConfig){
-    
+    if(this.mqttConfig||this.ftpConfig)
       this.createCameraSensor();
-      this.handleMQTT();
-    
-    } else if (this.ftpConfig){
-    
-      this.createCameraSensor();
-      
-      setTimeout(() => {
-      
-        this.handleFTP();
-      
-      }, this.randomIntInc(4,11) * 1000);  //to avoid multiple connections on the same time if same ftp server
-    
-    }
 
     process.on('SIGTERM', async () => {
       
@@ -272,7 +258,6 @@ class CameraAccessory {
     client.ftp.verbose = false;
     
     let refresh = 10;
-    let ftpLogged = false;
     
     try {
       
@@ -282,8 +267,6 @@ class CameraAccessory {
         password: this.ftpConfig.password,
         secure: this.ftpConfig.secure
       });
-      
-      ftpLogged = true;
         
       await client.cd(this.ftpConfig.absolutePath);
         
@@ -314,7 +297,7 @@ class CameraAccessory {
           if(lastMovement > this.accessory.context.lastMovement){
             
             //motion detected
-            //check again in 20s
+            //check again in this.ftpConfig.movementDuration (s)
             
             refresh = this.ftpConfig.movementDuration;
             
@@ -337,9 +320,8 @@ class CameraAccessory {
         
         } else {
         
-          //store last value to accessory.context and check again with refresh 5s
-        
-          refresh = 5;
+          //store last value to accessory.context
+          //check again in 10s default
           
           debug(this.accessory.displayName + ': Init movement detection');
           
@@ -356,17 +338,12 @@ class CameraAccessory {
     
     } finally {
     
-      if(ftpLogged)
-        client.close();
+      client.close();
       
       setTimeout(this.handleFTP.bind(this), refresh * 1000);
     
     }
   
-  }
-  
-  randomIntInc(low, high) {
-    return Math.floor(Math.random() * (high - low + 1) + low);
   }
 
   handleMQTT(){
@@ -475,24 +452,27 @@ class CameraAccessory {
     try {
       
       let resolution = this.videoConfig.maxWidth + 'x' + this.videoConfig.maxHeight;
-      let imageSource = this.videoConfig.stillImageSource;
     
-      let img;
+      let img, cmd;
       
       let recordOnMovement = this.mqttConfig ? this.mqttConfig.recordOnMovement : this.ftpConfig.recordOnMovement;
       let recordVideoSize = this.mqttConfig ? this.mqttConfig.recordVideoSize : this.ftpConfig.recordVideoSize;
       
       if(recordOnMovement){
-        
-        this.logger.info(this.accessory.displayName + ': Capturing video...');
-        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t ' + recordVideoSize + ' -s '+ resolution + ' -f mp4 -y ' + this.configPath + '/out.mp4').split(' '), {env: process.env});
+
+        this.logger.info(this.accessory.displayName + ': Capturing video...');  
+
+        cmd = '-y -t ' + recordVideoSize + ' ' + this.videoConfig.source + ' -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ' + this.configPath + '/out.mp4';
         
       } else {
         
-        this.logger.info(this.accessory.displayName + ': Capturing imgage...');
-        img = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t 1 -frames: 1 -s '+ resolution + ' -f image2 -y ' + this.configPath + '/out.jpg').split(' '), {env: process.env});  
+        this.logger.info(this.accessory.displayName + ': Capturing image...');
+        
+        cmd = '-y -t 1 ' + this.videoConfig.stillImageSource + ' -frames: 1 -s '+ resolution + ' -f image2 ' + this.configPath + '/out.jpg';
         
       }
+      
+      img = spawn(this.videoConfig.videoProcessor, cmd.split(' '), {env: process.env});
     
       img.stdout.on('error', error => {
     
@@ -506,7 +486,7 @@ class CameraAccessory {
         try {
         
           if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
-            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false, true);
+            await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
             
           if(recordOnMovement){
           
@@ -1142,6 +1122,17 @@ class CameraAccessory {
     this.services.push(this.motionService);
 
     this.refreshHistory();
+    
+    if(this.mqttConfig){
+      
+      this.handleMQTT();
+    
+    } else if (this.ftpConfig){
+      
+      //to avoid multiple connections on the same time
+      setTimeout(this.handleFTP.bind(this), this.randomFloat(0,10) * 1000);
+    
+    }
 
   }
  
@@ -1225,7 +1216,7 @@ class CameraAccessory {
 
   }
   
-  sendTelegram(token,chatID,message,origin){
+  sendTelegram(token,chatID,message){
     
     return new Promise((resolve,reject) => {
   
@@ -1243,11 +1234,9 @@ class CameraAccessory {
     
       if(message){
       
-        debug(this.accessory.displayName + ': Sending message...');
+        debug(this.accessory.displayName + ': Sending text message...');
       
         message = this.accessory.displayName + ': ' + message;
-
-        this.allowVideo = true;
 
         form.append('text', message);
         form.append('parse_mode', 'Markdown');
@@ -1275,52 +1264,72 @@ class CameraAccessory {
     
       }
       
-      if(!origin && this.config.notifier.interval && this.lastNotification && (this.lastNotification + this.config.notifier.interval) > this.now){
-
-        debug(this.accessory.displayName + ': Prevent sending new message, interval not reached!');
-
-        if(message)
-          this.allowVideo = false;
-
-        resolve(true);
-
-      } else {
+      if(message||(!this.config.notifier.motion_start && !this.config.notifier.motion_stop))
+        this.allowFile = true;
       
-        if(origin && !this.allowVideo){
-        
-          debug(this.accessory.displayName + ': Prevent sending captured file, interval not reached!');
-        
-          return resolve(true);
-        
-        }
+      let interval = this.mqttConfig ? this.mqttConfig.interval : this.ftpConfig.interval;
 
-        form.submit(request, (err, res) => {
-     
-          if(err) reject(err);
+      if(interval && this.lastNotification){
+      
+        if((this.lastNotification + interval) > this.now){
+
+          if(message){
+
+            debug(this.accessory.displayName + ': Prevent sending new text message, interval not reached!');
+            this.allowFile = false;
+
+            return resolve(true);
+ 
+          } else {
           
-          if(origin && this.allowVideo)
-            this.allowVideo = false;
+            if(!this.allowFile){
+              
+              debug(this.accessory.displayName + ': Prevent sending new captured file, interval not reached!');
+              
+              return resolve(true);
             
-          this.lastNotification = moment().unix();
-     
-          if(res.statusCode < 200 || res.statusCode > 200){
-          
-            this.allowVideo = false;
-          
-            reject('Error! Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
+            }
           
           }
+            
+        }
+      
+      }
+      
+      form.submit(request, (err, res) => {
+     
+        if(err) reject(err);
+     
+        if(res.statusCode < 200 || res.statusCode > 200){
           
+          if(!message)
+            this.allowFile = false;
+          
+          reject(this.accessory.displayName + ':Error - Code: ' + res.statusCode + ' - Message: ' + res.statusMessage);
+          
+        } else {
+          
+          this.lastNotification = moment().unix();
+              
           debug(this.accessory.displayName + ': Successfully send!');
      
+          if(!message)
+            this.allowFile = false;
+     
           resolve(res);
+              
+        }
       
-        });
-
-      }
+      });
       
     });
 
+  }
+  
+  randomFloat(low, high) {
+   
+    return parseFloat((Math.random() * (high - low + 1) + low).toFixed(2)) + 1;
+  
   }
 
 }
