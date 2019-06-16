@@ -1,6 +1,9 @@
 # Changelog
 
 
+## 2.1.6 - 2019-06-16
+- GUI Bugfix (Recordings)
+
 ## 2.1.5 - 2019-06-16
 - FTP Bugfix
 - Improved recording (movement detection)
