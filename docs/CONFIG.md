@@ -212,7 +212,8 @@ Below you can see which parameters are recommend or optional.
         "username": "MyUsername",
         "password": "MySuperSecretPassword",
         "port": 3000,
-        "wsport": 8100
+        "wsport": 8100,
+        "removeAfter": 1440
       }
     }
   ]
@@ -226,6 +227,7 @@ Below you can see which parameters are recommend or optional.
 | password | **X** | Password for GUI access |
 | port |  | Port for the GUI to listen (default: 3000) |
 | wsport |  | Port for the websocket (default:8100-8900) |
+| removeAfter |  | Time in minutes to automatically remove captured files (default: false) |
 
 ![Login](/images/homebridge-yi-cam-login.png)
 
