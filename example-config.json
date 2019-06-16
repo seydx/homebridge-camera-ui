@@ -47,7 +47,8 @@
             "startMessage": "motion_start",
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
+            "interval": 0
           }
         },
         {
@@ -70,7 +71,8 @@
             "absolutePath":"Recordings",
             "movementDuration":20,
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
+            "interval": 120
           }
         }
       ],
