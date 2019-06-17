@@ -5,7 +5,7 @@ Below you can see which parameters are recommend or optional.
  
  ## Main Config
 
-```
+```json
 {
   "bridge": {
     ...
@@ -69,7 +69,7 @@ Below you can see which parameters are recommend or optional.
 
 ## MQTT Config
 
-```
+```json
 {
   "bridge": {
     ...
@@ -125,7 +125,7 @@ Below you can see which parameters are recommend or optional.
 
 ## FTP Config
 
-```
+```json
 {
   "bridge": {
     ...
@@ -183,7 +183,7 @@ Below you can see which parameters are recommend or optional.
 
 ## GUI Config
 
-```
+```json
 {
   "bridge": {
     ...
@@ -235,7 +235,7 @@ Below you can see which parameters are recommend or optional.
 
 ## Notifier Config
 
-```
+```json
 {
   "bridge": {
     ...
