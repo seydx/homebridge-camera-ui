@@ -105,7 +105,7 @@ See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/e
  
 This plugin offers two possibilities to get movement detection on your camera. MQTT and FTP.
 
-- For MQTT, the camera need to have this capability, otherwise it is not possible to use MQTT for movement detection. The plugin listen to the server for the start and stop message setted up in config.json.
+- For MQTT, the camera need to have this capability, otherwise it is not possible to use MQTT for movement detection. You also need a MQTT Broker like [Mosquitto](https://github.com/eclipse/mosquitto). The plugin listen to the server for the start and stop message setted up in config.json.
 
 - For FTP, the camera need to have the capability to upload images to a FTP server by movement detection. If your camera has this ability, the plugin can scan the folder where the images are uploaded. The plugin compare all images and take the latest uploaded image and use the timestamp for movement detection. (Only if the latest image is newer than the image before stored in accessory cache). You can also set up a "duration" to hold the "movement detected" state.
  
