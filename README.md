@@ -144,7 +144,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
             "startMessage": "motion_start",
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
             "interval": 120
           }
         }
@@ -188,7 +188,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
 	        "absolutePath":"Recordings",
             "movementDuration":20,
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
             "interval": 120
           }
         }
@@ -354,7 +354,7 @@ pre-formatted fixed-width code block
             "startMessage": "motion_start",
             "stopMessage": "motion_stop",
             "recordOnMovement": true,
-            "recordVideoSize": 30
+            "recordVideoSize": 30,
             "interval": 120
           }
         }
