@@ -70,7 +70,7 @@ See [OS instructions](https://github.com/SeydX/homebridge-camera-ui/blob/master/
 
 ### Basic Configuration
 
- ```
+```json
 {
   "bridge": {
     ...
@@ -111,7 +111,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
  
  ### Movement Configuration MQTT
  
-  ```
+```json
 {
   "bridge": {
     ...
@@ -157,7 +157,7 @@ This plugin offers two possibilities to get movement detection on your camera. M
  ### Movement Configuration FTP
  
 
- ```
+```json
 {
   "bridge": {
     ...
@@ -208,7 +208,7 @@ You don't need to "activate" the camera(s) if you want only access the camera ov
 
 ### GUI Config
 
- ```
+```json
 {
   "bridge": {
     ...
@@ -259,7 +259,7 @@ For YI Cameras with YI-HACK-V4 this plugin offers custom characteristics and a "
 
 ### Yi Camera Config
 
- ```
+```json
 {
   "bridge": {
     ...
@@ -321,7 +321,7 @@ pre-formatted fixed-width code block
 
 ### Notifier Config
 
-  ```
+```json
 {
   "bridge": {
     ...
