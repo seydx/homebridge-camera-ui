@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "homebridge-camera-ui",
   "main": "index.js",
   "devDependencies": {},
@@ -36,7 +36,7 @@
     "ip": "^1.1.5",
     "moment": "^2.24.0",
     "fakegato-history": "^0.5.3",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "cookie-parser": "^1.4.4",
     "express": "4.16.4",
     "http-errors": "^1.7.2",
@@ -47,6 +47,7 @@
     "connect-flash": "^0.1.1",
     "helmet": "^3.18.0",
     "tcp-ping": "^0.1.1",
-    "basic-ftp": "^3.6.0"
+    "basic-ftp": "^3.6.0",
+    "is-image": "^3.0.0"
   }
 }

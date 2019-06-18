@@ -6,6 +6,7 @@ const ip = require('ip');
 const moment = require('moment');
 const axios = require('axios');
 const ftp = require('basic-ftp');
+const isImage = require('is-image');
 
 const crypto = require('crypto');
 const fs = require('fs');
@@ -186,7 +187,7 @@ class CameraAccessory {
   // Services
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
   
-  async handleMotionTrigger(motionState){
+  async handleMotionTrigger(motionState, ftp){
 
     try {
     
@@ -199,8 +200,16 @@ class CameraAccessory {
           this.logger.info(this.accessory.displayName + ': Motion Detected'); 
           
           if(this.motionService.getCharacteristic(Characteristic.Record).value){
-                                          
-            this.getSnap();
+            
+            if(ftp !== null){
+            
+              this.handleSnap(ftp);
+            
+            } else {
+             
+              this.getSnap();
+            
+            }
             
           } else {
           
@@ -245,7 +254,8 @@ class CameraAccessory {
     
     } catch(err){
       
-      throw err;
+      this.logger.error(this.accessory.displayName + ': An error occured with handling motiontrigger!');
+      debug(err);
       
     }
 
@@ -271,6 +281,7 @@ class CameraAccessory {
       await client.cd(this.ftpConfig.absolutePath);
         
       let files = await client.list();
+      let allBirthtimes = [];
       let allFiles = [];
         
       for(const file of files){
@@ -280,17 +291,18 @@ class CameraAccessory {
           let birthtime = await client.lastMod(file.name);
           let newBirthtime = moment(birthtime).format('x');
             
-          allFiles.push(newBirthtime);
+          allBirthtimes.push(newBirthtime);
+          allFiles.push({name: file.name, newBirthtime: newBirthtime});
         
         }
           
       }
         
-      if(allFiles.length){
+      if(allBirthtimes.length){
           
-        allFiles = allFiles.sort((a, b) => a - b);
+        allBirthtimes = allBirthtimes.sort((a, b) => a - b);
         
-        let lastMovement = allFiles[allFiles.length-1];
+        let lastMovement = allBirthtimes[allBirthtimes.length-1];
         
         if(this.accessory.context.lastMovement !== undefined){
         
@@ -305,7 +317,27 @@ class CameraAccessory {
             
             debug(this.accessory.displayName + ' (FTP): Received new data');
             
-            await this.handleMotionTrigger(1);
+            let fileName;
+            
+            for(const aFile of allFiles)
+              if(aFile.newBirthtime === lastMovement)
+                fileName = aFile.name;
+            
+            if(this.ftpConfig.recordOnMovement){
+            
+              this.handleMotionTrigger(1, null); 
+            
+            } else {
+            
+              debug(this.accessory.displayName + ' (FTP): Downloading file from FTP server...');
+            
+              await client.download(fs.createWriteStream(this.configPath + '/out_ftp.js'), fileName);
+            
+              debug(this.accessory.displayName + ' (FTP): File downloaded!');
+            
+              this.handleMotionTrigger(1, isImage(fileName)); 
+            
+            }
           
           } else {
           
@@ -314,7 +346,7 @@ class CameraAccessory {
           
             this.accessory.context.lastMovement = lastMovement;
           
-            await this.handleMotionTrigger(0);
+            this.handleMotionTrigger(0);
           
           }
         
@@ -451,6 +483,47 @@ class CameraAccessory {
   
   }
   
+  async handleSnap(img){
+    
+    try { 
+      
+      let extraCmd = img 
+        ? ' -vcodec copy ' 
+        : ' -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ';
+        
+      let cmd = '-y -i ' + this.configPath + '/' + 'out_ftp.js' + extraCmd + this.configPath + '/' + 'out_ftp' + (img ? '.jpg' : '.mp4');
+        
+      debug(this.accessory.displayName + ': Convert command: ' + cmd);
+        
+      let convert = spawn('ffmpeg', cmd.split(' '), {env: process.env});  
+       
+      convert.on('close', async () => {
+        
+        if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
+          await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false, img ? true : false);
+            
+        if(!img){
+          
+          let fileName = this.accessory.displayName + '_' + Date.now() + '.mp4';
+          let destDir = __dirname.split('/src/accessories')[0] + '/app/public/recordings/';
+          
+          fs.copyFileSync(this.configPath + '/out_ftp.mp4', destDir + fileName);
+            
+          debug(this.accessory.displayName + ': Recorded video copied to ' + destDir + fileName);
+           
+        }
+      
+      });
+    
+    } catch(err){
+    
+      this.logger.error(this.accessory.displayName + ': An error occured with handling Snap!');
+      debug(err);
+    
+    }
+  
+  }
+  
   async getSnap(){
   
     try {
@@ -489,6 +562,8 @@ class CameraAccessory {
         
         try {
         
+          //this.pushAndSave();
+        
           if(this.config.notifier && this.motionService.getCharacteristic(Characteristic.Telegram).value)
             await this.sendTelegram(this.config.notifier.token, this.config.notifier.chatID, false);
             
@@ -500,21 +575,21 @@ class CameraAccessory {
             fs.copyFileSync(this.configPath + '/out.mp4', destDir + fileName);
             
             debug(this.accessory.displayName + ': Recorded video copied to ' + destDir + fileName);
-          
+           
           }
         
         } catch(err){
     
-          this.logger.error(this.accessory.displayName + ': An error occured while closing img spawn process');    
+          this.logger.error(this.accessory.displayName + ': An error occured while closing file spawn process');    
           debug(err);
-        
+          
         }    
         
       });
   
     } catch(err) {
   
-      this.logger.error(this.accessory.displayName + ': An error occured while capturing img!');
+      this.logger.error(this.accessory.displayName + ': An error occured while capturing file!');
       debug(err);
   
     }
@@ -545,7 +620,7 @@ class CameraAccessory {
     
     let imageSource = this.videoConfig.stillImageSource;
   
-    let ffmpeg = spawn(this.videoConfig.videoProcessor, (imageSource + ' -t 1 -s '+ resolution + ' -f image2 -').split(' '), {env: process.env});
+    let ffmpeg = spawn(this.videoConfig.videoProcessor, (imageSource  + ' -t 1 -s '+ resolution + ' -f image2 -').split(' '), {env: process.env});
   
     let imageBuffer = Buffer.alloc(0);
   
@@ -1220,7 +1295,7 @@ class CameraAccessory {
 
   }
   
-  sendTelegram(token,chatID,message){
+  sendTelegram(token,chatID,message,img){
     
     return new Promise((resolve,reject) => {
   
@@ -1252,18 +1327,30 @@ class CameraAccessory {
     
         let recordOnMovement = this.mqttConfig ? this.mqttConfig.recordOnMovement : this.ftpConfig.recordOnMovement;
     
-        if(recordOnMovement){
+        if(recordOnMovement || img === false){
         
           debug(this.accessory.displayName + ': Sending captured video...');
 
-          form.append('video', fs.createReadStream(this.configPath + '/out.mp4'));  
+          let endFile = '/out.mp4';
+          
+          if(img === false)
+            endFile = '/out_ftp.mp4';
+
+          if(ftp !== undefined)
+
+            form.append('video', fs.createReadStream(this.configPath + endFile));  
           request.path = '/bot' + token + '/sendVideo';
          
         } else {
         
           debug(this.accessory.displayName + ': Sending captured image...');
         
-          form.append('photo', fs.createReadStream(this.configPath + '/out.jpg'));
+          let endFile = '/out.jpg';
+          
+          if(img === true)
+            endFile = '/out_ftp.jpg';
+        
+          form.append('photo', fs.createReadStream(this.configPath + endFile));
           request.path = '/bot' + token + '/sendPhoto';
         
         }

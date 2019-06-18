@@ -491,7 +491,7 @@ class GUI {
     } finally {
 
       if(!this.stopRemove)
-        setTimeout(this.removeHandler.bind(this), 10 * 60 * 1000);
+        setTimeout(this.removeHandler.bind(this), 12 * 60 * 60 * 1000); //12h
 
     }
 
