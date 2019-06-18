@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.8 - 2019-06-18
+- FTP Snapshot improvements*
+- Bugfixes
+
+*If recordOnMovement false, the plugin will take the file (image or video) from the FTP server and push it as a notification instead of capturing a new snapshot
+
 ## 2.1.7 - 2019-06-17
 - Notifier Bugfix
 - Ignore error 421
