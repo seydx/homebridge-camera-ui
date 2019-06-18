@@ -201,7 +201,7 @@ class CameraAccessory {
           
           if(this.motionService.getCharacteristic(Characteristic.Record).value){
             
-            if(ftp !== null){
+            if(ftp !== undefined){
             
               this.handleSnap(ftp);
             
@@ -325,13 +325,13 @@ class CameraAccessory {
             
             if(this.ftpConfig.recordOnMovement){
             
-              this.handleMotionTrigger(1, null); 
+              this.handleMotionTrigger(1); 
             
             } else {
             
               debug(this.accessory.displayName + ' (FTP): Downloading file from FTP server...');
             
-              await client.download(fs.createWriteStream(this.configPath + '/out_ftp.js'), fileName);
+              await client.download(fs.createWriteStream(this.configPath + '/' + this.accessory.displayName + '_out_ftp.js'), fileName);
             
               debug(this.accessory.displayName + ' (FTP): File downloaded!');
             
@@ -487,11 +487,7 @@ class CameraAccessory {
     
     try { 
       
-      let extraCmd = img 
-        ? ' -vcodec copy ' 
-        : ' -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ';
-        
-      let cmd = '-y -i ' + this.configPath + '/' + 'out_ftp.js' + extraCmd + this.configPath + '/' + 'out_ftp' + (img ? '.jpg' : '.mp4');
+      let cmd = '-y -i ' + this.configPath + '/' + this.accessory.displayName + '_out_ftp.js -vcodec copy ' + this.configPath + '/' + this.accessory.displayName + '_out_ftp' + (img ? '.jpg' : '.mp4');
         
       debug(this.accessory.displayName + ': Convert command: ' + cmd);
         
@@ -507,7 +503,7 @@ class CameraAccessory {
           let fileName = this.accessory.displayName + '_' + Date.now() + '.mp4';
           let destDir = __dirname.split('/src/accessories')[0] + '/app/public/recordings/';
           
-          fs.copyFileSync(this.configPath + '/out_ftp.mp4', destDir + fileName);
+          fs.copyFileSync(this.configPath + '/' + this.accessory.displayName + '_out_ftp.mp4', destDir + fileName);
             
           debug(this.accessory.displayName + ': Recorded video copied to ' + destDir + fileName);
            
@@ -539,13 +535,13 @@ class CameraAccessory {
 
         this.logger.info(this.accessory.displayName + ': Capturing video...');  
 
-        cmd = '-y -t ' + recordVideoSize + ' ' + this.videoConfig.source + ' -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ' + this.configPath + '/out.mp4';
+        cmd = '-y -t ' + recordVideoSize + ' ' + this.videoConfig.source + ' -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.0 -crf 22 -preset ultrafast -vf scale=1280:-2 -c:a aac -strict experimental -movflags +faststart -threads 0 ' + this.configPath + '/' + this.accessory.displayName + '_out.mp4';
         
       } else {
         
         this.logger.info(this.accessory.displayName + ': Capturing image...');
         
-        cmd = '-y -t 1 ' + this.videoConfig.stillImageSource + ' -frames: 1 -s '+ resolution + ' -f image2 ' + this.configPath + '/out.jpg';
+        cmd = '-y -t 1 ' + this.videoConfig.stillImageSource + ' -frames: 1 -s '+ resolution + ' -f image2 ' + this.configPath + '/' + this.accessory.displayName + '_out.jpg';
         
       }
       
@@ -572,7 +568,7 @@ class CameraAccessory {
             let fileName = this.accessory.displayName + '_' + Date.now() + '.mp4';
             let destDir = __dirname.split('/src/accessories')[0] + '/app/public/recordings/';
           
-            fs.copyFileSync(this.configPath + '/out.mp4', destDir + fileName);
+            fs.copyFileSync(this.configPath + '/' + this.accessory.displayName + '_out.mp4', destDir + fileName);
             
             debug(this.accessory.displayName + ': Recorded video copied to ' + destDir + fileName);
            
@@ -1331,24 +1327,22 @@ class CameraAccessory {
         
           debug(this.accessory.displayName + ': Sending captured video...');
 
-          let endFile = '/out.mp4';
+          let endFile = '/' + this.accessory.displayName + '_out.mp4';
           
           if(img === false)
-            endFile = '/out_ftp.mp4';
-
-          if(ftp !== undefined)
-
-            form.append('video', fs.createReadStream(this.configPath + endFile));  
+            endFile = '/' + this.accessory.displayName + '_out_ftp.mp4';
+            
+          form.append('video', fs.createReadStream(this.configPath + endFile));  
           request.path = '/bot' + token + '/sendVideo';
          
         } else {
         
           debug(this.accessory.displayName + ': Sending captured image...');
         
-          let endFile = '/out.jpg';
+          let endFile = '/' + this.accessory.displayName + '_out.jpg';
           
           if(img === true)
-            endFile = '/out_ftp.jpg';
+            endFile = '/' + this.accessory.displayName + '_out_ftp.jpg';
         
           form.append('photo', fs.createReadStream(this.configPath + endFile));
           request.path = '/bot' + token + '/sendPhoto';
