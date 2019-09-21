@@ -48,6 +48,7 @@
     "helmet": "^3.18.0",
     "tcp-ping": "^0.1.1",
     "basic-ftp": "^3.6.0",
-    "is-image": "^3.0.0"
+    "is-image": "^3.0.0",
+    "form-data": "^2.5.1"
   }
 }
