@@ -31,9 +31,15 @@ module.exports = (platform) => {
     
       for(const camera of platform.cameras){
     
-        let protocol = camera.videoConfig.source.split('-i ')[1].split('://')[0] + '://';
-  
-        let host = camera.videoConfig.source.split(protocol)[1];
+        let source = camera.videoConfig.source.split('-i ')[1].split(' ')[0];
+        
+        if (source.startsWith('/dev/video')) {
+          // TODO add device checking
+          camera.ping = true;
+          continue;
+        }
+
+        let host = source.split('://')[1];
 
         if(host.includes('@')){
 
