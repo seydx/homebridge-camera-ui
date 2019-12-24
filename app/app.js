@@ -418,7 +418,19 @@ class GUI {
 
       debug(this.currentPlayer + ': Start streaming - Source: ' + this.currentVideoConfig.source);
  
-      let cmd = this.currentVideoConfig.source + ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.gui.secret + ' -loglevel quiet';
+      // TODO add more options
+      let vf = [];
+      if(this.currentVideoConfig.hflip)
+        vf.push('hflip');
+      if(this.currentVideoConfig.vflip)
+        vf.push('vflip');
+      if(this.currentVideoConfig.rotate)
+        vf.push('rotate=' + this.currentVideoConfig.rotate + '*(PI/180)');
+
+      let cmd = this.currentVideoConfig.source + 
+        ' -f mpegts -codec:v mpeg1video -s ' + this.currentVideoConfig.maxWidth + 'x' + this.currentVideoConfig.maxHeight + 
+        ((vf.length > 0) ? (' -vf ' + vf.join(',')) : ('')) +
+        ' -b:v 1000k -r 30 -bf 0 -codec:a mp2 -ar 44100 -ac 1 -b:a 128k http://localhost:' + this.STREAM_PORT + '/' + this.gui.secret + ' -loglevel quiet';
   
       debug('Streaming command: ' + cmd);
   
@@ -584,6 +596,7 @@ class GUI {
       packetSize: config.packetSize||1316,
       vflip: config.vflip||false,
       hflip: config.hflip||false,
+      rotate: config.rotate||0,
       mapvideo: config.mapvideo||'0:0',
       mapaudio: config.mapaudio||'0:1',
       videoFilter: config.videoFilter||'',

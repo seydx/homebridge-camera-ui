@@ -758,6 +758,7 @@ class CameraAccessory {
           let additionalCommandline = this.videoConfig.additionalCommandline;
           let mapvideo = this.videoConfig.mapvideo;
           let mapaudio = this.videoConfig.mapaudio;
+          let rotate = this.videoConfig.rotate;
 
           let videoInfo = request.video;
         
@@ -810,6 +811,9 @@ class CameraAccessory {
 
             if(this.vflip)
               vf.push('vflip');
+            
+            if(rotate)
+              vf.push('rotate=' + rotate + '*(PI/180)');
         
           }
 

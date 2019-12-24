@@ -240,6 +240,7 @@ CameraUI.prototype = {
       packetSize: object.videoConfig.packetSize||1316,
       vflip: object.videoConfig.vflip||false,
       hflip: object.videoConfig.hflip||false,
+      rotate: object.videoConfig.rotate||0,
       mapvideo: object.videoConfig.mapvideo||'0:0',
       mapaudio: object.videoConfig.mapaudio||'0:1',
       videoFilter: object.videoConfig.videoFilter||'',
