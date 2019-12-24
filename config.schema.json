@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "camera-ui",
+    "pluginAlias": "CameraUI",
     "pluginType": "platform",
     "headerDisplay": "The **ffmpeg** binary must be installed on your system for this plugin to work.",
     "footerDisplay": "For help please see the [wiki](https://github.com/SeydX/homebridge-camera-ui).",
