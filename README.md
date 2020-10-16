@@ -93,6 +93,11 @@ The default username is ``admin`` and the default password is ``admin``.
 
 See [Example Config](https://github.com/SeydX/homebridge-camera-ui/edit/master/misc/example-config.json) for more details.
 
+# Livestream
+
+To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/2b59ce5ae51204c1920c3105c44a92c16ea8bf01/misc/example-config.json#L59) for more details.
+
+
 # Usage
 
 
