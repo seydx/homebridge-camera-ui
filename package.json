@@ -1,0 +1,53 @@
+{
+  "name": "homebridge-camera-ui",
+  "version": "3.0.0",
+  "description": "Camera User Interface for Homebridge",
+  "main": "index.js",
+  "devDependencies": {},
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/seydx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/SeydX"
+    }
+  ],
+  "scripts": {
+    "postinstall": "npm install --prefix app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeydX/homebridge-camera-ui.git"
+  },
+  "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SeydX/homebridge-camera-ui/issues"
+  },
+  "homepage": "https://github.com/SeydX/homebridge-camera-ui#readme",
+  "keywords": [
+    "camera",
+    "homebridge-plugin",
+    "mqtt",
+    "ftp",
+    "http",
+    "motion",
+    "detection",
+    "ui",
+    "homebridge",
+    "doorbell"
+  ],
+  "engines": {
+    "node": ">=12.18.3",
+    "homebridge": "^1.2.0"
+  },
+  "dependencies": {
+    "debug": "^4.2.0",
+    "fs-extra": "^9.0.1",
+    "get-port": "^5.1.1",
+    "mqtt": "^4.2.1",
+    "systeminformation": "^4.27.8"
+  }
+}

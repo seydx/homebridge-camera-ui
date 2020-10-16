@@ -1,0 +1,535 @@
+{
+  "pluginAlias": "CameraUI",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "<div class='card'><div class='card-body'><h5 class='card-title'>User Interface Server</h5><p class='card-text'>You can visit the User Interface over the link below <i>(replace port with the port from your config!)</i></p><a class='btn btn-primary text-lowercase mw-100'>http://${{HOSTNAME}}:port</a></div></div><br>",
+  "footerDisplay": "For documentation please see [GitHub repository](https://github.com/SeydX/homebridge-camera-ui)",
+  "schema": {
+    "name": {
+      "title": "Name",
+      "type": "string",
+      "default": "CameraUI"
+    },
+    "port": {
+      "title": "CameraUI Port",
+      "type": "integer",
+      "description": "User Interface port"
+    },
+    "auth": {
+      "title": "Auth Mode",
+      "description": "Authentication form for the User Interface",
+      "type": "string",
+      "default": "form",
+      "oneOf": [
+        { "title": "Form", "enum": ["form"] },
+        { "title": "None", "enum": ["none"] }
+      ],
+      "required": true
+    },
+    "language": {
+      "title": "Language",
+      "type": "string",
+      "description": "Standard language for the UI.",
+      "default": "AUTO",
+      "oneOf": [
+        { "title": "AUTO", "enum": ["auto"] },
+        { "title": "DE", "enum": ["de"] },
+        { "title": "EN", "enum": ["en"] }
+      ],
+      "required": true
+    },
+    "debug": {
+      "title": "Debug",
+      "type": "boolean",
+      "default": false,
+      "description": "User Interface Debug"
+    },
+    "reset": {
+      "title": "Reset Master Credentials",
+      "description": "If checked, the master credentials will be resettet on next start.",
+      "type": "boolean",
+      "default": false
+    },
+    "mqtt": {
+      "titel": "MQTT Server",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "MQTT Status",
+          "description": "Activates MQTT Broker for MQTT-based automation. If not set, MQTT support is not started.",
+          "type": "boolean",
+          "default": false
+        },
+        "host": {
+          "title": "MQTT Server",
+          "type": "string",
+          "placeholder": "127.0.0.1",
+          "description": "Defines the hostname or IP of the MQTT broker to connect to for MQTT-based automation. If not set, MQTT support is not started."
+        },
+        "port": {
+          "title": "MQTT Port",
+          "type": "integer",
+          "placeholder": "1883",
+          "description": "The port of the MQTT broker."
+        },
+        "username": {
+          "title": "MQTT Username",
+          "type": "string",
+          "description": "The username used to connect to your MQTT broker. If not set, no authentication is used."
+        },
+        "password": {
+          "title": "MQTT Password",
+          "type": "string",
+          "description": "The password used to connect to your MQTT broker. If not set, no authentication is used."
+        },
+        "topic": {
+          "title": "MQTT Topic",
+          "type": "string",
+          "placeholder": "homebridge/motion",
+          "description": "The base MQTT topic to subscribe to."
+        },
+        "on_message": {
+          "title": "ON message",
+          "description": "MQTT On message to trigger ON state",
+          "type": "string",
+          "placeholder": "ON"
+        }
+      }
+    },
+    "http": {
+      "titel": "HTTP Server",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "HTTP Status",
+          "description": "Activates HTTP Server for HTTP-based automation. If not set, HTTP support is not started.",
+          "type": "boolean",
+          "default": false
+        },
+        "port": {
+          "title": "HTTP Port",
+          "type": "integer",
+          "placeholder": "8080",
+          "description": "The port to listen on for HTTP-based automation. If not set, HTTP support is not started."
+        },
+        "localhttp": {
+          "title": "HTTP Localhost Only",
+          "type": "boolean",
+          "description": "Only allow HTTP calls from localhost. Useful if using helper plugins that translate to HTTP.",
+          "default": false
+        }
+      }
+    },
+    "ssl": {
+      "titel": "SSL Setup",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "SSL Status",
+          "description": "Activates SSL (HTTPS) for the User Interface",
+          "type": "boolean",
+          "default": false
+        },
+        "key": {
+          "title": "Private key",
+          "type": "string",
+          "description": "Path to Private Key"
+        },
+        "cert": {
+          "title": "Certificate",
+          "type": "string",
+          "description": "Path to Certificate"
+        }
+      }
+    },
+    "options": {
+      "titel": "Options",
+      "type": "object",
+      "properties": {
+        "videoProcessor": {
+          "title": "Video Processor",
+          "type": "string",
+          "placeholder": "ffmpeg",
+          "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
+        },
+        "interfaceName": {
+          "title": "Network Interface",
+          "type": "string",
+          "placeholder": "eth0",
+          "description": "Selects which network interface to use for video streaming to HomeKit. If you have multiple active network interfaces in your system, you may need to set this. If not set, the first available network interface is used, and a mismatch will cause HomeKit to discard the video stream."
+        },
+        "ffmpegExecPath": {
+          "title": "FFMPEG Exec path",
+          "type": "string",
+          "description": "If you have problems executing ffmpeg, u can set here manually the exec path for ffmpeg."
+        }
+      }
+    },
+    "cameras": {
+      "type": "array",
+      "items": {
+        "title": "Cameras",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "required": true,
+            "description": "Set the camera name for display in the Home app."
+          },
+          "manufacturer": {
+            "name": "Manufacturer",
+            "type": "string",
+            "placeholder": "Homebridge",
+            "description": "Set the manufacturer name for display in the Home app."
+          },
+          "model": {
+            "name": "Model",
+            "type": "string",
+            "placeholder": "Camera FFmpeg",
+            "description": "Set the model for display in the Home app."
+          },
+          "serialNumber": {
+            "name": "Serial Number",
+            "type": "string",
+            "placeholder": "SerialNumber",
+            "description": "Set the serial number for display in the Home app."
+          },
+          "firmwareRevision": {
+            "name": "Firmware Revision",
+            "type": "string",
+            "description": "Set the firmware revision for display in the Home app."
+          },
+          "motion": {
+            "title": "Enable Motion Sensor",
+            "type": "boolean",
+            "description": "Exposes the motion sensor for this camera. This can be triggered with the dummy switches, MQTT messages, or via HTTP, depending on what features are enabled in the config."
+          },
+          "doorbell": {
+            "title": "Enable Doorbell",
+            "type": "boolean",
+            "description": "Exposes the doorbell device for this camera. This can be triggered with the dummy switches, MQTT messages, or via HTTP, depending on what features are enabled in the config."
+          },
+          "switches": {
+            "title": "Enable Dummy Switches",
+            "type": "boolean",
+            "description": "Enables dummy switches to trigger motion and/or doorbell, if either of those are enabled. When enabled there will be an additional switch that triggers the motion or doorbell event."
+          },
+          "motionTimeout": {
+            "title": "Automatic Motion Reset (Seconds)",
+            "type": "integer",
+            "placeholder": 1,
+            "minimum": 0,
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP."
+          },
+          "unbridge": {
+            "title": "Unbridge Camera",
+            "type": "boolean",
+            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
+          },
+          "videoConfig": {
+            "title": "Video Configuration",
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Video Source",
+                "type": "string",
+                "placeholder": "-i rtsp://username:password@example.com:554",
+                "required": true,
+                "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL."
+              },
+              "stillImageSource": {
+                "title": "Still Image Source",
+                "type": "string",
+                "description": "If your camera also provides a URL for a still image, that can be defined here with the same syntax as 'source'. If not set, the plugin will grab one frame from 'source'."
+              },
+              "returnAudioTarget": {
+                "title": "Two-way Audio Target (EXPERIMENTAL - WIP)",
+                "type": "string",
+                "description": "The FFmpeg output command for directing audio back to a two-way capable camera. This feature is still in development and a configuration that works today may not work in the future."
+              },
+              "maxStreams": {
+                "title": "Maximum Concurrent Streams",
+                "type": "integer",
+                "placeholder": 2,
+                "minimum": 1,
+                "description": "The maximum number of streams that will be allowed at once to this camera."
+              },
+              "maxWidth": {
+                "title": "Maximum Width",
+                "type": "integer",
+                "placeholder": 1280,
+                "multipleOf": 2,
+                "minimum": 0,
+                "description": "The maximum width used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+              },
+              "maxHeight": {
+                "title": "Maximum Height",
+                "type": "integer",
+                "placeholder": 720,
+                "multipleOf": 2,
+                "minimum": 0,
+                "description": "The maximum height used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+              },
+              "maxFPS": {
+                "title": "Maximum Framerate",
+                "type": "integer",
+                "placeholder": 30,
+                "minimum": 0,
+                "description": "The maximum frame rate used for video streamed to HomeKit. If set to 0, the framerate of the source is used. If not set, will use any framerate HomeKit requests."
+              },
+              "maxBitrate": {
+                "title": "Maximum Bitrate",
+                "type": "integer",
+                "placeholder": 299,
+                "minimum": 0,
+                "description": "The maximum bitrate used for video streamed to HomeKit, in kbit/s. If not set, will use any bitrate HomeKit requests."
+              },
+              "forceMax": {
+                "title": "Force Maximums",
+                "type": "boolean",
+                "description": "If set, the settings requested by HomeKit will be overridden with any 'maximum' values defined in this config."
+              },
+              "preserveRatio": {
+                "title": "Preserve Aspect Ratio",
+                "type": "boolean",
+                "description": "Preserves the aspect ratio of the source video."
+              },
+              "vcodec": {
+                "title": "Video Codec",
+                "type": "string",
+                "placeholder": "libx264",
+                "typeahead": {
+                  "source": [
+                    "libx264",
+                    "h264_omx",
+                    "h264_videotoolbox",
+                    "copy"
+                  ]
+                },
+                "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available."
+              },
+              "packetSize": {
+                "title": "Packet Size",
+                "type": "number",
+                "placeholder": 1316,
+                "multipleOf": 188,
+                "minimum": 188,
+                "description": "If audio or video is choppy try a smaller value."
+              },
+              "videoFilter": {
+                "title": "Additional Video Filters",
+                "type": "string",
+                "description": "Comma-delimited list of additional video filters for FFmpeg to run on the video. If 'none' is included, the default video filters are disabled."
+              },
+              "encoderOptions": {
+                "title": "Encoder Options",
+                "type": "string",
+                "placeholder": "-preset ultrafast -tune zerolatency",
+                "description": "Options to be passed to the video encoder."
+              },
+              "mapvideo": {
+                "type": "string",
+                "title": "Video Stream",
+                "description": "Selects the stream used for video."
+              },
+              "mapaudio": {
+                "type": "string",
+                "title": "Audio Stream",
+                "description": "Selects the stream used for audio."
+              },
+              "audio": {
+                "title": "Enable Audio",
+                "type": "boolean",
+                "description": "Enables audio streaming from camera."
+              },
+              "debug": {
+                "title": "FFmpeg Debug Logging",
+                "type": "boolean",
+                "description": "Includes debugging output from the main FFmpeg process in the Homebridge log."
+              },
+              "debugReturn": {
+                "title": "Two-way FFmpeg Debug Logging",
+                "type": "boolean",
+                "description": "Includes debugging output from the FFmpeg process used for two-way audio in the Homebridge log."
+              },
+              "socketPort": {
+                "title": "Websocket Port",
+                "type": "integer",
+                "description": "Livestream Websocket Port for the UI"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "layout": [
+    {
+      "type": "section",
+      "title": "User Interface",
+      "expandable": true,
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        "port",
+        "auth",
+        "language",
+        "debug",
+        "reset"
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Cameras",
+      "expandable": true,
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        {
+          "key": "cameras",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add Camera",
+          "items": [
+            "cameras[].name",
+            "cameras[].videoConfig.source",
+            "cameras[].videoConfig.stillImageSource",
+            "cameras[].videoConfig.audio",
+            "cameras[].videoConfig.socketPort",
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Branding",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].manufacturer",
+                "cameras[].model",
+                "cameras[].serialNumber",
+                "cameras[].firmwareRevision"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Video Output",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].unbridge",
+                "cameras[].videoConfig.maxStreams",
+                "cameras[].videoConfig.maxWidth",
+                "cameras[].videoConfig.maxHeight",
+                "cameras[].videoConfig.maxFPS",
+                "cameras[].videoConfig.maxBitrate",
+                "cameras[].videoConfig.forceMax"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Advanced",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "key": "cameras[]",
+                  "type": "section",
+                  "title": "EXPERIMENTAL - WIP",
+                  "expandable": true,
+                  "expanded": false,
+                  "items": [
+                    "cameras[].videoConfig.returnAudioTarget",
+                    "cameras[].videoConfig.debugReturn"
+                  ]
+                },
+                "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.packetSize",
+                "cameras[].videoConfig.mapvideo",
+                "cameras[].videoConfig.mapaudio",
+                "cameras[].videoConfig.videoFilter",
+                "cameras[].videoConfig.encoderOptions",
+                "cameras[].videoConfig.debug"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Automation",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].motion",
+                "cameras[].doorbell",
+                "cameras[].switches",
+                "cameras[].motionTimeout"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ssl",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "ssl.active",
+        "ssl.key",
+        "ssl.cert"
+      ]
+    },
+    {
+      "key": "options",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "options.videoProcessor",
+        "options.interfaceName",
+        "options.ffmpegExecPath"
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Automation",
+      "expandable": true,
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        {
+          "key": "mqtt",
+          "type": "object",
+          "orderable": false,
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "mqtt.active",
+            "mqtt.host",
+            "mqtt.port",
+            "mqtt.username",
+            "mqtt.password",
+            "mqtt.topic",
+            "mqtt.on_message"
+          ]
+        },
+        {
+          "key": "http",
+          "type": "object",
+          "orderable": false,
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "http.active",
+            "http.port",
+            "http.localhttp"
+          ]
+        }
+      ]
+    }
+  ]
+  }
