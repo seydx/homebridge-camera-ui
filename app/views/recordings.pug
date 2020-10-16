@@ -1,0 +1,142 @@
+extends layout
+
+block head
+
+block content
+  body.overflow-hidden
+    audio#soundFx
+      source(src="/sounds/notification.wav")
+    a#nb-dialog-container.mt-save-s(href="#", data-rel="lightcase")
+      .nb-dialog-box
+        .nb-background-blur
+        .nb-header
+          .nb-contents
+            .nb-left
+              i.fa.fa-bell.text-color-pink
+              |   Notifications
+            .nb-right 
+        .nb-contents.nb-main-content
+          strong#nbcontenttitle
+            | Camera
+          br
+          span#nbcontent
+    #loading.d-flex.h-100max.w-100.justify-content-center.align-content-center(style='display: none!important;')
+      h4.loading-title.mt-save
+        b=t('views.logout.title') + ','
+        br
+        span=t('views.logout.undertitle') + '...'
+      .row.w-100.d-flex.justify-content-center.align-content-center
+        .w-100.d-flex.justify-content-center
+          img#userpic-black(src=photo, alt=username)
+        .w-100.d-flex.justify-content-center.mt-3
+          h3#usertitle-black.profile-title-black= username
+        .w-100.d-flex.justify-content-center
+          p#userrole-black.profile-role-black= role
+      .loading-circle
+        .lds-ring
+          div
+          div
+          div
+          div
+    main#main
+      nav#header.navbar.fixed-top.navbar-light.white-nav-inner
+        .container.position-relative
+          .navbar-brand 
+            #contentImg
+              img(src="/images/web/logo_transparent-256.png", width="45", height="45", alt="Logo")
+              a.nav-header-title2(href="/dashboard", target="_self")=t('views.recordings.title')
+          .nav-desk
+            ul
+              li.nav-item
+                a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard') 
+              if role !== 'User'
+                li.nav-item
+                  a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                li.nav-item.active
+                  a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                li.nav-item
+                  a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                    span.notbadge.badge.badge-light.ml-2= not_size
+              li.nav-item
+                a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+              li.nav-item.camview
+                a.nav-link.smoothLink(href="/camviews")=t('navigation.camviews')
+              if !noAuth
+                li.nav-item.logout
+                  a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+          button.navbar-toggler(aria-label="Toggler")
+            span#togglebutton.navbar-toggler-icon
+            #navbarNavCustom.container.collapse.navbar-collapse.red-collapse.hidenavi(style="display: none")
+              ul.navbar-nav.navbar-red
+                li.nav-item-placeholder
+                li.nav-item
+                  a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard')
+                if role !== 'User'
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                  li.nav-item.active
+                    a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                      span.notbadge.badge.badge-light.ml-2= not_size
+                li.nav-item
+                  a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+                if !noAuth
+                  li.nav-item
+                    a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+                li.nav-item
+                  a.nav-link.camview-nav-item.smoothLink(href="/camviews")=t('navigation.camviews')
+            #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
+      .d-block.h-100vh.fix-body-top-inner
+        section.breadcrumbs.w-100.h-100.d-flex.justify-content-center
+          .container
+            .row.d-flex.justify-content-between.align-items-center
+              .col.text-left
+                h4#breadTitle.undertitle=t('breadcrumb.all') + ' ' + t('views.recordings.title')
+              .col.text-right
+                .dropdown
+                  button#dropdownMenuButton.dropdown-toggle.btnFilter(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")=t('breadcrumb.filter')
+                  #filterControls.dropdown-menu.filterMenu(aria-labelledby="dropdownMenuButton")
+                    label.b-contain
+                      input.filterBtn(type="checkbox", value="all", checked)
+                      label=t('breadcrumb.all')
+                      .b-input
+                    each room in settings.general.rooms
+                      - shortName = room.replace(/\s/g,"");
+                      label.b-contain
+                        input.filterBtn(type="checkbox", value=shortName)
+                        label= room
+                        .b-input
+        #recordings.container.position-relative.mt-breadcrumb
+          - recsize = recordings.length
+          i#left-arrow.hnavi.hleft.fa.fa-arrow-left.d-flex.justify-content-center(style="display: none!important;")
+          i#right-arrow.hnavi.hright.fa.fa-arrow-right.d-flex.justify-content-center(style="display: none!important;")
+          form#recs.row.justify-content-center.horizontal-direction
+            each recording in recordings
+              - room = recording.room
+              - shortRoom = recording.room.replace(/\s/g,"") 
+              .video-cards.col-lg-4.col-md-4.col-12.position-relative(data-filterable='yes', class=shortRoom, data-target=recording.id)
+                if role === 'Master'
+                  i.removeRecording.fa.fa-times-circle.text-color-pink.recording-remove(style="display: none;")
+                .card.bg-transparent.no-shadow.recording-card
+                  a(href="/files/" + recording.fileName, data-rel="lightcase")
+                    img.card-img-top.add-shadow.camera-img(onerror="this.onerror=null;this.src='/images/web/noimg.png';", src="/files/" + ( recording.fileType === "Snapshot" ? recording.fileName : recording.fileName.split(".mp4")[0] + "@2.jpeg"), alt=recording.originName)
+                  .card-body.camera-cards
+                    .row.card-title-cameras
+                      .col.text-center
+                        h5.card-title-camera.text-truncate= recording.originName
+                    .card-text-cameras.text-center= recording.fileName
+                    .card-text-cameras.text-center= t('views.recordings.room') + ': ' + room
+                    .card-text-cameras.text-center.mt-3.text-color-pink= t('views.recordings.info') + ' ' + recording.time
+                    .d-flex.justify-content-end
+                      a.d-flex.justify-content-center.mt-3.recording-dl(href="/recordings/" + recording.fileName target="_self")
+                        i.fas.fa-download
+          if recsize
+            if role === 'Master'
+              .d-flex.justify-content-center.mb-4.mt-4
+                #removeAllRecordings.btn.logout=t('views.recordings.btn_removeall')
+          else
+            img.container.d-flex.justify-content-center.mw-470(src="/images/web/no_recordings.png", alt=t('views.recordings.no_recordings'))
+block footscripts
+  script(type='text/javascript' src='/javascripts/utils/filter.js' defer)
+  script(type='text/javascript' src='/javascripts/views/recordings.js' defer)

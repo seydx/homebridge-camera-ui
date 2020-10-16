@@ -1,0 +1,15 @@
+extends layout
+
+block head
+
+block content
+  body.overflow-hidden
+    #error.container.position-relative.w-100.h-100.d-flex.justify-content-center
+      .align-self-center.text-center
+        img.d-block.mx-auto(src='/images/web/logo_transparent-256.png', alt='Camera UI Logo', width='125px', height='118px')
+        h1.d-block Ooops!
+        p.text-color-pink.error-status= message
+        a.btn.camview.text-light.go-back-page(href="#") Go Back
+    #preloader
+block footscripts
+  script(type='text/javascript' src='/javascripts/main.js' defer)

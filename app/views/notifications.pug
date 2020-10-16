@@ -1,0 +1,124 @@
+extends layout
+
+block head
+
+block content
+  body.overflow-hidden
+    audio#soundFx
+      source(src="/sounds/notification.wav")
+    #loading.d-flex.h-100max.w-100.justify-content-center.align-content-center(style='display: none!important;')
+      h4.loading-title.mt-save
+        b=t('views.logout.title') + ','
+        br
+        span=t('views.logout.undertitle') + '...'
+      .row.w-100.d-flex.justify-content-center.align-content-center
+        .w-100.d-flex.justify-content-center
+          img#userpic-black(src=photo, alt=username)
+        .w-100.d-flex.justify-content-center.mt-3
+          h3#usertitle-black.profile-title-black= username
+        .w-100.d-flex.justify-content-center
+          p#userrole-black.profile-role-black= role
+      .loading-circle
+        .lds-ring
+          div
+          div
+          div
+          div
+    main#main
+      nav#header.navbar.fixed-top.navbar-light.white-nav-inner
+        .container.position-relative
+          .navbar-brand 
+            #contentImg
+              img(src="/images/web/logo_transparent-256.png", width="45", height="45", alt="Logo")
+              a.nav-header-title2(href="/dashboard", target="_self")=t('views.notifications.title')
+          .nav-desk
+            ul
+              li.nav-item
+                a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard') 
+              if role !== 'User'
+                li.nav-item
+                  a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                li.nav-item
+                  a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                li.nav-item.active
+                  a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                    span.notbadge.badge.badge-light.ml-2= not_size
+              li.nav-item
+                a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+              li.nav-item.camview
+                a.nav-link.smoothLink(href="/camviews")=t('navigation.camviews')
+              if !noAuth
+                li.nav-item.logout
+                  a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+          button.navbar-toggler(aria-label="Toggler")
+            span#togglebutton.navbar-toggler-icon
+            #navbarNavCustom.container.collapse.navbar-collapse.red-collapse.hidenavi(style="display: none")
+              ul.navbar-nav.navbar-red
+                li.nav-item-placeholder
+                li.nav-item
+                  a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard')
+                if role !== 'User'
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                  li.nav-item.active
+                    a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                      span.notbadge.badge.badge-light.ml-2= not_size
+                li.nav-item
+                  a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+                if !noAuth
+                  li.nav-item
+                    a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+                li.nav-item
+                  a.nav-link.camview-nav-item.smoothLink(href="/camviews")=t('navigation.camviews')
+            #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
+      .d-block.h-100vh.fix-body-top-inner
+        section.breadcrumbs.w-100.h-100.d-flex.justify-content-center
+          .container
+            .row.d-flex.justify-content-between.align-items-center
+              .col.text-left
+                h4#breadTitle.undertitle=t('breadcrumb.all') + ' ' + t('views.notifications.title')
+              .col.text-right
+                .dropdown
+                  button#dropdownMenuButton.dropdown-toggle.btnFilter(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")=t('breadcrumb.filter')
+                  #filterControls.dropdown-menu.filterMenu(aria-labelledby="dropdownMenuButton")
+                    label.b-contain
+                      input.filterBtn(type="checkbox", value="all", checked)
+                      label=t('breadcrumb.all')
+                      .b-input
+                    each room in settings.general.rooms
+                      - shortName = room.replace(/\s/g,"");
+                      label.b-contain
+                        input.filterBtn(type="checkbox", value=shortName)
+                        label= room
+                        .b-input                 
+        #notifications.container.position-relative.mt-breadcrumb
+          .container.nots-container
+            - notsize = notifications.length;
+            form#nots.row.justify-content-center.pbc-30
+              each val,index in notifications
+                - notification = notifications[index];
+                - room = notification.room.replace(/\s/g,"");
+                a.col-12.notification-deck.position-relative(href=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? ".mp4" : ".jpeg") : "/images/web/no_recordings.png", data-filterable='yes', class=room, data-target=notification.id, data-rel="lightcase")
+                  if role === 'Master'
+                    if !is_mobile
+                      i.removeNotification.fa.fa-times-circle.text-color-pink.notification-remove(style="display: none;")
+                    .notification-deck-remove X
+                  .row.justify-content-center
+                    .col-9
+                      h3.m-0.notification-title= notification.name + ' (' + notification.room + ')'
+                      p.m-0.notification-text 
+                        b.text-color-pink=t('views.notifications.movement') + ': '
+                        span= notification.time
+                    .col-3.text-right
+                      img(onerror="this.onerror=null;this.src='/images/web/noimg.png';", src=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? "@2.jpeg" : ".jpeg") : "/images/web/logo_transparent-256.png", width="45", height="45", alt=t('views.notifications.img_notification'), class="notification-img")
+            if notsize
+              if role === 'Master'
+                .d-flex.justify-content-center
+                  #removeAllNotifications.btn.logout=t('views.notifications.btn_removeall')
+            else
+              img.container.d-flex.justify-content-center.mw-470(src="/images/web/no_notifications.png", alt=t('views.notifications.no_notifications'))
+block footscripts
+  script(type='text/javascript' src='/javascripts/utils/filter.js' defer)
+  script(type='text/javascript' src='/javascripts/views/notifications.js' defer)

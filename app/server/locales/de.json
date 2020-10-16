@@ -1,0 +1,255 @@
+{
+  "views": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Willkommen",
+      "hello": "Hallo",
+      "undertitle": "Unten sehen Sie Ihre Lieblings Streams"
+    },
+    "cameras": {
+      "title": "Kameras",
+      "notification_title": "Letzte Benachrichtigung",
+      "notifications_title": "Letzte Benachrichtigungen",
+      "notification_info": "Bewegung erkannt am",
+      "notification_nodata": "Keine Daten"
+    },
+    "camera": {
+      "notification_title": "Letzte Benachrichtigung",
+      "notifications_title": "Letzte Benachrichtigungen",
+      "notification_info": "Bewegung erkannt am",
+      "notification_nodata": "Keine Daten",
+      "previous_camera": "Vorherige Kamera",
+      "next_camera": "Nächste Kamera"
+    },
+    "recordings": {
+      "title": "Aufnahmen",
+      "room": "Raum",
+      "info": "Diese Datei wurde aufgenommen am",
+      "btn_removeall": "Alles löschen",
+      "no_recordings": "Keine Aufnahmen",
+      "download": "Runterladen"
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "movement": "Bewegung",
+      "btn_removeall": "Alles löschen",
+      "no_notifications": "Keine Benachrichtigungen",
+      "img_notification": "Benachrichtigungsbild"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "apply": "Annehmen",
+      "cancel": "Abbrechen",
+      "reset": "Zurücksetzen",
+      "reset_confirm": "Zurücksetzen bestätigen",
+      "reset_info": "Nach dem Klicken auf Zurücksetzen werden alle gespeicherten Daten unwiderruflich gelöscht! Sind Sie sicher?",
+      "reset_btn_reset": "Zurücksetzen",
+      "reset_btn_close": "Schließen",
+      "select_never": "Niemals",
+      "subnavigation": {
+        "profile": "Profil",
+        "general": "Allgemein",
+        "dashboard": "Dashboard",
+        "cameras": "Kameras",
+        "recordings": "Aufnahmen",
+        "notifications": "Benachrichtigungen",
+        "camviews": "CamViews",
+        "webhook": "Webhook"
+      },
+      "popup": {
+        "btn_close": "Schließen"
+      },
+      "views": {
+        "profile": {
+          "account_title": "Konto",
+          "account_undertitle": "Allgemeine Informationen",
+          "account_name": "Name",
+          "account_signout": "Ausloggen nach (h)",
+          "password_title": "Passwort",
+          "password_undertitle": "Verwalte dein Paswort",
+          "password_old": "Altes Passwort",
+          "password_new": "Neues Passwort",
+          "password_confirm": "Neues Passwort bestätigen",
+          "user_title": "Benutzer",
+          "user_undertitle": "Registrierte Benutzer",
+          "user_new": "Neue Benutzer",
+          "user_new_name": "Name",
+          "user_new_username": "Benutzername",
+          "user_new_password": "Passwort",
+          "user_new_role": "Rolle",
+          "user_new_add": "Neuen Benutzer anlegen",
+          "user_role_admin": "Administrator",
+          "user_role_user": "Benutzer"
+        },
+        "general": {
+          "title": "Allgemein",
+          "athome": "Zu Hause",
+          "athome_info": "Wenn diese Einstellung aktiviert wird, werden ankommende Benachrichtigungen und Aufnahmen für NICHT ausgeschlossene Kameras deaktiviert!",
+          "exclude": "Ausschließen",
+          "exclude_info": "Ausgeschlossene Kameras sind nicht von 'Zu Hause' betroffen. Diese Kameras werden weiterhin Bewegungen aufzeichnen und Bilder/Videos aufnehmen.",
+          "themes_title": "Themen",
+          "themes_darkmode": "Darkmode",
+          "themes_themes": "Themen",
+          "rooms_title": "Räume",
+          "rooms_name": "Raum Name",
+          "rooms_name_standard": "Standard"
+        },
+        "dashboard": {
+          "title": "Dashboard",
+          "title_cameras": "Kameras",
+          "timer": "Bild neuladen (s)",
+          "timer_info": "Timer zum generieren eines neuen Bildes in Sekunden (wenn Liveübertragung deaktiviert)",
+          "favourite": "Favorit",
+          "favourite_info": "Wenn diese Einstellung aktiviert wird, wird diese Kamera im Dashboard angezeigt.",
+          "livestream": "Liveübertragung",
+          "livestream_info": "Wenn diese Einstellung aktiviert wird, wird die Kamera im Dashboard eine Liveübertragung anzeigen. Wenn es deaktiviert ist, werden nach eingestellter Zeit Bilder generiert und agezeigt"
+        },
+        "cameras": {
+          "title": "Kameras",
+          "info": "Kamera Info",
+          "room": "Raum auswählen",
+          "video": "Video Auflösung",
+          "audio": "Audio aktivieren"
+        },
+        "recordings": {
+          "title": "Aufnahmen",
+          "active": "Aktiv",
+          "active_info": "Wenn diese Einstellungen aktiviert wird, werden alle Kameras beim Erkennen einer Bewegung eine Aufnahme starten.",
+          "type": "Aufnahmetyp",
+          "type_info": "Sie können zwischen Snapshot und Video auswählen. Snapshot wird eine JPEG Datei erstellen und Video erstellt eine MP4 Datei.",
+          "type_snapshot": "Snapshot",
+          "type_video": "Video",
+          "timer": "Video Länge (s)",
+          "timer_info": "Timer in Sekungen zum Aufnehmen des Videos (wenn Video ausgewählt wurde).",
+          "store": "Speichern unter",
+          "store_info": "Ort zum Speichern der Aufnahmen.",
+          "remove": "Löschen nach (d)",
+          "remove_info": "Timer in Tagen zum automatischen Löschen der Aufnahmen vom Speicher."
+        },
+        "notifications": {
+          "title": "Benachrichtigungen",
+          "remove": "Löschen nach (h)",
+          "remove_info": "Timer in Stunden zum automatischen Löschen von Benachrichtigungen sowohl vom Speicher als auch im Interface.",
+          "remove_banner": "Banner ausblenden nach (s)",
+          "remove_banner_info": "Timer in Sekunden zum ausblenden des Banners."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "active": "Aktiv",
+          "active_info": "Aktiviert Telegram Benachrichtigungen für alle Bewegunserkennungen.",
+          "token": "Token",
+          "token_info": "Token welches von @BotFather gegeben wird wenn ein Telegram Bot hergestellt wird.",
+          "chatid": "Chat ID",
+          "chatid_info": "Vom Bot gegebene Chat ID nachdem '/start' ausgeführt wurde.",
+          "motion_text": "Bewegungsmitteilung",
+          "motion_text_info": "Eigener Text für Bewegungsmitteilungen. (@ wird durch den Namen des jeweiligen Kameras ersetzt).",
+          "type_snapshot": "Snapshot",
+          "type_video": "Video",
+          "type_text": "Text",
+          "type_info": "Es kann zwischen Video, Snapshot und Text ausgewählt werden."
+        },
+        "camviews": {
+          "title": "CamViews",
+          "title_cameras": "Kameras",
+          "timer": "Bild neuladen (s)",
+          "timer_info": "Timer zum generieren eines neuen Bildes in Sekunden (wenn Liveübertragung deaktiviert)",
+          "favourite": "Favorit",
+          "favourite_info": "Wenn diese Einstellung aktiviert wird, wird diese Kamera im Dashboard angezeigt.",
+          "livestream": "Liveübertragung",
+          "livestream_info": "Wenn diese Einstellung aktiviert wird, wird die Kamera im Dashboard eine Liveübertragung anzeigen. Wenn es deaktiviert ist, werden nach eingestellter Zeit Bilder generiert und agezeigt"
+        },
+        "webhook": {
+          "title": "Webhook",
+          "title_endpoint": "Endpunkt",
+          "title_endpoints": "Endpunkte",
+          "placeholder": "http://trigger.de/test?trigger=true",
+          "active": "Active",
+          "active_info": "Wenn diese Option aktiv ist, wird beim Erkennen einer Bewegung zusätzlich der in den Einstellungen gegebene Webhook Endpunkt getriggert.",
+          "status": "Status",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "endpoints_athome": "Zu Hause",
+          "on": "On",
+          "on_info": "Webhook Endpunkt zum Triggern bei einer Bewegung.",
+          "off": "Off",
+          "trigger": "Trigger"
+        }
+      }
+    },
+    "camviews": {
+      "title": "CamViews",
+      "btn_fullscreen": "Vollbild",
+      "btn_close": "Schließen",
+      "btn_logout": "Ausloggen",
+      "btn_back": "Zurück",
+      "btn_positions": "Position speichern",
+      "btn_positions_saved": "Gespeichert!",
+      "lastnotification": "Letzte Bewegung",
+      "nodata": "Keine Daten"
+    },
+    "login": {
+      "title": "Login",
+      "welcome_desktop": "Willkommen zu",
+      "welcome_mobile": "Willkommen",
+      "undertitle_desktop": "Homebridge Benutzerkonto zum Kontrollieren",
+      "undertitle2_desktop": "ihrer Kameras",
+      "undertitle_mobile": "Streams werden vorbereitet",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "forgotpw": "Passwort vergessen?",
+      "forgotpw_info": "Wenn Sie Ihr Passwort vergessen haben können Sie diese durch aktivieren von 'Reset' in Ihrer Config Einstellung zurücksetzen.",
+      "signin": "Einloggen",
+      "loading": "Wird geladen...",
+      "go": "Los",
+      "anonym": "Anonym",
+      "guest": "Gast",
+      "incorrect_cr": "Benutzername/Passwort falsch!"
+    },
+    "change": {
+      "welcome": "Willkommen",
+      "undertitle": "Bitte ändern Sie ihre Login Daten um fortzufahren",
+      "username": "Benutzername",
+      "username_new": "Neuer Benutzername",
+      "password": "Passwort",
+      "password_new": "Neues Passwort",
+      "save_signin": "Speichern & Einloggen",
+      "loading": "Wird geladen...",
+      "same_username": "Benutzername und neuer Benutzername dürfen nicht identisch sein!",
+      "same_pw": "Passwort und neues Passwort dürfen nicht identisch sein!",
+      "wrong_pw": "Passwort falsch!",
+      "empty": "Alle Felder müssen ausgefüllt werden!",
+      "incorrect_cr": "Benutzername/Passwort falsch!"
+      
+    },
+    "logout": {
+      "title": "Bis bald",
+      "undertitle": "Abmeldung wird verarbeitet"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "cameras": "Kameras",
+    "recordings": "Aufnahmen",
+    "notifications": "Benachrichtigungen",
+    "settings": "Einstellungen",
+    "camviews": "CamViews",
+    "logout": "Ausloggen"
+  },
+  "breadcrumb": {
+    "all": "Alle",
+    "allnotifications": "Alle Benachrichtigungen",
+    "allrecordings": "Alle Aufnahmen",
+    "allcameras": "Alle Kameras",
+    "filter": "Filter",
+    "filter_standard": "Standard"
+  },
+  "banner": {
+    "title": "Benachrichtigungen",
+    "camera_title": "Kamera",
+    "motion_info": "Neue Bewegung entdeckt",
+    "doorbell_info": "Türklingel geläutet"
+  },
+  "push": {
+    
+  }
+}

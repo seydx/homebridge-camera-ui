@@ -1,0 +1,99 @@
+extends layout
+
+block head
+  link(rel='stylesheet' href='/plugins/gridstack/gridstack.min.css' type='text/css')
+
+block content
+  body.overflow-hidden
+    audio#soundFx
+      source(src="/sounds/notification.wav")
+    #loading.d-flex.h-100max.w-100.justify-content-center.align-content-center(style='display: none!important;')
+      h4.loading-title.mt-save
+        b=t('views.logout.title') + ','
+        br
+        span=t('views.logout.undertitle') + '...'
+      .row.w-100.d-flex.justify-content-center.align-content-center
+        .w-100.d-flex.justify-content-center
+          img#userpic-black(src=photo, alt=username)
+        .w-100.d-flex.justify-content-center.mt-3
+          h3#usertitle-black.profile-title-black= username
+        .w-100.d-flex.justify-content-center
+          p#userrole-black.profile-role-black= role
+      .loading-circle
+        .lds-ring
+          div
+          div
+          div
+          div
+    main#main.w-100.h-100full.bg-dark
+      - activeCams = 0
+      each camEntry in Object.keys(settings.camviews.cameras)
+        if settings.camviews.cameras[camEntry]
+          - activeCams = activeCams + 1
+      a#skipclick.btn.btn-secondary.camview-btn-back.mt-save.ml-save.zi9.go-back-page(href='#back', target='_self')=t('views.camviews.btn_back')
+      if is_desktop && activeCams
+        a#skipclick.btn.btn-light.camview-btn-fullscreen.mt-save.zi9(href='#')=t('views.camviews.btn_fullscreen')
+      if !noAuth
+        a.btn.logout.camview-btn-logout.mt-save.mr-save.zi9(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('views.camviews.btn_logout')
+      if activeCams
+        a#skipclick.btn.btn-secondary.camview-btn-save.mt-save.ml-save.zi9(href='#', target='_self')=t('views.camviews.btn_positions')
+      #grid.w-100.h-100full.overflow-hidden
+        .fs-bg
+        .grid-stack.h-100full-imp
+          each camEntry,index in Object.keys(settings.camviews.cameras)
+            - active = settings.camviews.cameras[camEntry].active
+            - ping = settings.camviews.cameras[camEntry].ping
+            - livestream = settings.camviews.cameras[camEntry].livestream
+            - cam = camEntry.replace(/\s/g,"")
+            if active
+              if !ping
+                .grid-stack-item(data-gs-id=index)
+                  .grid-stack-item-content
+                    .nameOverlay.mt-save= camEntry
+                    svg.bi.bi-camera-video-off.camview-offline-video(width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg")
+                      path(fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518l.605.847zM1.428 4.18A.999.999 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634l.58.814zM15 11.73l-3.5-1.555v-4.35L15 4.269v7.462zm-4.407 3.56l-10-14 .814-.58 10 14-.814.58z")
+              else
+                .grid-stack-item(data-gs-id=index)
+                  .grid-stack-item-content.overflow-hidden
+                    .liveSnap.w-100.h-100(id=cam)
+                      if !livestream
+                        .lds-ring-cv(id=cam + 'LDR')
+                          div
+                          div
+                          div
+                          div
+                        .updateOverlay(id=cam+'Timer')
+                        .nameOverlay.mt-save= camEntry
+                        .w-100.h-100.fs-container(id=cam+'Snap')
+                      else
+                        .lds-ring(id=cam + 'LDR')
+                          div
+                          div
+                          div
+                          div
+                        .notOverlay.text-center=t('views.camviews.lastnotification') + ': '
+                          if Object.keys(lastNotifications[camEntry]).length
+                            - notification = lastNotifications[camEntry] 
+                            a(href=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? ".mp4" : ".jpeg") : "/images/web/no_recordings.png", id=cam+'Not', data-rel="lightcase")= notification.time
+                          else
+                            span(id=cam+'Not')=t('views.camviews.nodata')
+                        .nameOverlay.mt-save= camEntry
+                        canvas.w-100.h-100.fs-container(id=cam+'Stream')
+block footscripts
+  script(type='text/javascript' src='/javascripts/modules/jsmpeg.min.js' defer)  
+  script(type='text/javascript' src='/plugins/gridstack/jquery.ui.touch-punch.min.js' defer)
+  script(type='text/javascript' src='/plugins/lightcase/lightcase.js' defer)
+  script(type='text/javascript').
+    function getCameras(){
+      return !{JSON.stringify(cameras)};
+    }
+    function getSettings(){
+      return !{JSON.stringify(camview)};
+    }
+    function getLastNotifications(){
+      return !{JSON.stringify(lastNotifications)};
+    }
+    function getSSL(){
+      return !{JSON.stringify(ssl)};
+    }
+  script(type='text/javascript' src='/javascripts/views/camviews.js' defer)

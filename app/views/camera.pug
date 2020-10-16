@@ -1,0 +1,188 @@
+extends layout
+
+block head
+
+block content
+  body.overflow-hidden
+    audio#soundFx
+      source(src="/sounds/notification.wav")
+    a#nb-dialog-container.mt-save-s(href="#back", data-rel="lightcase")
+      .nb-dialog-box
+        .nb-background-blur
+        .nb-header
+          .nb-contents
+            .nb-left
+              i.fa.fa-bell.text-color-pink
+              |   Notifications
+            .nb-right 
+        .nb-contents.nb-main-content
+          strong#nbcontenttitle
+            | Camera
+          br
+          span#nbcontent
+    #loading.d-flex.h-100max.w-100.justify-content-center.align-content-center(style='display: none!important;')
+      h4.loading-title.mt-save
+        b=t('views.logout.title') + ','
+        br
+        span=t('views.logout.undertitle') + '...'
+      .row.w-100.d-flex.justify-content-center.align-content-center
+        .w-100.d-flex.justify-content-center
+          img#userpic-black(src=photo, alt=username)
+        .w-100.d-flex.justify-content-center.mt-3
+          h3#usertitle-black.profile-title-black= username
+        .w-100.d-flex.justify-content-center
+          p#userrole-black.profile-role-black= role
+      .loading-circle
+        .lds-ring
+          div
+          div
+          div
+          div
+    main#main
+      nav#header.navbar.fixed-top.navbar-light.white-nav-inner-trans(class=is_phone?"transparent":"")
+        .container.position-relative
+          .navbar-brand 
+            #contentImg
+              if !is_phone
+                img(src="/images/web/logo_transparent-256.png", width="45", height="45", alt="Logo")
+                a.nav-header-title2(href="/dashboard", target="_self")= title
+              else
+                a#back.go-back-page(href='#', target="_self", aria-label="Back")
+                  i.fa.fa-arrow-left
+          .nav-desk
+            ul
+              li.nav-item
+                a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard') 
+              if role !== 'User'
+                li.nav-item.active
+                  a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                li.nav-item
+                  a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                li.nav-item
+                  a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                    span.notbadge.badge.badge-light.ml-2= not_size
+              li.nav-item
+                a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+              li.nav-item.camview
+                a.nav-link(href="/camviews")=t('navigation.camviews')
+              if !noAuth
+                li.nav-item.logout
+                  a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+          button.navbar-toggler(class=is_phone?"transparent":"", aria-label="Toggler")
+            span#togglebutton.navbar-toggler-icon
+            #navbarNavCustom.container.collapse.navbar-collapse.red-collapse.hidenavi(style="display: none")
+              ul.navbar-nav.navbar-red
+                li.nav-item-placeholder
+                li.nav-item
+                  a.nav-link.smoothLink(href="/dashboard")=t('navigation.dashboard')
+                if role !== 'User'
+                  li.nav-item.active
+                    a.nav-link.smoothLink(href="/cameras")=t('navigation.cameras')
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/recordings")=t('navigation.recordings')
+                  li.nav-item
+                    a.nav-link.smoothLink(href="/notifications")=t('navigation.notifications')
+                      span.notbadge.badge.badge-light.ml-2= not_size
+                li.nav-item
+                  a.nav-link.smoothLink(href="/settings")=t('navigation.settings')
+                if !noAuth
+                  li.nav-item
+                    a.nav-link(href=is_phone?"#":"/logout" id=is_phone?"logoutBtn":"logout")=t('navigation.logout')
+                li.nav-item
+                  a.nav-link.camview-nav-item.smoothLink(href="/camviews")=t('navigation.camviews')
+            #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
+      .container-fluid.p-0.position-fixed
+        .row.camera-phone-header.d-flex.justify-content-center.align-content-center.position-relative.m-0(class=is_phone?"":"camera-phone-header-desk")
+      .d-block.h-100vh(class=is_phone?"camera-inner":"camera-inner-desk")
+        #camera.container.position-relative
+          - shortTitle = title.replace(/\s/g,"")
+          .row.justify-content-center.horizontal-direction
+            .video-cards.col(data-filterable='yes')
+              .card.bg-transparent.no-shadow
+                .fs-bg.position-relative
+                  if ping
+                    .lds-ring(id=camId + 'LDR')
+                      div
+                      div
+                      div
+                      div
+                    i.fa.fa-expand-alt.fs-arrow
+                    canvas.card-img-top.add-shadow.camera-img.bg-dark(id=camId)
+                  else
+                    .card-img-top.add-shadow.camera-img.bg-dark.mh-300px
+                      svg.bi.bi-camera-video-off.offline-video(width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg")
+                        path(fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518l.605.847zM1.428 4.18A.999.999 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634l.58.814zM15 11.73l-3.5-1.555v-4.35L15 4.269v7.462zm-4.407 3.56l-10-14 .814-.58 10 14-.814.58z")
+                .card-body.camera-cards
+                  .row.card-title-cameras
+                    .col-10
+                      h5.card-title-camera.text-truncate= title
+                    .col-2.text-right
+                      if Object.keys(lastNotification).length
+                        a(tabindex='0' role='button' data-placement='bottom' data-toggle='popover' data-trigger='focus' title=t('views.camera.notification_title') data-content=t('views.camera.notification_info') + ' ' + lastNotification.time, aria-label=t('views.camera.notification_title'))
+                          i.fa.fa-bell.text-color-pink
+                      else
+                        a(tabindex='0' role='button' data-placement='bottom' data-toggle='popover' data-trigger='focus' title=t('views.camera.notification_title') data-content=t('views.camera.notification_nodata'), aria-label=t('views.camera.notification_title'))
+                          i.fa.fa-bell.text-secondary
+                  each cam in Object.keys(settings.cameras)
+                    - cammm = settings.cameras[cam]
+                    if camId === cam.replace(/\s/g,"")
+                      p.card-text-cameras= cammm.info
+          .container.row.justify-content-center.m-0.p-0
+            .notifications-box
+              .title.text-left.notifications-box-title= t('views.camera.notifications_title')
+              ul
+                if lastFive.length
+                  each entry in lastFive
+                    li
+                      div(class=is_phone?'horizontal-text-direction':'')
+                        b.text-color-pink= title + ': '
+                        span= entry.time
+                        a.text-color-pink.float-right(href=entry.storing ? "/files/" + entry.id + (entry.fileType === "Video" ? ".mp4" : ".jpeg") : "#", data-rel="lightcase")
+                          i.fa.fa-arrow-circle-right.text-color-pink
+                else
+                  span No Data
+          .row.justify-content-center.m-0.p-0.camera-navigator
+            - max = positions.size
+            each camIndex in Object.keys(positions.cameras)
+              - current = positions.cameras[camIndex]
+              if current.url === title
+                if camIndex < 2
+                  - next = parseInt(camIndex) + 1
+                  - nextPos = positions.cameras[next]
+                  .col-12.text-right
+                    a(href='/camera/' + nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                      span= nextPos.url
+                      i.fa.fa-arrow-right.ml-2
+                else if camIndex > 1 && camIndex < max
+                  - next = parseInt(camIndex) + 1
+                  - prev = parseInt(camIndex) - 1
+                  - nextPos = positions.cameras[next]
+                  - prevPos = positions.cameras[prev] 
+                  .col-6.text-left
+                    a(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                      i.fa.fa-arrow-left.mr-2
+                      span= prevPos.url
+                  .col-6.text-right
+                    a(href=nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                      span= nextPos.url
+                      i.fa.fa-arrow-right.ml-2 
+                else
+                  - prev = parseInt(camIndex) - 1
+                  - prevPos = positions.cameras[prev]
+                  .col-12.text-left
+                    a(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                      i.fa.fa-arrow-left.mr-2
+                      span= prevPos.url
+block footscripts
+  script(type='text/javascript' src='/javascripts/modules/jsmpeg.min.js' defer)
+  script(type='text/javascript').
+    function getSSL(){
+      return !{JSON.stringify(ssl)};
+    }
+    function getPing(){
+      return !{JSON.stringify(ping)};
+    }
+    const camId = !{JSON.stringify(camId)};
+    const title = !{JSON.stringify(title)};
+    const port = !{JSON.stringify(port)};
+  script(type='text/javascript' src='/javascripts/views/camera.js' defer)

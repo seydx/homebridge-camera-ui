@@ -1,0 +1,78 @@
+extends layout
+
+block head
+
+block content
+  body
+    main.h-100
+      if is_phone
+        #landing.container.h-100.d-flex.justify-content-center.align-content-center.bg-color-white
+          .login-phone
+            .row.h-80.d-flex.justify-content-center.align-content-center
+              img.d-block(src='/images/web/logo_transparent-512.png', alt='Camera UI Logo')
+            .row.h-20.d-flex.justify-content-center.align-content-center
+              input#continue-btn.blob(type='submit', value=t('views.login.go'))
+        #loading.d-flex.h-100.w-100.justify-content-center.align-content-center(style='display: none!important;')
+          h4.loading-title.mt-save
+            b=t('views.login.welcome_mobile') + ','
+            br
+            span=t('views.login.undertitle_mobile') + '...'
+          .row.w-100.d-flex.justify-content-center.align-content-center
+            .w-100.d-flex.justify-content-center
+              img#userpic-black(src='/images/user/anonym.png', alt='User')
+            .w-100.d-flex.justify-content-center.mt-3
+              h3#usertitle-black.profile-title-black=t('views.login.anonym')
+            .w-100.d-flex.justify-content-center
+              p#userrole-black.profile-role-black=t('views.login.guest')
+          .loading-circle
+            .lds-ring
+              div
+              div
+              div
+              div
+      else
+        #login-desk.main.d-flex.flex-wrap.justify-content-center.align-content-center.h-100.w-100
+          .login.container.bg-color-white
+            .login-inner.row
+              #left-side.col-5.d-flex.bg-color-pink.justify-content-center.align-content-center
+                img.d-block(src='/images/web/logo_white_both.png', alt='Camera UI Logo')
+                d-block.mini-text-left= version
+              #right-side.col.d-flex.flex-wrap.justify-content-center
+                .row.w-100
+                  h3=t('views.login.welcome_desktop')
+                    b.text-color-pink  camera.ui
+                  p.mt-3=t('views.login.undertitle_desktop')
+                    br
+                    span=' ' + t('views.login.undertitle2_desktop')
+                .row.w-100.mt-3
+                  .col-3.redline.mr-3
+                  .col-3.greyline
+                .row.w-100
+                  .bubble2(style='display: none')
+                  .login200-form
+                    form#login-post(method='post')
+                      .wrap-input200
+                        input#username.input200(type='text', name='username', autocomplete='username')
+                        span.focus-input200(data-placeholder=t('views.login.username'))
+                      .wrap-input200
+                        span.btn-show-pass
+                          i.fa.fa-eye
+                        input#password.input200(type='password', name='password', autocomplete='current-password')
+                        span.focus-input200(data-placeholder=t('views.login.password'))
+                      .container-login200-form-btn
+                        .row.w-100
+                          .col-7.p-0
+                            .wrap-login200-form-btn
+                              .login200-form-bgbtn
+                              input.login200-form-btn(type='submit', value=t('views.login.signin'), id='login-btn')
+                          .col.p-0.text-right
+                            a.login-right-forgotpw.popover-dismiss(tabindex="0", data-toggle="popover", data-placement="top", data-trigger="focus", data-content=t('views.login.forgotpw_info'))=t('views.login.forgotpw')
+                .d-block.mini-text-right &#169; SeydX
+block footscripts
+  script(type='text/javascript').
+    function check_flash(){
+      let flash = !{JSON.stringify(flash)};
+      flash = flash.error[0];
+      return flash
+    }
+  script(type='text/javascript' src='/javascripts/views/login.js' defer)
