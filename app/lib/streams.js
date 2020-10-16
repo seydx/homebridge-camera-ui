@@ -4,14 +4,15 @@ const debug = require('debug')('CameraUIStream');
 
 const Stream = require('@seydx/node-rtsp-stream');
 
-var accessories, db;
+var accessories, db, log;
 const startedStreams = {};
 
 module.exports = {
 
-  init: function(accessories, ssl, db_settings){
+  init: function(lg, accessories, ssl, db_settings){
 
     db = db_settings;
+    log = lg;
     
     let cameras = db.getCameras();
 
@@ -22,7 +23,7 @@ module.exports = {
         startedStreams[accessory.displayName] = {};
          
         let url = accessory.context.videoConfig.source;
-        url = url.split(' ');
+        url = url ? url.split(' ') : false;
         
         let audio = cameras[accessory.displayName].audio;
         let videoSize = cameras[accessory.displayName].resolutions;
@@ -37,7 +38,7 @@ module.exports = {
           ffmpegOptions: {
             '-s': videoSize,
             '-b:v': '299k',
-            '-r': accessory.context.videoConfig.maxFPS,
+            '-r': accessory.context.videoConfig.maxFPS || 20,
             '-preset:v': 'ultrafast',
             '-threads': '1',
             '-loglevel': 'quiet'
@@ -102,12 +103,21 @@ module.exports = {
   
   start: function(camera){
   
-    if(startedStreams[camera].streamFailed){
+    if(startedStreams[camera].streamFailed && startedStreams[camera].wsPort && startedStreams[camera].streamUrl){
     
       debug('Starting stream server for %s', camera);
     
       startedStreams[camera].pipeStreamToSocketServer();
       startedStreams[camera].streamFailed = false;
+    
+    } else {
+    
+      if(!startedStreams[camera].wsPort)
+        log('Can not start stream for %s - Socket Port not defined in videoConfig!', startedStreams[camera].name);
+        
+      if(!startedStreams[camera].streamUrl)
+        log('Can not start stream for %s - Source not defined in videoConfig!', startedStreams[camera].name);
+    
     }
     
     return;

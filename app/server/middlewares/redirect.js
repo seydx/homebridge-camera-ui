@@ -1,5 +1,7 @@
 'use strict';
 
+const debug = require('debug')('CameraUIInterface');
+
 const socket = require('../socket');
 
 const unless = require('express-unless');
@@ -8,10 +10,18 @@ const createError = require('http-errors');
 module.exports = () => {
   
   function session(req, res, next) {
+    
+    debug({
+      userID: req.session.userID ? req.session.userID : false,
+      message: 'session redirect',
+      url: req.originalUrl,
+      authenticated: req.isAuthenticated(),
+      noAuth: req.session.noAuth || false
+    });
   
     if (req.isAuthenticated() || req.session.noAuth) {
     
-      let validUrls = ['/dashboard', '/cameras', '/camera', '/notifications', '/recordings', '/settings', '/camviews'];
+      let validUrls = ['/dashboard', '/cameras', '/camera', '/notifications', '/recordings', '/settings', '/camviews', '/'];
       let validMain = validUrls.some(site => req.originalUrl.includes(site));
       
       if(validMain){

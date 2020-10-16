@@ -24,16 +24,13 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
   });
   
   router.post('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
-  
-    delete req.session.user;
     
+    let adminUser = req.session.user;
     let username = req.body.username;
     let username_new = req.body.username_new;
     let password = req.body.password;
     let password_new = req.body.password_new;
-    
-    let adminUser = db_users.getUser(username);
-    
+
     if(username_new && username_new !== '' && password && password !== '' && password_new && password_new !== ''){
       if(username === username_new){
         return res.status(500).send({
@@ -65,6 +62,9 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
     req.body.username = username_new;
     req.body.password = password_new;
     
+    delete req.body.username_new;
+    delete req.body.password_new;
+    
     passport.authenticate('local', (err, user, info) => {
     
       if (err) {
@@ -83,17 +83,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
         return res.status(401).send(info);
         
       }
-      
-      if(user && user.role === 'Master' && info.change){
-        debug('Please change your credentials!');
-        req.session.user = user;
-        return res.status(201).send({
-          photo: user.photo + '?r=' + Math.random(),
-          username: user.username, 
-          role: user.role
-        });
-      }
-      
+
       req.login(user, (err) => {
       
         if (err){

@@ -14,7 +14,7 @@ module.exports = (app, db_notifications, db_cameras) => {
     let lastNotifications = db_notifications.getLastNotifications(title);
     let camera = db_cameras.getCamera(title);
 
-    let port = camera.socketPort;
+    let port = camera.socketPort || false;
     let id = title.replace(/\s+/g, '');
     let ping = await db_cameras.pingCamera(title);
     

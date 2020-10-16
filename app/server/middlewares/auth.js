@@ -10,14 +10,22 @@ module.exports = (auth, db_users) => {
   auth = auth === 'form';
   
   function ensureAuthenticated(req, res, next) {
+    
+    debug({
+      userID: req.session.userID ? req.session.userID : false,
+      message: 'ensure authenticated',
+      url: req.originalUrl,
+      authenticated: req.isAuthenticated(),
+      noAuth: !auth || false
+    });
   
     if (req.isAuthenticated() || !auth) {
       
       if(!auth){
         
-        debug('%s (%s): Authentication skipped!', user.username, user.role);
-        
         let user = db_users.getUser(false, 'Master');
+        
+        debug('%s (%s): Authentication skipped!', user.username, user.role);
         
         req.session.noAuth = !auth;
         req.session.userID = user.id;          
@@ -49,13 +57,21 @@ module.exports = (auth, db_users) => {
   
   function ensureAdmin(req, res, next) {
     
+    debug({
+      userID: req.session.userID ? req.session.userID : false,
+      message: 'ensure admin',
+      url: req.originalUrl,
+      authenticated: req.isAuthenticated(),
+      noAuth: !auth || false
+    });
+    
     if (req.isAuthenticated() || !auth) {
    
       if(!auth){
         
-        debug('%s (%s): Authentication skipped!', user.username, user.role);
-        
         let user = db_users.getUser(false, 'Master');
+        
+        debug('%s (%s): Authentication skipped!', user.username, user.role);
         
         req.session.noAuth = !auth;
         req.session.userID = user.id;          

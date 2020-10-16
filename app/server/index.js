@@ -41,7 +41,7 @@ module.exports = class UserInterface {
   
       //config camera streams    
       debug('Configuring cameras');
-      streams.init(this.accessories, this.config.ssl, this.database.Settings());
+      streams.init(this.log, this.accessories, this.config.ssl, this.database.Settings());
       
       //config app
       debug('Configuring app');

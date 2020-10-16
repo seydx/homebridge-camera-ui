@@ -8,7 +8,7 @@
   let url = (ssl ? 'wss://' : 'ws://') + document.location.hostname + ':' + port + '/';
   let loader = '#' + camId + 'LDR';
 
-  if(ping){
+  if(ping && port){
     await timeout(1000);
     let player = new JSMpeg.Player(url, { canvas: object });
     $(loader).velocity({ opacity: 0, display: 'none' });

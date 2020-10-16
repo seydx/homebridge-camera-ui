@@ -4,6 +4,7 @@ const debug = require('debug')('CameraUI');
 const networkInterfaceDefault = require('systeminformation').networkInterfaceDefault; 
 const os = require('os');
 const fs = require('fs-extra');
+const { v4: uuidv4 } = require('uuid');
 
 const UserInterface = require('../app/server/index.js');
 const packageFile = require('../package.json');
@@ -224,11 +225,11 @@ CameraUI.prototype = {
     this.ui = new UserInterface(this.api, this.log, this.config, this.accessories);
     await this.ui.init();
     
-    if(this.config.reset){
+    if(this.config.reset && this.config.auth === 'form'){
       let db = this.ui.database.db;
       db.get('users').remove({ role: 'Master' }).write();
       db.get('users').push({
-        id: 0,
+        id: uuidv4(),
         username: 'admin',
         password: 'admin',
         role: 'Master',

@@ -119,12 +119,14 @@ block content
               each camEntry in Object.keys(settings.cameras)
                 - room = settings.cameras[camEntry].room.replace(/\s/g,"");
                 - ping = settings.cameras[camEntry].ping
+                - source = settings.cameras[camEntry].source
+                - imgSource = settings.cameras[camEntry].stillImageSource
                 - info = settings.cameras[camEntry].info
                 - cam = camEntry.replace(/\s/g,"") 
                 .video-cards.col-lg-6.col-md-6.col-12(data-filterable='yes', class=room)
                   .card.bg-transparent.no-shadow
                     a.position-relative.h-255px(href="/camera/" + camEntry, target="_self", aria-label=camEntry)
-                      if ping
+                      if ping && (cameras[camEntry].source || cameras[camEntry].sillImageSource) 
                         .lds-ring(id=cam + 'LDR')
                           div
                           div

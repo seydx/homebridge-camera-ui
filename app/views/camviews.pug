@@ -46,7 +46,7 @@ block content
             - livestream = settings.camviews.cameras[camEntry].livestream
             - cam = camEntry.replace(/\s/g,"")
             if active
-              if !ping
+              if !ping || !cameras[camEntry].socketPort || !cameras[camEntry].source
                 .grid-stack-item(data-gs-id=index)
                   .grid-stack-item-content
                     .nameOverlay.mt-save= camEntry

@@ -175,7 +175,7 @@
 
       await timeout(1000);
         
-      if (cameras[i].ping && $(loader).length) {
+      if (cameras[i].ping && cameras[i].socketPort && cameras[i].source && $(loader).length) {
           
         let liveStream = false;
           
@@ -203,8 +203,7 @@
         }
       } else {
       
-        if(!cameras[i].ping)
-          $.snack('error', cameras[i].originName + ' offline!', 3000);
+        $.snack('error', cameras[i].originName + ' offline!', 3000);
       
       }
     }
