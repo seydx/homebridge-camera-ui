@@ -38,7 +38,7 @@ CameraUI is a homebridge user interface to control your cameras. It supports alm
 
 
 ```
-sudo npm install -g --unsafe-perm homebridge-camera-ui
+sudo npm install -g --unsafe-perm homebridge-camera-ui@latest
 ```
 
 
