@@ -178,7 +178,8 @@ module.exports = {
     });
     const upload = multer({ storage: storage });
     
-    app.set('trust proxy', 1);
+    if(config.ssl)
+      app.set('trust proxy', 1);
      
     sessionMiddleware = session({
       genid: (req) => {
@@ -188,15 +189,14 @@ module.exports = {
       name: 'camera.ui',
       resave: true,
       saveUninitialized: false,
-      proxy: true,
+      proxy: config.ssl ? true : false,
       store: new FileStore({
         path: configPath + '/db/session/',
         logFn: function(){},
         ttl: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 : profile.logoutTimer * 60 * 60 //in seconds
       }),
       cookie: {
-        secure: 'auto',
-        httpOnly: true,
+        secure: config.ssl ? true : false,
         maxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000, //miliseconds,
         originalMaxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000    
       }
@@ -258,30 +258,21 @@ module.exports = {
     }));
     
     const locals = function (req, res, next) {
-      
-      let dshbrd = db_settings.getDashboard();
-      let cmvws = db_settings.getCamviews();
-      let cams = db_cameras.getCameras();
-      let nots = db_notifications.getNots();
-      let lastNotifications = db_notifications.getLastNotifications();
-      let sttngs = db_settings.get();
-      let wbpsh = db_settings.getWebpush();      
-      let usrs = db_users.get();
-      
+  
       res.locals.noAuth = req.session.noAuth;
       res.locals.username = req.session.username;
       res.locals.role = req.session.role;
       res.locals.photo = req.session.photo;
       
-      res.locals.dashboard = dshbrd;
-      res.locals.camview = cmvws;
-      res.locals.cameras = cams;
-      res.locals.notifications = nots;
-      res.locals.not_size = nots.length; 
-      res.locals.lastNotifications = lastNotifications; 
-      res.locals.settings = sttngs;
-      res.locals.keys = wbpsh;
-      res.locals.users = usrs;
+      res.locals.dashboard = db_settings.getDashboard();
+      res.locals.camview = db_settings.getCamviews();
+      res.locals.cameras = db_cameras.getCameras();
+      res.locals.notifications = db_notifications.getNots();
+      res.locals.not_size = res.locals.notifications.length; 
+      res.locals.lastNotifications = db_notifications.getLastNotifications();
+      res.locals.settings = db_settings.get();
+      res.locals.keys = db_settings.getWebpush();
+      res.locals.users = db_users.get();
       
       res.locals.ssl = config.ssl ? true : false;
       res.locals.flash = req.flash();

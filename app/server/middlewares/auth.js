@@ -10,6 +10,14 @@ module.exports = (auth, db_users) => {
   auth = auth === 'form';
   
   function ensureAuthenticated(req, res, next) {
+    
+    debug({
+      userID: req.session.userID ? req.session.userID : false,
+      message: 'ensure admin',
+      url: req.originalUrl,
+      authenticated: req.isAuthenticated(),
+      noAuth: req.session.noAuth || false
+    });
   
     if (req.isAuthenticated() || !auth) {
       
@@ -48,6 +56,14 @@ module.exports = (auth, db_users) => {
   ensureAuthenticated.unless = unless;
   
   function ensureAdmin(req, res, next) {
+    
+    debug({
+      userID: req.session.userID ? req.session.userID : false,
+      message: 'ensure admin',
+      url: req.originalUrl,
+      authenticated: req.isAuthenticated(),
+      noAuth: req.session.noAuth || false
+    });
     
     if (req.isAuthenticated() || !auth) {
    
