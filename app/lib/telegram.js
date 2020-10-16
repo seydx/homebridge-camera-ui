@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface')
+const debug = require('debug')('CameraUIInterface');
 
 const { Telegraf } = require('telegraf');
 
@@ -37,7 +37,7 @@ module.exports = {
     
     await bot.stop();
     
-    return
+    return;
     
   },
   
@@ -49,19 +49,19 @@ module.exports = {
       
       if(content.message){
       
-        debug('Telegram: Sending Message (%s)', content.txt)
+        debug('Telegram: Sending Message (%s)', content.txt);
         await bot.sendMessage(telegram.chatID, content.txt);
       
       } else if(content.photo){
       
         //await bot.sendMessage(telegram.chatID, content.txt);
-        debug('Telegram: Sending Photo (%s)', content.img)
+        debug('Telegram: Sending Photo (%s)', content.img);
         await bot.sendPhoto(telegram.chatID, {source: content.img});
       
       } else { //content.video
       
         //await bot.sendMessage(telegram.chatID, content.txt);
-        debug('Telegram: Sending Video (%s)', content.vid)
+        debug('Telegram: Sending Video (%s)', content.vid);
         await bot.sendVideo(telegram.chatID, {source: content.vid});
       
       }
@@ -76,4 +76,4 @@ module.exports = {
     
   }
   
-}
+};

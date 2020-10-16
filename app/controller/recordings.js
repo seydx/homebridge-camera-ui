@@ -3,8 +3,6 @@
 const express = require('express');
 const router = express.Router();
 
-const db = require('../models/recordings');
-const FileSync = require('lowdb/adapters/FileSync');
 const path = require('path');
 
 module.exports = (app, db_settings, db_recordings) => {

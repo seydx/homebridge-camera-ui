@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('CameraUIInterface');
-const fs = require('fs-extra');
 const moment = require('moment');
 
 const socket = require('../server/socket');
@@ -167,4 +166,4 @@ module.exports = {
     
   }
 
-}
+};

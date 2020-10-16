@@ -17,13 +17,8 @@ module.exports = (app, upload, db_settings, db_users) => {
   
   router.post('/', upload.single('photo'), async (req, res, next) => { // eslint-disable-line no-unused-vars
     
-    let profile = db_settings.getProfile();
-    
     let user = db_users.getUser(req.session.username);
     let data = JSON.parse(req.body.data);
-    
-    let file = req.file;
-    let photo = user.photo;
     
     let changedCr = false;
     

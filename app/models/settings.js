@@ -4,7 +4,6 @@ const debug = require('debug')('CameraUIInterface');
 
 const bcrypt = require('bcrypt');
 const fs = require('fs');
-const path = require('path');
 
 const streams = require('../lib/streams');
 
@@ -12,81 +11,81 @@ module.exports = (db, accessories, configPath, db_users) => {
   
   function get(){
   
-     let settings = db.get('settings').value();
+    let settings = db.get('settings').value();
     
-     return settings;
+    return settings;
     
   }
   
   function getProfile(){
   
-     let profile = db.get('settings').get('profile').value();
+    let profile = db.get('settings').get('profile').value();
     
-     return profile;
+    return profile;
     
   }
   
   function getDashboard(){
   
-     let dashboard = db.get('settings').get('dashboard').value();
+    let dashboard = db.get('settings').get('dashboard').value();
     
-     return dashboard;
+    return dashboard;
     
   }
   
   function getCameras(){
   
-     let cameras = db.get('settings').get('cameras').value();
+    let cameras = db.get('settings').get('cameras').value();
     
-     return cameras;
+    return cameras;
     
   }
   
   function getRecordings(){
   
-     let recordings = db.get('settings').get('recordings').value();
+    let recordings = db.get('settings').get('recordings').value();
     
-     return recordings;
+    return recordings;
     
   }
   
   function getNotifications(){
   
-     let notifications = db.get('settings').get('notifications').value();
+    let notifications = db.get('settings').get('notifications').value();
     
-     return notifications;
+    return notifications;
     
   }
   
   function getTelegram(){
   
-     let telegram = db.get('settings').get('telegram').value();
+    let telegram = db.get('settings').get('telegram').value();
     
-     return telegram;
+    return telegram;
     
   }
   
   function getWebhook(){
   
-     let webhook = db.get('settings').get('webhook').value();
+    let webhook = db.get('settings').get('webhook').value();
     
-     return webhook;
+    return webhook;
     
   }
   
   function getCamviews(){
   
-     let camviews = db.get('settings').get('camviews').value();
+    let camviews = db.get('settings').get('camviews').value();
     
-     return camviews;
+    return camviews;
     
   }
   
   function getWebpush(){
   
-     let webpush = db.get('settings').get('webpush').value();
+    let webpush = db.get('settings').get('webpush').value();
     
-     return webpush;
+    return webpush;
     
   }
   
@@ -119,8 +118,8 @@ module.exports = (db, accessories, configPath, db_users) => {
         
         } catch(err) {
           
-          debug('An error occured during checking profile picture!')
-          debug(err)
+          debug('An error occured during checking profile picture!');
+          debug(err);
         
           photo = '/images/user/anonym.png';
         
@@ -180,10 +179,10 @@ module.exports = (db, accessories, configPath, db_users) => {
         dashboard = { refreshTimer: data.dashboard.refreshTimer, cameras: {} };
         cameras = {};
         camviews = { refreshTimer: data.camviews.refreshTimer, cameras: {} };
-        telegram = { active: data.telegram.active, token: data.telegram.token, chatID: data.telegram.chatID, motionOn: (data.telegram.motionOn || ''), cameras: {} }
-        webhook = { active: data.webhook.active, cameras: {} }
+        telegram = { active: data.telegram.active, token: data.telegram.token, chatID: data.telegram.chatID, motionOn: (data.telegram.motionOn || ''), cameras: {} };
+        webhook = { active: data.webhook.active, cameras: {} };
         
-        accessories.map((accessory,index) => {
+        accessories.map(accessory => {
           
           dashboard.cameras[accessory.displayName] = {};
           dashboard.cameras[accessory.displayName].active = false;
@@ -252,7 +251,7 @@ module.exports = (db, accessories, configPath, db_users) => {
                 
                 if(stream){
                 
-                  streams.set(cam, { '-s': data.cameras[cam].resolutions })
+                  streams.set(cam, { '-s': data.cameras[cam].resolutions });
                 
                   if(data.cameras[cam].audio){
                   
@@ -294,7 +293,7 @@ module.exports = (db, accessories, configPath, db_users) => {
             for(const i in users){
               
               let user = users[i].username.replace(/\s/g, '');
-              let role = users[i].role
+              let role = users[i].role;
              
               let remove = true;
                
@@ -343,14 +342,14 @@ module.exports = (db, accessories, configPath, db_users) => {
         
         profile = {
           logoutTimer: data.profile.logoutTimer
-        }
+        };
         
         general = {
           darkmode: data.general.darkmode || false,
           atHome: data.general.atHome || false,
           exclude: data.general.exclude || [],
           rooms: data.general.rooms 
-        }
+        };
         
         recordings = {
           active: data.recordings.active || false,
@@ -358,12 +357,12 @@ module.exports = (db, accessories, configPath, db_users) => {
           timer: data.recordings.timer,
           path: data.recordings.path || configPath + '/recordings',
           removeAfter: data.recordings.removeAfter
-        }
+        };
         
         notifications = {
           clearTimer: data.notifications.clearTimer,
           clearBanner: data.notifications.clearBanner
-        }
+        };
         
       }
 
@@ -382,7 +381,7 @@ module.exports = (db, accessories, configPath, db_users) => {
       webpush: webpush || db.get('settings').get('webpush').value() 
     }).write();
     
-    debug('Settings updated!')
+    debug('Settings updated!');
     
     return;
     
@@ -394,8 +393,9 @@ module.exports = (db, accessories, configPath, db_users) => {
     let cameras = {};
     let camviews = { refreshTimer: '60', cameras: {} };
     let telegram = { active: false, token: '', chatID: '', motionOn: '', cameras: {} };
+    let webhook = { active: false, cameras: {} };
   
-    accessories.map((accessory,index) => {
+    accessories.map(accessory => {
        
       let skip = false;
      
@@ -464,7 +464,7 @@ module.exports = (db, accessories, configPath, db_users) => {
       }
     }).write();
     
-    debug('Settings resetted!')
+    debug('Settings resetted!');
     
     return;
     
@@ -483,6 +483,6 @@ module.exports = (db, accessories, configPath, db_users) => {
     getWebpush: getWebpush,
     update: update,
     reset: reset
-  }
+  };
   
-}
+};

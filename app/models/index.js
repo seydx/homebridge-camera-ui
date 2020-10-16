@@ -17,8 +17,6 @@ const recordings_model = require('./recordings');
 const settings_model = require('./settings');
 const users_model = require('./users');
 
-var log, accessories, configPath 
-
 module.exports = class DB {
 
   constructor(log, accessories, configPath){
@@ -51,7 +49,7 @@ module.exports = class DB {
       await fs.ensureFile(this.configPath + '/db/session/session.json');
       
       // check if users folder exist for profile pictures, otherwise create
-      await fs.ensureDir(this.configPath + '/db/users')
+      await fs.ensureDir(this.configPath + '/db/users');
       
       // init database
       const adapter = new FileSync(this.configPath + '/db/cameraui.db.json');
@@ -93,7 +91,7 @@ module.exports = class DB {
         
         if(!master){
           
-          debug('Can not find "Master" in database! Resetting Master credentials!')
+          debug('Can not find "Master" in database! Resetting Master credentials!');
           
           this.db.get('users').push({
             id: uuidv4(),
@@ -119,7 +117,7 @@ module.exports = class DB {
         
       }
       
-      this.accessories.map((accessory,index) => {
+      this.accessories.map(accessory => {
       
         cams[accessory.displayName] = accessory.context.videoConfig;
         cams[accessory.displayName].name = accessory.displayName.replace(/\s+/g, '');
@@ -272,4 +270,4 @@ module.exports = class DB {
     
   }
   
-}
+};

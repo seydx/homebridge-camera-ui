@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface')
+const debug = require('debug')('CameraUIInterface');
 
 const app = require('./app');
 const database = require('../models/index');
@@ -10,8 +10,6 @@ const server = require('./server');
 const socket = require('./socket');
 const streams = require('../lib/streams');
 const webhook = require('../lib/webhook');
-
-const fs = require('fs-extra');
 
 module.exports = class UserInterface {
   
@@ -34,44 +32,44 @@ module.exports = class UserInterface {
     
     try {
       
-      this.log('Configuring User Interface')
+      this.log('Configuring User Interface');
       
       //config database and cameras
-      debug('Configuring database')
+      debug('Configuring database');
       this.database = new database(this.log, this.accessories, this.api.user.storagePath());
       await this.database.init();
   
       //config camera streams    
-      debug('Configuring cameras')
+      debug('Configuring cameras');
       streams.init(this.accessories, this.config.ssl, this.database.Settings());
       
       //config app
-      debug('Configuring app')
+      debug('Configuring app');
       app.init(this.config, this.accessories, this.database, this.api.user.storagePath());
   
       //config and start server
-      debug('Configuring server')
+      debug('Configuring server');
       //await server.start(this.log, this.config.ssl);
       server.init(this.log, this.config.ssl);
   
       //config socket and listen to server
-      debug('Configuring socket')
-      socket.init(this.database.Users());
+      debug('Configuring socket');
+      socket.init();
       
       //config clear timer
-      debug('Configuring clear timer')
+      debug('Configuring clear timer');
       await cleartimer.init(this.database);
   
       //start motion handler
-      debug('Configuring handler')
+      debug('Configuring handler');
       handler.init(this.database, this.config.language);
   
       //start webhook handler
-      debug('Configuring webhook')
+      debug('Configuring webhook');
       webhook.init(this.database);
       
       //everything started successfully, now lets start the server!
-      this.log('Starting User Interface')
+      this.log('Starting User Interface');
       server.start();
       
     } catch(err) {
@@ -84,4 +82,4 @@ module.exports = class UserInterface {
 
   }
   
-}
+};

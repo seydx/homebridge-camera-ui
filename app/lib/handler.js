@@ -7,7 +7,7 @@ const socket = require('../server/socket');
 
 const http = require('http');
 const https = require('https');
-const URL = require("url").URL;
+const URL = require('url').URL;
 
 const moment = require('moment');
 const webpush = require('web-push');
@@ -52,23 +52,22 @@ const splitUrl = (url) => {
     port: port,
     pathname: pathname,
     params: params
-  }
+  };
 
-}
+};
 
-var database, language, webpushhh, telegramCredentials, telegramBot;  
+var database, webpushhh, telegramCredentials, telegramBot;  
 
 module.exports = {
 
-  init(db, lng){
+  init(db){
   
     database = db;
-    language = lng;
     
     telegramCredentials = {
       token: database.db.get('settings').get('telegram').get('token').value(),
       chatID: database.db.get('settings').get('telegram').get('chatID').value()
-    }
+    };
     
     return;
   
@@ -102,7 +101,7 @@ module.exports = {
       let time = {
         time: moment().format('DD.MM.YYYY, HH:mm:ss'),
         timestamp: moment().unix()
-      }
+      };
       
       let rndm = crypto.randomBytes(5).toString('hex');
       
@@ -184,11 +183,11 @@ module.exports = {
           // The whole response has been received. Print out the result.
           resp.on('end', () => {
             debug('%s: Webhook Endpoint triggered successfully!', accessory.displayName);
-            debug('Data: ' + data.toString())
+            debug('Data: ' + data.toString());
           });
         
-        }).on("error", (err) => {
-          debug("%s Error: " + err.message, accessory.displayName);
+        }).on('error', (err) => {
+          debug('%s Error: ' + err.message, accessory.displayName);
         });
       
       } else {
@@ -221,7 +220,7 @@ module.exports = {
         telegramCredentials = {
           token: tlgrm.token,
           chatID: tlgrm.chatID
-        }
+        };
         
         if(telegramBot){
           await Telegram.stop(telegramBot);
@@ -232,7 +231,6 @@ module.exports = {
         
       }
       
-      let tlgrmCamera = tlgrm.cameras[accessory.displayName];
       let tlgrmCameraType = tlgrm.cameras[accessory.displayName].type;
       let motionTxt = tlgrm.motionOn && tlgrm.motionOn !== '' ? tlgrm.motionOn : false;
       
@@ -263,25 +261,25 @@ module.exports = {
     let webpush_not = {
       ...notification,
       detect_info: 'detected a new movement on'
-    }
+    };
     
     if(web_push.subscription){
       debug('%s: Sending new webpush notification', accessory.displayName);
       webpush.sendNotification(web_push.subscription, JSON.stringify(webpush_not))
         .catch(async error => {
           if(error.statusCode === 410){
-            debug('Web-Push Notification Grant changed! Removing subscription..')
+            debug('Web-Push Notification Grant changed! Removing subscription..');
             await database.Settings().update(false, false, false, false, false, false, false, false, false, {
               pub_key: web_push.pub_key,
               priv_key: web_push.priv_key,
               subscription: false
             });
           } else {
-            debug('An error occured during sending Wep-Push Notification!', error.body)
+            debug('An error occured during sending Wep-Push Notification!', error.body);
           }
         });
-      }
+    }
     
   }
 
-}
+};

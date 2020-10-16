@@ -1,7 +1,7 @@
 'use strict';
 
 const debug = require('debug')('CameraUISocket');
-const sharedsession = require("express-socket.io-session");
+const sharedsession = require('express-socket.io-session');
 
 const socketIO = require('socket.io');
 
@@ -10,7 +10,7 @@ let io_session = {};
 
 module.exports = {
 
-  init: function(db_users){
+  init: function(){
   
     io = socketIO(require('./server').get());
     
@@ -27,7 +27,7 @@ module.exports = {
         
     io.on('connection', socket => {
       
-      debug("Socket connection from %s", socket.handshake.session.username); 
+      debug('Socket connection from %s', socket.handshake.session.username); 
       
       socket.on('session', session => {
         
@@ -57,7 +57,7 @@ module.exports = {
   
   io: function(target, options){
   
-    io.emit(target, options)
+    io.emit(target, options);
   
   },
   
@@ -67,4 +67,4 @@ module.exports = {
   
   }
 
-}
+};

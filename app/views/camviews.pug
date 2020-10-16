@@ -30,7 +30,7 @@ block content
       each camEntry in Object.keys(settings.camviews.cameras)
         if settings.camviews.cameras[camEntry]
           - activeCams = activeCams + 1
-      a#skipclick.btn.btn-secondary.camview-btn-back.mt-save.ml-save.zi9.go-back-page(href='#back', target='_self')=t('views.camviews.btn_back')
+      a#skipclick.btn.btn-secondary.camview-btn-back.mt-save.ml-save.zi9(href='/dashboard', target='_self')=t('navigation.dashboard')
       if is_desktop && activeCams
         a#skipclick.btn.btn-light.camview-btn-fullscreen.mt-save.zi9(href='#')=t('views.camviews.btn_fullscreen')
       if !noAuth

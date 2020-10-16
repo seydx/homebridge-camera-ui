@@ -18,7 +18,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
         user: req.session.user
       });
     } else {
-      res.redirect('/')
+      res.redirect('/');
     }
     
   });
@@ -26,8 +26,6 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
   router.post('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
   
     delete req.session.user;
-  
-    let mobile = req.body.mobile === 'true';
     
     let username = req.body.username;
     let username_new = req.body.username_new;
@@ -61,7 +59,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
     db_users.change(false, {
       username: username_new,
       password: password_new,
-      changed: "yes"
+      changed: 'yes'
     }, false, adminUser.role);
     
     req.body.username = username_new;
@@ -100,8 +98,8 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
       
         if (err){
           
-          debug('An error occured during login process!')
-          debug(err.message)
+          debug('An error occured during login process!');
+          debug(err.message);
           
           return res.status(500).send({
             message: err.message
@@ -121,7 +119,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
         req.session.role = user.role;
         req.session.photo = user.photo + '?r=' + Math.random();
         
-        socket.io('login', user)
+        socket.io('login', user);
          
         if(sessionTimer){
           
@@ -142,7 +140,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
             delete req.session.role;
             delete req.session.photo;
             
-            socket.io('logout_user', user.username)                                               
+            socket.io('logout_user', user.username);                                               
           
           }, sessionTimer + 30000);
         
@@ -162,7 +160,7 @@ module.exports = (app, db_settings, db_users, autoSignout) => {
             role: user.role
           });
         
-        })
+        });
         
       });
       

@@ -17,14 +17,13 @@ module.exports = () => {
       if(validMain){
       
         let session = socket.session();
-        let username = req.session.username;
         
         if(session[req.sessionID]){
           let validSession = session[req.sessionID];
           if(!validSession.targetUrl && validSession.currentUrl !== req.originalUrl){
             let valid = validUrls.some(site => validSession.currentUrl.includes(site));
             if(valid){
-              return res.redirect(validSession.currentUrl)
+              return res.redirect(validSession.currentUrl);
             } else {
               return next(createError(404));
             }
@@ -47,6 +46,6 @@ module.exports = () => {
   
   return {
     session: session
-  }
+  };
   
-}
+};

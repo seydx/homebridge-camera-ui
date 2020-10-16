@@ -91,6 +91,6 @@ module.exports = (auth, db_users) => {
   return {
     ensureAuthenticated: ensureAuthenticated,
     ensureAdmin: ensureAdmin
-  }
+  };
   
-}
+};

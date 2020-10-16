@@ -32,13 +32,13 @@ module.exports = (db, camDb) => {
       
       try {
         
-        debug('Trying to ping %s', camera)
+        debug('Trying to ping %s', camera);
         
         state = await Ping.ping(cam);
         
       } catch(err) {
         
-        debug('An error occured during pinging %s', camera, err)
+        debug('An error occured during pinging %s', camera, err);
         state = false;
         
       }
@@ -59,8 +59,6 @@ module.exports = (db, camDb) => {
   
   async function pingCameras(){
     
-    let state = false;
-    
     let cams = getCameras();
     
     for(const camera of Object.keys(cams)){
@@ -71,13 +69,13 @@ module.exports = (db, camDb) => {
       
         let cam = cams[camera];
         
-        debug('Trying to ping %s', camera)
+        debug('Trying to ping %s', camera);
         
         state = await Ping.ping(cam);
         
       } catch(err) {
         
-        debug('An error occured during pinging %s', camera, err)
+        debug('An error occured during pinging %s', camera, err);
         
       }
       
@@ -100,6 +98,6 @@ module.exports = (db, camDb) => {
     getCameras: getCameras,
     pingCamera: pingCamera,
     pingCameras: pingCameras
-  }
+  };
   
-}
+};

@@ -64,11 +64,11 @@
         if (this.checked) {
           let title = getTitle();
           if(title === 'Cameras'){
-            title = window.i18next.t('views.cameras.title')
+            title = window.i18next.t('views.cameras.title');
           } else if(title === 'Notifications'){
-            title = window.i18next.t('views.notifications.title')
+            title = window.i18next.t('views.notifications.title');
           } else if(title === 'Recordings'){
-            title = window.i18next.t('views.recordings.title')
+            title = window.i18next.t('views.recordings.title');
           }
           breadTitle = title = window.i18next.t('breadcrumb.all') + ' ' + title;
           setTimeout(() => {

@@ -16,6 +16,7 @@
             "auth": "form",
             "debug": true,
             "reset": false,
+            "language": "auto",
             "mqtt": {
                 "active": true,
                 "host": "192.168.178.123",
@@ -36,8 +37,7 @@
             "options": {
                 "videoProcessor": "ffmpeg",
                 "interfaceName": "eth0",
-                "ffmpegExecPath": "/usr/bin/ffmpeg",
-                "language": "DE"
+                "ffmpegExecPath": "/usr/bin/ffmpeg"
             },
             "cameras": [
                 {
