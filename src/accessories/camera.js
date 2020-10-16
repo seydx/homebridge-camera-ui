@@ -6,7 +6,6 @@ const networkInterfaceDefault = require('systeminformation').networkInterfaceDef
 const os = require('os');
 const getPort = require('get-port');
 const createSocket = require('dgram').createSocket;
-const Socket  = require('dgram').Socket ;
 
 const FfmpegProcess = require('../helper/ffmpeg.js');
 

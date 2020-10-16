@@ -220,7 +220,7 @@ CameraUI.prototype = {
     if (this.config.http)
       this.http = new Http(this.log, this.config, this.handler);
       
-        //start ui after everything done
+    //start ui after everything done
     this.ui = new UserInterface(this.api, this.log, this.config, this.accessories);
     await this.ui.init();
     
