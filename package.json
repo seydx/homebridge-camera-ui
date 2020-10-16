@@ -15,7 +15,7 @@
     }
   ],
   "scripts": {
-    "postinstall": "npm install --prefix app"
+    "postinstall": "cd app && npm install"
   },
   "repository": {
     "type": "git",
