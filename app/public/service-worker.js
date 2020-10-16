@@ -134,7 +134,7 @@ const urlsToCache = [
 
 function firstWindowClient() {
   return clients.matchAll({ type: 'window' }).then(function(windowClients) {
-    return windowClients.length ? windowClients[0] : Promise.reject("No clients");
+    return windowClients.length ? windowClients[0] : Promise.reject('No clients');
   });
 }
 
@@ -167,7 +167,7 @@ self.addEventListener('fetch', (event) => {
      event.request.url.includes('/socket.io') ||
      event.request.url.endsWith('/camviews')){
      
-    return false
+    return false;
     
   }
 
@@ -245,7 +245,7 @@ self.addEventListener('notificationclick', function(event) {
   if (options.action == 'default' || options.action == 'focus-only') {
     promise =
         promise.then(function() { return firstWindowClient(); })
-               .then(function(client) { return client.focus(); });
+          .then(function(client) { return client.focus(); });
     if (options.action == 'default') {
       promise = promise.catch(function() { clients.openWindow(options.url); });
     }
@@ -283,8 +283,8 @@ self.addEventListener('push', event => {
 
   const data = event.data.json();
   
-  self.registration.showNotification(data.name + ' (' + data.type + ')', {
-    type: "image",
+  self.registration.showNotification(data.originName + ' (' + data.type + ')', {
+    type: 'image',
     dir: 'auto',
     body: (data.name + ' ' + data.detect_info + ' ' + data.time),
     tag: 'CameraUI',
@@ -292,8 +292,8 @@ self.addEventListener('push', event => {
     badge: 'images/web/logo_transparent-256.png',
     icon: 'images/web/logo_transparent-256.png',
     iconUrl: 'images/web/logo_transparent-256.png',
-    image: (data.storing ? "files/" + data.id + (data.fileType === "Video" ? "@2.jpeg" : ".jpeg") : "images/web/no_recordings.png"),
-    imageUrl: (data.storing ? "files/" + data.id + (data.fileType === "Video" ? "@2.jpeg" : ".jpeg") : "images/web/no_recordings.png"),
+    image: (data.storing ? 'files/' + data.id + (data.fileType === 'Video' ? '@2.jpeg' : '.jpeg') : 'images/web/no_recordings.png'),
+    imageUrl: (data.storing ? 'files/' + data.id + (data.fileType === 'Video' ? '@2.jpeg' : '.jpeg') : 'images/web/no_recordings.png'),
     vibrate: [100, 50, 100],
     eventTime: Date.now(),
     timestamp: Date.now(),
@@ -302,7 +302,7 @@ self.addEventListener('push', event => {
         action: 'open-only',
         close: true,
         //url: self.location.origin,
-        url: self.location.origin + (data.storing ? "/files/" + data.id + (data.fileType === "Video" ? ".mp4" : ".jpeg") : "/notifications")
+        url: self.location.origin + (data.storing ? '/files/' + data.id + (data.fileType === 'Video' ? '.mp4' : '.jpeg') : '/notifications')
       }
     },
     actions: [
@@ -315,16 +315,16 @@ self.addEventListener('push', event => {
   
 });
 
-self.addEventListener("pushsubscriptionchange", event => {
+self.addEventListener('pushsubscriptionchange', event => {
   event.waitUntil(swRegistration.pushManager.subscribe(event.oldSubscription.options)
     .then(subscription => {
       $.ajax({
         url:'/subscribe',
-        type:"POST",
+        type:'POST',
         data:JSON.stringify(subscription),
-        contentType:"application/json; charset=utf-8",
-        dataType:"json"
-      })
+        contentType:'application/json; charset=utf-8',
+        dataType:'json'
+      });
     })
   );
 }, false);

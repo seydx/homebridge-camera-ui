@@ -23,16 +23,16 @@
   const viewport = $('meta[name="viewport"]');
 
   $('a[data-rel^=lightcase]').lightcase({
-     onStart: {
-       bar: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, viewport-fit=cover");
-       }
-     },
-     onClose: {
-       grault: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover");
-       }
-     }
+    onStart: {
+      bar: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
+      }
+    },
+    onClose: {
+      grault: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover');
+      }
+    }
   });
   
   $('html, body').attr('style', 'position: relative; overflow-x: hidden; overflow-y: visible; height: 100vh; background: #000000!important');
@@ -43,8 +43,8 @@
     $(hideShowButtons)
       .velocity({ opacity: 0, display: 'none' })
       .then(() => {
-        $(hideShowButtons).attr("style", "display: none !important; opacity: 0!important");
-      })
+        $(hideShowButtons).attr('style', 'display: none !important; opacity: 0!important');
+      });
   }, 1000);
   
   $(window).on('click', function (e) {
@@ -59,13 +59,13 @@
         $(hideShowButtons)
           .velocity({ opacity: 0, display: 'none' })
           .then(function(){
-            $(hideShowButtons).attr("style", "display: block !important; opacity: 100!important");
+            $(hideShowButtons).attr('style', 'display: block !important; opacity: 100!important');
           });
       } else {
         $(hideShowButtons)
           .velocity({ opacity: 0, display: 'none' })
           .then(function(){
-            $(hideShowButtons).attr("style", "display: none !important; opacity: 0!important");
+            $(hideShowButtons).attr('style', 'display: none !important; opacity: 0!important');
           });
       }
     }
@@ -161,49 +161,49 @@
     
     let restoreCameras = function(){
     
-       if(!($('.grid-stack-item-content').hasClass('overflow-hidden'))){
+      if(!($('.grid-stack-item-content').hasClass('overflow-hidden'))){
          
-         $('.grid-stack-item-content').addClass('overflow-hidden');
+        $('.grid-stack-item-content').addClass('overflow-hidden');
          
-         let cameras = Object.keys(camviews.cameras);
+        let cameras = Object.keys(camviews.cameras);
          
-         let activeCameras = [];
+        let activeCameras = [];
          
-         cameras.forEach(cam => {
-           if(camviews.cameras[cam].active){
-             camviews.cameras[cam].camName = cam.replace(/\s/g,"");
-             activeCameras.push(camviews.cameras[cam])
-           }
-         })
+        cameras.forEach(cam => {
+          if(camviews.cameras[cam].active){
+            camviews.cameras[cam].camName = cam.replace(/\s/g,'');
+            activeCameras.push(camviews.cameras[cam]);
+          }
+        });
          
-         $('.grid-stack-item-content').each((index,ele) => { 
+        $('.grid-stack-item-content').each((index,ele) => { 
          
-             let active = activeCameras[index].active;
-             let ping = activeCameras[index].ping;
-             let livestream = activeCameras[index].livestream;
-             let cam = activeCameras[index].camName;
-             let camEntry = activeCameras[index].name;
+          let active = activeCameras[index].active;
+          let ping = activeCameras[index].ping;
+          let livestream = activeCameras[index].livestream;
+          let cam = activeCameras[index].camName;
+          let camEntry = activeCameras[index].name;
              
-             let lastNotification = getLastNotifications();
-             let notification;
+          let lastNotification = getLastNotifications();
+          let notification;
              
-             for(const not in lastNotification)
-               if(not.name === camEntry)
-                  notification = not;
+          for(const not in lastNotification)
+            if(not.name === camEntry)
+              notification = not;
                  
-             let appendData;
+          let appendData;
              
-             if(active){
+          if(active){
              
-               if(!ping){
+            if(!ping){
                
-                 appendData = '<div class="nameOverlay mt-save">' + camEntry + '</div><svg class="bi bi-camera-video-off camview-offline-video" width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518l.605.847zM1.428 4.18A.999.999 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634l.58.814zM15 11.73l-3.5-1.555v-4.35L15 4.269v7.462zm-4.407 3.56l-10-14 .814-.58 10 14-.814.58z"></path></svg>'
+              appendData = '<div class="nameOverlay mt-save">' + camEntry + '</div><svg class="bi bi-camera-video-off camview-offline-video" width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518l.605.847zM1.428 4.18A.999.999 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634l.58.814zM15 11.73l-3.5-1.555v-4.35L15 4.269v7.462zm-4.407 3.56l-10-14 .814-.58 10 14-.814.58z"></path></svg>';
                  
-               } else {
+            } else {
                
-                 appendData = '<div class="liveSnap w-100 h-100" id="' + cam + '">' + 
+              appendData = '<div class="liveSnap w-100 h-100" id="' + cam + '">' + 
                    (!livestream ? 
-                   '<div class="lds-ring-cv" id="' + cam + 'LDR">'+
+                     '<div class="lds-ring-cv" id="' + cam + 'LDR">'+
                    '  <div></div>'+
                    '  <div></div>'+
                    '  <div></div>'+
@@ -212,31 +212,31 @@
                    '<div class="updateOverlay" id="' + cam + 'Timer"></div>'+
                    '<div class="nameOverlay mt-save">' + camEntry + '</div>'+
                    '<div class="w-100 h-100 fs-container" id="' + cam + 'Snap"></div>' : 
-                   '<div class="lds-ring" id="' + cam + 'LDR">'+
+                     '<div class="lds-ring" id="' + cam + 'LDR">'+
                    '  <div></div>'+
                    '  <div></div>'+
                    '  <div></div>'+
                    '  <div></div>'+
                    '</div>'+
                    '<div class="notOverlay text-center">' + window.i18next.t('views.camviews.lastnotification') + ': ' + (notification?
-                   '<a href=' + notification.storing ? "/notifications/" + notification.id + (notification.fileType === "Video" ? ".mp4" : ".jpeg") : "/images/web/no_recordings.png" + ' id="' + cam + 'Not" data-rel="lightcase"' + notification.timestamp + '</a>' :
-                   '<span id="' + cam + 'Not">' + window.i18next.t('views.camviews.nodata') + '</span>') + '</div>'+
+                       '<a href=' + notification.storing ? '/notifications/' + notification.id + (notification.fileType === 'Video' ? '.mp4' : '.jpeg') : '/images/web/no_recordings.png' + ' id="' + cam + 'Not" data-rel="lightcase"' + notification.timestamp + '</a>' :
+                       '<span id="' + cam + 'Not">' + window.i18next.t('views.camviews.nodata') + '</span>') + '</div>'+
                    '<div class="nameOverlay mt-save">' + camEntry + '</div>'+
                    '<canvas class="w-100 h-100 fs-container" id="' + cam + 'Stream"></canvas>'
                    ) + 
-                 '</div>'
+                 '</div>';
                
-               }
+            }
                
-               $(ele).append(appendData)
+            $(ele).append(appendData);
              
-             }
+          }
          
-         });
+        });
          
-       }
+      }
     
-    }
+    };
   
     let saveGrid = function() {
     
@@ -276,35 +276,35 @@
       
       $('.grid-stack-item').each(function(index,ele){
       
-          if(items > 2 && windowWidth > 500){
-            if(i >= 2){
-              i = 0;
-              curAmount = curAmount + 12/(items/2 + (items % 2 !== 0 ? 0.5 : 0));
-            }
+        if(items > 2 && windowWidth > 500){
+          if(i >= 2){
+            i = 0;
+            curAmount = curAmount + 12/(items/2 + (items % 2 !== 0 ? 0.5 : 0));
           }
+        }
           
-          let x = items < 3 ? 0 : (windowWidth > 500 ? (!index || index %2 === 0 ? 0 : 6) : 0);
-          let y = items < 2 ? 0 : items < 3 ? index*6 : (windowWidth > 500 ? curAmount : curAmount );
-          let itemWidth = items < 3 ? 12 : (windowWidth > 500 ? 6 : 12);
-          let itemHeight = items < 2 ? 12 : items < 3 ? 6 : (windowWidth > 500 ? (12/(items/2 + (items % 2 !== 0 ? 0.5 : 0))) : (12/(items + (items % 2 !== 0 ? 1 : 0))));
+        let x = items < 3 ? 0 : (windowWidth > 500 ? (!index || index %2 === 0 ? 0 : 6) : 0);
+        let y = items < 2 ? 0 : items < 3 ? index*6 : (windowWidth > 500 ? curAmount : curAmount );
+        let itemWidth = items < 3 ? 12 : (windowWidth > 500 ? 6 : 12);
+        let itemHeight = items < 2 ? 12 : items < 3 ? 6 : (windowWidth > 500 ? (12/(items/2 + (items % 2 !== 0 ? 0.5 : 0))) : (12/(items + (items % 2 !== 0 ? 1 : 0))));
           
-          serializedData.push({
-            x: x,
-            y: y,
-            width: itemWidth,
-            height: itemHeight,
-            id: idNr.toString()
-          })
+        serializedData.push({
+          x: x,
+          y: y,
+          width: itemWidth,
+          height: itemHeight,
+          id: idNr.toString()
+        });
           
-          grid.update(ele,x,y,itemWidth,itemHeight);
+        grid.update(ele,x,y,itemWidth,itemHeight);
           
-          if(items > 2 && windowWidth <= 500)
-            curAmount = curAmount + 12/(items + (items % 2 !== 0 ? 1 : 0) );
+        if(items > 2 && windowWidth <= 500)
+          curAmount = curAmount + 12/(items + (items % 2 !== 0 ? 1 : 0) );
           
-          if(items > 2 && windowWidth > 500)
-            i++;
+        if(items > 2 && windowWidth > 500)
+          i++;
             
-          idNr++;
+        idNr++;
     
       });            
     
@@ -315,10 +315,10 @@
       
       saveGrid();
       
-      $(this).text(window.i18next.t('views.camviews.btn_positions_saved'))
+      $(this).text(window.i18next.t('views.camviews.btn_positions_saved'));
       
       setTimeout(() => {
-        $(this).text(window.i18next.t('views.camviews.btn_positions'))
+        $(this).text(window.i18next.t('views.camviews.btn_positions'));
       }, 3000);
       
     });
@@ -501,7 +501,7 @@
             }, refreshTimer);
           }
         } else {
-          console.log(data)
+          console.log(data);
         }
       });
     } else {
@@ -544,8 +544,8 @@
         }
       } else {
       
-         if(!cameras[i].ping)
-           $.snack('error', cameras[i].originName + ' offline!', 3000)
+        if(!cameras[i].ping)
+          $.snack('error', cameras[i].originName + ' offline!', 3000);
       
       }
     }

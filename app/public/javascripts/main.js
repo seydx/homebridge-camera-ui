@@ -10,11 +10,11 @@
     stackable: true,
     pauseDelayOnHover: true, 
     style: {
-        toast: 'bg-secondary text-light mb-save',
-        info: '',
-        success: 'bg-success text-light mb-save',
-        warning: 'bg-warning text-dark mb-save',
-        error: 'bg-danger text-light mb-save'
+      toast: 'bg-secondary text-light mb-save',
+      info: '',
+      success: 'bg-success text-light mb-save',
+      warning: 'bg-warning text-dark mb-save',
+      error: 'bg-danger text-light mb-save'
     }
   };
   
@@ -66,18 +66,18 @@
   $(window).click(function(e){
     if(e.target && e.target.id === 'logoutBtn'){
       $('#main, #footer').velocity({ opacity: 0, display: 'none' }, 500)
-      .then( async () => {
-        $('#main, #footer').remove();
-        $('#loading').velocity({ opacity: 1, display: 'block' }, 500)
         .then( async () => {
-          await timeout(1500);
-          $('#loading').velocity({ opacity: 0, display: 'none' }, 500)
-          .then( () => {
-            $('#loading').remove();
-            window.location.replace('/logout');
-          });
+          $('#main, #footer').remove();
+          $('#loading').velocity({ opacity: 1, display: 'block' }, 500)
+            .then( async () => {
+              await timeout(1500);
+              $('#loading').velocity({ opacity: 0, display: 'none' }, 500)
+                .then( () => {
+                  $('#loading').remove();
+                  window.location.replace('/logout');
+                });
+            });
         });
-      });
     } 
     if(e.target && e.target.id === 'togglebutton'){
       if ($('body').hasClass('overflow-hidden')) {
@@ -160,12 +160,12 @@
     e.preventDefault();
     let targetUrl = $(this).attr('href');
     $('#main, #footer, #footer2, .back-to-top')
-    .velocity({ opacity: 0, display: 'none' }).then(async () => {
-      $('#main, #footer, #footer2, .back-to-top').remove();
-      $('#preloader').velocity({ opacity: 1, display: 'block' }, { duration: 250 });
-      await timeout(250);
-      window.location.replace(targetUrl);
-    });
+      .velocity({ opacity: 0, display: 'none' },0).then(async () => {
+        $('#main, #footer, #footer2, .back-to-top').remove();
+        $('#preloader').velocity({ opacity: 1, display: 'block' }, { duration: 250 });
+        await timeout(250);
+        window.location.replace(targetUrl);
+      });
   });
   
   //adjust bg color

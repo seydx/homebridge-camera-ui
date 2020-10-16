@@ -37,7 +37,7 @@
           content.velocity({ opacity: 1, display: 'block' });
           removeBtn.remove();
           
-          $.snack('success', 'All Notifications removed!', 3000)
+          $.snack('success', 'All Notifications removed!', 3000);
   
           if (!$('.mw-470').length)
             $('.nots-container').append(
@@ -46,7 +46,7 @@
         });
       } else {
         console.log('Error');
-        $.snack('error', 'An error occured!', 3000)
+        $.snack('error', 'An error occured!', 3000);
       }
     });
   });
@@ -72,24 +72,24 @@
         ) {
           if (jqXHR.status === 200) {
             $(light)
-            .velocity({ opacity: 0, display: 'none' }, { duration: 500 })
-            .then( function () {
-              $(light).remove();
+              .velocity({ opacity: 0, display: 'none' }, { duration: 500 })
+              .then( function () {
+                $(light).remove();
               
-              $.snack('success', 'Notification ' + id + ' removed!', 3000)
+                $.snack('success', 'Notification ' + id + ' removed!', 3000);
   
-              let notifications = $('#nots').children();
+                let notifications = $('#nots').children();
   
-              if (!notifications.length) {
-                $('#removeAllNotifications').remove();
-                $('.nots-container').append(
-                  '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
-                );
-              }
-            });
+                if (!notifications.length) {
+                  $('#removeAllNotifications').remove();
+                  $('.nots-container').append(
+                    '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+                  );
+                }
+              });
           } else {
             console.log('Error');
-            $.snack('error', 'An error occured!', 3000)
+            $.snack('error', 'An error occured!', 3000);
           }
         });
       
@@ -105,12 +105,12 @@
           href: href,
           onStart: {
             bar: function(){
-              viewport.attr("content", "width=device-width, initial-scale=1, viewport-fit=cover");
+              viewport.attr('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
             }
           },
           onClose: {
             grault: function(){
-              viewport.attr("content", "width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover");
+              viewport.attr('content', 'width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover');
             }
           }
         });

@@ -127,7 +127,7 @@
                   '" alt="Snapshot" id="' +
                   cam.name +
                   'Snap" />'
-              );
+            );
           
           } else {
           
@@ -153,7 +153,7 @@
             }, refreshTimer);
           }
         } else {
-          console.log(data)                   
+          console.log(data);                   
         }
       });
         
@@ -203,8 +203,8 @@
         }
       } else {
       
-         if(!cameras[i].ping)
-           $.snack('error', cameras[i].originName + ' offline!', 3000)
+        if(!cameras[i].ping)
+          $.snack('error', cameras[i].originName + ' offline!', 3000);
       
       }
     }

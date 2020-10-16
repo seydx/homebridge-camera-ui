@@ -61,37 +61,37 @@
     let password_new = $('#password_new').val();
       
     $.post('/change', { mobile: mobile, username: username, username_new: username_new, password: password, password_new: password_new})
-    .always(function(data, textStatus, jqXHR) { 
+      .always(function(data, textStatus, jqXHR) { 
     
-      $('#login-btn').val(window.i18next.t('views.change.loading') + '...'); 
+        $('#login-btn').val(window.i18next.t('views.change.loading') + '...'); 
       
-      if (jqXHR.status === 200) {
+        if (jqXHR.status === 200) {
         
-        if(mobile){
+          if(mobile){
           
-          loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/dashboard'); 
+            loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/dashboard'); 
        
-        } else {
+          } else {
         
-          window.location.replace('/dashboard');
+            window.location.replace('/dashboard');
         
-        }
+          }
       
-      } else { 
+        } else { 
       
-        $('#login-btn').val(window.i18next.t('views.change.save_signin'));
+          $('#login-btn').val(window.i18next.t('views.change.save_signin'));
         
-        if($('.bubble').length){
-          $('.bubble').text(data.responseJSON.message);  
-          $('.bubble').velocity({ opacity: 1, display: 'block' }); 
-        } else {
-          $('.bubble2').text(data.responseJSON.message);  
-          $('.bubble2').velocity({ opacity: 1, display: 'block' }); 
-        }
+          if($('.bubble').length){
+            $('.bubble').text(data.responseJSON.message);  
+            $('.bubble').velocity({ opacity: 1, display: 'block' }); 
+          } else {
+            $('.bubble2').text(data.responseJSON.message);  
+            $('.bubble2').velocity({ opacity: 1, display: 'block' }); 
+          }
      
-      } 
+        } 
       
-    });
+      });
       
   });
   
@@ -104,34 +104,34 @@
         $('#usertitle-black').text(name);
         $('#userrole-black').text(role);
         $('#userpic-black, #usertitle-black, #userrole-black')
-        .velocity({ opacity: 1, display: 'block' }, 250);   
+          .velocity({ opacity: 1, display: 'block' }, 250);   
       });
       
     $('#login-desk')
-    .velocity({ opacity: 0, display: 'none' }, 500)
-    .then( async () => {
-      
-      $('#login-desk').remove();
-      
-      $('#loading')
-      .velocity({ opacity: 1, display: 'block' }, 500)
+      .velocity({ opacity: 0, display: 'none' }, 500)
       .then( async () => {
-         
-        await timeout(1500);
-          
-        $('#loading')
-        .velocity({ opacity: 0, display: 'none' }, 500)
-        .then( () => {
-          
-          $('#loading').remove();
-            
-          window.location.replace(dest);
-          
-        });
-  
-      });
       
-    });
+        $('#login-desk').remove();
+      
+        $('#loading')
+          .velocity({ opacity: 1, display: 'block' }, 500)
+          .then( async () => {
+         
+            await timeout(1500);
+          
+            $('#loading')
+              .velocity({ opacity: 0, display: 'none' }, 500)
+              .then( () => {
+          
+                $('#loading').remove();
+            
+                window.location.replace(dest);
+          
+              });
+  
+          });
+      
+      });
       
   }
   

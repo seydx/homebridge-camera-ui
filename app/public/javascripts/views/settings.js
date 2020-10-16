@@ -10,17 +10,21 @@
   
   $('.popover-dismiss').popover({
     trigger: 'hover'
-  })
+  });
   
   $('#athome_endpoints').on('show.bs.collapse', function () {
     $('#athome_arrow').removeClass('fa-chevron-circle-down');
     $('#athome_arrow').addClass('fa-chevron-circle-up');
-  })
+  });
   
   $('#athome_endpoints').on('hidden.bs.collapse', function () {
     $('#athome_arrow').removeClass('fa-chevron-circle-up');
     $('#athome_arrow').addClass('fa-chevron-circle-down');
-  })
+  });
+  
+  $('.selectpicker').selectpicker({
+    noneSelectedText : window.i18next.t('views.settings.views.general.nothing_selected')
+  });
     
   //inital scroll
   let initScroll = $(window).scrollTop();
@@ -38,12 +42,12 @@
         }, 800);
       }
     }, 0);
-    $(this).unbind('blur')
+    $(this).unbind('blur');
   });
     
   $('input[type="text"], input[type=password], textarea').on('click focus', function(e){
     
-    $(this).bind('blur')
+    $(this).bind('blur');
       
     let width = $(this).width(); 
     $('#popupTxt').val($(this).val());
@@ -336,7 +340,7 @@
             if (data.status == 400) {
               $.snack('error', 'Failed!', 3000);
               $('.bubble3').text(data.responseJSON.message);
-              $('.bubble3').velocity({ opacity: 1, display: 'block' })
+              $('.bubble3').velocity({ opacity: 1, display: 'block' });
             }
       
             if (data.status === 202) {
@@ -369,7 +373,7 @@
           },
         });
         
-      })
+      });
   
   });
     

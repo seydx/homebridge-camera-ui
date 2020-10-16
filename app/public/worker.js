@@ -23,13 +23,13 @@
   
     if ('serviceWorker' in navigator) {
     
-      console.log("Registering service-worker")
-      await navigator.serviceWorker.register('/service-worker.js', {scope: "/"})
-      console.log("Registered!")
+      console.log('Registering service-worker');
+      await navigator.serviceWorker.register('/service-worker.js', {scope: '/'});
+      console.log('Registered!');
       
-      console.log("Wait until service worker is ready!")
+      console.log('Wait until service worker is ready!');
       let reg = await navigator.serviceWorker.ready;
-      console.log("Service Worker is ready!")
+      console.log('Service Worker is ready!');
       
       let deferredPrompt;
       const addBtn = document.querySelector('.add-button');
@@ -95,15 +95,15 @@
                 
                 $.ajax({
                   url:'/subscribe',
-                  type:"POST",
+                  type:'POST',
                   data:JSON.stringify(newSubscription),
-                  contentType:"application/json; charset=utf-8",
-                  dataType:"json"
+                  contentType:'application/json; charset=utf-8',
+                  dataType:'json'
                 });
               
               } catch(err) {
               
-                console.log("Can not subscribe user!", err)
+                console.log('Can not subscribe user!', err);
               
               }
               

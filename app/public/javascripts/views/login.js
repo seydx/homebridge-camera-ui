@@ -83,53 +83,53 @@
       let password = $('#password').val();
         
       $.post('/', { mobile: mobile, username: username, password: password})
-      .always(function(data, textStatus, jqXHR) { 
+        .always(function(data, textStatus, jqXHR) { 
       
-        $('#login-btn').val(window.i18next.t('views.login.loading') + '...'); 
+          $('#login-btn').val(window.i18next.t('views.login.loading') + '...'); 
         
-        if (jqXHR.status === 200) {
+          if (jqXHR.status === 200) {
           
-          if(mobile){
+            if(mobile){
             
-            loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/dashboard'); 
+              loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/dashboard'); 
          
-          } else {
+            } else {
           
-            window.location.replace('/dashboard');
+              window.location.replace('/dashboard');
           
-          }
+            }
         
-        } else if(jqXHR.status === 201) {
+          } else if(jqXHR.status === 201) {
         
-          if(mobile){
+            if(mobile){
             
-            loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/change'); 
+              loader(jqXHR.responseJSON.photo, jqXHR.responseJSON.username, jqXHR.responseJSON.role, '/change'); 
          
-          } else {
+            } else {
           
-            window.location.replace('/change');
+              window.location.replace('/change');
           
-          }
+            }
         
-        }else { 
+          }else { 
         
-          $('#login-btn').val(window.i18next.t('views.login.signin'));
+            $('#login-btn').val(window.i18next.t('views.login.signin'));
 
-          if($('.bubble').length){
+            if($('.bubble').length){
           
-            $('.bubble').text(data.responseJSON.message);  
-            $('.bubble').velocity({ opacity: 1, display: 'block' }); 
+              $('.bubble').text(data.responseJSON.message);  
+              $('.bubble').velocity({ opacity: 1, display: 'block' }); 
           
-          } else {
+            } else {
           
-            $('.bubble2').text(data.responseJSON.message);  
-            $('.bubble2').velocity({ opacity: 1, display: 'block' }); 
+              $('.bubble2').text(data.responseJSON.message);  
+              $('.bubble2').velocity({ opacity: 1, display: 'block' }); 
           
-          }
+            }
        
-        } 
+          } 
         
-      });
+        });
        
     }
       
@@ -225,36 +225,36 @@
         $('#userrole').text(role);
         $('#userrole-black').text(role);
         $('#userpic, #userpic-black, #usertitle, #usertitle-black, #userrole, #userrole-black')
-        .velocity({ opacity: 1, display: 'block' }, 250);   
+          .velocity({ opacity: 1, display: 'block' }, 250);   
       });
       
     await timeout(1500);
       
     $('#login')
-    .velocity({ opacity: 0, display: 'none' }, 500)
-    .then( async () => {
-      
-      $('#login').remove();
-      
-      $('#loading')
-      .velocity({ opacity: 1, display: 'block' }, 500)
+      .velocity({ opacity: 0, display: 'none' }, 500)
       .then( async () => {
-         
-        await timeout(1500);
-          
-        $('#loading')
-        .velocity({ opacity: 0, display: 'none' }, 500)
-        .then( () => {
-          
-          $('#loading').remove();
-            
-          window.location.replace(dest);
-          
-        });
-  
-      });
       
-    });
+        $('#login').remove();
+      
+        $('#loading')
+          .velocity({ opacity: 1, display: 'block' }, 500)
+          .then( async () => {
+         
+            await timeout(1500);
+          
+            $('#loading')
+              .velocity({ opacity: 0, display: 'none' }, 500)
+              .then( () => {
+          
+                $('#loading').remove();
+            
+                window.location.replace(dest);
+          
+              });
+  
+          });
+      
+      });
       
   }
   

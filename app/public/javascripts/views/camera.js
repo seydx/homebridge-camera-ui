@@ -13,22 +13,22 @@
     let player = new JSMpeg.Player(url, { canvas: object });
     $(loader).velocity({ opacity: 0, display: 'none' });
   } else {
-    $.snack('error', title + ' offline!', 3000)
+    $.snack('error', title + ' offline!', 3000);
   }
     
   const viewport = $('meta[name="viewport"]');
 
   $('a[data-rel^=lightcase]').lightcase({
-     onStart: {
-       bar: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, viewport-fit=cover");
-       }
-     },
-     onClose: {
-       grault: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover");
-       }
-     }
+    onStart: {
+      bar: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
+      }
+    },
+    onClose: {
+      grault: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover');
+      }
+    }
   });
   
   $('[data-toggle="popover"]').popover();

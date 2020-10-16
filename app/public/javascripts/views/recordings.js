@@ -5,16 +5,16 @@
   const viewport = $('meta[name="viewport"]');
 
   $('a[data-rel^=lightcase]').lightcase({
-     onStart: {
-       bar: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, viewport-fit=cover");
-       }
-     },
-     onClose: {
-       grault: function(){
-         viewport.attr("content", "width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover");
-       }
-     }
+    onStart: {
+      bar: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
+      }
+    },
+    onClose: {
+      grault: function(){
+        viewport.attr('content', 'width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover');
+      }
+    }
   });
 
   if(role && role === 'Master'){
@@ -52,7 +52,7 @@
             $(light).velocity({ opacity: 0, display: 'none' }).then( function () {
               $(light).remove();
               
-              $.snack('success', 'Recording ' + id + ' removed!', 3000)
+              $.snack('success', 'Recording ' + id + ' removed!', 3000);
   
               let recs = $('#recs').children();
   
@@ -63,7 +63,7 @@
             });
           } else {
             console.log('Error');
-            $.snack('error', 'An error occured!', 3000)
+            $.snack('error', 'An error occured!', 3000);
           }
         });
       
@@ -85,7 +85,7 @@
         $(targets).velocity({ opacity: 0, display: 'none' }).then( function () {
           targets.remove();
           
-          $.snack('success', 'All Recordings removed!', 3000)
+          $.snack('success', 'All Recordings removed!', 3000);
   
           if (!$('.mw-470').length)
             $('#recordings').append(
@@ -94,7 +94,7 @@
         });
       } else {
         console.log('Error');
-        $.snack('error', 'An error occured!', 3000)
+        $.snack('error', 'An error occured!', 3000);
       }
     });
   });
