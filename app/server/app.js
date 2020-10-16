@@ -208,12 +208,26 @@ module.exports = {
     
     app.use(auth_.ensureAuthenticated.unless({
       path: [
-        '/cameras',
-        '/camera',
-        '/notifications',
-        '/recordings',
-        '/interface',
-        { methods: ['POST'] }
+        { 
+          url: '/camera',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/cameras',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/notifications',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/recordings',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/interface',
+          methods: ['GET', 'POST'] 
+        }
       ],
       ext: [
         'jpg',
@@ -224,16 +238,42 @@ module.exports = {
     
     app.use(auth_.ensureAdmin.unless({
       path: [
-        '/',
-        '/change',
-        '/logout',
-        '/dashboard',
-        '/camviews',
-        '/settings',
-        '/files',
-        '/subscribe',
-        '/interface',
-        { methods: ['POST'] }
+        { 
+          url: '/',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/change',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/logout',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/dashboard',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/camviews',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/settings',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/files',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/subscribe',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/interface',
+          methods: ['GET', 'POST'] 
+        }
       ],
       ext: [
         'jpg',
@@ -244,11 +284,22 @@ module.exports = {
     
     app.use(redirect_.session.unless({
       path: [
-        '/logout',
-        '/files',
-        '/subscribe',
-        '/interface',
-        { methods: ['POST'] }
+        { 
+          url: '/logout',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/files',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/subscribe',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/interface',
+          methods: ['GET', 'POST'] 
+        }
       ],
       ext: [
         'jpg',
@@ -258,6 +309,16 @@ module.exports = {
     }));
     
     const locals = function (req, res, next) {
+    
+      let auth = config.auth === 'form';
+    
+      debug({
+        userID: req.session.userID ? req.session.userID : false,
+        message: 'locals',
+        url: req.originalUrl,
+        authenticated: req.isAuthenticated(),
+        noAuth: !auth || false
+      });
   
       res.locals.noAuth = req.session.noAuth;
       res.locals.username = req.session.username;
@@ -285,13 +346,30 @@ module.exports = {
     
     app.use(locals.unless({
       path: [
-        '/',
-        '/change',
-        '/logout',
-        '/files',
-        '/subscribe',
-        '/interface',
-        { methods: ['POST'] }
+        { 
+          url: '/',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/change',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/logout',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/files',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/subscribe',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/interface',
+          methods: ['GET', 'POST'] 
+        }
       ],
       ext: [
         'jpg',
@@ -318,7 +396,7 @@ module.exports = {
     // error handler
     app.use(function(err, req, res, next) {
     
-      debug(err.toString());
+      debug(err);
       
       // set locals, only providing error in development
       res.locals.message = err.message;

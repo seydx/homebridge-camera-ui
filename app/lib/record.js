@@ -11,7 +11,7 @@ module.exports = {
     
       debug('CameraUI - %s: Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720) + '%s', camera.originName, (additional ? ' (This snapshot will be created additional to the video as preview file)' : ''));
       
-      let ffmpegArgs = camera.source;
+      let ffmpegArgs = camera.source || camera.stillImageSource;
       let snapPath =  recording ? recPath + '/' + recording.id + (additional ? '@2' : '') + '.jpeg' : false;
 
       ffmpegArgs += // Still

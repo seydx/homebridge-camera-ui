@@ -100,7 +100,7 @@ block content
             .video-cards.col(data-filterable='yes')
               .card.bg-transparent.no-shadow
                 .fs-bg.position-relative
-                  if ping
+                  if ping && port && cameras[title].source
                     .lds-ring(id=camId + 'LDR')
                       div
                       div

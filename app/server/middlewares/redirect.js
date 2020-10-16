@@ -21,7 +21,7 @@ module.exports = () => {
   
     if (req.isAuthenticated() || req.session.noAuth) {
     
-      let validUrls = ['/dashboard', '/cameras', '/camera', '/notifications', '/recordings', '/settings', '/camviews'];
+      let validUrls = ['/dashboard', '/cameras', '/camera', '/notifications', '/recordings', '/settings', '/camviews', '/'];
       let validMain = validUrls.some(site => req.originalUrl.includes(site));
       
       if(validMain){
