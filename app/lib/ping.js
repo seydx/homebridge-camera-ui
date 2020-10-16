@@ -55,8 +55,8 @@ module.exports = {
     return {
       host: host,
       port: port || 554
-    }
+    };
     
   }
 
-}
+};

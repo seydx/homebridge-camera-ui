@@ -42,7 +42,7 @@ module.exports = (db) => {
       password: password,
       role: role,
       photo: photo || '/images/user/anonym.png',
-      changed: "yes"
+      changed: 'yes'
     }).write();
     
     return;
@@ -74,7 +74,7 @@ module.exports = (db) => {
   
   function remove(username){
     
-    debug('Removing User:', username)
+    debug('Removing User:', username);
     
     db.get('users').remove({ username: username }).write();
     
@@ -84,7 +84,7 @@ module.exports = (db) => {
   
   function removeAll(){
     
-    debug('Removing all users!')
+    debug('Removing all users!');
     
     let users = get();
     
@@ -103,6 +103,6 @@ module.exports = (db) => {
     change: change,
     remove: remove,
     removeAll: removeAll
-  }
+  };
   
-}
+};

@@ -14,7 +14,7 @@ module.exports = (app, db_settings, autoSignout) => {
   router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
   
     if(req.session.user)
-      delete req.session.user
+      delete req.session.user;
   
     res.render('login', {
       title: 'Login',
@@ -25,15 +25,13 @@ module.exports = (app, db_settings, autoSignout) => {
   });
   
   router.post('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
-  
-    let mobile = req.body.mobile === 'true';
     
     passport.authenticate('local', (err, user, info) => {
     
       if (err) {
       
-        debug('An error occured during login process!')
-        debug(err.message)
+        debug('An error occured during login process!');
+        debug(err.message);
         
         req.flash('error', err.message);
         return res.status(500).send({
@@ -64,8 +62,8 @@ module.exports = (app, db_settings, autoSignout) => {
       
         if (err){
           
-          debug('An error occured during login process!')
-          debug(err.message)
+          debug('An error occured during login process!');
+          debug(err.message);
           
           req.flash('error', err.message);
           return res.status(500).send({
@@ -86,7 +84,7 @@ module.exports = (app, db_settings, autoSignout) => {
         req.session.role = user.role;
         req.session.photo = user.photo + '?r=' + Math.random();
         
-        socket.io('login', user)
+        socket.io('login', user);
          
         if(sessionTimer){
           
@@ -107,7 +105,7 @@ module.exports = (app, db_settings, autoSignout) => {
             delete req.session.role;
             delete req.session.photo;
             
-            socket.io('logout_user', user.username)                                               
+            socket.io('logout_user', user.username);                                               
           
           }, sessionTimer + 30000);
         
@@ -127,7 +125,7 @@ module.exports = (app, db_settings, autoSignout) => {
             role: user.role
           });
         
-        })
+        });
         
       });
       

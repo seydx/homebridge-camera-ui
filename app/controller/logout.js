@@ -28,8 +28,8 @@ module.exports = (app, autoSignout) => {
     
     req.session.destroy(function(err) {
       if (err) {
-        debug('An error occured during clearing cookie!')
-        debug(err)
+        debug('An error occured during clearing cookie!');
+        debug(err);
       } else {
         res.clearCookie('camera.ui');
       }

@@ -38,7 +38,7 @@ module.exports = (app, db_settings, db_users) => {
         let credentials = {
           username: parseurl.query.includes('username=') ? decodeURIComponent(parseurl.query).split('username=')[1].split('&')[0] : false,
           password: parseurl.query.includes('password=') ? decodeURIComponent(parseurl.query).split('password=')[1] : false,
-        }
+        };
           
         if(!credentials.username || !credentials.password)
           results = {
@@ -47,7 +47,7 @@ module.exports = (app, db_settings, db_users) => {
             message: 'No Credentials!'
           };
           
-        let user = db_users.getUser(credentials.username)
+        let user = db_users.getUser(credentials.username);
          
         if(!user)
           results = {

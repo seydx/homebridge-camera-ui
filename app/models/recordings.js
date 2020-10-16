@@ -23,7 +23,7 @@ module.exports = (db, camDb, recDb) => {
     } catch(err){
     
       debug('An error occured during checking %s', recPath);
-      debug(err)
+      debug(err);
       
       return false;
   
@@ -38,13 +38,13 @@ module.exports = (db, camDb, recDb) => {
     
     try {
     
-       let pathExist = await check();
+      let pathExist = await check();
        
-        if(pathExist){
+      if(pathExist){
           
-          recordings = await fs.readdir(recPath);
+        recordings = await fs.readdir(recPath);
           
-          recordings = recordings
+        recordings = recordings
           .filter(rec => rec && rec.length > 0 && !rec.includes('@') && (rec.includes('_1_') || rec.includes('_0_')))
           .map(rec => {
             
@@ -71,11 +71,11 @@ module.exports = (db, camDb, recDb) => {
             
           });
           
-        }
+      }
     
     } catch(err) {
     
-      debug('An error occured during reading %s', recPath)
+      debug('An error occured during reading %s', recPath);
       debug(err);
     
     }
@@ -221,6 +221,6 @@ module.exports = (db, camDb, recDb) => {
     add: add,
     remove: remove,
     removeAll: removeAll
-  }
+  };
   
-}
+};

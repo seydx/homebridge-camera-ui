@@ -12,9 +12,9 @@ module.exports = (app, db_settings, db_cameras) => {
     
     for(const cam of Object.keys(res.locals.dashboard.cameras)){
       if(res.locals.dashboard.cameras[cam].active){
-        let ping = await db_cameras.pingCamera(cam)
+        let ping = await db_cameras.pingCamera(cam);
         if(ping)
-          streams.start(cam)
+          streams.start(cam);
       }
     }
     

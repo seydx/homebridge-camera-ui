@@ -34,7 +34,7 @@ module.exports = {
               
       ffmpeg.on('error', error => {
         debug('CameraUI - %s: An error occurred while making snapshot request: ' + error, camera.originName);
-        reject(err);
+        reject(error);
       });
               
       ffmpeg.on('close', () => {
@@ -100,4 +100,4 @@ module.exports = {
     
   }
   
-}
+};

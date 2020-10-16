@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
-const createError = require('http-errors');
 const device = require('express-device');
 const express = require('express');
 const favicon = require('serve-favicon');
@@ -52,8 +51,6 @@ module.exports = {
     
     let port = config.port;
     let debugMode = config.debug;
-    let ssl = config.ssl;
-    let auth = config.auth === 'form';
     let lang = config.language === 'auto' ? false : [config.language];
     
     let db_cameras = database.Cameras();
@@ -86,32 +83,32 @@ module.exports = {
     
     //Passport
     passport.use(new LocalStrategy({
-        usernameField: 'username',
-        passwordField: 'password'
-      }, 
-      async function (username, password, cb) {
-        let user = db_users.getUser(username);
-        if(!user)
-          return cb(null, false, {message: 'Incorrect username or password.'});
-        if(user.changed){
-          if(user.hashedpassword){
-            let match = await bcrypt.compare(password, user.hashedpassword);
-            if(!match)
-              return cb(null, false, {message: 'Incorrect username or password.'});
-          } else {
-            let hash = await bcrypt.hash(password, 10);
-            db_users.change(username, {
-              hashedpassword: hash
-            }, [
-              'password'
-            ]);
-            user = db_users.getUser(username);
-          }
-          return cb(null, user, {message: 'Logged In Successfully'});
+      usernameField: 'username',
+      passwordField: 'password'
+    }, 
+    async function (username, password, cb) {
+      let user = db_users.getUser(username);
+      if(!user)
+        return cb(null, false, {message: 'Incorrect username or password.'});
+      if(user.changed){
+        if(user.hashedpassword){
+          let match = await bcrypt.compare(password, user.hashedpassword);
+          if(!match)
+            return cb(null, false, {message: 'Incorrect username or password.'});
         } else {
-          return cb(null, user, {change: true, message: 'Please change credentials!'});
+          let hash = await bcrypt.hash(password, 10);
+          db_users.change(username, {
+            hashedpassword: hash
+          }, [
+            'password'
+          ]);
+          user = db_users.getUser(username);
         }
+        return cb(null, user, {message: 'Logged In Successfully'});
+      } else {
+        return cb(null, user, {change: true, message: 'Please change credentials!'});
       }
+    }
     ));
     
     // tell passport how to serialize the user
@@ -185,7 +182,7 @@ module.exports = {
      
     sessionMiddleware = session({
       genid: (req) => {
-        return uuidv4()
+        return uuidv4();
       },
       secret: database.session.get('key').value(),
       name: 'camera.ui',
@@ -242,7 +239,7 @@ module.exports = {
         'jpg',
         'jpeg',
         'mp4'
-        ]
+      ]
     }));
     
     app.use(redirect_.session.unless({
@@ -257,7 +254,7 @@ module.exports = {
         'jpg',
         'jpeg',
         'mp4'
-        ]
+      ]
     }));
     
     const locals = function (req, res, next) {
@@ -286,12 +283,12 @@ module.exports = {
       res.locals.keys = wbpsh;
       res.locals.users = usrs;
       
-      res.locals.ssl = config.ssl ? true : false
+      res.locals.ssl = config.ssl ? true : false;
       res.locals.flash = req.flash();
       
-      next()
+      next();
       
-    }
+    };
     
     locals.unless = unless;
     
@@ -309,7 +306,7 @@ module.exports = {
         'jpg',
         'jpeg',
         'mp4'
-        ]
+      ]
     }));
     
     //define routes
@@ -379,4 +376,4 @@ module.exports = {
     
   }
   
-}
+};

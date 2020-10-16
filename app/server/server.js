@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIServer')
+const debug = require('debug')('CameraUIServer');
 
 const http = require('http');
 //const https = require('https');
@@ -32,7 +32,7 @@ module.exports = {
 
     server.on('close', () => {
 
-      log('Stopping user interface server...');
+      debug('Stopping user interface server...');
 
     });
       
@@ -50,14 +50,14 @@ module.exports = {
       
       if(server){
         
-        server.listen(port)
+        server.listen(port);
         
         server.on('error', error => {
    
           let err;
      
           if (error.syscall !== 'listen')
-            log(error);
+            logger(error);
     
           let bind = typeof port === 'string'
             ? 'Pipe ' + port
@@ -82,7 +82,7 @@ module.exports = {
       
           }
           
-          reject(err)
+          reject(err);
     
         });
     
@@ -102,7 +102,7 @@ module.exports = {
         
       } else {
         
-        reject('Can not start server! No server defined!!')
+        reject('Can not start server! No server defined!!');
         
       }
       
@@ -119,4 +119,4 @@ module.exports = {
   
   }
 
-}
+};

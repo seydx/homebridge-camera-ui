@@ -92,7 +92,8 @@
           "themes_themes": "Themes",
           "rooms_title": "Rooms",
           "rooms_name": "Room Name",
-          "rooms_name_standard": "Standard"
+          "rooms_name_standard": "Standard",
+          "nothing_selected": "Nothing selected"
         },
         "dashboard": {
           "title": "Dashboard",

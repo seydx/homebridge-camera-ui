@@ -14,12 +14,12 @@ module.exports = (app, db_settings, configPath) => {
     
     if(file.includes('photo_')){
       file = file.includes('?r=') ? file.split('?r=')[0] : file;
-      recPath = configPath + '/db/users/'
+      recPath = configPath + '/db/users/';
     }
     
     let options = {
       root: path.join(recPath)
-    }
+    };
         
     res.sendFile(req.params.name, options, err => {
       if(err) res.status(err.status).end();

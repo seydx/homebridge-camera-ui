@@ -147,7 +147,7 @@ block content
                           else
                             a(tabindex='0' role='button' data-placement='bottom' data-toggle='popover' data-trigger='focus' title=t('views.cameras.notification_title') data-content=t('views.cameras.notification_nodata'), aria-label=t('views.cameras.notification_title'))
                               i.fa.fa-bell.text-secondary
-                      p.card-text-cameras= info
+                      p.card-text-cameras.text-elipsis= info
             else
               img.col.mw-470(src="/images/web/no_cameras.png", alt="No Cameras")
 block footscripts

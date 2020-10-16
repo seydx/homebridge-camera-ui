@@ -48,8 +48,8 @@ module.exports = {
           error: true,
           message: 'Command (' + cmd + ') not found!'
         };
-     }
+    }
   
   }
 
-}
+};

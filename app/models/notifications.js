@@ -2,8 +2,6 @@
 
 const debug = require('debug')('CameraUIInterface');
 
-const moment = require('moment');
-
 module.exports = (db) => {
 
   function get(){
@@ -72,9 +70,6 @@ module.exports = (db) => {
     let storing = db.get('settings').get('recordings').get('active').value();
     let fileType = db.get('settings').get('recordings').get('type').value();
     let hideBanner = db.get('settings').get('notifications').get('clearBanner').value();
-    
-    let clearTimer = db.get('settings').get('notifications').get('clearTimer').value();
-    clearTimer = isNaN(parseInt(clearTimer)) ? false : parseInt(clearTimer);
   
     let id = accessory.displayName.replace(/\s/g,'_') + '-' + rndm + '-' + time.timestamp + '_' + (storing ? '1' : '0') + '_' + (type === 'motion' ? 'm' : 'd');
   
@@ -125,7 +120,7 @@ module.exports = (db) => {
   
   function removeAll(){
   
-    debug('Removing all notifications!')
+    debug('Removing all notifications!');
     
     db.get('notifications').set('nots', []).write();
     
@@ -171,6 +166,6 @@ module.exports = (db) => {
     add: add,
     remove: remove,
     removeAll: removeAll
-  }
+  };
   
-}
+};

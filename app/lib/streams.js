@@ -80,7 +80,7 @@ module.exports = {
   
   set: function(camera, options){
   
-    debug('Settings new stream parameter for %s %s', camera, options)
+    debug('Settings new stream parameter for %s %s', camera, options);
     
     for (const [ key, value ] of Object.entries(options))
       startedStreams[camera].options.ffmpegOptions[key] = value;
@@ -91,7 +91,7 @@ module.exports = {
   
   del: function(camera, options){
   
-    debug('Removing stream parameter from %s %s', camera, options)
+    debug('Removing stream parameter from %s %s', camera, options);
   
     for(const prop in options)
       delete startedStreams[camera].options.ffmpegOptions[prop];
@@ -104,7 +104,7 @@ module.exports = {
   
     if(startedStreams[camera].streamFailed){
     
-      debug('Starting stream server for %s', camera)
+      debug('Starting stream server for %s', camera);
     
       startedStreams[camera].pipeStreamToSocketServer();
       startedStreams[camera].streamFailed = false;
@@ -116,7 +116,7 @@ module.exports = {
   
   stop: function(camera){
   
-    debug('Stopping stream for %s', camera)
+    debug('Stopping stream for %s', camera);
   
     startedStreams[camera].stopStream();
     
@@ -126,7 +126,7 @@ module.exports = {
   
   close: function(camera){
   
-    debug('Closing stream server for %s', camera)
+    debug('Closing stream server for %s', camera);
   
     startedStreams[camera].stopAll();
     
@@ -136,7 +136,7 @@ module.exports = {
   
   quit: function(){
   
-    debug('Stopping all stream server!')
+    debug('Stopping all stream server!');
   
     for(const camera of Object.keys(startedStreams))
       startedStreams[camera].stopAll();
@@ -145,4 +145,4 @@ module.exports = {
   
   },
 
-}
+};

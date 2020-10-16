@@ -16,10 +16,10 @@ module.exports = (app, db_notifications, db_cameras) => {
 
     let port = camera.socketPort;
     let id = title.replace(/\s+/g, '');
-    let ping = await db_cameras.pingCamera(title)
+    let ping = await db_cameras.pingCamera(title);
     
     if(ping)
-      streams.start(title)
+      streams.start(title);
 
     let position = {
       size: Object.keys(res.locals.cameras).length,
