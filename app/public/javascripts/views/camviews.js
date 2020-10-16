@@ -517,7 +517,7 @@
 
       await timeout(1000);
       
-      if (cameras[i].ping && $(loader).length) {
+      if (cameras[i].ping && cameras[i].socketPort && cameras[i].source && $(loader).length) {
         
         let liveStream = false;
         

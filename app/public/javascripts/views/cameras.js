@@ -12,7 +12,7 @@
       let camName = camm.originName;
       let ping = camm.ping;
   
-      if (ping) {
+      if (ping && (camm.source || camm.stillImageSource)) {
         $.post('/cameras', { name: camm.originName }).always(function (data, textStatus, jqXHR) {
           if (jqXHR.status === 200) {
             let img = data;
