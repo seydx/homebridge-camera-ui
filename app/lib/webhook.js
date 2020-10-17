@@ -23,13 +23,17 @@ module.exports = {
         
         if(state === 'trigger'){
           
-          state = false;
+          state = true;
           
           let atHome = database.db.get('settings').get('general').get('atHome').value();
           
           if(atHome === true || atHome === 'true' || atHome === 'on')
-            state = true;
+            state = false;
           
+        } else {
+        
+          state = state === 'true';
+        
         }
         
         database.db.get('settings').get('general').set('atHome', state).write();

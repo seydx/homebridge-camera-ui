@@ -1,6 +1,8 @@
 (async function ($) {
   'use strict';
   
+  let username = getUsername();
+  
   const timeout = (ms) => new Promise((res) => setTimeout(res, ms));  
   
   let oldWidth = $('.page').width();
@@ -421,8 +423,9 @@
     let role = $('#userRoles option:selected').text();
     let pw = $('*[data-name="' + window.i18next.t('views.settings.views.profile.user_new_password') + '"]').val();   
     let index = $('.customUser').length;
+    let adminUsername = $('#adminUsername').val();
     
-    if (name && !$('#' + name).length && pw) {
+    if (name && !$('#' + name).length && pw && name !== username && name !== adminUsername) {
       let id = name.replace(/\s/g, '');
       
       $('#users').append(

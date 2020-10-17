@@ -140,7 +140,7 @@ block content
                         a.text-color-pink.float-right(href=entry.storing ? "/files/" + entry.id + (entry.fileType === "Video" ? ".mp4" : ".jpeg") : "#", data-rel="lightcase")
                           i.fa.fa-arrow-circle-right.text-color-pink
                 else
-                  span No Data
+                  span=t('views.camera.notification_nodata')
           .row.justify-content-center.m-0.p-0.camera-navigator
             - max = positions.size
             each camIndex in Object.keys(positions.cameras)
@@ -150,7 +150,7 @@ block content
                   - next = parseInt(camIndex) + 1
                   - nextPos = positions.cameras[next]
                   .col-12.text-right
-                    a(href='/camera/' + nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                    a.smoothLink(href='/camera/' + nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
                       span= nextPos.url
                       i.fa.fa-arrow-right.ml-2
                 else if camIndex > 1 && camIndex < max
@@ -159,18 +159,18 @@ block content
                   - nextPos = positions.cameras[next]
                   - prevPos = positions.cameras[prev] 
                   .col-6.text-left
-                    a(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                    a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
                       i.fa.fa-arrow-left.mr-2
                       span= prevPos.url
                   .col-6.text-right
-                    a(href=nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                    a.smoothLink(href=nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
                       span= nextPos.url
                       i.fa.fa-arrow-right.ml-2 
                 else
                   - prev = parseInt(camIndex) - 1
                   - prevPos = positions.cameras[prev]
                   .col-12.text-left
-                    a(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                    a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
                       i.fa.fa-arrow-left.mr-2
                       span= prevPos.url
 block footscripts

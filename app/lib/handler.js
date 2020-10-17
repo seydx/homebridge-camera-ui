@@ -126,6 +126,8 @@ module.exports = {
       //Push Notification
       
       socket.io('notification', notification);
+      socket.storeNots(notification);
+      
       this.webPush(notification, accessory);
       this.teleGram(notification, accessory, recActive, recPath, recType);
       

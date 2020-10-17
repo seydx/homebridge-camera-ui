@@ -151,7 +151,7 @@ block content
                           .settings-box-account-form
                             .form-group
                               label=t('views.settings.views.profile.account_name')
-                                input.form-control.form-control(type="text", name="admin[username]", value=username)
+                                input.form-control.form-control(type="text", name="admin[username]", value=username, id='adminUsername')
                             if role === 'Master'
                               .form-group.mt-3.d-flex.justify-content-end
                                 label=t('views.settings.views.profile.account_signout')

@@ -10,7 +10,7 @@
       "title": "Cameras",
       "notification_title": "Latest Notification",
       "notifications_title": "Latest Notifications",
-      "notification_inner": "Movement detected on",
+      "notification_info": "Movement detected on",
       "notification_nodata": "No Data"
     },
     "camera": {
@@ -259,6 +259,8 @@
     "motion_info": "New motion detected",
     "doorbell_info": "Doorbell triggered"
   },
-  "push": {
+  "toast": {
+    "not_info": "You have @ unread notification",
+    "not_info_x": "You have @ unread notifications"
   }
 }
