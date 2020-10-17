@@ -1,6 +1,11 @@
 # Changelog
 
 
+## v3.0.4 - 2020-10-17
+- Added more translation
+- Fixed a bug that caused the preloader not to be hidden on an "Error" page
+- Fixed a bug where camera pages containing a spaces were not displayed
+
 ## v3.0.3 - 2020-10-17
 - "Reset" will now automatically set itself to "false" in config.json after resetting master credentials
 - After opening the app or visiting the main page ("/") the last opened page is now opened if the user is logged in (fixed)
