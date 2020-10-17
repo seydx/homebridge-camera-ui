@@ -229,6 +229,16 @@ Here you can find all available languages for the interface. These are structure
     "logout": {
       "title": "See you soon",
       "undertitle": "logout is beeing processed"
+    },
+    "error": {
+      "goback": "Go Back",
+      "restricted": "Restricted!",
+      "stop": "Stop!",
+      "unauthorized": "Unauthorized!",
+      "login": "Login",
+      "dashboard": "Dashboard",
+      "ooops": "Ooops!",
+      "notfound": "Not found!"
     }
   },
   "navigation": {
@@ -254,7 +264,9 @@ Here you can find all available languages for the interface. These are structure
     "motion_info": "New motion detected",
     "doorbell_info": "Doorbell triggered"
   },
-  "push": {
+  "toast": {
+    "not_info": "You have @ unread notification",
+    "not_info_x": "You have @ unread notifications"
   }
 }
 ```
