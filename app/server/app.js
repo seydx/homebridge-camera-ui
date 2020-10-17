@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const createError = require('http-errors');
 const device = require('express-device');
 const express = require('express');
 const favicon = require('serve-favicon');
@@ -47,7 +48,7 @@ module.exports = {
   init: function(config, accessories, database, configPath){
 
     const auth_ = require('./middlewares/auth')(config.auth, database.Users());
-    const redirect_ = require('./middlewares/redirect')();
+    const redirect_ = require('./middlewares/redirect')(accessories);
     
     let port = config.port;
     let debugMode = config.debug;
@@ -206,6 +207,32 @@ module.exports = {
     app.use(passport.initialize());
     app.use(passport.session());
     
+    app.use(redirect_.session.unless({
+      path: [
+        { 
+          url: '/logout',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/files',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/subscribe',
+          methods: ['GET', 'POST'] 
+        },
+        { 
+          url: '/interface',
+          methods: ['GET', 'POST'] 
+        }
+      ],
+      ext: [
+        'jpg',
+        'jpeg',
+        'mp4'
+      ]
+    }));
+    
     app.use(auth_.ensureAuthenticated.unless({
       path: [
         { 
@@ -282,32 +309,6 @@ module.exports = {
       ]
     }));
     
-    app.use(redirect_.session.unless({
-      path: [
-        { 
-          url: '/logout',
-          methods: ['GET', 'POST'] 
-        },
-        { 
-          url: '/files',
-          methods: ['GET', 'POST'] 
-        },
-        { 
-          url: '/subscribe',
-          methods: ['GET', 'POST'] 
-        },
-        { 
-          url: '/interface',
-          methods: ['GET', 'POST'] 
-        }
-      ],
-      ext: [
-        'jpg',
-        'jpeg',
-        'mp4'
-      ]
-    }));
-    
     const locals = function (req, res, next) {
     
       let auth = config.auth === 'form';
@@ -334,6 +335,8 @@ module.exports = {
       res.locals.settings = db_settings.get();
       res.locals.keys = db_settings.getWebpush();
       res.locals.users = db_users.get();
+      
+      res.locals.camNames = accessories.map(accessory => accessory.displayName);
       
       res.locals.ssl = config.ssl ? true : false;
       res.locals.flash = req.flash();
@@ -391,12 +394,16 @@ module.exports = {
     app.use('/recordings', recordings(app, db_settings, db_recordings));
     app.use('/interface', interFace(app, db_settings, db_users));
     app.use('/files', files(app, db_settings, configPath));
-    app.use('/subscribe', subscribe(app, db_settings)); 
+    app.use('/subscribe', subscribe(app, db_settings));
+    
+    app.use((req, res, next) => {
+      next(createError(404));
+    }); 
     
     // error handler
     app.use(function(err, req, res, next) {
     
-      debug(err);
+      debug(err.message);
       
       // set locals, only providing error in development
       res.locals.message = err.message;

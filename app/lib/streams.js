@@ -4,7 +4,7 @@ const debug = require('debug')('CameraUIStream');
 
 const Stream = require('@seydx/node-rtsp-stream');
 
-var accessories, db, log;
+var db, log;
 const startedStreams = {};
 
 module.exports = {

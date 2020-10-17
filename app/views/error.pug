@@ -9,7 +9,7 @@ block content
         img.d-block.mx-auto(src='/images/web/logo_transparent-256.png', alt='Camera UI Logo', width='125px', height='118px')
         h1.d-block Ooops!
         p.text-color-pink.error-status= message
-        a.btn.camview.text-light.go-back-page(href="#") Go Back
+        a.btn.camview.text-light.go-back-page(href="#")=t('views.error.goback')
     #preloader
 block footscripts
   script(type='text/javascript' src='/javascripts/main.js' defer)

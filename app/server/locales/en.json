@@ -224,6 +224,14 @@
     "logout": {
       "title": "See you soon",
       "undertitle": "logout is beeing processed"
+    },
+    "error": {
+      "goback": "Go Back",
+      "restricted": "Restricted!",
+      "stop": "Stop!",
+      "unauthorized": "Unauthorized!",
+      "login": "Login",
+      "dashboard": "Dashboard"
     }
   },
   "navigation": {
