@@ -260,7 +260,8 @@
     "motion_info": "Neue Bewegung entdeckt",
     "doorbell_info": "Türklingel geläutet"
   },
-  "push": {
-    
+  "toast": {
+    "not_info": "Sie haben @ ungelesene Benachrichtigung",
+    "not_info_x": "Sie haben @ ungelesene Benachrichtigungen"
   }
 }

@@ -259,6 +259,8 @@
     "motion_info": "New motion detected",
     "doorbell_info": "Doorbell triggered"
   },
-  "push": {
+  "toast": {
+    "not_info": "You have @ unread notification",
+    "not_info_x": "You have @ unread notifications"
   }
 }

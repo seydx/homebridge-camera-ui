@@ -3,8 +3,8 @@
 const debug = require('debug')('CameraUIServer');
 
 const http = require('http');
-//const https = require('https');
-const spdy = require('spdy');
+const https = require('https');
+//const spdy = require('spdy');
 
 var server, port, logger;
 
@@ -19,7 +19,7 @@ module.exports = {
 
     if(ssl){
 
-      server = spdy.createServer({
+      server = https.createServer({
         key: ssl.key,
         cert: ssl.cert
       }, app);

@@ -7,6 +7,10 @@ const socketIO = require('socket.io');
 
 var io;
 let io_session = {};
+let io_clients = {};
+let nots = [];
+
+let connectedClients = {};  
 
 module.exports = {
 
@@ -25,9 +29,38 @@ module.exports = {
       return next(new Error('authentication error'));  
     });
         
-    io.on('connection', socket => {
+    io.on('connection', async (socket) => {
       
-      debug('Socket connection from %s', socket.handshake.session.username); 
+      debug('%s connected!', socket.handshake.session.username); 
+
+      if(connectedClients[socket.handshake.session.username] && connectedClients[socket.handshake.session.username].devices >= 0){
+        connectedClients[socket.handshake.session.username].devices++; 
+      } else {
+        connectedClients[socket.handshake.session.username] = {};
+        connectedClients[socket.handshake.session.username].devices = 1;
+      }
+      
+      debug(connectedClients);
+    
+      if(((io_clients[socket.handshake.session.userID] && connectedClients[socket.handshake.session.username].devices === 1) || !io_clients[socket.handshake.session.userID]) && socket.handshake.session.role === 'Master'){ 
+    
+        let now = Date.now();
+        let lastConnection = io_clients[socket.handshake.session.userID] ? io_clients[socket.handshake.session.userID].lastConnection : 0;
+        let millis = Math.floor( (now - lastConnection) / 1000 ); //seconds elapsed since last connection
+        let limit = 30; //seconds
+         
+        if((lastConnection && millis >= limit) || !io_clients[socket.handshake.session.userID]){
+         
+          let missedNots = nots.filter(not => not && (not.timestamp * 1000) > lastConnection);
+           
+          if(missedNots.length)
+            io.emit('lastnotification', missedNots.length);
+           
+          nots = []; 
+           
+        }
+        
+      }
       
       socket.on('session', session => {
         
@@ -51,7 +84,22 @@ module.exports = {
         debug(io_session[socket.handshake.sessionID]);
       
       });
-    
+      
+      socket.on('disconnect', () => {
+        
+        debug('%s disconnected!', socket.handshake.session.username); 
+        
+        if(connectedClients[socket.handshake.session.username].devices)
+          connectedClients[socket.handshake.session.username].devices--; 
+        
+        io_clients[socket.handshake.session.userID] = {
+          lastConnection: Date.now() 
+        };
+        
+        debug(connectedClients);
+      
+      });
+      
     });
     
     return;
@@ -67,6 +115,20 @@ module.exports = {
   session: function(){
   
     return io_session;
+  
+  },
+  
+  clients: function(){
+  
+    return io_clients;
+  
+  },
+  
+  storeNots: function(notification){
+  
+    debug('Storing notification');
+  
+    nots.push(notification);
   
   }
 
