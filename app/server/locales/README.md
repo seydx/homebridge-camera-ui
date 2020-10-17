@@ -15,7 +15,7 @@ Here you can find all available languages for the interface. These are structure
       "title": "Cameras",
       "notification_title": "Latest Notification",
       "notifications_title": "Latest Notifications",
-      "notification_inner": "Movement detected on",
+      "notification_info": "Movement detected on",
       "notification_nodata": "No Data"
     },
     "camera": {
