@@ -226,8 +226,11 @@ CameraUI.prototype = {
     await this.ui.init();
     
     if(this.config.reset && this.config.auth === 'form'){
+    
       let db = this.ui.database.db;
+      
       db.get('users').remove({ role: 'Master' }).write();
+      
       db.get('users').push({
         id: uuidv4(),
         username: 'admin',
@@ -235,7 +238,28 @@ CameraUI.prototype = {
         role: 'Master',
         photo: '/images/user/anonym.png'
       }).write();
-      this.log('Master credentials resetted. Please turn off "Reset"!');
+      
+      this.log('Master credentials resetted! Setting "reset" to false...');
+      
+      try {
+      
+        const configJSON = await fs.readJson(this.api.user.storagePath() + '/config.json');
+        
+        for(const i in configJSON.platforms)
+          if(configJSON.platforms[i].platform === 'CameraUI')
+            configJSON.platforms[i].reset = false;
+        
+        await fs.writeJson(this.api.user.storagePath() + '/config.json', configJSON, { spaces: 4 });
+        
+        this.log('"Reset" setted to false!'); 
+        
+      } catch(err){
+      
+        this.log('There was an error reading/writing your config.json file');
+        this.log('Please change manually "reset" to false!');
+      
+      }
+      
     }
   
   },
