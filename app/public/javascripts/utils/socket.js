@@ -5,6 +5,7 @@
   
   const role = getRole() || false; 
   const username = getUsername();
+  const camNames = getCamNames();
   
   let title = getTitle();
   let hideBannerTimeout;
@@ -30,8 +31,7 @@
     //save session
     socket.emit('session', {
       username: getUsername(),
-      currentUrl: window.location.pathname,
-      targetUrl: false
+      currentUrl: window.location.pathname
     });
     
     //save url for rejoin
@@ -39,9 +39,14 @@
        
       let targetUrl = $(this).attr('href');
        
-      if(targetUrl){
+      if(targetUrl){    
          
-        let validUrls = ['/dashboard', '/cameras', '/camera', '/notifications', '/recordings', '/settings', '/camviews'];
+        let urls = ['/dashboard', '/cameras', '/notifications', '/recordings', '/settings', '/camviews'];
+        
+        let validUrls = camNames.map(name => {
+          return ('/camera/' + name);
+        }).concat(urls);
+        
         let valid = validUrls.some(site => (targetUrl.includes(site) || targetUrl.includes('#back')) );
           
         if(valid){
@@ -224,7 +229,7 @@
         $('.mw-470').remove();
       }
          
-      $('form').prepend('<a class="col-12 notification-deck position-relative ' + notification.room.replace(/\s/g,'') + '" href="' + url_path + '" data-filterable="yes" data-target="' + notification.id + '" data-rel="lightcase" style="opacity: 0; display: none!important">' + (isMobile() === false ? '<i class="removeNotification fa fa-times-circle text-color-pink notification-remove" style="display: none;"></i>' : '<div class="notification-deck-remove">X</div>') + '<div class="row justify-content-center"><div class="col-9"><h3 class="m-0 notification-title">' + notification.name + ' (' + notification.room + ')' + '</h3><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.movement') + ': </b><span>' + notification.time + '</span></p></div><div class="col-3 text-right"><img class="notification-img" onerror="this.onerror=null;this.src=\'/images/web/noimg.png\';" src="' + img_url_path + '" width="45" height="45" alt="' + window.i18next.t('views.notifications.img_notification') + '"/></div></div></a>');
+      $('form').prepend('<a class="col-12 notification-deck position-relative ' + notification.room.replace(/\s/g,'') + '" href="' + url_path + '" data-filterable="yes" data-target="' + notification.id + '" data-rel="lightcase" style="opacity: 0; display: none!important">' + (isMobile() === false ? '<i class="removeNotification fa fa-times-circle text-color-pink notification-remove" style="display: none;"></i>' : '<div class="notification-deck-remove">X</div>') + '<div class="row justify-content-center"><div class="col-9"><h3 class="m-0 notification-title">' + notification.originName + ' (' + notification.room + ')' + '</h3><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.movement') + ': </b><span>' + notification.time + '</span></p></div><div class="col-3 text-right"><img class="notification-img" onerror="this.onerror=null;this.src=\'/images/web/noimg.png\';" src="' + img_url_path + '" width="45" height="45" alt="' + window.i18next.t('views.notifications.img_notification') + '"/></div></div></a>');
              
       $('[data-target="' + notification.id + '"]')
         .velocity({ opacity: 1, display: 'block' }, 500);  

@@ -171,7 +171,7 @@
             '       <div class="container-fluid">  ' +
             '           <div class="row login-phone-header d-flex justify-content-center align-content-center">  ' +
             '               <div class="row w-100 mt-save">  ' +
-            '                   <div class="col"><a href="#" id="back-btn-a" class="backarrow" target="_self" style="display: block"><svg  id="back-btn-svg" class="bi bi-caret-left-fill" width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path id="back-btn" d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path></svg></a></div>  ' +
+            '                   <div class="col"><a href="#back" id="back-btn-a" class="backarrow" target="_self" style="display: block"><svg  id="back-btn-svg" class="bi bi-caret-left-fill" width="1em" height="1em" viewbox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path id="back-btn" d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path></svg></a></div>  ' +
             '                   <div  ' +
             '                       class="col p-0">  ' +
             '                       <div class="row w-100 m-0 d-flex justify-content-center align-content-center">  ' +

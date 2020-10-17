@@ -21,7 +21,12 @@
   //Go back
   $('.go-back-page').on('click', function(e){ 
     e.preventDefault(); 
-    window.history.go(-1); 
+    
+    if($('#preloader').length)
+      $('#preloader').velocity({ opacity: 1, display: 'block' }, 250 );
+    
+    window.history.length > 2 ? setTimeout(function(){ window.history.go(-1); }, 500) : window.location.replace('/dashboard');
+  
   });
   
   // Preloader
