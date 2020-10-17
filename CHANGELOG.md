@@ -1,6 +1,14 @@
 # Changelog
 
 
+## v3.0.5 - 2020-10-18
+- Added new function that allows to see missed notifications after login
+- Fixed Translation & added new translation
+- Fixed an error with ServiceWorker for Firefox
+- Prevent creating a user with same name as admin (Master)
+- Fixed a bug with Webhook that caused the "Trigger" and "False" commands to be triggered incorrectly
+- UI Improvements
+
 ## v3.0.4 - 2020-10-17
 - Added more translation
 - Fixed a bug that caused the preloader not to be hidden on an "Error" page
