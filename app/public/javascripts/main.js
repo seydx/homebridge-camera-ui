@@ -10,11 +10,11 @@
     stackable: true,
     pauseDelayOnHover: true, 
     style: {
-      toast: 'bg-secondary text-light mb-save',
-      info: '',
-      success: 'bg-success text-light mb-save',
-      warning: 'bg-warning text-dark mb-save',
-      error: 'bg-danger text-light mb-save'
+      toast: 'bg-secondary text-light mb-save text-center',
+      info: 'bg-color-pink text-light mb-save text-center',
+      success: 'bg-success text-light mb-save text-center',
+      warning: 'bg-warning text-dark mb-save text-center',
+      error: 'bg-danger text-light mb-save text-center'
     }
   };
   

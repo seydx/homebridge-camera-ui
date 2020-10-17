@@ -72,8 +72,16 @@
       window.location.replace('/logout');       
   });
   
+  //notification toaster
+  if(role  && role == 'Master'){
+    socket.on('lastnotification', size => { 
+      let info = size > 1 ? window.i18next.t('toast.not_info_x') : window.i18next.t('toast.not_info');
+      info = info.replace('@', size);
+      $.snack('info', info, 5000);
+    });
+  }
+  
   //if(role && role === 'Master'){
-
   socket.on('notification', notification => {
       
     if($('#soundFx').length && role && role === 'Master')
