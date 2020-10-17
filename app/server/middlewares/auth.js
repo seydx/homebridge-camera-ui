@@ -14,7 +14,7 @@ module.exports = (auth, db_users) => {
     debug({
       userID: req.session.userID ? req.session.userID : false,
       message: 'ensure authenticated',
-      url: req.originalUrl,
+      originalUrl: req.originalUrl,
       authenticated: req.isAuthenticated(),
       noAuth: !auth || false
     });
@@ -60,7 +60,7 @@ module.exports = (auth, db_users) => {
     debug({
       userID: req.session.userID ? req.session.userID : false,
       message: 'ensure admin',
-      url: req.originalUrl,
+      originalUrl: req.originalUrl,
       authenticated: req.isAuthenticated(),
       noAuth: !auth || false
     });

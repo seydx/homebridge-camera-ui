@@ -7,9 +7,9 @@ block content
     #error.container.position-relative.w-100.h-100.d-flex.justify-content-center
       .align-self-center.text-center
         img.d-block.mx-auto(src='/images/web/logo_transparent-256.png', alt='Camera UI Logo', width='125px', height='118px')
-        h1.d-block Stop!
-        p.text-color-pink.error-status Unauthorised!
-        a.btn.camview.text-light(href='/') Login
+        h1.d-block=t('views.error.stop')
+        p.text-color-pink.error-status=t('views.error.unauthorized')
+        a.btn.camview.text-light(href='/')=t('views.error.login')
     #preloader
 block footscripts
   script(type='text/javascript' src='/javascripts/main.js' defer)

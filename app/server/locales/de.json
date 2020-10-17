@@ -225,6 +225,14 @@
     "logout": {
       "title": "Bis bald",
       "undertitle": "Abmeldung wird verarbeitet"
+    },
+    "error": {
+      "goback": "Zurück",
+      "restricted": "Eingeschränkt!",
+      "stop": "Stop!",
+      "unauthorized": "Unautorisiert!",
+      "login": "Login",
+      "dashboard": "Dashboard"
     }
   },
   "navigation": {

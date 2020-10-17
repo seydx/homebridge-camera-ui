@@ -1,3 +1,8 @@
+# Locales
+
+Here you can find all available languages for the interface. These are structured as follows
+
+```
 {
   "views": {
     "dashboard": {
@@ -224,14 +229,6 @@
     "logout": {
       "title": "See you soon",
       "undertitle": "logout is beeing processed"
-    },
-    "error": {
-      "goback": "Go Back",
-      "restricted": "Restricted!",
-      "stop": "Stop!",
-      "unauthorized": "Unauthorized!",
-      "login": "Login",
-      "dashboard": "Dashboard"
     }
   },
   "navigation": {
@@ -260,3 +257,4 @@
   "push": {
   }
 }
+```

@@ -38,7 +38,8 @@ module.exports = {
           io_session[socket.handshake.sessionID] = {
             username: session.username,
             currentUrl: session.back ? prevUrl : session.currentUrl,
-            targetUrl: session.targetUrl
+            targetUrl: session.targetUrl || false,
+            back: session.back ? (io_session[socket.handshake.sessionID].targetUrl ? io_session[socket.handshake.sessionID].targetUrl : io_session[socket.handshake.sessionID].currentUrl) : false
           };
           
         } else {
@@ -46,6 +47,8 @@ module.exports = {
           io_session[socket.handshake.sessionID] = session;
           
         }
+        
+        debug(io_session[socket.handshake.sessionID]);
       
       });
     

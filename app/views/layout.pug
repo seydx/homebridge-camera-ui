@@ -99,7 +99,7 @@ if title && title !== 'CamViews' && title !== 'Login'
     .snapLine(style="opacity: 0;")
   a.back-to-top.mr-save.mb-save.text-center(href='#', aria-label="Back to top", style="display: none;")
     i.fa.fa-arrow-up
-  #preloader
+#preloader
 - title = title && title !== '' ? title : false;
 - role = role && role !== '' ? role : false;
 - keys = keys && keys !== '' ? keys : false;
@@ -131,6 +131,9 @@ if title && title !== 'Login'
     }
     function getRole(){
       return !{JSON.stringify(role)};
+    }
+    function getCamNames(){
+      return !{JSON.stringify(camNames)};
     }
 script(type='text/javascript').
   (async function ($) {
