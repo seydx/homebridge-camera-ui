@@ -125,7 +125,7 @@ const urlsToCache = [
   '/plugins/gridstack/gridstack.all.js',
   '/plugins/gridstack/gridstack.min.css',
   '/plugins/gridstack/jquery.ui.touch-punch.min.js',
-  '/sounds/notification.wav',
+  //'/sounds/notification.wav',
   '/www/config.xml',
   '/www/manifest.json',
   '/service-worker.js',

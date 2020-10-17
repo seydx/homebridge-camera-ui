@@ -565,7 +565,7 @@ iframe {
 }
 
 .bg-color-pink {
-  background-color: var(--primary-color);
+  background-color: var(--primary-color)!important;
 }
 
 .bg-dark {
