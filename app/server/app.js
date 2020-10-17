@@ -403,7 +403,7 @@ module.exports = {
     // error handler
     app.use(function(err, req, res, next) {
     
-      debug(err.message);
+      debug(err.message); 
       
       // set locals, only providing error in development
       res.locals.message = err.message;
@@ -411,10 +411,13 @@ module.exports = {
       
       if(err.status === 401){
         res.status(err.status);
-        res.render('unauthorised', {status: err.status, message: res.locals.message});
+        res.render('unauthorised', {status: err.status, message: res.locals.t('views.error.unauthorized')});
       } else if(err.status === 403) {
         res.status(err.status);
-        res.render('restricted', {status: err.status, message: res.locals.message});
+        res.render('restricted', {status: err.status, message: res.locals.t('views.error.restricted')});
+      } else if(err.status === 404) {
+        res.status(err.status);
+        res.render('error', {status: err.status, message: res.locals.t('views.error.notfound')});
       } else {
         res.status(err.status || 500);
         res.render('error', {status: err.status, message: res.locals.message});

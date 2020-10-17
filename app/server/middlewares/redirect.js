@@ -10,6 +10,8 @@ const createError = require('http-errors');
 module.exports = (accessories) => {
   
   function session(req, res, next) {
+  
+    req.originalUrl = decodeURIComponent(req.originalUrl);
     
     debug({
       userID: req.session.userID ? req.session.userID : false,
@@ -37,16 +39,16 @@ module.exports = (accessories) => {
         
           let validSession = session[req.sessionID];
           
-          if(validSession.back){
+          if(validSession.back){ 
           
             let valid = validUrls.some(site => validSession.back.includes(site));
             
-            if(valid)
+            if(valid) 
               return res.redirect(validSession.back);
-              
+                   
             return res.redirect('/dashboard');
           
-          } else {
+          } else {   
           
             let valid = validUrls.some(site => validSession.currentUrl.includes(site));
             

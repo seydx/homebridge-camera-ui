@@ -99,7 +99,8 @@ if title && title !== 'CamViews' && title !== 'Login'
     .snapLine(style="opacity: 0;")
   a.back-to-top.mr-save.mb-save.text-center(href='#', aria-label="Back to top", style="display: none;")
     i.fa.fa-arrow-up
-#preloader
+if title
+  #preloader
 - title = title && title !== '' ? title : false;
 - role = role && role !== '' ? role : false;
 - keys = keys && keys !== '' ? keys : false;

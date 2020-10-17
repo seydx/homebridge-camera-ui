@@ -65,9 +65,7 @@ images/
 docs/
 example/
 misc/
-CHANGELOG.md 
 CONTRIBUTING.md
-LICENSE
-FAQ.md  
+LICENSE 
 README.md
 .eslintrc.json
