@@ -231,7 +231,9 @@
       "stop": "Stop!",
       "unauthorized": "Unauthorized!",
       "login": "Login",
-      "dashboard": "Dashboard"
+      "dashboard": "Dashboard",
+      "ooops": "Ooops!",
+      "notfound": "Not found!"
     }
   },
   "navigation": {

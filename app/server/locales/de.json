@@ -232,7 +232,9 @@
       "stop": "Stop!",
       "unauthorized": "Unautorisiert!",
       "login": "Login",
-      "dashboard": "Dashboard"
+      "dashboard": "Dashboard",
+      "ooops": "Ooops!",
+      "notfound": "Nicht gefunden!"
     }
   },
   "navigation": {

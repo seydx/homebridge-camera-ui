@@ -8,7 +8,7 @@ block content
       .align-self-center.text-center
         img.d-block.mx-auto(src='/images/web/logo_transparent-256.png', alt='Camera UI Logo', width='125px', height='118px')
         h1.d-block=t('views.error.stop')
-        p.text-color-pink.error-status=t('views.error.restricted')
+        p.text-color-pink.error-status= message
         a.btn.camview.text-light(href='/dashboard')=t('views.error.dashboard')
     #preloader
 block footscripts
