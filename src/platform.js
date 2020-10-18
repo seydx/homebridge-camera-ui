@@ -115,7 +115,7 @@ function CameraUI (log, config, api) {
     
   }
   
-  if(this.config.options && !this.config.options.interfaceName) {
+  if(!this.config.options.interfaceName) {
   
     debug('Missing interface name in config.json - Looking for interface names..');
   
@@ -290,7 +290,7 @@ CameraUI.prototype = {
     new doorbellSensor(this.api, this.log, this.config, accessory, cameraConfig, this);
 
     const Camera = new camera(this.config, this.log, cameraConfig, this.api, this.api.hap,
-      this.config.options.videoProcessor, (this.config.options ? this.config.options.interfaceName : false), accessory);
+      this.config.options.videoProcessor, this.config.options.interfaceName, accessory);
 
     accessory.configureController(Camera.controller);
   
