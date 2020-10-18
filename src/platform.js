@@ -47,6 +47,7 @@ function CameraUI (log, config, api) {
   this.config.auth = config.auth || 'form';
   this.config.language = config.language || 'auto',
   this.config.cameras = config.cameras || [];
+  this.config.options = this.config.options || {};
   
   //precheck
   if(this.config.auth == 'form' && this.config.auth == 'auth'){
@@ -68,9 +69,6 @@ function CameraUI (log, config, api) {
     debug('HTTP Server for motion handling not active.');
     this.config.http = false;
   }
-
-  if(!this.config.options)
-    this.config.options = {};
 
   if(!this.config.options.videoProcessor){
     debug('Missing video processor in config.json - Setting it to "ffmpeg"');
@@ -213,17 +211,7 @@ CameraUI.prototype = {
         this.removeAccessory(accessory);
       
     });
-
-    //create handler
-    if(this.config.mqtt || this.config.http || this.config.ftp)
-      this.handler = new Handler(this.log, this.accessories, this.config, this.api, this.cameraConfigs);
-
-    if (this.config.mqtt)
-      this.mqtt = new Mqtt(this.log, this.config, this.handler);
-      
-    if (this.config.http)
-      this.http = new Http(this.log, this.config, this.handler);
-      
+    
     //start ui after everything done
     this.ui = new UserInterface(this.api, this.log, this.config, this.accessories);
     await this.ui.init();
@@ -264,6 +252,16 @@ CameraUI.prototype = {
       }
       
     }
+
+    //create handler
+    if(this.config.mqtt || this.config.http || this.config.ftp)
+      this.handler = new Handler(this.log, this.accessories, this.config, this.api, this.cameraConfigs);
+
+    if (this.config.mqtt)
+      this.mqtt = new Mqtt(this.log, this.config, this.handler);
+      
+    if (this.config.http)
+      this.http = new Http(this.log, this.config, this.handler);
   
   },
 
@@ -293,7 +291,7 @@ CameraUI.prototype = {
       this.config.options.videoProcessor, this.config.options.interfaceName, accessory);
 
     accessory.configureController(Camera.controller);
-  
+
   },
 
   configureAccessory: function(accessory){
