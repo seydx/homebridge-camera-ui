@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v3.0.6 - 2020-10-18
+- Fixed a bug that caused Homebridge to crash when no "options" is given in config.json
+
 ## v3.0.5 - 2020-10-18
 - Added new function that allows to see missed notifications after login
 - Fixed Translation & added new translation

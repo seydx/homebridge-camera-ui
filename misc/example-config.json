@@ -36,8 +36,7 @@
             },
             "options": {
                 "videoProcessor": "ffmpeg",
-                "interfaceName": "eth0",
-                "ffmpegExecPath": "/usr/bin/ffmpeg"
+                "interfaceName": "eth0"
             },
             "cameras": [
                 {
