@@ -69,6 +69,9 @@ function CameraUI (log, config, api) {
     this.config.http = false;
   }
 
+  if(!this.config.options)
+    this.config.options = {};
+
   if(!this.config.options.videoProcessor){
     debug('Missing video processor in config.json - Setting it to "ffmpeg"');
     this.config.options.videoProcessor = 'ffmpeg';
