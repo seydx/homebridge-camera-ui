@@ -80,7 +80,6 @@ The default username is ``admin`` and the default password is ``admin``.
             "options": {
                 "videoProcessor": "ffmpeg",
                 "interfaceName": "eth0",
-                "ffmpegExecPath": "/usr/bin/ffmpeg",
                 "language": "DE"
             },
             "cameras": [ ... ],
