@@ -248,14 +248,15 @@
       }
         
       if(role && role === 'Master'){
+        $('.notification-deck').unbind();
         $('.notification-deck').hover(
           function () {
             let removeBtn = $(this).children()[0];
-            $(removeBtn).velocity({ opacity: 1, display: 'block' });
+            $(removeBtn).velocity({ opacity: 1, display: 'block' }, 0);
           },
           function () {
             let removeBtn = $(this).children()[0];
-            $(removeBtn).velocity({ opacity: 0, display: 'none' });
+            $(removeBtn).velocity({ opacity: 0, display: 'none' }, 0);
           }
         );
       }

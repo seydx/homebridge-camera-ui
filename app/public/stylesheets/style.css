@@ -249,6 +249,10 @@ label {
   z-index: 99;
 }
 
+.bs-popover-top>.arrow::after {
+  border-top-color: var(--secondary-bg-color)!important;
+}
+
 .card {
   background: var(--secondary-bg-color);
 }

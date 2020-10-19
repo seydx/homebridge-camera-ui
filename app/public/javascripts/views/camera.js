@@ -13,7 +13,7 @@
     let player = new JSMpeg.Player(url, { canvas: object });
     $(loader).velocity({ opacity: 0, display: 'none' });
   } else {
-    $.snack('error', title + ' offline!', 3000);
+    $.snack('error', title + ' ' + window.i18next.t('views.camera.offline'), 3000);
   }
     
   const viewport = $('meta[name="viewport"]');

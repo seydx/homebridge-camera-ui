@@ -514,6 +514,7 @@
   if (cameras) {
     for (const i in cameras) {
       let loader = '#' + cameras[i].name + 'LDR';
+      let offlineId = '#' + cameras[i].name + 'Offline';
 
       await timeout(1000);
       
@@ -544,8 +545,8 @@
         }
       } else {
       
-        if(!cameras[i].ping)
-          $.snack('error', cameras[i].originName + ' offline!', 3000);
+        if($(offlineId).length)
+          $.snack('error', cameras[i].originName + ' ' + window.i18next.t('views.camera.offline'), 3000);
       
       }
     }

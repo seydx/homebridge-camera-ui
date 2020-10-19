@@ -19,36 +19,49 @@
   }
   
   $('#notifications').on('click', '#removeAllNotifications', function (e) {
+    
+    let allBoxes = $('.filterBtn:checkbox');
+    let room = [];
+    
+    allBoxes.each(function () {
+      if(this.checked)
+        room.push(this.value);
+    });
+    
+    $.ajax({
+      url: '/notifications',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ all: true, room: room }),
+      success: function(data, textStatus, jqXHR){
       
-    let content = $('#nots');
-    let removeBtn = $('#removeAllNotifications');
-      
-    let allContent = $('#nots, #removeAllNotifications');
-  
-    $.post('/notifications', { all: true }).always(function (
-      data,
-      textStatus,
-      jqXHR
-    ) {
-      if (jqXHR.status === 200) {
-        allContent.velocity({ opacity: 0, display: 'none' }, { duration: 500 }).then( function () {
-  
-          content.empty();
-          content.velocity({ opacity: 1, display: 'block' });
-          removeBtn.remove();
-          
-          $.snack('success', 'All Notifications removed!', 3000);
-  
-          if (!$('.mw-470').length)
-            $('.nots-container').append(
-              '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
-            );
+        let newTarget = $('.notification-deck');
+        let found = false;        
+        
+        newTarget.each(function(){
+          if($(this).css('display') !== 'none'){
+            found = true;
+            $(this).remove();                   
+          }            
         });
-      } else {
-        console.log('Error');
-        $.snack('error', 'An error occured!', 3000);
+        
+        if(found){
+          $.snack('success', window.i18next.t('views.notifications.all_removed'), 3000);
+          $('#removeAllNotifications').remove();   
+          $('.nots-container').append(
+            '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+          );              
+        } 
+
+      },
+      error: function(jqXHR, textStatus, error){
+      
+        console.log(error);
+        $.snack('error', window.i18next.t('views.notifications.error'), 3000);
+     
       }
     });
+    
   });
     
   $('#notifications').on('click', function (e) {
@@ -75,8 +88,11 @@
               .velocity({ opacity: 0, display: 'none' }, { duration: 500 })
               .then( function () {
                 $(light).remove();
+                
+                let removedInfo = window.i18next.t('views.notifications.not_removed');
+                removedInfo = removedInfo.replace('@', id);
               
-                $.snack('success', 'Notification ' + id + ' removed!', 3000);
+                $.snack('success', removedInfo, 3000);
   
                 let notifications = $('#nots').children();
   
@@ -89,7 +105,7 @@
               });
           } else {
             console.log('Error');
-            $.snack('error', 'An error occured!', 3000);
+            $.snack('error', window.i18next.t('views.notifications.error'), 3000);
           }
         });
       
