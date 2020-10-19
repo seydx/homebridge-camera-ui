@@ -27,6 +27,9 @@ module.exports = {
         
         let audio = cameras[accessory.displayName].audio;
         let videoSize = cameras[accessory.displayName].resolutions;
+        let rate = accessory.context.videoConfig.maxFPS;
+        
+        rate = rate ? (rate < 20 ? 20 : rate) : 20;
         
         startedStreams[accessory.displayName] = new Stream({
           name: accessory.displayName,
@@ -38,7 +41,7 @@ module.exports = {
           ffmpegOptions: {
             '-s': videoSize,
             '-b:v': '299k',
-            '-r': accessory.context.videoConfig.maxFPS || 20,
+            '-r': rate,
             '-preset:v': 'ultrafast',
             '-threads': '1',
             '-loglevel': 'quiet'
@@ -113,11 +116,14 @@ module.exports = {
     
     } else {
     
-      if(!startedStreams[camera].wsPort)
+      if(!startedStreams[camera].wsPort){
         log('Can not start stream for %s - Socket Port not defined in videoConfig!', startedStreams[camera].name);
-        
-      if(!startedStreams[camera].streamUrl)
+      } else if(!startedStreams[camera].streamUrl){
         log('Can not start stream for %s - Source not defined in videoConfig!', startedStreams[camera].name);
+      } else {
+        log('Can not start stream for %s', startedStreams[camera].name);
+        debug(startedStreams[camera]);
+      }
     
     }
     
