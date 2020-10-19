@@ -1,6 +1,14 @@
 # Changelog
 
 
+## v3.0.8 - 2020-10-19
+- Added min fps of 20, otherwise the decoder will show a black livestream
+- more debug if stream failed
+- Fix admin username validation
+- Fixed a bug where breadcrumb title not updated properly
+- Added translation to selectpicker
+- Added new params to avoid ffmpeg hang on a process
+
 ## v3.0.7 - 2020-10-19
 - Added new translation
 - Added validation to "change admin username"
