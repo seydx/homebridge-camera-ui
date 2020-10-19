@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.0.7 - 2020-10-19
+- Added new translation
+- Added validation to "change admin username"
+- Added validation to "adding new user (username)"
+- Recordings: "Remove all" will now remove the recordings from choosen room (filter)
+- Notifications: "Remove all" will now remove the notifications from choosen room (filter)
+- Changes Spdy (http/2) to https (http/1) because of callback error
+- Rearranged ui/handler init to avoid incoming mqtt/http message before ui finished initialisation
+- Fixed a bug where "offline" toast message appeared also for hidden cameras
+- Fixed a bug that caused the video processor entered in config.json not to be passed to videoStream
+- Fixed a bug that caused that if only one camera is entered in config.json, the camera page was not visible
+
 ## v3.0.6 - 2020-10-18
 - Fixed a bug that caused Homebridge to crash when no "options" is given in config.json
 
