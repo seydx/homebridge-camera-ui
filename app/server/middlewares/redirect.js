@@ -65,7 +65,7 @@ module.exports = (accessories) => {
     
     }
     
-    if(!validMain && req.originalUrl !== '/')
+    if(!validMain && req.originalUrl !== '/' && (req.session.user && req.originalUrl !== '/change'))
       return next(createError(404));
     
     return next();
