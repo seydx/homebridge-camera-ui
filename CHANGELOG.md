@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v3.0.9 - 2020-10-20
+- Rearranged /change view
+- Fixed a bug where the /change path could not be found
+- Fixed a bug where the port was false if host doesnt include '@' char
+- Added ffmpeg-for-homebridge as dependency 
+
 ## v3.0.8 - 2020-10-19
 - Added min fps of 20, otherwise the decoder will show a black livestream
 - more debug if stream failed
