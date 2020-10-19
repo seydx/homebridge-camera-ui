@@ -73,7 +73,7 @@
                         "maxHeight": 1080,
                         "maxFPS": 25,
                         "maxBitrate": 1000,
-                        "socketPort": 8300
+                        "socketPort": 8200
                     }
                 },
                 {
