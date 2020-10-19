@@ -44,7 +44,7 @@ module.exports = (app, upload, db_settings, db_users) => {
     
     } else {
     
-      await db_settings.update(user, req.body.data, req.file);
+      await db_settings.update(user, data, req.file);
     
     }
     
