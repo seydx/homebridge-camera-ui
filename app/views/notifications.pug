@@ -115,7 +115,7 @@ block content
                       img(onerror="this.onerror=null;this.src='/images/web/noimg.png';", src=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? "@2.jpeg" : ".jpeg") : "/images/web/logo_transparent-256.png", width="45", height="45", alt=t('views.notifications.img_notification'), class="notification-img")
             if notsize
               if role === 'Master'
-                .d-flex.justify-content-center
+                #removeContainer.d-flex.justify-content-center
                   #removeAllNotifications.btn.logout=t('views.notifications.btn_removeall')
             else
               img.container.d-flex.justify-content-center.mw-470(src="/images/web/no_notifications.png", alt=t('views.notifications.no_notifications'))

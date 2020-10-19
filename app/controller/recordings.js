@@ -36,13 +36,11 @@ module.exports = (app, db_settings, db_recordings) => {
     
       if(req.body.all){
         
-        await db_recordings.removeAll();
+        await db_recordings.removeAll(req.body.room);
         
       } else {
-      
-        let id = req.body.id;
    
-        await db_recordings.remove(id);
+        await db_recordings.remove(req.body.id);
         
       }
     

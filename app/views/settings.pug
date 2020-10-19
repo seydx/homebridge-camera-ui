@@ -151,7 +151,7 @@ block content
                           .settings-box-account-form
                             .form-group
                               label=t('views.settings.views.profile.account_name')
-                                input.form-control.form-control(type="text", name="admin[username]", value=username, id='adminUsername')
+                                input#adminUsername.form-control.form-control(type="text", name="admin[username]", value=username)
                             if role === 'Master'
                               .form-group.mt-3.d-flex.justify-content-end
                                 label=t('views.settings.views.profile.account_signout')
@@ -192,7 +192,7 @@ block content
                           .settings-box-account-form
                             .form-group
                               label=t('views.settings.views.profile.password_old')
-                                input.form-control.form-control(type="password", autocomplete="current-password", name="password[old]")
+                                input.form-control.form-control(type="password", autocomplete="new-password", name="password[old]")
                             .form-group.mt-4
                               label=t('views.settings.views.profile.password_new')
                                 input.form-control.form-control(type="password", autocomplete="new-password", name="password[new]")
@@ -210,7 +210,7 @@ block content
                                   h3=t('views.settings.views.profile.user_new')
                                   .form-group.mt-4
                                     label=t('views.settings.views.profile.user_new_name')
-                                      input#userName.form-control.form-control(type="text", placeholder=t('views.settings.views.profile.user_new_username'), data-name=t('views.settings.views.profile.user_new_username'))
+                                      input#userName.form-control.form-control(type="text", placeholder=t('views.settings.views.profile.user_new_username'), data-name=t('views.settings.views.profile.user_new_username'), data-container="body" data-toggle="popover" data-placement="top" data-content=t('views.settings.views.profile.invalid_username'))
                                   .form-group.mt-4
                                     label=t('views.settings.views.profile.user_new_password')
                                       input#userPassword.form-control.form-control(type="password", placeholder='*********', data-name=t('views.settings.views.profile.user_new_password'))

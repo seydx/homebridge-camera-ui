@@ -19,12 +19,23 @@ module.exports = (app, upload, db_settings, db_users) => {
     
     let user = db_users.getUser(req.session.username);
     let data = JSON.parse(req.body.data);
-    
     let changedCr = false;
     
-    //check if credentials changed
-    if(data.admin && data.admin.username && data.admin.username !== '' && user.username !== data.admin.username)
-      changedCr = true;
+    if(data.admin && data.admin.username){
+    
+      let validName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,15}$/.test(data.admin.username);
+      
+      //check if credentials changed
+      if(validName && user.username !== data.admin.username)
+        changedCr = true;
+        
+      //check if admin name has invalid chars
+      if(!validName){
+        debug('Can not change username! Username not valid!');
+        data.admin.username = user.username;
+      }
+      
+    }
   
     //update/reset
     if(req.query && req.query.reset && user.role === 'Master'){

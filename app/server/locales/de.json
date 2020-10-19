@@ -4,14 +4,16 @@
       "title": "Dashboard",
       "welcome": "Willkommen",
       "hello": "Hallo",
-      "undertitle": "Unten sehen Sie Ihre Lieblings Streams"
+      "undertitle": "Unten sehen Sie Ihre Lieblings Streams",
+      "offline": "offline!"
     },
     "cameras": {
       "title": "Kameras",
       "notification_title": "Letzte Benachrichtigung",
       "notifications_title": "Letzte Benachrichtigungen",
       "notification_info": "Bewegung erkannt am",
-      "notification_nodata": "Keine Daten"
+      "notification_nodata": "Keine Daten",
+      "offline": "offline!"
     },
     "camera": {
       "notification_title": "Letzte Benachrichtigung",
@@ -19,7 +21,8 @@
       "notification_info": "Bewegung erkannt am",
       "notification_nodata": "Keine Daten",
       "previous_camera": "Vorherige Kamera",
-      "next_camera": "Nächste Kamera"
+      "next_camera": "Nächste Kamera",
+      "offline": "offline!"
     },
     "recordings": {
       "title": "Aufnahmen",
@@ -27,14 +30,20 @@
       "info": "Diese Datei wurde aufgenommen am",
       "btn_removeall": "Alles löschen",
       "no_recordings": "Keine Aufnahmen",
-      "download": "Runterladen"
+      "download": "Runterladen",
+      "error": "Fehler!",
+      "rec_removed": "Aufnahme @ wurde gelöscht!",
+      "all_removed": "Alle Aufnahmen wurden gelöscht!"
     },
     "notifications": {
       "title": "Benachrichtigungen",
       "movement": "Bewegung",
       "btn_removeall": "Alles löschen",
       "no_notifications": "Keine Benachrichtigungen",
-      "img_notification": "Benachrichtigungsbild"
+      "img_notification": "Benachrichtigungsbild",
+      "error": "Fehler!",
+      "not_removed": "Benachrichtigung @ wurde gelöscht!",
+      "all_removed": "Alle Benachrichtigungen wurden gelöscht!"
     },
     "settings": {
       "title": "Einstellungen",
@@ -79,7 +88,8 @@
           "user_new_role": "Rolle",
           "user_new_add": "Neuen Benutzer anlegen",
           "user_role_admin": "Administrator",
-          "user_role_user": "Benutzer"
+          "user_role_user": "Benutzer",
+          "invalid_username": "Benutzername ungültig!"   
         },
         "general": {
           "title": "Allgemein",
@@ -186,7 +196,8 @@
       "btn_positions": "Position speichern",
       "btn_positions_saved": "Gespeichert!",
       "lastnotification": "Letzte Bewegung",
-      "nodata": "Keine Daten"
+      "nodata": "Keine Daten",
+      "offline": "offline!"
     },
     "login": {
       "title": "Login",

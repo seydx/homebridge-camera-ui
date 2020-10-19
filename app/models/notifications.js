@@ -2,6 +2,8 @@
 
 const debug = require('debug')('CameraUIInterface');
 
+const socket = require('../server/socket');
+
 module.exports = (db) => {
 
   function get(){
@@ -107,6 +109,7 @@ module.exports = (db) => {
     if(notification){
     
       db.get('notifications').get('nots').remove({ id: id }).write();
+      socket.io('notification_remove', id);
     
     } else {
     
@@ -118,11 +121,27 @@ module.exports = (db) => {
     
   }
   
-  function removeAll(){
-  
-    debug('Removing all notifications!');
+  function removeAll(room){
+      
+    if(room.length && !room.includes('all')){
     
-    db.get('notifications').set('nots', []).write();
+      debug('Removing all notifications for following rooms: ' + room.toString());
+    
+      let nots = getNots();
+      
+      for(const not of nots)
+        if(room.includes(not.room))
+          remove(not.id);
+    
+    } else {
+    
+      if(room.includes('all')){
+        debug('Removing all notifications!');
+        db.get('notifications').set('nots', []).write();
+        socket.io('notification_remove', 'all');
+      }
+    
+    }
     
     return;
     

@@ -425,7 +425,10 @@
     let index = $('.customUser').length;
     let adminUsername = $('#adminUsername').val();
     
-    if (name && !$('#' + name).length && pw && name !== username && name !== adminUsername) {
+    let validName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,15}$/.test(name);
+    
+    if (validName && name && !$('#' + name).length && pw && name !== username && name !== adminUsername) {
+     
       let id = name.replace(/\s/g, '');
       
       $('#users').append(
@@ -445,7 +448,13 @@
       );
   
       $('#newUsername').val('');
+    
+    } else {
+    
+      $('#userName').popover('show');
+    
     }
+    
   });
   
   $('#users').on('click', '.removeUser', function (e) {

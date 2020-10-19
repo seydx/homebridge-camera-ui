@@ -2,6 +2,7 @@
   'use strict';
 
   let role = getRole();
+  
   const viewport = $('meta[name="viewport"]');
 
   $('a[data-rel^=lightcase]').lightcase({
@@ -52,7 +53,10 @@
             $(light).velocity({ opacity: 0, display: 'none' }).then( function () {
               $(light).remove();
               
-              $.snack('success', 'Recording ' + id + ' removed!', 3000);
+              let removedInfo = window.i18next.t('views.recordings.rec_removed');
+              removedInfo = removedInfo.replace('@', id);
+              
+              $.snack('success', removedInfo, 3000);
   
               let recs = $('#recs').children();
   
@@ -63,7 +67,7 @@
             });
           } else {
             console.log('Error');
-            $.snack('error', 'An error occured!', 3000);
+            $.snack('error', window.i18next.t('views.recordings.error'), 3000);
           }
         });
       
@@ -74,29 +78,49 @@
   });
    
   $('#recordings').on('click', '#removeAllRecordings', function (e) {
-    let targets = $('#recs, #removeAllRecordings');
-  
-    $.post('/recordings', { all: true }).always(function (
-      data,
-      textStatus,
-      jqXHR
-    ) {
-      if (jqXHR.status === 200) {
-        $(targets).velocity({ opacity: 0, display: 'none' }).then( function () {
-          targets.remove();
-          
-          $.snack('success', 'All Recordings removed!', 3000);
-  
-          if (!$('.mw-470').length)
-            $('#recordings').append(
-              '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />'
-            );
+    
+    let allBoxes = $('.filterBtn:checkbox');
+    let room = [];
+    
+    allBoxes.each(function () {
+      if(this.checked)
+        room.push(this.value);
+    });
+    
+    $.ajax({
+      url: '/recordings',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ all: true, room: room }),
+      success: function(data, textStatus, jqXHR){
+        
+        let newTarget = $('.video-cards');
+        let found = false;        
+        
+        newTarget.each(function(){
+          if($(this).css('display') !== 'none'){
+            found = true;
+            $(this).remove();                   
+          }            
         });
-      } else {
-        console.log('Error');
-        $.snack('error', 'An error occured!', 3000);
+        
+        if(found){
+          $.snack('success', window.i18next.t('views.recordings.all_removed'), 3000);
+          $('#removeAllRecordings').remove();   
+          $('#recordings').append(
+            '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />'
+          );                
+        }                    
+
+      },
+      error: function(jqXHR, textStatus, error){
+      
+        console.log(error);
+        $.snack('error', window.i18next.t('views.recordings.error'), 3000);
+     
       }
     });
+ 
   });
   
 })(jQuery);

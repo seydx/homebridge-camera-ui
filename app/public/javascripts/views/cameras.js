@@ -28,7 +28,7 @@
           }
         });
       } else {
-        $.snack('error', camm.originName + ' offline!', 3000);
+        $.snack('error', camm.originName + ' ' + window.i18next.t('views.camera.offline'), 3000);
       }
     }
   }
