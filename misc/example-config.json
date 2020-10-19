@@ -83,7 +83,6 @@
                     "serialNumber": "123456",
                     "firmwareRevision": "1.0",
                     "motion": false,
-                    "yihack": true,
                     "videoConfig": {
                         "source": "-i rtsp://192.168.178.11/ch0_0.h264",
                         "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",
