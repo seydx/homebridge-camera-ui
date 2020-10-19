@@ -25,7 +25,12 @@
   });
   
   $('.selectpicker').selectpicker({
-    noneSelectedText : window.i18next.t('views.settings.views.general.nothing_selected')
+    noneSelectedText : window.i18next.t('views.settings.views.general.nothing_selected'),
+    countSelectedText: function(selected, all){
+      if(selected && selected > 1){
+        return selected.toString() + ' ' +  window.i18next.t('views.cameras.title')
+      }
+    }
   });
     
   //inital scroll
