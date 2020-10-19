@@ -12,10 +12,11 @@ module.exports = {
       debug('CameraUI - %s: Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720) + '%s', camera.originName, (additional ? ' (This snapshot will be created additional to the video as preview file)' : ''));
       
       let ffmpegArgs = camera.source || camera.stillImageSource;
+      ffmpegArgs = ffmpegArgs.replace('-i', '-nostdin -y -i');
+      
       let snapPath =  recording ? recPath + '/' + recording.id + (additional ? '@2' : '') + '.jpeg' : false;
 
       ffmpegArgs += // Still
-        ' -y' +
         ' -frames:v 1' +
         ' -filter:v' +
         ' scale=\'min(' + (camera.maxWidth||1280) + ',iw)\':\'min('+ (camera.maxHeight||720) + ',ih)\':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2' + 
@@ -52,11 +53,10 @@ module.exports = {
       
       debug('CameraUI - %s: Video requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720), camera.originName);
       
-      let ffmpegArgs = camera.source;
+      let ffmpegArgs = camera.source.replace('-i', '-nostdin -y -i');    
       let videoName = recPath + '/' + recording.id + '.mp4';    
 
       ffmpegArgs +=
-        ' -y' +
         ' -t ' + (recTimer || '10') +
         (camera.videoFilter ? ' -filter:v ' + camera.videoFilter : '') +
         ' -strict experimental' +
@@ -66,21 +66,6 @@ module.exports = {
         ' -movflags +faststart' +
         ' -crf 23 ' +
         videoName;
-        
-      /*ffmpegArgs +=
-        ' -y' +
-        ' -t ' + (recTimer || '10') +
-        (camera.videoFilter ? ' -filter:v ' + camera.videoFilter : '') +
-        ' -strict experimental' +
-        ' -threads 0' + 
-        ' -profile:v baseline' +
-        ' -codec:v libx264' +
-        ' -codec:a aac' +
-        ' -s ' + ( (camera.maxWidth||1280) + 'x' + (camera.maxHeight||720) ) +
-        ' -movflags +faststart' +
-        ' -crf 23' + 
-        ' -pix_fmt yuv420p ' +
-        videoName;*/
         
       const ffmpeg = spawn('ffmpeg', ffmpegArgs.split(/\s+/), { env: process.env });
       
