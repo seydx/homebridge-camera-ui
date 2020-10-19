@@ -40,8 +40,8 @@ module.exports = class UserInterface {
       await this.database.init();
   
       //config camera streams    
-      debug('Configuring cameras');
-      streams.init(this.log, this.accessories, this.config.ssl, this.database.Settings());
+      debug('Configuring camera streams');
+      streams.init(this.log, this.accessories, this.config.ssl, this.config.options.videoProcessor, this.database.Settings());
       
       //config app
       debug('Configuring app');
@@ -61,11 +61,11 @@ module.exports = class UserInterface {
       await cleartimer.init(this.database);
   
       //start motion handler
-      debug('Configuring handler');
-      handler.init(this.database, this.config.language);
+      debug('Configuring motion handler');
+      handler.init(this.database);
   
       //start webhook handler
-      debug('Configuring webhook');
+      debug('Configuring webhook handler');
       webhook.init(this.database);
       
       //everything started successfully, now lets start the server!

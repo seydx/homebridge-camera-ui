@@ -3,8 +3,6 @@
 const express = require('express');
 const router = express.Router();
 
-const socket = require('../server/socket');
-
 module.exports = (app, db_notifications) => {
 
   router.get('/', (req, res, next) => { // eslint-disable-line no-unused-vars
@@ -20,18 +18,12 @@ module.exports = (app, db_notifications) => {
     try {
     
       if(req.body.all){
-        
-        socket.io('notification_remove', 'all');
-        
-        db_notifications.removeAll();
+
+        db_notifications.removeAll(req.body.room);
     
       } else {
-   
-        let id = req.body.id;
-        
-        socket.io('notification_remove', id);
-        
-        db_notifications.remove(id);
+
+        db_notifications.remove(req.body.id);
     
       }
     

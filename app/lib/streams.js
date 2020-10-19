@@ -9,7 +9,7 @@ const startedStreams = {};
 
 module.exports = {
 
-  init: function(lg, accessories, ssl, db_settings){
+  init: function(lg, accessories, ssl, ffmpegPath, db_settings){
 
     db = db_settings;
     log = lg;
@@ -43,7 +43,8 @@ module.exports = {
             '-threads': '1',
             '-loglevel': 'quiet'
           },
-          ssl: ssl
+          ssl: ssl,
+          ffmpegPath: ffmpegPath 
         });
         
         if(audio){

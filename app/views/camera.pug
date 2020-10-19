@@ -146,33 +146,34 @@ block content
             each camIndex in Object.keys(positions.cameras)
               - current = positions.cameras[camIndex]
               if current.url === title
-                if camIndex < 2
-                  - next = parseInt(camIndex) + 1
-                  - nextPos = positions.cameras[next]
-                  .col-12.text-right
-                    a.smoothLink(href='/camera/' + nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
-                      span= nextPos.url
-                      i.fa.fa-arrow-right.ml-2
-                else if camIndex > 1 && camIndex < max
-                  - next = parseInt(camIndex) + 1
-                  - prev = parseInt(camIndex) - 1
-                  - nextPos = positions.cameras[next]
-                  - prevPos = positions.cameras[prev] 
-                  .col-6.text-left
-                    a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
-                      i.fa.fa-arrow-left.mr-2
-                      span= prevPos.url
-                  .col-6.text-right
-                    a.smoothLink(href=nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
-                      span= nextPos.url
-                      i.fa.fa-arrow-right.ml-2 
-                else
-                  - prev = parseInt(camIndex) - 1
-                  - prevPos = positions.cameras[prev]
-                  .col-12.text-left
-                    a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
-                      i.fa.fa-arrow-left.mr-2
-                      span= prevPos.url
+                if max > 1
+                  if camIndex < 2
+                    - next = parseInt(camIndex) + 1
+                    - nextPos = positions.cameras[next]
+                    .col-12.text-right
+                      a.smoothLink(href='/camera/' + nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                        span= nextPos.url
+                        i.fa.fa-arrow-right.ml-2
+                  else if camIndex > 1 && camIndex < max
+                    - next = parseInt(camIndex) + 1
+                    - prev = parseInt(camIndex) - 1
+                    - nextPos = positions.cameras[next]
+                    - prevPos = positions.cameras[prev] 
+                    .col-6.text-left
+                      a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                        i.fa.fa-arrow-left.mr-2
+                        span= prevPos.url
+                    .col-6.text-right
+                      a.smoothLink(href=nextPos.url, target="_self", aria-label=t('views.camera.next_camera'))
+                        span= nextPos.url
+                        i.fa.fa-arrow-right.ml-2 
+                  else
+                    - prev = parseInt(camIndex) - 1
+                    - prevPos = positions.cameras[prev]
+                    .col-12.text-left
+                      a.smoothLink(href='/camera/' + prevPos.url, target="_self", aria-label=t('views.camera.previous_camera'))
+                        i.fa.fa-arrow-left.mr-2
+                        span= prevPos.url
 block footscripts
   script(type='text/javascript' src='/javascripts/modules/jsmpeg.min.js' defer)
   script(type='text/javascript').

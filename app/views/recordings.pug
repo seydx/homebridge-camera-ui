@@ -133,7 +133,7 @@ block content
                         i.fas.fa-download
           if recsize
             if role === 'Master'
-              .d-flex.justify-content-center.mb-4.mt-4
+              #removeContainer.d-flex.justify-content-center.mb-4.mt-4
                 #removeAllRecordings.btn.logout=t('views.recordings.btn_removeall')
           else
             img.container.d-flex.justify-content-center.mw-470(src="/images/web/no_recordings.png", alt=t('views.recordings.no_recordings'))

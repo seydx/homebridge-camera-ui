@@ -195,13 +195,39 @@ module.exports = (db, camDb, recDb) => {
     
   }
   
-  async function removeAll(){
+  async function removeAll(room){
 
     let recPath = db.get('settings').get('recordings').get('path').value();
     
     try {
     
-      await fs.emptyDir(recPath);
+      if(room.length && !room.includes('all')){
+      
+        debug('Removing all recordings for following rooms: ' + room.toString());
+        
+        let recs = await get();
+        
+        for(const rec of recs){
+          
+          if(room.includes(rec.room)){
+          
+            await fs.remove(recPath + '/' + rec.fileName);
+            
+            if(rec.type === 'Video')
+              await fs.remove(recPath + '/' + rec.fileName.split('.mp4')[0] + '@2.jpeg');
+          
+          }  
+          
+        }
+      
+      }else {
+      
+        if(room.includes('all')){
+          debug('Removing all recordings!');
+          await fs.emptyDir(recPath);
+        }
+        
+      }
       
     } catch(err) {
     
