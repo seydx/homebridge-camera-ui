@@ -92,9 +92,9 @@ module.exports = (db, accessories, configPath, db_users) => {
   async function update(profile, users, general, dashboard, cameras, recordings, notifications, telegram, camviews, webpush, webhook){
   
     if(profile && profile.username){ // update through settings controller
-    
+
       let user = profile;
-      let data = JSON.parse(users);   // users = req.body.data from settings controller
+      let data = users;   // users = req.body.data from settings controller
       let file = general;  // general = req.file from settings controller
       let photo;
       
