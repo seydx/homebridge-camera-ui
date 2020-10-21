@@ -106,7 +106,7 @@ class Handler {
         if (motionTrigger)
           motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
         
-        let timeoutConfig = cameraConfig ? cameraConfig.motionTimeout : 1;
+        let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
         
         if (timeoutConfig < minimumTimeout)
           timeoutConfig = minimumTimeout;
@@ -188,16 +188,21 @@ class Handler {
         
           doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
           
-          let timeoutConfig = cameraConfig ? cameraConfig.motionTimeout : false;
+          let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
           
-          timeoutConfig = timeoutConfig && timeoutConfig > 0 ? timeoutConfig : 1;
+          if (timeoutConfig > 0) {
           
-          const timer = setTimeout(() => {
-            Logger.debug('Doorbell handler timeout.', accessory.displayName);
-            doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
-          }, timeoutConfig * 1000);
+            const timer = setTimeout(() => {
+           
+              Logger.debug('Doorbell handler timeout.', accessory.displayName);
+            
+              doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
           
-          this.doorbellTimers.set(accessory.UUID, timer);
+            }, timeoutConfig * 1000);
+            
+            this.doorbellTimers.set(accessory.UUID, timer);
+          
+          }
         
         }
         
