@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.1.1 - 2020-10-21
+- Interface Stream: Revert back to -threads 1
+- Fix not appearing motion switches
+- Fix not appearing doorbell switches
+- Bugfix: Remove Motion Characteristic from doorbell
+- Bugfix: Doorbell Timeout
+
+## v3.1.0 - 2020-10-21
+- Added a new logging function
+- Refactored recording/notification handler
+- Bugfix: Avoid multiple recording processes at same time on same camera
+
 ## v3.0.9 - 2020-10-20
 - Rearranged /change view
 - Fixed a bug where the /change path could not be found
