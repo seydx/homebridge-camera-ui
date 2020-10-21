@@ -4,14 +4,14 @@ const Logger = require('../helper/logger.js');
 
 class motionService {
 
-  constructor (api, config, accessory, cameraConfig, handler) {
+  constructor (accessory, cameraConfig, platform) {
 
-    this.api = api;
-    this.config = config;
+    this.platform = platform;
+    
+    this.api = platform.api;
+    this.config = platform.config;
     this.cameraConfig = cameraConfig;
     this.accessory = accessory;
-    
-    this.handler = handler;
     
     this.getService(this.accessory);
 
@@ -26,7 +26,7 @@ class motionService {
     let service = accessory.getService(this.api.hap.Service.MotionSensor);
     let switchService = accessory.getServiceById(this.api.hap.Service.Switch, 'MotionTrigger');
     
-    if((this.config.mqtt || this.config.ftp || this.config.http) && this.cameraConfig.motion){
+    if(this.cameraConfig.motion){
     
       if(!service){
         Logger.info('Adding motion sensor', accessory.displayName);
@@ -49,7 +49,7 @@ class motionService {
     
     }
     
-    if((this.config.mqtt || this.config.ftp || this.config.http) && this.cameraConfig.switches){
+    if(this.cameraConfig.switches){
     
       if(!switchService){
         Logger.info('Adding motion switch', accessory.displayName);
@@ -60,7 +60,7 @@ class motionService {
         .getCharacteristic(this.api.hap.Characteristic.On)
         .on('set', (state, callback) => {
           Logger.info('Motion Switch ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
-          this.handler.getHandler().motionHandler(accessory, state, 1);
+          this.platform.setHandler('motion', accessory, state, 1);
           callback(null, state);
         });
     
