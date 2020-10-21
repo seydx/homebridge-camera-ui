@@ -262,9 +262,7 @@ CameraUI.prototype = {
       
     }
 
-    //create handler
-    if(this.config.mqtt || this.config.http || this.config.ftp)
-      this.handler = new Handler(this.accessories, this.config, this.api, this.cameraConfigs);
+    this.handler = new Handler(this.accessories, this.config, this.api, this.cameraConfigs);
 
     if (this.config.mqtt)
       this.mqtt = new Mqtt(this.config, this.handler);
@@ -274,8 +272,20 @@ CameraUI.prototype = {
   
   },
 
-  getHandler: function(){
-    return this.handler;
+  setHandler: function(type, accessory, state, minimumTimeout){
+    
+    if(type === 'doorbell'){
+      
+      if(this.handler)
+        this.handler.doorbellHandler(accessory, state, minimumTimeout);
+      
+    } else if(type === 'motion'){
+      
+      if(this.handler)
+        this.handler.motionHandler(accessory, state, minimumTimeout);
+      
+    }
+    
   },
   
   setupAccessory: function(accessory, cameraConfig){
@@ -293,8 +303,8 @@ CameraUI.prototype = {
       AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, cameraConfig.firmwareRevision || packageFile.version);
     }
     
-    new motionSensor(this.api, this.config, accessory, cameraConfig, this);
-    new doorbellSensor(this.api, this.config, accessory, cameraConfig, this);
+    new motionSensor(accessory, cameraConfig, this);
+    new doorbellSensor(accessory, cameraConfig, this);
 
     const Camera = new camera(this.config, cameraConfig, this.api, this.api.hap,
       this.config.options.videoProcessor, this.config.options.interfaceName, accessory);
