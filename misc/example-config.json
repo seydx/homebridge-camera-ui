@@ -55,7 +55,8 @@
                         "maxWidth": 1280,
                         "maxHeight": 720,
                         "maxFPS": 30,
-                        "socketPort": 8100
+                        "socketPort": 8100,
+                        "debug": true
                     }
                 },
                 {
