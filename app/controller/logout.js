@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const express = require('express');
 const router = express.Router();
@@ -22,14 +22,14 @@ module.exports = (app, autoSignout) => {
       autoSignout[username] = false;
     }
     
-    debug('%s: Logged out', username);
+    Logger.ui.info('Logged out', username);
     
     req.logout();
     
     req.session.destroy(function(err) {
       if (err) {
-        debug('An error occured during clearing cookie!');
-        debug(err);
+        Logger.ui.error('An error occured during clearing cookie!');
+        Logger.ui.error(err);
       } else {
         res.clearCookie('camera.ui');
       }

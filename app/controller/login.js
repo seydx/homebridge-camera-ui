@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 const packageFile = require('../../package.json');  
 
 const express = require('express');
@@ -30,8 +30,8 @@ module.exports = (app, db_settings, autoSignout) => {
     
       if (err) {
       
-        debug('An error occured during login process!');
-        debug(err.message);
+        Logger.ui.error('An error occured during login process!');
+        Logger.ui.error(err.message);
         
         req.flash('error', err.message);
         return res.status(500).send({
@@ -49,7 +49,7 @@ module.exports = (app, db_settings, autoSignout) => {
       }
       
       if(user && user.role === 'Master' && info.change){
-        debug('Credentials not changed! Please change your credentials!');
+        Logger.ui.warn('Credentials not changed! Please change your credentials!');
         req.session.user = user;
         return res.status(201).send({
           photo: user.photo + '?r=' + Math.random(),
@@ -62,8 +62,8 @@ module.exports = (app, db_settings, autoSignout) => {
       
         if (err){
           
-          debug('An error occured during login process!');
-          debug(err.message);
+          Logger.ui.error('An error occured during login process!');
+          Logger.ui.error(err.message);
           
           req.flash('error', err.message);
           return res.status(500).send({
@@ -76,7 +76,7 @@ module.exports = (app, db_settings, autoSignout) => {
         
         let sessionTimer = isNaN(parseInt(profile.logoutTimer)) ? false : parseInt(profile.logoutTimer) * 60 * 60 * 1000;
 
-        debug('%s (%s): Successfully logged in!', user.username, user.role);
+        Logger.ui.info('Successfully logged in!', user.username);
         
         req.session.noAuth = false;
         req.session.userID = user.id;          
@@ -88,7 +88,7 @@ module.exports = (app, db_settings, autoSignout) => {
          
         if(sessionTimer){
           
-          debug('%s (%s): Your session expires in %s hour(s)', user.username, user.role, profile.logoutTimer);
+          Logger.ui.debug('Your session expires in ' + profile.logoutTimer + ' hour(s)', user.username);
 
           req.session.cookie.maxAge = sessionTimer;
           
@@ -97,7 +97,7 @@ module.exports = (app, db_settings, autoSignout) => {
           
           autoSignout[user.username] = setTimeout(() => {
             
-            debug('%s (%s): Session timed out.', user.username, user.role);
+            Logger.ui.info('Session timed out.', user.username);
             
             delete req.session.noAuth;
             delete req.session.userID;
@@ -111,7 +111,7 @@ module.exports = (app, db_settings, autoSignout) => {
         
         } else {
         
-          debug('%s (%s): Your session will not expire!', user.username, user.role);
+          Logger.ui.debug('Your session will not expire!', user.username);
         
           req.session.cookie.maxAge = 2147483648 * 1000;
         

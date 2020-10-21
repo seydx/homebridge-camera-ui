@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const express = require('express');
 const router = express.Router();
@@ -85,7 +85,7 @@ module.exports = (app, db_settings, db_users) => {
        
       }
       
-      debug('Received a new HTTP message %s (%s)', results, target);
+      Logger.ui.debug('Received a new HTTP message %s (%s)', results, target);
       
     } else {
     

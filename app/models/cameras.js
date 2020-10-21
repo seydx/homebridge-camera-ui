@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const Ping = require('../lib/ping');
 
@@ -32,18 +32,19 @@ module.exports = (db, camDb) => {
       
       try {
         
-        debug('Trying to ping %s', camera);
+        Logger.ui.debug('Trying to ping', camera);
         
         state = await Ping.ping(cam);
         
       } catch(err) {
         
-        debug('An error occured during pinging %s', camera, err);
+        Logger.ui.error('An error occured during pinging', camera);
+        Logger.ui.error(err);
         state = false;
         
       }
       
-      debug('%s: %s', camera, (state ? 'Online' : 'Offline'));
+      Logger.ui.info((state ? 'Online' : 'Offline'), camera);
     
       camDb.get('cameras').get(camera).set('ping', state).write();
       
@@ -69,17 +70,18 @@ module.exports = (db, camDb) => {
       
         let cam = cams[camera];
         
-        debug('Trying to ping %s', camera);
+        Logger.ui.debug('Trying to ping ' + camera);
         
         state = await Ping.ping(cam);
         
       } catch(err) {
         
-        debug('An error occured during pinging %s', camera, err);
+        Logger.ui.error('An error occured during pinging', camera);
+        Logger.error(err);
         
       }
       
-      debug('%s: %s', camera, (state ? 'Online' : 'Offline'));
+      Logger.ui.info((state ? 'Online' : 'Offline'), camera);
     
       camDb.get('cameras').get(camera).set('ping', state).write();
       

@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIApp');
+const Logger = require('../../src/helper/logger.js');
 
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
@@ -313,7 +313,7 @@ module.exports = {
     
       let auth = config.auth === 'form';
     
-      debug({
+      Logger.ui.debug({
         userID: req.session.userID ? req.session.userID : false,
         message: 'locals',
         url: req.originalUrl,
@@ -403,7 +403,7 @@ module.exports = {
     // error handler
     app.use(function(err, req, res, next) {
     
-      debug(err.message); 
+      Logger.ui.error(err.message); 
       
       // set locals, only providing error in development
       res.locals.message = err.message;

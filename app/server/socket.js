@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUISocket');
+const Logger = require('../../src/helper/logger.js');
 const sharedsession = require('express-socket.io-session');
 
 const socketIO = require('socket.io');
@@ -31,7 +31,7 @@ module.exports = {
         
     io.on('connection', async (socket) => {
       
-      debug('%s connected!', socket.handshake.session.username); 
+      Logger.ui.debug('connected!', socket.handshake.session.username); 
 
       if(connectedClients[socket.handshake.session.username] && connectedClients[socket.handshake.session.username].devices >= 0){
         connectedClients[socket.handshake.session.username].devices++; 
@@ -40,7 +40,7 @@ module.exports = {
         connectedClients[socket.handshake.session.username].devices = 1;
       }
       
-      debug(connectedClients);
+      Logger.ui.debug(connectedClients);
     
       if(((io_clients[socket.handshake.session.userID] && connectedClients[socket.handshake.session.username].devices === 1) || !io_clients[socket.handshake.session.userID]) && socket.handshake.session.role === 'Master'){ 
     
@@ -81,13 +81,13 @@ module.exports = {
           
         }
         
-        debug(io_session[socket.handshake.sessionID]);
+        Logger.ui.debug(io_session[socket.handshake.sessionID]);
       
       });
       
       socket.on('disconnect', () => {
         
-        debug('%s disconnected!', socket.handshake.session.username); 
+        Logger.ui.debug('disconnected!', socket.handshake.session.username); 
         
         if(connectedClients[socket.handshake.session.username].devices)
           connectedClients[socket.handshake.session.username].devices--; 
@@ -96,7 +96,7 @@ module.exports = {
           lastConnection: Date.now() 
         };
         
-        debug(connectedClients);
+        Logger.ui.debug(connectedClients);
       
       });
       
@@ -126,7 +126,7 @@ module.exports = {
   
   storeNots: function(notification){
   
-    debug('Storing notification');
+    Logger.ui.debug('Storing notification');
   
     nots.push(notification);
   

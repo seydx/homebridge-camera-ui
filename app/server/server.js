@@ -1,21 +1,18 @@
 'use strict';
 
-const debug = require('debug')('CameraUIServer');
+const Logger = require('../../src/helper/logger.js');
 
 const http = require('http');
 const https = require('https');
-//const spdy = require('spdy');
 
-var server, port, logger;
+var server, port;
 
 module.exports = {
 
-  init: function(log, ssl){
+  init: function(ssl){
       
     let app = require('./app.js').get();
     port = app.get('port');
-    
-    logger = log;
 
     if(ssl){
 
@@ -32,7 +29,7 @@ module.exports = {
 
     server.on('close', () => {
 
-      debug('Stopping user interface server...');
+      Logger.ui.debug('Stopping user interface server...');
 
     });
       
@@ -57,7 +54,7 @@ module.exports = {
           let err;
      
           if (error.syscall !== 'listen')
-            logger(error);
+            Logger.ui.error(error);
     
           let bind = typeof port === 'string'
             ? 'Pipe ' + port
@@ -94,7 +91,7 @@ module.exports = {
             ? 'pipe ' + addr
             : 'port ' + addr.port;
       
-          logger('CameraUI is listening on %s', bind);
+          Logger.ui.info('CameraUI is listening on ' + bind);
     
           resolve();
           

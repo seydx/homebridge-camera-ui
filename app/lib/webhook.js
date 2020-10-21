@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 var database;
 
@@ -19,7 +19,7 @@ module.exports = {
     switch (cmd) {
       case 'atHome':
       
-        debug('At Home event triggered.');
+        Logger.ui.info('At Home event triggered.');
         
         if(state === 'trigger'){
           
@@ -46,7 +46,7 @@ module.exports = {
         
         break;
       default:
-        debug('Can not handle event (%s)', cmd);
+        Logger.ui.warn('Can not handle event (%s)', cmd);
         return {
           status: 500,        
           error: true,

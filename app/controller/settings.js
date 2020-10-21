@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const express = require('express');
 const router = express.Router();
@@ -31,7 +31,7 @@ module.exports = (app, upload, db_settings, db_users) => {
         
       //check if admin name has invalid chars
       if(!validName){
-        debug('Can not change username! Username not valid!');
+        Logger.ui.warn('Can not change username! Username not valid!');
         data.admin.username = user.username;
       }
       
@@ -52,7 +52,7 @@ module.exports = (app, upload, db_settings, db_users) => {
     req.session.photo = !user.photo.includes('anonym')? user.photo + '?r=' + Math.random() : user.photo;
     
     if(changedCr){
-      debug('Credentials changed! Logging out...');
+      Logger.ui.info('Credentials changed! Logging out...');
       return res.sendStatus(202);
     }
       

@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const { Telegraf } = require('telegraf');
 
@@ -8,12 +8,12 @@ module.exports = {
   
   start: async function(telegram){
     
-    debug('Connecting to Telegram...');
+    Logger.ui.debug('Connecting to Telegram...');
 
     const bot = new Telegraf(telegram.token);
     
     bot.catch((err, ctx) => {
-      debug('Telegram: ' + ctx.updateType + ' Error: ' + err.message);
+      Logger.ui.error('Telegram: ' + ctx.updateType + ' Error: ' + err.message);
     });
     
     bot.start((ctx) => {
@@ -21,7 +21,7 @@ module.exports = {
         const from = ctx.message.chat.title || ctx.message.chat.username || 'unknown';
         const message = 'Chat ID for ' + from + ': ' + ctx.message.chat.id;
         ctx.reply(message);
-        debug('Telegram: ' + message);
+        Logger.ui.debug('Telegram: ' + message);
       }
     });
     
@@ -33,7 +33,7 @@ module.exports = {
   
   stop: async function(bot){
     
-    debug('Stopping Telegram...');
+    Logger.ui.debug('Stopping Telegram...');
     
     await bot.stop();
     
@@ -43,32 +43,33 @@ module.exports = {
   
   send: async function(bot, telegram, content){
     
-    debug('Sending Telegram message to ChatID: %s', telegram.chatID);
+    Logger.ui.info('Sending Telegram message to ChatID: ' + telegram.chatID);
     
     try {
       
       if(content.message){
       
-        debug('Telegram: Sending Message (%s)', content.txt);
+        Logger.ui.debug('Telegram: Sending Message ' + content.txt);
         await bot.sendMessage(telegram.chatID, content.txt);
       
       } else if(content.photo){
       
         //await bot.sendMessage(telegram.chatID, content.txt);
-        debug('Telegram: Sending Photo (%s)', content.img);
+        Logger.ui.debug('Telegram: Sending Photo ' + content.img);
         await bot.sendPhoto(telegram.chatID, {source: content.img});
       
       } else { //content.video
       
         //await bot.sendMessage(telegram.chatID, content.txt);
-        debug('Telegram: Sending Video (%s)', content.vid);
+        Logger.ui.debug('Telegram: Sending Video ' + content.vid);
         await bot.sendVideo(telegram.chatID, {source: content.vid});
       
       }
     
     } catch(err) {
       
-      debug('An error occured during sending telegram message!', err);
+      Logger.ui.error('An error occured during sending telegram message!');
+      Logger.ui.error(err);
       
     }
     

@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
@@ -19,9 +19,8 @@ const users_model = require('./users');
 
 module.exports = class DB {
 
-  constructor(log, accessories, configPath){
-    
-    this.log = log;
+  constructor(accessories, configPath){
+
     this.accessories = accessories;
     this.configPath = configPath;
     
@@ -91,7 +90,7 @@ module.exports = class DB {
         
         if(!master){
           
-          debug('Can not find "Master" in database! Resetting Master credentials!');
+          Logger.ui.warn('Can not find "Master" in database! Resetting Master credentials!');
           
           this.db.get('users').push({
             id: uuidv4(),
@@ -232,7 +231,7 @@ module.exports = class DB {
     
     } catch(err){
     
-      this.log('An error occured during creating database!', err);
+      Logger.ui.error('An error occured during creating database!', err);
     
     }
     

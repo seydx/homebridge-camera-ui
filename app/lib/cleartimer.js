@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 const moment = require('moment');
 
 const socket = require('../server/socket');
@@ -110,14 +110,14 @@ module.exports = {
   
   },
   
-  clearNotifications: function(id, timer){
+  clearNotifications: function(id){
   
     if(notificationTimer.has(id)){
       
       let not = db_notifications.getNotification(id);
     
       if(not){      
-        debug('Clear timer for notification [%s] reached (%s hours)', id, timer);    
+        Logger.ui.debug('Clear timer for notification [' + id + '] reached');    
         db_notifications.remove(id);
         socket.io('notification_remove', id);
       }
@@ -133,14 +133,14 @@ module.exports = {
     
   },
   
-  clearRecordings: async function(id, timer){
+  clearRecordings: async function(id){
   
     if(recordingTimer.has(id)){
       
       let rec = db_recordings.getRecording(id);
       
       if(rec)
-        debug('Clear timer for file [%s] reached (%s days)', id, timer);
+        Logger.ui.debug('Clear timer for file [' + id + '] reached');
       
       try {
         
@@ -149,7 +149,8 @@ module.exports = {
         
       } catch(err){
         
-        debug('An error occured during auto remove recording file %s!', id, err);
+        Logger.ui.error('An error occured during auto remove recording file ' + id);
+        Logger.ui.error(err);
         
       } finally {
       

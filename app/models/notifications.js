@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const socket = require('../server/socket');
 
@@ -89,7 +89,7 @@ module.exports = (db) => {
       hideBanner: hideBanner
     };
     
-    debug('Adding new notification (%s)', notification.id);
+    Logger.ui.info('Adding new notification ' + notification.id);
 
     db.get('notifications').get('nots').push(notification).write();
     
@@ -102,7 +102,7 @@ module.exports = (db) => {
   
   function remove(id){
   
-    debug('Removing notification (%s)', id);
+    Logger.ui.debug('Removing notification ' + id);
     
     let notification = getNotification(id);
     
@@ -113,7 +113,7 @@ module.exports = (db) => {
     
     } else {
     
-      debug('Can not remove notification! Not found or already removed!');
+      Logger.ui.debug('Can not remove notification! Not found or already removed!');
     
     }
     
@@ -125,7 +125,7 @@ module.exports = (db) => {
       
     if(room.length && !room.includes('all')){
     
-      debug('Removing all notifications for following rooms: ' + room.toString());
+      Logger.ui.info('Removing all notifications for following rooms: ' + room.toString());
     
       let nots = getNots();
       
@@ -136,7 +136,7 @@ module.exports = (db) => {
     } else {
     
       if(room.includes('all')){
-        debug('Removing all notifications!');
+        Logger.ui.info('Removing all notifications!');
         db.get('notifications').set('nots', []).write();
         socket.io('notification_remove', 'all');
       }
