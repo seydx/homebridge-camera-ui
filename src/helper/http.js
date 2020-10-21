@@ -1,14 +1,15 @@
 'use strict';
 
-const debug = require('debug')('CameraUIHttp');
+const Logger = require('./logger.js');
+
 const http = require('http');
 const url = require('url');
 
 class Http {
 
-  constructor (log, config, handler) {
+  constructor (config, handler) {
 
-    debug('Setting up ' + (config.http.localhttp ? 'localhost-only ' : '') +
+    Logger.debug('Setting up ' + (config.http.localhttp ? 'localhost-only ' : '') +
       'HTTP server on port ' + config.http.port + '...');
     
     const server = http.createServer();
@@ -32,7 +33,7 @@ class Http {
           const name = decodeURIComponent(parseurl.query).split('=')[0];
           results = handler.automationHandler(parseurl.pathname, name);
           
-          debug('Received a new HTTP message %s (%s)', results, name);
+          Logger.debug('Received a new HTTP message ' + results + ' (' + name + ')');
           
         }
       
