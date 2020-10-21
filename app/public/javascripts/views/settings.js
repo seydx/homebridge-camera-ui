@@ -28,7 +28,7 @@
     noneSelectedText : window.i18next.t('views.settings.views.general.nothing_selected'),
     countSelectedText: function(selected, all){
       if(selected && selected > 1){
-        return selected.toString() + ' ' +  window.i18next.t('views.cameras.title')
+        return selected.toString() + ' ' +  window.i18next.t('views.cameras.title');
       }
     }
   });
