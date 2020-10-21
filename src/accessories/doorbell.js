@@ -4,14 +4,14 @@ const Logger = require('../helper/logger.js');
 
 class doorbellService {
 
-  constructor (api, config, accessory, cameraConfig, handler) {
-
-    this.api = api;
-    this.config = config;
+  constructor (accessory, cameraConfig, platform) {
+    
+    this.platform = platform;
+    
+    this.api = platform.api;
+    this.config = platform.config;
     this.cameraConfig = cameraConfig;
     this.accessory = accessory;
-    
-    this.handler = handler;
     
     this.getService(this.accessory);
 
@@ -26,19 +26,12 @@ class doorbellService {
     let service = accessory.getService(this.api.hap.Service.Doorbell);    
     let switchService = accessory.getServiceById(this.api.hap.Service.Switch, 'DoorbellTrigger');
     
-    if((this.config.mqtt || this.config.ftp || this.config.http) && this.cameraConfig.doorbell){
+    if(this.cameraConfig.doorbell){
       
       if(!service){
         Logger.info('Adding doorbell', accessory.displayName);
         service = accessory.addService(this.api.hap.Service.Doorbell, this.accessory.displayName + ' Doorbell', 'doorbell');
       }
-      
-      service
-        .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
-        .on('change', value => {
-          accessory.context.motionOldvalue = value.oldValue;
-          //Logger.info('Motion (Doorbell) ' + (value.newValue ? 'detected!' : 'not detected anymore!'), accessory.displayName);
-        });
       
     } else {
     
@@ -49,7 +42,7 @@ class doorbellService {
       
     }
     
-    if((this.config.mqtt || this.config.ftp || this.config.http) && this.cameraConfig.switches){
+    if(this.cameraConfig.switches){
       
       if(!switchService){
         Logger.info('Adding doorbell switch', accessory.displayName);
@@ -60,7 +53,7 @@ class doorbellService {
         .getCharacteristic(this.api.hap.Characteristic.On)
         .on('set', (state, callback) => {
           Logger.info('Doorbell ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
-          this.handler.getHandler().doorbellHandler(accessory, state, 1);
+          this.platform.setHandler('doorbell', accessory, state, 1);
           callback(null, state);
         });
       
