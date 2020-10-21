@@ -41,8 +41,8 @@ module.exports = {
             '-b:v': '299k',
             '-r': rate,
             '-preset:v': 'ultrafast',
-            //'-threads': '1',
-            '-tune': 'zerolatency',
+            '-threads': '1',
+            //'-tune': 'zerolatency',
             '-loglevel': 'quiet'
           },
           ssl: ssl,
