@@ -41,7 +41,7 @@
     "homebridge": "^1.2.0"
   },
   "dependencies": {
-    "@seydx/node-rtsp-stream": "^1.1.2",
+    "@seydx/node-rtsp-stream": "^1.1.3",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
