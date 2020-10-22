@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const socket = require('../server/socket');
 
@@ -66,14 +66,13 @@ module.exports = (db) => {
     
   }
   
-  function add(accessory, type, time, rndm){
+  function add(accessory, type, time, rndm, recordNotification){
   
     let room = db.get('settings').get('cameras').get(accessory.displayName).get('room').value();
-    let storing = db.get('settings').get('recordings').get('active').value();
     let fileType = db.get('settings').get('recordings').get('type').value();
     let hideBanner = db.get('settings').get('notifications').get('clearBanner').value();
   
-    let id = accessory.displayName.replace(/\s/g,'_') + '-' + rndm + '-' + time.timestamp + '_' + (storing ? '1' : '0') + '_' + (type === 'motion' ? 'm' : 'd');
+    let id = accessory.displayName.replace(/\s/g,'_') + '-' + rndm + '-' + time.timestamp + '_' + (recordNotification ? '1' : '0') + '_' + (type === 'motion' ? 'm' : 'd');
   
     let notification = {
       id: id,
@@ -85,7 +84,7 @@ module.exports = (db) => {
       room: room,
       timestamp: time.timestamp,
       time: time.time,
-      storing: storing,
+      storing: recordNotification,
       hideBanner: hideBanner
     };
     

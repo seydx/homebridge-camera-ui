@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
@@ -29,17 +29,6 @@ module.exports = class DB {
   async init(){
     
     try {
-    
-      /*
-      /
-      / 1) cameraui.db.json    (this.db)
-      / 2) Memory DB           (this.camDb)          
-      / 3) Memory DB           (this.recDb)
-      /
-      / read/create/update database on start for settings (1), notifications (1), users (1), cameras (2) and recordings (3)
-      / cameras and recordings database only for "lowdb" usage
-      /
-      */
       
       // check if database file exists, otherwise create
       await fs.ensureFile(this.configPath + '/db/cameraui.db.json');

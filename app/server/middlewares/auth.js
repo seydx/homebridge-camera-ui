@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../../src/helper/logger.js');
+const Logger = require('../../../lib/logger.js');
 
 const unless = require('express-unless'); 
 const createError = require('http-errors');

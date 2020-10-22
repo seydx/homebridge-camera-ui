@@ -1,16 +1,17 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 const Stream = require('@seydx/node-rtsp-stream');
 
-var db;
+var db, streamSessions;
 const startedStreams = {};
 
 module.exports = {
 
-  init: function(accessories, ssl, ffmpegPath, db_settings){
+  init: function(accessories, ssl, ffmpegPath, db_settings, sessions){
 
     db = db_settings;
+    streamSessions = sessions;
     
     let cameras = db.getCameras();
 
@@ -42,12 +43,11 @@ module.exports = {
             '-r': rate,
             '-preset:v': 'ultrafast',
             '-threads': '1',
-            //'-tune': 'zerolatency',
             '-loglevel': 'quiet'
           },
           ssl: ssl,
           ffmpegPath: ffmpegPath 
-        }, Logger);
+        }, Logger, streamSessions);
         
         if(audio){
           
@@ -62,7 +62,14 @@ module.exports = {
         
         }
         
-        startedStreams[accessory.displayName].streamFailed = true;
+        if(startedStreams[accessory.displayName].wsPort && startedStreams[accessory.displayName].streamUrl){
+          startedStreams[accessory.displayName].pipeStreamToSocketServer();
+        } else {
+          if(!startedStreams[accessory.displayName].wsPort)
+            Logger.ui.warn('Can not start stream server - Socket Port not defined in videoConfig!', startedStreams[accessory.displayName].name);
+          if(!startedStreams[accessory.displayName].streamUrl)
+            Logger.ui.warn('Can not start stream server - Source not defined in videoConfig!', startedStreams[accessory.displayName].name);
+        }
       
       }
       
@@ -105,34 +112,12 @@ module.exports = {
   
   },
   
-  start: function(camera){
-  
-    if(startedStreams[camera].streamFailed && startedStreams[camera].wsPort && startedStreams[camera].streamUrl){
-    
-      Logger.ui.debug('Starting stream server ', camera);
-    
-      startedStreams[camera].pipeStreamToSocketServer();
-      startedStreams[camera].streamFailed = false;
-    
-    } else {
-    
-      if(!startedStreams[camera].wsPort){
-        Logger.ui.warn('Can not start stream - Socket Port not defined in videoConfig!', startedStreams[camera].name);
-      } else if(!startedStreams[camera].streamUrl){
-        Logger.ui.warn('Can not start stream - Source not defined in videoConfig!', startedStreams[camera].name);
-      }
-    
-    }
-    
-    return;
-  
-  },
-  
   stop: function(camera){
   
     Logger.ui.debug('Stopping stream', camera);
   
     startedStreams[camera].stopStream();
+    streamSessions.closeSession(camera);
     
     return;
   

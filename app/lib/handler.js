@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const Telegram = require('./telegram');
 const socket = require('../server/socket');
@@ -56,26 +56,19 @@ const splitUrl = (url) => {
 
 };
 
-const multipleRecordSize = 1;
-const activeRecordings = {};
-
-var database, webpushhh, telegramCredentials, telegramBot;  
+var database, webpushhh, telegramCredentials, telegramBot, streamSessions;  
 
 module.exports = {
 
-  init(db){
+  init(db, sessions){
   
     database = db;
+    streamSessions = sessions;
     
     telegramCredentials = {
       token: database.db.get('settings').get('telegram').get('token').value(),
       chatID: database.db.get('settings').get('telegram').get('chatID').value()
     };
-    
-    const cameras = database.db.get('settings').get('cameras').value();
-    
-    for(const cam of Object.keys(cameras))
-      activeRecordings[cam] = 0;
     
     return;
   
@@ -89,42 +82,21 @@ module.exports = {
     if(active && (!atHome || atHome && exclude.includes(accessory.displayName))){
       
       const recActive = database.db.get('settings').get('recordings').get('active').value();
-      
-      if(recActive)
-        activeRecordings[accessory.displayName]++;
-      
-      let startProcess = true;
-      
-      if(!activeRecordings[accessory.displayName])
-        activeRecordings[accessory.displayName] = 1;
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
       
-      //Push to webhook
+      let recordNotification = recActive ? streamSessions.requestSession(accessory.displayName) : false;
+      
+      let notification = await this.handleRecNot(accessory, type, recordNotification);
+      
+      if(recordNotification)
+        streamSessions.closeSession(accessory.displayName);
+      
       this.webHook(accessory);
-      
-      if(recActive && activeRecordings[accessory.displayName] > multipleRecordSize)
-        startProcess = false;
-
-      if(startProcess){
-      
-        //Generate Notification & Recording
-        let notification = await this.handleRecNot(recActive, accessory, type);
-        
-        if(recActive)
-          activeRecordings[accessory.displayName]--;
-    
-        //Push Notification via socket.io, webpush & telegram
-        socket.io('notification', notification);
-        socket.storeNots(notification);
-        this.webPush(notification, accessory);
-        this.teleGram(notification, accessory, recActive);
-      
-      } else {
-      
-        Logger.ui.debug('Skip motion event. Recording for ' + accessory.displayName + ' has not been finished yet!');
-      
-      }
+      socket.io('notification', notification);
+      socket.storeNots(notification);
+      this.webPush(notification, accessory);
+      this.teleGram(notification, accessory, recordNotification);
       
     } else {
       
@@ -138,7 +110,7 @@ module.exports = {
   
   },
   
-  handleRecNot: async function(recActive, accessory, type){
+  handleRecNot: async function(accessory, type, recordNotification){
   
     let time = {
       time: moment().format('DD.MM.YYYY, HH:mm:ss'),
@@ -147,9 +119,9 @@ module.exports = {
     
     let rndm = crypto.randomBytes(5).toString('hex');
     
-    let notification = database.Notifications().add(accessory, type, time, rndm);
+    let notification = database.Notifications().add(accessory, type, time, rndm, recordNotification);
     
-    if(recActive) 
+    if(recordNotification) 
       await database.Recordings().add(accessory, type, time, rndm); 
     
     //clearTimer
@@ -230,53 +202,57 @@ module.exports = {
     
   },
   
-  teleGram: async function(notification, accessory, recActive){ 
-  
-    const recPath = database.db.get('settings').get('recordings').get('path').value();
+  teleGram: async function(notification, accessory, recordNotification){ 
+    
+    const tlgrm = database.db.get('settings').get('telegram').value();
+    const tlgrmCameraType = tlgrm.cameras[accessory.displayName].type;
     const recType = database.db.get('settings').get('recordings').get('type').value();
     
-    let tlgrm = database.db.get('settings').get('telegram').value();
+    if((tlgrmCameraType === 'Text')||(tlgrmCameraType === 'Snapshot' && recordNotification)||(tlgrmCameraType === 'Video' && recordNotification && recType === 'Video')){
       
-    if(tlgrm.active && tlgrm.token && tlgrm.chatID){
-      
-      if(tlgrm.token === telegramCredentials.token && tlgrm.chatID === telegramCredentials.chatID){
+      const recPath = database.db.get('settings').get('recordings').get('path').value();
         
-        //credentials not changed, grab telegram from storage or create new one if not exists
+      if(tlgrm.active && tlgrm.token && tlgrm.chatID){
         
-        if(!telegramBot)
+        if(tlgrm.token === telegramCredentials.token && tlgrm.chatID === telegramCredentials.chatID){
+          
+          //credentials not changed, grab telegram from storage or create new one if not exists
+          
+          if(!telegramBot)
+            telegramBot = await Telegram.start(tlgrm);
+          
+        } else {
+          
+          //credentials changed, stop telegram from storage if exists and create new one
+          
+          telegramCredentials = {
+            token: tlgrm.token,
+            chatID: tlgrm.chatID
+          };
+          
+          if(telegramBot){
+            await Telegram.stop(telegramBot);
+            telegramBot = false;
+          }
+          
           telegramBot = await Telegram.start(tlgrm);
-        
-      } else {
-        
-        //credentials changed, stop telegram from storage if exists and create new one
-        
-        telegramCredentials = {
-          token: tlgrm.token,
-          chatID: tlgrm.chatID
-        };
-        
-        if(telegramBot){
-          await Telegram.stop(telegramBot);
-          telegramBot = false;
+          
         }
         
-        telegramBot = await Telegram.start(tlgrm);
+        let motionTxt = tlgrm.motionOn && tlgrm.motionOn !== '' ? tlgrm.motionOn : false;
+        
+        motionTxt = motionTxt && motionTxt.includes('@') ? motionTxt.replace('@', accessory.displayName) : (accessory.displayName + ': New motion detected!');
+        
+        Telegram.send(telegramBot, tlgrm, {
+          message: tlgrmCameraType === 'Text' ? true : false,
+          photo: tlgrmCameraType === 'Snapshot' && recordNotification ? true : false,
+          video: tlgrmCameraType === 'Video' && recordNotification && recType === 'Video' ? true : false,
+          txt: motionTxt,
+          img: tlgrmCameraType === 'Snapshot' && recType === 'Video' ? recPath + '/' + notification.id + '@2.jpeg' : recPath + '/' + notification.id + '.jpeg',
+          vid: recPath + '/' + notification.id + '.mp4'
+        });
         
       }
-      
-      let tlgrmCameraType = tlgrm.cameras[accessory.displayName].type;
-      let motionTxt = tlgrm.motionOn && tlgrm.motionOn !== '' ? tlgrm.motionOn : false;
-      
-      motionTxt = motionTxt && motionTxt.includes('@') ? motionTxt.replace('@', accessory.displayName) : (accessory.displayName + ': New motion detected!');
-      
-      Telegram.send(telegramBot, tlgrm, {
-        message: tlgrmCameraType === 'Text' ? true : false,
-        photo: tlgrmCameraType === 'Snapshot' && recActive ? true : false,
-        video: tlgrmCameraType === 'Video' && recActive && recType === 'Video' ? true : false,
-        txt: motionTxt,
-        img: tlgrmCameraType === 'Snapshot' && recType === 'Video' ? recPath + '/' + notification.id + '@2.jpeg' : recPath + '/' + notification.id + '.jpeg',
-        vid: recPath + '/' + notification.id + '.mp4'
-      });
       
     }
     
