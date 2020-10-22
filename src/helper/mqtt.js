@@ -1,11 +1,11 @@
 'use strict';
 
-const debug = require('debug')('CameraUIMqtt');
+const Logger = require('./logger.js');
 const mqtt = require('mqtt');
 
 class Mqtt {
 	
-  constructor (log, config, handler) {
+  constructor (config, handler) {
 
     const port = config.mqtt.port || '1883';
     
@@ -14,7 +14,7 @@ class Mqtt {
     if (config.mqtt.topic && config.mqtt.topic != 'homebridge/motion')
       topic = config.mqtt.topic;
 
-    debug('Setting up MQTT connection with topic %s ...', topic);
+    Logger.debug('Setting up MQTT connection with topic ' + topic + ' ...');
     
     const client = mqtt.connect('mqtt://' + config.mqtt.host + ':' + port, {
       'username': config.mqtt.username,
@@ -22,7 +22,7 @@ class Mqtt {
     });
     
     client.on('connect', () => {
-      debug('MQTT connected.');
+      Logger.debug('MQTT connected.');
       client.subscribe(topic + '/#');
     });
     
@@ -30,7 +30,7 @@ class Mqtt {
 
       if (topic.startsWith(topic)) {
         //const path = topic.substr(topic.length);
-        debug('Received a new MQTT message %s (%s)', message, topic);
+        Logger.debug('Received a new MQTT message ' + message + ' (' + topic + ')');
         const name = message.toString();
         handler.automationHandler(topic, name);
       }

@@ -1,6 +1,7 @@
 'use strict';
 
-const debug = require('debug')('CameraUIStream');
+const Logger = require('../helper/logger.js');
+
 const spawn = require('child_process').spawn;
 const networkInterfaceDefault = require('systeminformation').networkInterfaceDefault; 
 const os = require('os');
@@ -11,9 +12,8 @@ const FfmpegProcess = require('../helper/ffmpeg.js');
 
 class Camera {
 
-  constructor (config, log, cameraConfig, api, hap, videoProcessor, interfaceName, accessory) {
+  constructor (config, cameraConfig, api, hap, videoProcessor, interfaceName, accessory) {
 
-    this.log = log;
     this.api = api;
     this.hap = hap;
     this.config = config;
@@ -121,8 +121,8 @@ class Camera {
   
     const resolution = this.determineResolution(request, true);
     
-    this.log('%s: Snapshot requested: ' + request.width + ' x ' + request.height, this.cameraName);
-    this.log('%s: Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native'), this.cameraName);
+    Logger.debug('Snapshot requested: ' + request.width + ' x ' + request.height, this.cameraName);
+    Logger.info('Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native'), this.cameraName);
 
     let ffmpegArgs = this.videoConfig.stillImageSource || this.videoConfig.source;
 
@@ -136,16 +136,14 @@ class Camera {
       const ffmpeg = spawn(this.videoProcessor, ffmpegArgs.split(/\s+/), { env: process.env });
 
       let imageBuffer = Buffer.alloc(0);
-      debug('%s: Snapshot command: ' + this.videoProcessor + ' ' + ffmpegArgs, this.cameraName);
+      Logger.debug('Snapshot command: ' + this.videoProcessor + ' ' + ffmpegArgs, this.cameraName);
       
       ffmpeg.stdout.on('data', data => {
         imageBuffer = Buffer.concat([imageBuffer, data]);
       });
       
-      const log = this.log;
-      
       ffmpeg.on('error', error => {
-        log('%s: An error occurred while making snapshot request: ' + error, this.cameraName);
+        Logger.error('An error occurred while making snapshot request: ' + error, this.cameraName);
       });
       
       ffmpeg.on('close', () => {
@@ -154,7 +152,7 @@ class Camera {
       
     } catch (err) {
     
-      this.log(err, this.cameraName);
+      Logger.error(err, this.cameraName);
       callback(err);
       
     }
@@ -216,7 +214,7 @@ class Camera {
     
       if (this.interfaceName) {
         
-        this.log(ex + ' Falling back to default.', this.cameraName);
+        Logger.warn(ex + ' Falling back to default.', this.cameraName);
         currentAddress = await this.getIpAddress(ipv6);
      
       } else {
@@ -293,8 +291,8 @@ class Camera {
       videoBitrate = 0;
     }
   
-    debug('%s: Video stream requested: ' + request.video.width + ' x ' + request.video.height + ', ' + request.video.fps + ' fps, ' + request.video.max_bit_rate + ' kbps', this.cameraName);
-    this.log('%s: Starting video stream: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native') + ', ' + (fps > 0 ? fps : 'native') + ' fps, ' + (videoBitrate > 0 ? videoBitrate : '???') + ' kbps', this.cameraName);
+    Logger.debug('Video stream requested: ' + request.video.width + ' x ' + request.video.height + ', ' + request.video.fps + ' fps, ' + request.video.max_bit_rate + ' kbps', this.cameraName);
+    Logger.info('Starting video stream: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native') + ', ' + (fps > 0 ? fps : 'native') + ' fps, ' + (videoBitrate > 0 ? videoBitrate : '???') + ' kbps', this.cameraName);
     
     let ffmpegArgs = this.videoConfig.source;
     
@@ -348,7 +346,7 @@ class Camera {
 
     activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
     activeSession.socket.on('error', err => {
-      this.log('%s: Socket error: ' + err.name, this.cameraName);
+      Logger.error('Socket error: ' + err.name, this.cameraName);
       this.stopStream(request.sessionID);
     });
     activeSession.socket.on('message', () => {
@@ -356,7 +354,7 @@ class Camera {
         clearTimeout(activeSession.timeout);
       }
       activeSession.timeout = setTimeout(() => {
-        this.log('%s: Device appears to be inactive. Stopping stream.', this.cameraName);
+        Logger.warn('Device appears to be inactive. Stopping stream.', this.cameraName);
         this.controller.forceStopStreamingSession(request.sessionID);
         this.stopStream(request.sessionID);
       }, request.video.rtcp_interval * 2 * 1000);
@@ -364,7 +362,7 @@ class Camera {
     activeSession.socket.bind(sessionInfo.videoReturnPort, sessionInfo.localAddress);
 
     activeSession.mainProcess = new FfmpegProcess(this.api, this.cameraName, request.sessionID, this.videoProcessor,
-      ffmpegArgs, this.log, this.videoConfig.debug, this, callback);
+      ffmpegArgs, this.videoConfig.debug, this, callback);
 
     if (this.videoConfig.returnAudioTarget) {
       let ffmpegReturnArgs =
@@ -396,7 +394,7 @@ class Camera {
           'config=F8F0212C00BC00\r\n' +
         'a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:' + sessionInfo.audioSRTP.toString('base64') + '\r\n';
       activeSession.returnProcess = new FfmpegProcess(this.cameraName + '] [Two-way', request.sessionID,
-        this.videoProcessor, ffmpegReturnArgs, this.log, this.videoConfig.debugReturn, this);
+        this.videoProcessor, ffmpegReturnArgs, this.videoConfig.debugReturn, this);
       if(activeSession.returnProcess.getStdin())
         activeSession.returnProcess.getStdin().end(sdpReturnAudio);
     }
@@ -414,7 +412,7 @@ class Camera {
         this.startStream(request, callback);
         break;
       case 'reconfigure':
-        debug('%s: Received request to reconfigure: ' + request.video.width + 'x' + request.video.height + ', ' +
+        Logger.debug('Received request to reconfigure: ' + request.video.width + 'x' + request.video.height + ', ' +
           request.video.fps + ' fps, ' + request.video.max_bit_rate + ' kbps (Ignored)', this.cameraName);
         callback();
         break;
@@ -443,7 +441,7 @@ class Camera {
           
       } catch (err) {
       
-        this.log('%s: Error occurred closing socket: ' + err, this.cameraName);
+        Logger.error('Error occurred closing socket: ' + err, this.cameraName);
     
       }
       
@@ -454,7 +452,7 @@ class Camera {
           
       } catch (err) {
        
-        this.log('%s: Error occurred terminating main FFmpeg process: ' + err, this.cameraName);
+        Logger.error('Error occurred terminating main FFmpeg process: ' + err, this.cameraName);
       
       }
       
@@ -465,12 +463,12 @@ class Camera {
      
       } catch (err) {
         
-        this.log('%s: Error occurred terminating two-way FFmpeg process: ' + err, this.cameraName);
+        Logger.error('Error occurred terminating two-way FFmpeg process: ' + err, this.cameraName);
   
       }
       
       delete this.ongoingSessions[sessionId];
-      this.log.info('%s: Stopped video stream.', this.cameraName);
+      Logger.info('Stopped video stream.', this.cameraName);
   
     }
   

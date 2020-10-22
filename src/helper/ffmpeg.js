@@ -1,12 +1,12 @@
 'use strict';
 
-const debug = require('debug')('CameraUIffmpeg');
+const Logger = require('./logger.js');
 const spawn = require('child_process').spawn;
 
 class FfmpegProcess {
-  constructor (api, name, sessionId, videoProcessor, command, log, debugg, delegate, callback) {
+  constructor (api, name, sessionId, videoProcessor, command, debugg, delegate, callback) {
 
-    debug('%s: Stream command: ' + videoProcessor + ' ' + command, name, debugg);
+    Logger.debug('Stream command: ' + videoProcessor + ' ' + command, name);
     
     let started = false;
 
@@ -15,7 +15,7 @@ class FfmpegProcess {
     if (this.process.stdin) {
       this.process.stdin.on('error', error => {
         if (!error.message.includes('EPIPE')) {
-          log(error.message, name);
+          Logger.error(error.message, name);
         }
       });
     }
@@ -32,7 +32,7 @@ class FfmpegProcess {
 
         if (debugg) {
           data.toString().split(/\n/).forEach(line => {
-            debug(line, name, debug);
+            Logger.debug(line, name);
           });
         }
         
@@ -40,7 +40,7 @@ class FfmpegProcess {
     }
     
     this.process.on('error', error => {
-      log('%s: Failed to start stream: ' + error.message, name);
+      Logger.error('Failed to start stream: ' + error.message, name);
       if (callback) {
         callback(new Error('FFmpeg process creation failed'));
       }
@@ -53,14 +53,14 @@ class FfmpegProcess {
       if (code == null || code === 255) {
       
         if (this.process.killed) {
-          debug(message + ' (Expected)', name);
+          Logger.debug(message + ' (Expected)', name);
         } else {
-          log(message + ' (Unexpected)', name);
+          Logger.warn(message + ' (Unexpected)', name);
         }
         
       } else {
       
-        log(message + ' (Error)', name);
+        Logger.error(message + ' (Error)', name);
         
         delegate.stopStream(sessionId);
         

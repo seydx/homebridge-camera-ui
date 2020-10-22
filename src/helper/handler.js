@@ -1,14 +1,12 @@
 'use strict';
 
-const debug = require('debug')('CameraUIHandler');
-
+const Logger = require('./logger.js');
 const handler = require('../../app/lib/handler');
 
 class Handler {
 
-  constructor (log, accessories, config, api, cameraConfigs) {
-  
-    this.log = log;
+  constructor (accessories, config, api, cameraConfigs) {
+
     this.accessories = accessories;
     this.config = config;
     this.api = api;
@@ -52,15 +50,15 @@ class Handler {
       
       switch (path[0]) {
         case 'motion':
-          debug('Motion event triggered.');
+          Logger.debug('Motion event triggered.');
           return this.motionHandler(accessory, active);
           break;
         case 'doorbell':
-          debug('Doorbell event triggered.');
+          Logger.debug('Doorbell event triggered.');
           return this.doorbellHandler(accessory, active);
           break;
         default:
-          debug('Can not handle event (%s)', path[0]);
+          Logger.debug('Can not handle event ' + path[0]);
           return {
             error: true,
             message: 'First directory level must be "motion" or "doorbell", got "' + path[0] + '".'
@@ -86,7 +84,7 @@ class Handler {
       
       let cameraConfig = this.cameraConfigs.get(accessory.UUID);
 
-      debug('Switch motion detect ' + (active ? 'on.' : 'off.'), accessory.displayName);
+      Logger.debug('Switch motion detect ' + (active ? 'on.' : 'off.'), accessory.displayName);
       
       handler.handleMotion(accessory, cameraConfig, active, 'motion');
       
@@ -108,7 +106,7 @@ class Handler {
         if (motionTrigger)
           motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
         
-        let timeoutConfig = cameraConfig ? cameraConfig.motionTimeout : 1;
+        let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
         
         if (timeoutConfig < minimumTimeout)
           timeoutConfig = minimumTimeout;
@@ -117,7 +115,7 @@ class Handler {
           
           const timer = setTimeout(() => {
             
-            this.log('Motion handler timeout.', accessory.displayName);
+            Logger.info('Motion handler timeout.', accessory.displayName);
             
             motionSensor.updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
             
@@ -168,7 +166,7 @@ class Handler {
       
       let cameraConfig = this.cameraConfigs.get(accessory.UUID);
       
-      debug('Switch doorbell ' + (active ? 'on.' : 'off.'), accessory.displayName);
+      Logger.debug('Switch doorbell ' + (active ? 'on.' : 'off.'), accessory.displayName);
       
       handler.handleMotion(accessory, cameraConfig, active, 'doorbell');
       
@@ -190,16 +188,21 @@ class Handler {
         
           doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
           
-          let timeoutConfig = cameraConfig ? cameraConfig.motionTimeout : false;
+          let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
           
-          timeoutConfig = timeoutConfig && timeoutConfig > 0 ? timeoutConfig : 1;
+          if (timeoutConfig > 0) {
           
-          const timer = setTimeout(() => {
-            debug('Doorbell handler timeout.', accessory.displayName);
-            doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
-          }, timeoutConfig * 1000);
+            const timer = setTimeout(() => {
+           
+              Logger.debug('Doorbell handler timeout.', accessory.displayName);
+            
+              doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
           
-          this.doorbellTimers.set(accessory.UUID, timer);
+            }, timeoutConfig * 1000);
+            
+            this.doorbellTimers.set(accessory.UUID, timer);
+          
+          }
         
         }
         

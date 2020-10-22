@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../../src/helper/logger.js');
 
 const socket = require('../socket');
 
@@ -13,7 +13,7 @@ module.exports = (accessories) => {
   
     req.originalUrl = decodeURIComponent(req.originalUrl);
     
-    debug({
+    Logger.ui.debug({
       userID: req.session.userID ? req.session.userID : false,
       message: 'session redirect',
       originalUrl: req.originalUrl,
@@ -65,7 +65,7 @@ module.exports = (accessories) => {
     
     }
     
-    if(!validMain && req.originalUrl !== '/')
+    if(!validMain && req.originalUrl !== '/' && (req.session.user && req.originalUrl !== '/change'))
       return next(createError(404));
     
     return next();

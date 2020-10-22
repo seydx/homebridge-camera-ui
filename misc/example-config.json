@@ -55,7 +55,8 @@
                         "maxWidth": 1280,
                         "maxHeight": 720,
                         "maxFPS": 30,
-                        "socketPort": 8100
+                        "socketPort": 8100,
+                        "debug": true
                     }
                 },
                 {
@@ -73,7 +74,7 @@
                         "maxHeight": 1080,
                         "maxFPS": 25,
                         "maxBitrate": 1000,
-                        "socketPort": 8300
+                        "socketPort": 8200
                     }
                 },
                 {
@@ -83,7 +84,6 @@
                     "serialNumber": "123456",
                     "firmwareRevision": "1.0",
                     "motion": false,
-                    "yihack": true,
                     "videoConfig": {
                         "source": "-i rtsp://192.168.178.11/ch0_0.h264",
                         "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",

@@ -34,22 +34,15 @@ module.exports = {
     let port;
         
     if(host.includes('@')){
-     
       host = host.split('@')[1].split('/')[0];
-      
-      if(host.includes(':')){
-        port = host.split(':')[1];
-        port = port.includes('/') ? port.split('/')[0] : port;
-        host = host.split(':')[0];
-      }
-      
     } else {
-      
       host = host.split('/')[0];
-      
-      if(host.includes(':'))
-        host = host.split(':')[0];
-      
+    }
+    
+    if(host.includes(':')){
+      port = host.split(':')[1];
+      port = port.includes('/') ? port.split('/')[0] : port;
+      host = host.split(':')[0];
     }
     
     return {

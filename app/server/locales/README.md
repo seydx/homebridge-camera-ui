@@ -9,14 +9,16 @@ Here you can find all available languages for the interface. These are structure
       "title": "Dashboard",
       "welcome": "Welcome",
       "hello": "Hello",
-      "undertitle": "Below you can see your favourite streams"
+      "undertitle": "Below you can see your favourite streams",
+      "offline": "offline!"
     },
     "cameras": {
       "title": "Cameras",
       "notification_title": "Latest Notification",
       "notifications_title": "Latest Notifications",
       "notification_info": "Movement detected on",
-      "notification_nodata": "No Data"
+      "notification_nodata": "No Data",
+      "offline": "offline!"
     },
     "camera": {
       "notification_title": "Latest Notification",
@@ -24,7 +26,8 @@ Here you can find all available languages for the interface. These are structure
       "notification_info": "Movement detected on",
       "notification_nodata": "No Data",
       "previous_camera": "Previous Camera",
-      "next_camera": "Next Camera"
+      "next_camera": "Next Camera",
+      "offline": "offline!"
     },
     "recordings": {
       "title": "Recordings",
@@ -32,14 +35,20 @@ Here you can find all available languages for the interface. These are structure
       "info": "This file was recorded on",
       "btn_removeall": "Remove All",
       "no_recordings": "No Recordings",
-      "download": "Download"
+      "download": "Download",
+      "error": "An error occured!",
+      "rec_removed": "Recording @ removed!",
+      "all_removed": "All Recordings removed!"
     },
     "notifications": {
       "title": "Notifications",
       "movement": "Movement",
       "btn_removeall": "Remove All",
       "no_notifications": "No Notifications",
-      "img_notification": "Notification Image"
+      "img_notification": "Notification Image",
+      "error": "An error occured!",
+      "not_removed": "Notification @ removed!",
+      "all_removed": "All Notifications removed!"
     },
     "settings": {
       "title": "Settings",
@@ -84,7 +93,8 @@ Here you can find all available languages for the interface. These are structure
           "user_new_role": "Role",
           "user_new_add": "Add new User",
           "user_role_admin": "Administrator",
-          "user_role_user": "User"                    
+          "user_role_user": "User",
+          "invalid_username": "Invalid Username!"                    
         },
         "general": {
           "title": "General",
@@ -191,7 +201,8 @@ Here you can find all available languages for the interface. These are structure
       "btn_positions": "Save Positions",
       "btn_positions_saved": "Saved!",
       "lastnotification": "Last Movement",
-      "nodata": "No Data"
+      "nodata": "No Data",
+      "offline": "offline!"
     },
     "login": {
       "title": "Login",

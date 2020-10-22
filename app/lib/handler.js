@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const Telegram = require('./telegram');
 const socket = require('../server/socket');
@@ -56,6 +56,9 @@ const splitUrl = (url) => {
 
 };
 
+const multipleRecordSize = 1;
+const activeRecordings = {};
+
 var database, webpushhh, telegramCredentials, telegramBot;  
 
 module.exports = {
@@ -69,6 +72,11 @@ module.exports = {
       chatID: database.db.get('settings').get('telegram').get('chatID').value()
     };
     
+    const cameras = database.db.get('settings').get('cameras').value();
+    
+    for(const cam of Object.keys(cameras))
+      activeRecordings[cam] = 0;
+    
     return;
   
   },
@@ -80,68 +88,88 @@ module.exports = {
     
     if(active && (!atHome || atHome && exclude.includes(accessory.displayName))){
       
-      const cameras = database.db.get('settings').get('cameras').value();
       const recActive = database.db.get('settings').get('recordings').get('active').value();
-      const recPath = database.db.get('settings').get('recordings').get('path').value();
-      const recType = database.db.get('settings').get('recordings').get('type').value();
       
-      let room = 'Standard';
-      cameraConfig.videoConfig.originName = accessory.displayName;
+      if(recActive)
+        activeRecordings[accessory.displayName]++;
       
-      for(const cam of Object.keys(cameras))
-        if(cam === accessory.displayName)
-          room = cameras[cam].room;
+      let startProcess = true;
+      
+      if(!activeRecordings[accessory.displayName])
+        activeRecordings[accessory.displayName] = 1;
           
-      debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert from %s [%s]', accessory.displayName, room);
+      Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
       
+      //Push to webhook
       this.webHook(accessory);
       
-      //Generate Recording/Notification
-          
-      let time = {
-        time: moment().format('DD.MM.YYYY, HH:mm:ss'),
-        timestamp: moment().unix()
-      };
+      if(recActive && activeRecordings[accessory.displayName] > multipleRecordSize)
+        startProcess = false;
+
+      if(startProcess){
       
-      let rndm = crypto.randomBytes(5).toString('hex');
-      
-      let notification = database.Notifications().add(accessory, type, time, rndm);
-      
-      if(recActive) await database.Recordings().add(accessory, type, time, rndm); 
-      
-      //clearTimer
-         
-      let notTimer = database.db.get('settings').get('notifications').get('clearTimer').value();
-      notTimer = isNaN(parseInt(notTimer)) ? false : parseInt(notTimer);
-      
-      if(notTimer)
-        cleartimer.setNotification(notification.id, notTimer);
-      
-      let recTimer = database.db.get('settings').get('recordings').get('removeAfter').value();
-      recTimer = isNaN(parseInt(recTimer)) ? false : parseInt(recTimer);
-      
-      if(recTimer)
-        cleartimer.setNotification(notification.id, recTimer);   
+        //Generate Notification & Recording
+        let notification = await this.handleRecNot(recActive, accessory, type);
         
-      //Push Notification
+        if(recActive)
+          activeRecordings[accessory.displayName]--;
+    
+        //Push Notification via socket.io, webpush & telegram
+        socket.io('notification', notification);
+        socket.storeNots(notification);
+        this.webPush(notification, accessory);
+        this.teleGram(notification, accessory, recActive);
       
-      socket.io('notification', notification);
-      socket.storeNots(notification);
+      } else {
       
-      this.webPush(notification, accessory);
-      this.teleGram(notification, accessory, recActive, recPath, recType);
+        Logger.ui.debug('Skip motion event. Recording for ' + accessory.displayName + ' has not been finished yet!');
+      
+      }
       
     } else {
       
       if(active && atHome && !exclude.includes(accessory.displayName)){
       
-        debug('Skip motion trigger. At Home is active and %s is not excluded!', accessory.displayName);
+        Logger.ui.debug('Skip motion trigger. At Home is active and ' + accessory.displayName + ' is not excluded!');
      
       }
       
     }
   
   },
+  
+  handleRecNot: async function(recActive, accessory, type){
+  
+    let time = {
+      time: moment().format('DD.MM.YYYY, HH:mm:ss'),
+      timestamp: moment().unix()
+    };
+    
+    let rndm = crypto.randomBytes(5).toString('hex');
+    
+    let notification = database.Notifications().add(accessory, type, time, rndm);
+    
+    if(recActive) 
+      await database.Recordings().add(accessory, type, time, rndm); 
+    
+    //clearTimer
+       
+    let notTimer = database.db.get('settings').get('notifications').get('clearTimer').value();
+    notTimer = isNaN(parseInt(notTimer)) ? false : parseInt(notTimer);
+    
+    if(notTimer)
+      cleartimer.setNotification(notification.id, notTimer);
+    
+    let recTimer = database.db.get('settings').get('recordings').get('removeAfter').value();
+    recTimer = isNaN(parseInt(recTimer)) ? false : parseInt(recTimer);
+    
+    if(recTimer)
+      cleartimer.setNotification(notification.id, recTimer);  
+      
+    return notification; 
+  
+  },
+  
   
   webHook: function(accessory){
     
@@ -153,7 +181,7 @@ module.exports = {
 
       if(validUrl){
       
-        debug('%s: Trigger Webhook endpoint %s', accessory.displayName, webhook.cameras[accessory.displayName].endpoint);
+        Logger.ui.debug('Trigger Webhook endpoint ' + webhook.cameras[accessory.displayName].endpoint, accessory.displayName);
         
         let protocol = splitUrl(validUrl).protocol() === 'https://' ? https : http;
         /*let hostname = splitUrl(validUrl).hostname();
@@ -184,17 +212,17 @@ module.exports = {
         
           // The whole response has been received. Print out the result.
           resp.on('end', () => {
-            debug('%s: Webhook Endpoint triggered successfully!', accessory.displayName);
-            debug('Data: ' + data.toString());
+            Logger.ui.debug('Webhook Endpoint triggered successfully!', accessory.displayName);
+            Logger.ui.debug('Data: ' + data.toString());
           });
         
         }).on('error', (err) => {
-          debug('%s Error: ' + err.message, accessory.displayName);
+          Logger.ui.error('Error: ' + err.message, accessory.displayName);
         });
       
       } else {
      
-        debug('The given endpoint is not a valid URL! Please check your endpoint!');
+        Logger.ui.warn('The given endpoint is not a valid URL! Please check your endpoint!');
      
       }
     
@@ -202,7 +230,10 @@ module.exports = {
     
   },
   
-  teleGram: async function(notification, accessory, recActive, recPath, recType){ 
+  teleGram: async function(notification, accessory, recActive){ 
+  
+    const recPath = database.db.get('settings').get('recordings').get('path').value();
+    const recType = database.db.get('settings').get('recordings').get('type').value();
     
     let tlgrm = database.db.get('settings').get('telegram').value();
       
@@ -266,18 +297,19 @@ module.exports = {
     };
     
     if(web_push.subscription){
-      debug('%s: Sending new webpush notification', accessory.displayName);
+      Logger.ui.debug('Sending new webpush notification', accessory.displayName);
       webpush.sendNotification(web_push.subscription, JSON.stringify(webpush_not))
         .catch(async error => {
           if(error.statusCode === 410){
-            debug('Web-Push Notification Grant changed! Removing subscription..');
+            Logger.ui.debug('Web-Push Notification Grant changed! Removing subscription..');
             await database.Settings().update(false, false, false, false, false, false, false, false, false, {
               pub_key: web_push.pub_key,
               priv_key: web_push.priv_key,
               subscription: false
             });
           } else {
-            debug('An error occured during sending Wep-Push Notification!', error.body);
+            Logger.ui.error('An error occured during sending Wep-Push Notification!');
+            Logger.ui.error(error.body);
           }
         });
     }

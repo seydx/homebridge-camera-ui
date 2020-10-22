@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -34,7 +34,7 @@ module.exports = (db) => {
   
   function add(username, password, role, photo){
     
-    debug('Adding new User:', username);
+    Logger.ui.info('Adding new User', username);
     
     db.get('users').push({
       id: uuidv4(),
@@ -53,17 +53,17 @@ module.exports = (db) => {
     
     for (const [ key, value ] of Object.entries(properties)){
       if(role){
-        debug('Changing %s for %s', key, role);
+        Logger.ui.debug('Changing ' + key, role);
         db.get('users').find({ role: role }).set(key, value).write();
       } else {
-        debug('Changing %s for %s', key, username);
+        Logger.ui.debug('Changing ' + key, username);
         db.get('users').find({ username: username }).set(key, value).write();
       }
     }
     
     if(remove){
       for(const key of remove){
-        debug('Removing %s for %s', key, username);
+        Logger.ui.debug('Removing ' + key, username);
         db.get('users').find({ username: username }).unset(key).write();
       }
     }
@@ -74,7 +74,7 @@ module.exports = (db) => {
   
   function remove(username){
     
-    debug('Removing User:', username);
+    Logger.ui.info('Removing User', username);
     
     db.get('users').remove({ username: username }).write();
     
@@ -84,7 +84,7 @@ module.exports = (db) => {
   
   function removeAll(){
     
-    debug('Removing all users!');
+    Logger.ui.info('Removing all users!');
     
     let users = get();
     

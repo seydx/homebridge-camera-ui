@@ -4,6 +4,15 @@
   let mainTitle = getTitle(); 
   let found = false;
   let cardsTimer;
+  
+  let title = getTitle();
+  if(title === 'Cameras'){
+    title = window.i18next.t('views.cameras.title');
+  } else if(title === 'Notifications'){
+    title = window.i18next.t('views.notifications.title');
+  } else if(title === 'Recordings'){
+    title = window.i18next.t('views.recordings.title');
+  }
 
   let sections = $('[data-filterable="yes"]');
   
@@ -86,22 +95,19 @@
             
           });
           
-          if(!checked)
+          if(!checked){
+            breadTitle = window.i18next.t('breadcrumb.all') + ' ' + title;
             $('.filterBtn:checkbox[value=all]').prop('checked', true).change();
+          }
         
         }
+        
       } else {
+        
         if (this.checked) {
         
-          let title = getTitle();
-          if(title === 'Cameras'){
-            title = window.i18next.t('views.cameras.title');
-          } else if(title === 'Notifications'){
-            title = window.i18next.t('views.notifications.title');
-          } else if(title === 'Recordings'){
-            title = window.i18next.t('views.recordings.title');
-          }
-          breadTitle = title = window.i18next.t('breadcrumb.all') + ' ' + title;
+          breadTitle = window.i18next.t('breadcrumb.all') + ' ' + title;
+          
           setTimeout(() => {
           
             if(mainTitle === 'Recordings')
@@ -117,10 +123,13 @@
             }
             
           }, 500);
+          
         }
+        
       }
   
       $('#breadTitle').text(breadTitle);
+      
     });
     
     if(cardsTimer)

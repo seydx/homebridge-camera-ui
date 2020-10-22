@@ -1,18 +1,16 @@
 'use strict';
 
-const debug = require('debug')('CameraUIStream');
-
+const Logger = require('../../src/helper/logger.js');
 const Stream = require('@seydx/node-rtsp-stream');
 
-var db, log;
+var db;
 const startedStreams = {};
 
 module.exports = {
 
-  init: function(lg, accessories, ssl, ffmpegPath, db_settings){
+  init: function(accessories, ssl, ffmpegPath, db_settings){
 
     db = db_settings;
-    log = lg;
     
     let cameras = db.getCameras();
 
@@ -27,6 +25,9 @@ module.exports = {
         
         let audio = cameras[accessory.displayName].audio;
         let videoSize = cameras[accessory.displayName].resolutions;
+        let rate = accessory.context.videoConfig.maxFPS;
+        
+        rate = rate ? (rate < 20 ? 20 : rate) : 20;
         
         startedStreams[accessory.displayName] = new Stream({
           name: accessory.displayName,
@@ -38,14 +39,15 @@ module.exports = {
           ffmpegOptions: {
             '-s': videoSize,
             '-b:v': '299k',
-            '-r': accessory.context.videoConfig.maxFPS || 20,
+            '-r': rate,
             '-preset:v': 'ultrafast',
             '-threads': '1',
+            //'-tune': 'zerolatency',
             '-loglevel': 'quiet'
           },
           ssl: ssl,
           ffmpegPath: ffmpegPath 
-        });
+        }, Logger);
         
         if(audio){
           
@@ -82,7 +84,8 @@ module.exports = {
   
   set: function(camera, options){
   
-    debug('Settings new stream parameter for %s %s', camera, options);
+    Logger.ui.debug('Adding new stream parameter', camera);
+    Logger.ui.debug(options);
     
     for (const [ key, value ] of Object.entries(options))
       startedStreams[camera].options.ffmpegOptions[key] = value;
@@ -93,7 +96,7 @@ module.exports = {
   
   del: function(camera, options){
   
-    debug('Removing stream parameter from %s %s', camera, options);
+    Logger.ui.debug('Removing stream parameter ' + options, camera);
   
     for(const prop in options)
       delete startedStreams[camera].options.ffmpegOptions[prop];
@@ -106,18 +109,18 @@ module.exports = {
   
     if(startedStreams[camera].streamFailed && startedStreams[camera].wsPort && startedStreams[camera].streamUrl){
     
-      debug('Starting stream server for %s', camera);
+      Logger.ui.debug('Starting stream server ', camera);
     
       startedStreams[camera].pipeStreamToSocketServer();
       startedStreams[camera].streamFailed = false;
     
     } else {
     
-      if(!startedStreams[camera].wsPort)
-        log('Can not start stream for %s - Socket Port not defined in videoConfig!', startedStreams[camera].name);
-        
-      if(!startedStreams[camera].streamUrl)
-        log('Can not start stream for %s - Source not defined in videoConfig!', startedStreams[camera].name);
+      if(!startedStreams[camera].wsPort){
+        Logger.ui.warn('Can not start stream - Socket Port not defined in videoConfig!', startedStreams[camera].name);
+      } else if(!startedStreams[camera].streamUrl){
+        Logger.ui.warn('Can not start stream - Source not defined in videoConfig!', startedStreams[camera].name);
+      }
     
     }
     
@@ -127,7 +130,7 @@ module.exports = {
   
   stop: function(camera){
   
-    debug('Stopping stream for %s', camera);
+    Logger.ui.debug('Stopping stream', camera);
   
     startedStreams[camera].stopStream();
     
@@ -137,7 +140,7 @@ module.exports = {
   
   close: function(camera){
   
-    debug('Closing stream server for %s', camera);
+    Logger.ui.debug('Closing stream server', camera);
   
     startedStreams[camera].stopAll();
     
@@ -147,7 +150,7 @@ module.exports = {
   
   quit: function(){
   
-    debug('Stopping all stream server!');
+    Logger.ui.debug('Stopping all stream server!');
   
     for(const camera of Object.keys(startedStreams))
       startedStreams[camera].stopAll();

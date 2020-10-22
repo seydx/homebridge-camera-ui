@@ -1,4 +1,4 @@
-﻿extends layout
+extends layout
 
 block head
 
@@ -44,13 +44,13 @@ block content
                   .wrap-input200
                     input#username.input200(type="text" name="username" value=user.username disabled)
                   .wrap-input200
-                    input#username_new.input200(type="text" name="username_new" autocomplete="new-password")
-                    span.focus-input200(data-placeholder=t('views.change.username_new'))
-                  .wrap-input200
                     span.btn-show-pass
                       i.fa.fa-eye
                     input#password.input200(type="password" name="password" autocomplete="new-password")
                     span.focus-input200(data-placeholder=t('views.change.password'))
+                  .wrap-input200
+                    input#username_new.input200(type="text" name="username_new" autocomplete="new-password")
+                    span.focus-input200(data-placeholder=t('views.change.username_new'))
                   .wrap-input200
                     span.btn-show-pass
                       i.fa.fa-eye
@@ -59,6 +59,5 @@ block content
                   .container-login200-form-btn
                     .row.w-100.justify-content-center
                       input#login-btn.login200-form-btn(type="submit" value=t('views.change.save_signin'), style="width: 380px!important")
-    #preloader
 block footscripts
   script(type='text/javascript' src='/javascripts/views/change.js' defer)

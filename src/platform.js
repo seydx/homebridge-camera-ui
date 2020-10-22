@@ -1,6 +1,5 @@
 'use strict';
 
-const debug = require('debug')('CameraUI');
 const networkInterfaceDefault = require('systeminformation').networkInterfaceDefault; 
 const os = require('os');
 const fs = require('fs-extra');
@@ -16,6 +15,7 @@ const doorbellSensor = require('./accessories/doorbell.js');
 const Handler = require('./helper/handler.js');
 const Mqtt = require('./helper/mqtt.js');
 const Http = require('./helper/http.js');
+const Logger = require('./helper/logger.js');
 
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
@@ -37,7 +37,8 @@ function CameraUI (log, config, api) {
   if (!api||!config) 
     return;
 
-  this.log = log;
+  Logger.init(log);
+
   this.api = api;
   this.accessories = [];
   this.cameraConfigs = new Map();
@@ -51,7 +52,7 @@ function CameraUI (log, config, api) {
   
   //precheck
   if(this.config.auth == 'form' && this.config.auth == 'auth'){
-    debug('Missing auth form in config.json - Setting it to "form"');
+    Logger.debug('Missing auth form in config.json - Setting it to "form"');
     this.config.auth = 'form';
   }
     
@@ -59,19 +60,19 @@ function CameraUI (log, config, api) {
     this.config.mqtt = config.mqtt;
     this.config.mqtt.on_message = config.mqtt.on_message || 'ON';
   } else {
-    debug('MQTT for motion handling not active.');
+    Logger.debug('MQTT for motion handling not active.');
     this.config.mqtt = false;
   }
   
   if(config.http && config.http.active && config.http.port){
     this.config.http = config.http;
   } else {
-    debug('HTTP Server for motion handling not active.');
+    Logger.debug('HTTP Server for motion handling not active.');
     this.config.http = false;
   }
 
   if(!this.config.options.videoProcessor){
-    debug('Missing video processor in config.json - Setting it to "ffmpeg"');
+    Logger.debug('Missing video processor in config.json - Setting it to "ffmpeg"');
     this.config.options.videoProcessor = 'ffmpeg';
   }
     
@@ -82,20 +83,20 @@ function CameraUI (log, config, api) {
       let error = false;
 
       if (!cameraConfig.name) {
-        this.log('One of your cameras has no name configured. This camera will be skipped.');
+        Logger.warn('One of your cameras has no name configured. This camera will be skipped.', false);
         error = true;
       }
       
       if (!cameraConfig.videoConfig) {
-        this.log('%s: The videoConfig section is missing from the config. This camera will be skipped.', cameraConfig.name);
+        Logger.warn('The videoConfig section is missing from the config. This camera will be skipped.', cameraConfig.name);
         error = true;
       } else if (!cameraConfig.videoConfig.source) {
-        this.log('%s: There is no source configured for this camera. This camera will be skipped.', cameraConfig.name);
+        Logger.warn('There is no source configured for this camera. This camera will be skipped.', cameraConfig.name);
         error = true;
       } else {
         const sourceArgs = cameraConfig.videoConfig.source.split(/\s+/);
         if (!sourceArgs.includes('-i')) {
-          this.log('%s: The source for this camera is missing "-i", it is likely misconfigured.', cameraConfig.name);
+          Logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', cameraConfig.name);
         }
       }
 
@@ -103,7 +104,7 @@ function CameraUI (log, config, api) {
         const uuid = UUIDGen.generate(cameraConfig.name);
         if (this.cameraConfigs.has(uuid)) {
           // Camera names must be unique
-          this.log('%s: Multiple cameras are configured with this name. Duplicate cameras will be skipped.', cameraConfig.name);
+          Logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', cameraConfig.name);
         } else {
           this.cameraConfigs.set(uuid, cameraConfig);
         }
@@ -115,7 +116,7 @@ function CameraUI (log, config, api) {
   
   if(!this.config.options.interfaceName) {
   
-    debug('Missing interface name in config.json - Looking for interface names..');
+    Logger.debug('Missing interface name in config.json - Looking for interface names..');
   
     const interfaces = os.networkInterfaces();
     const publicNics = [];
@@ -139,7 +140,7 @@ function CameraUI (log, config, api) {
     
       networkInterfaceDefault()
         .then((defaultInterfaceName) => {
-          this.log('Multiple network interfaces detected ("' + publicNics.join('", "') + '"). ' +
+          Logger.info('Multiple network interfaces detected ("' + publicNics.join('", "') + '"). ' +
             'If you encounter issues with streaming video you may need to set interfaceName. ' +
             'If not set, "' + defaultInterfaceName + '" will be used.');
         });  
@@ -161,8 +162,8 @@ CameraUI.prototype = {
         this.config.ssl.cert = await fs.readFile(this.config.ssl.cert, 'utf8');
         this.config.ssl.key = await fs.readFile(this.config.ssl.key, 'utf8');
       } catch(err){
-        this.log('WARNING: Could not read SSL Cert/Key');
-        debug(err);
+        Logger.warn('WARNING: Could not read SSL Cert/Key');
+        Logger.debug(err);
         this.config.ssl = false;
       }
     } else {
@@ -177,7 +178,7 @@ CameraUI.prototype = {
       if (cameraConfig.unbridge) {
       
         const accessory = new Accessory(cameraConfig.name, uuid);
-        this.log('%s: Configuring unbridged accessory...', accessory.displayName);
+        Logger.info('Configuring unbridged accessory...', accessory.displayName);
         this.setupAccessory(accessory, cameraConfig);
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
         this.accessories.push(accessory);
@@ -191,7 +192,7 @@ CameraUI.prototype = {
           const accessory = new Accessory(cameraConfig.name, uuid);
           accessory.context.videoConfig = cameraConfig.videoConfig;
       
-          this.log.info('%s: Configuring bridged accessory...', accessory.displayName);
+          Logger.info('Configuring bridged accessory...', accessory.displayName);
           this.setupAccessory(accessory, cameraConfig);
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
           
@@ -207,13 +208,21 @@ CameraUI.prototype = {
     
       const cameraConfig = this.cameraConfigs.get(accessory.UUID);
       
-      if (!cameraConfig || cameraConfig.unbridge)
-        this.removeAccessory(accessory);
+      try {
+      
+        if (!cameraConfig || cameraConfig.unbridge)
+          this.removeAccessory(accessory);
+    
+      } catch(err) {
+     
+        Logger.debug('It looks like the camera has already been removed. Skip removing.');
+     
+      }
       
     });
     
     //start ui after everything done
-    this.ui = new UserInterface(this.api, this.log, this.config, this.accessories);
+    this.ui = new UserInterface(this.api, this.config, this.accessories);
     await this.ui.init();
     
     if(this.config.reset && this.config.auth === 'form'){
@@ -230,7 +239,7 @@ CameraUI.prototype = {
         photo: '/images/user/anonym.png'
       }).write();
       
-      this.log('Master credentials resetted! Setting "reset" to false...');
+      Logger.info('Master credentials resetted! Setting "reset" to false...');
       
       try {
       
@@ -239,40 +248,50 @@ CameraUI.prototype = {
         for(const i in configJSON.platforms)
           if(configJSON.platforms[i].platform === 'CameraUI')
             configJSON.platforms[i].reset = false;
-        
-        await fs.writeJson(this.api.user.storagePath() + '/config.json', configJSON, { spaces: 4 });
-        
-        this.log('"Reset" setted to false!'); 
-        
+
+        fs.writeJsonSync(this.api.user.storagePath() + '/config.json', configJSON, { spaces: 4 });
+
+        Logger.info('"Reset" setted to false!'); 
+
       } catch(err){
       
-        this.log('There was an error reading/writing your config.json file');
-        this.log('Please change manually "reset" to false!');
+        Logger.warn('There was an error reading/writing your config.json file');
+        Logger.warn('Please change manually "reset" to false!');
       
       }
       
     }
 
-    //create handler
-    if(this.config.mqtt || this.config.http || this.config.ftp)
-      this.handler = new Handler(this.log, this.accessories, this.config, this.api, this.cameraConfigs);
+    this.handler = new Handler(this.accessories, this.config, this.api, this.cameraConfigs);
 
     if (this.config.mqtt)
-      this.mqtt = new Mqtt(this.log, this.config, this.handler);
+      this.mqtt = new Mqtt(this.config, this.handler);
       
     if (this.config.http)
-      this.http = new Http(this.log, this.config, this.handler);
+      this.http = new Http(this.config, this.handler);
   
   },
 
-  getHandler: function(){
-    return this.handler;
+  setHandler: function(type, accessory, state, minimumTimeout){
+    
+    if(type === 'doorbell'){
+      
+      if(this.handler)
+        this.handler.doorbellHandler(accessory, state, minimumTimeout);
+      
+    } else if(type === 'motion'){
+      
+      if(this.handler)
+        this.handler.motionHandler(accessory, state, minimumTimeout);
+      
+    }
+    
   },
   
   setupAccessory: function(accessory, cameraConfig){
   
     accessory.on('identify', () => {
-      this.log('%s: Identify requested.', accessory.displayName);
+      Logger.info('Identify requested.', accessory.displayName);
     });
 
     const AccessoryInformation = accessory.getService(this.api.hap.Service.AccessoryInformation);
@@ -284,10 +303,10 @@ CameraUI.prototype = {
       AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, cameraConfig.firmwareRevision || packageFile.version);
     }
     
-    new motionSensor(this.api, this.log, this.config, accessory, cameraConfig, this);
-    new doorbellSensor(this.api, this.log, this.config, accessory, cameraConfig, this);
+    new motionSensor(accessory, cameraConfig, this);
+    new doorbellSensor(accessory, cameraConfig, this);
 
-    const Camera = new camera(this.config, this.log, cameraConfig, this.api, this.api.hap,
+    const Camera = new camera(this.config, cameraConfig, this.api, this.api.hap,
       this.config.options.videoProcessor, this.config.options.interfaceName, accessory);
 
     accessory.configureController(Camera.controller);
@@ -296,7 +315,7 @@ CameraUI.prototype = {
 
   configureAccessory: function(accessory){
 
-    this.log('%s: Configuring cached bridged accessory...', accessory.displayName);
+    Logger.info('Configuring cached bridged accessory...', accessory.displayName);
 
     const cameraConfig = this.cameraConfigs.get(accessory.UUID);
 
@@ -311,7 +330,7 @@ CameraUI.prototype = {
   
   removeAccessory: function(accessory) {
   
-    this.log('%s: Removing bridged accessory...', accessory.displayName);
+    Logger.info('Removing bridged accessory...', accessory.displayName);
     
     let accessories = this.accessories.map( cachedAccessory => {
       if(cachedAccessory.displayName !== accessory.displayName){

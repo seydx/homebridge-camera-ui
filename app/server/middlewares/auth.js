@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../../src/helper/logger.js');
 
 const unless = require('express-unless'); 
 const createError = require('http-errors');
@@ -11,7 +11,7 @@ module.exports = (auth, db_users) => {
   
   function ensureAuthenticated(req, res, next) {
     
-    debug({
+    Logger.ui.debug({
       userID: req.session.userID ? req.session.userID : false,
       message: 'ensure authenticated',
       originalUrl: req.originalUrl,
@@ -25,7 +25,7 @@ module.exports = (auth, db_users) => {
         
         let user = db_users.getUser(false, 'Master');
         
-        debug('%s (%s): Authentication skipped!', user.username, user.role);
+        Logger.ui.debug('Authentication skipped!', user.username);
         
         req.session.noAuth = !auth;
         req.session.userID = user.id;          
@@ -57,7 +57,7 @@ module.exports = (auth, db_users) => {
   
   function ensureAdmin(req, res, next) {
     
-    debug({
+    Logger.ui.debug({
       userID: req.session.userID ? req.session.userID : false,
       message: 'ensure admin',
       originalUrl: req.originalUrl,
@@ -71,7 +71,7 @@ module.exports = (auth, db_users) => {
         
         let user = db_users.getUser(false, 'Master');
         
-        debug('%s (%s): Authentication skipped!', user.username, user.role);
+        Logger.ui.debug('Authentication skipped!', user.username);
         
         req.session.noAuth = !auth;
         req.session.userID = user.id;          

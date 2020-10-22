@@ -56,12 +56,12 @@ The default username is ``admin`` and the default password is ``admin``.
     "platforms": [
         {
             "name": "CameraUI",
-            "port": 3333,
+            "port": 8181,
             "auth": "form",
             "debug": true,
             "reset": false,
             "mqtt": {
-                "active": true,
+                "active": false,
                 "host": "192.168.178.123",
                 "port": 1883,
                 "topic": "homebridge/motion",
@@ -79,8 +79,7 @@ The default username is ``admin`` and the default password is ``admin``.
             },
             "options": {
                 "videoProcessor": "ffmpeg",
-                "interfaceName": "eth0",
-                "language": "DE"
+                "interfaceName": "eth0"
             },
             "cameras": [ ... ],
             "platform": "CameraUI"

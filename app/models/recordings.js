@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const record = require('../lib/record');
 
@@ -22,8 +22,8 @@ module.exports = (db, camDb, recDb) => {
    
     } catch(err){
     
-      debug('An error occured during checking %s', recPath);
-      debug(err);
+      Logger.ui.error('An error occured during checking ' + recPath);
+      Logger.ui.error(err);
       
       return false;
   
@@ -75,8 +75,8 @@ module.exports = (db, camDb, recDb) => {
     
     } catch(err) {
     
-      debug('An error occured during reading %s', recPath);
-      debug(err);
+      Logger.ui.error('An error occured during reading ' + recPath);
+      Logger.ui.error(err);
     
     }
     
@@ -122,7 +122,7 @@ module.exports = (db, camDb, recDb) => {
         storing: storing
       };
       
-      debug('Adding new recording (%s)', recording.fileName);
+      Logger.ui.info('Adding new recording ' + recording.fileName);
       
       recDb.get('recordings').push(recording).write();
       
@@ -141,7 +141,8 @@ module.exports = (db, camDb, recDb) => {
     
     } catch(err) {
     
-      debug('An error occured during creating new database entry for %s!', accessory.displayName, err);
+      Logger.ui.error('An error occured during creating new database entry!', accessory.displayName);
+      Logger.ui.error(err);
     
     }
     
@@ -151,7 +152,7 @@ module.exports = (db, camDb, recDb) => {
   
   async function remove(id){
     
-    debug('Removing recording (%s)', id);
+    Logger.ui.info('Removing recording (%s)', id);
 
     let recPath = db.get('settings').get('recordings').get('path').value();
     
@@ -172,7 +173,7 @@ module.exports = (db, camDb, recDb) => {
   
         } else {
         
-          debug('Can not remove recording! Not found or already removed!');
+          Logger.ui.debug('Can not remove recording! Not found or already removed!');
         
         }
           
@@ -180,14 +181,14 @@ module.exports = (db, camDb, recDb) => {
         
       } catch(err) {
       
-        debug('An error occured during removing %s', recording.fileName);
-        debug(err);
+        Logger.ui.error('An error occured during removing %s', recording.fileName);
+        Logger.ui.error(err);
       
       }
     
     } else {
     
-      debug('Can not remove recording! Not found or already removed!');
+      Logger.ui.debug('Can not remove recording! Not found or already removed!');
     
     }
     
@@ -203,7 +204,7 @@ module.exports = (db, camDb, recDb) => {
     
       if(room.length && !room.includes('all')){
       
-        debug('Removing all recordings for following rooms: ' + room.toString());
+        Logger.ui.info('Removing all recordings for following rooms: ' + room.toString());
         
         let recs = await get();
         
@@ -223,7 +224,7 @@ module.exports = (db, camDb, recDb) => {
       }else {
       
         if(room.includes('all')){
-          debug('Removing all recordings!');
+          Logger.ui.info('Removing all recordings!');
           await fs.emptyDir(recPath);
         }
         
@@ -231,8 +232,8 @@ module.exports = (db, camDb, recDb) => {
       
     } catch(err) {
     
-      debug('An error occured during removing recordings!');
-      debug(err);
+      Logger.ui.error('An error occured during removing recordings!');
+      Logger.ui.error(err);
     
     }
     

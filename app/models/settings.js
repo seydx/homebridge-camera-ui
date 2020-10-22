@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const bcrypt = require('bcrypt');
 const fs = require('fs');
@@ -92,9 +92,9 @@ module.exports = (db, accessories, configPath, db_users) => {
   async function update(profile, users, general, dashboard, cameras, recordings, notifications, telegram, camviews, webpush, webhook){
   
     if(profile && profile.username){ // update through settings controller
-    
+
       let user = profile;
-      let data = JSON.parse(users);   // users = req.body.data from settings controller
+      let data = users;   // users = req.body.data from settings controller
       let file = general;  // general = req.file from settings controller
       let photo;
       
@@ -118,8 +118,8 @@ module.exports = (db, accessories, configPath, db_users) => {
         
         } catch(err) {
           
-          debug('An error occured during checking profile picture!');
-          debug(err);
+          Logger.ui.debug('An error occured during checking profile picture!');
+          Logger.ui.debug(err);
         
           photo = '/images/user/anonym.png';
         
@@ -148,13 +148,13 @@ module.exports = (db, accessories, configPath, db_users) => {
              
           } else {
              
-            debug('Can not change password! Password wrong!');
+            Logger.ui.warn('Can not change password! Password wrong!');
              
           }
         
         } else {
            
-          debug('Can not change password! Check new/confirm password!');
+          Logger.ui.warn('Can not change password! Check new/confirm password!');
            
         }
          
@@ -381,7 +381,7 @@ module.exports = (db, accessories, configPath, db_users) => {
       webpush: webpush || db.get('settings').get('webpush').value() 
     }).write();
     
-    debug('Settings updated!');
+    Logger.ui.info('Settings updated!');
     
     return;
     
@@ -464,7 +464,7 @@ module.exports = (db, accessories, configPath, db_users) => {
       }
     }).write();
     
-    debug('Settings resetted!');
+    Logger.ui.info('Settings resetted!');
     
     return;
     

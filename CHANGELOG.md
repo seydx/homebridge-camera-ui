@@ -1,6 +1,44 @@
 # Changelog
 
 
+## v3.1.1 - 2020-10-21
+- Interface Stream: Revert back to -threads 1
+- Fix not appearing motion switches
+- Fix not appearing doorbell switches
+- Bugfix: Remove Motion Characteristic from doorbell
+- Bugfix: Doorbell Timeout
+
+## v3.1.0 - 2020-10-21
+- Added a new logging function
+- Refactored recording/notification handler
+- Bugfix: Avoid multiple recording processes at same time on same camera
+
+## v3.0.9 - 2020-10-20
+- Rearranged /change view
+- Fixed a bug where the /change path could not be found
+- Fixed a bug where the port was false if host doesnt include '@' char
+- Added ffmpeg-for-homebridge as dependency 
+
+## v3.0.8 - 2020-10-19
+- Added min fps of 20, otherwise the decoder will show a black livestream
+- more debug if stream failed
+- Fix admin username validation
+- Fixed a bug where breadcrumb title not updated properly
+- Added translation to selectpicker
+- Added new params to avoid ffmpeg hang on a process
+
+## v3.0.7 - 2020-10-19
+- Added new translation
+- Added validation to "change admin username"
+- Added validation to "adding new user (username)"
+- Recordings: "Remove all" will now remove the recordings from choosen room (filter)
+- Notifications: "Remove all" will now remove the notifications from choosen room (filter)
+- Changes Spdy (http/2) to https (http/1) because of callback error
+- Rearranged ui/handler init to avoid incoming mqtt/http message before ui finished initialisation
+- Fixed a bug where "offline" toast message appeared also for hidden cameras
+- Fixed a bug that caused the video processor entered in config.json not to be passed to videoStream
+- Fixed a bug that caused that if only one camera is entered in config.json, the camera page was not visible
+
 ## v3.0.6 - 2020-10-18
 - Fixed a bug that caused Homebridge to crash when no "options" is given in config.json
 

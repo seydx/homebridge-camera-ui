@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('CameraUIInterface');
+const Logger = require('../../src/helper/logger.js');
 
 const app = require('./app');
 const database = require('../models/index');
@@ -13,10 +13,9 @@ const webhook = require('../lib/webhook');
 
 module.exports = class UserInterface {
   
-  constructor(api, log, config, accessories){
-  
+  constructor(api, config, accessories){
+
     this.api = api;
-    this.log = log;
     this.config = config;
     this.accessories = accessories;
     
@@ -32,50 +31,50 @@ module.exports = class UserInterface {
     
     try {
       
-      this.log('Configuring User Interface');
+      Logger.ui.info('Configuring User Interface');
       
       //config database and cameras
-      debug('Configuring database');
-      this.database = new database(this.log, this.accessories, this.api.user.storagePath());
+      Logger.ui.debug('Configuring database');
+      this.database = new database(this.accessories, this.api.user.storagePath());
       await this.database.init();
   
       //config camera streams    
-      debug('Configuring camera streams');
-      streams.init(this.log, this.accessories, this.config.ssl, this.config.options.videoProcessor, this.database.Settings());
+      Logger.ui.debug('Configuring camera streams');
+      streams.init(this.accessories, this.config.ssl, this.config.options.videoProcessor, this.database.Settings());
       
       //config app
-      debug('Configuring app');
+      Logger.ui.debug('Configuring app');
       app.init(this.config, this.accessories, this.database, this.api.user.storagePath());
   
       //config and start server
-      debug('Configuring server');
-      //await server.start(this.log, this.config.ssl);
-      server.init(this.log, this.config.ssl);
+      Logger.ui.debug('Configuring server');
+      //await server.start(Logger, this.config.ssl);
+      server.init(this.config.ssl);
   
       //config socket and listen to server
-      debug('Configuring socket');
+      Logger.ui.debug('Configuring socket');
       socket.init();
       
       //config clear timer
-      debug('Configuring clear timer');
+      Logger.ui.debug('Configuring clear timer');
       await cleartimer.init(this.database);
   
       //start motion handler
-      debug('Configuring motion handler');
+      Logger.ui.debug('Configuring motion handler');
       handler.init(this.database);
   
       //start webhook handler
-      debug('Configuring webhook handler');
+      Logger.ui.debug('Configuring webhook handler');
       webhook.init(this.database);
       
       //everything started successfully, now lets start the server!
-      this.log('Starting User Interface');
+      Logger.ui.info('Starting User Interface');
       server.start();
       
     } catch(err) {
       
-      this.log('An error occured during initializing User Interface!');
-      this.log(err);
+      Logger.ui.error('An error occured during initializing User Interface!');
+      Logger.ui.error(err);
       
     }
     
