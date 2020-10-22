@@ -39,7 +39,7 @@ function CameraUI (log, config, api) {
   if (!api||!config) 
     return;
 
-  Logger.init(log);
+  Logger.init(log, config.debug);
 
   this.api = api;
   this.accessories = [];
