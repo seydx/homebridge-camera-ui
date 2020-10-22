@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('./logger.js');
+const Logger = require('../../lib/logger.js');
 
 const http = require('http');
 const url = require('url');
