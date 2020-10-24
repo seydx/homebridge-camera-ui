@@ -1,6 +1,14 @@
 # Changelog
 
 
+## v3.1.2 - 2020-10-24
+- New function to handle ffmpeg processes
+- It is now possible to change theme directly from config-ui
+- Bugfixes
+- Better Debug
+- Refactored Logger
+- Bump dependencies
+
 ## v3.1.1 - 2020-10-21
 - Interface Stream: Revert back to -threads 1
 - Fix not appearing motion switches
