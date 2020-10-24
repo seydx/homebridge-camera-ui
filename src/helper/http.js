@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('./logger.js');
+const Logger = require('../../lib/logger.js');
 
 const http = require('http');
 const url = require('url');
@@ -33,7 +33,7 @@ class Http {
           const name = decodeURIComponent(parseurl.query).split('=')[0];
           results = handler.automationHandler(parseurl.pathname, name);
           
-          Logger.debug('Received a new HTTP message ' + results + ' (' + name + ')');
+          Logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')');
           
         }
       

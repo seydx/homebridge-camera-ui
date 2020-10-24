@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 var database;
 

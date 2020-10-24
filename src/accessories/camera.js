@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const spawn = require('child_process').spawn;
 const networkInterfaceDefault = require('systeminformation').networkInterfaceDefault; 
@@ -12,12 +12,13 @@ const FfmpegProcess = require('../helper/ffmpeg.js');
 
 class Camera {
 
-  constructor (config, cameraConfig, api, hap, videoProcessor, interfaceName, accessory) {
+  constructor (config, cameraConfig, api, hap, videoProcessor, interfaceName, accessory, streamSessions) {
 
     this.api = api;
     this.hap = hap;
     this.config = config;
     this.accessory = accessory;
+    this.streamSessions = streamSessions;
     
     this.cameraName = cameraConfig.name;
     this.videoProcessor = videoProcessor;
@@ -121,40 +122,51 @@ class Camera {
   
     const resolution = this.determineResolution(request, true);
     
-    Logger.debug('Snapshot requested: ' + request.width + ' x ' + request.height, this.cameraName);
-    Logger.info('Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native'), this.cameraName);
-
-    let ffmpegArgs = this.videoConfig.stillImageSource || this.videoConfig.source;
-
-    ffmpegArgs += // Still
-      ' -frames:v 1' +
-      (resolution.videoFilter ? ' -filter:v ' + resolution.videoFilter : '') +
-      ' -f image2 -';
-
-    try {
+    let allowStream = this.streamSessions.requestSession(this.cameraName);
     
-      const ffmpeg = spawn(this.videoProcessor, ffmpegArgs.split(/\s+/), { env: process.env });
-
-      let imageBuffer = Buffer.alloc(0);
-      Logger.debug('Snapshot command: ' + this.videoProcessor + ' ' + ffmpegArgs, this.cameraName);
+    if(allowStream){
       
-      ffmpeg.stdout.on('data', data => {
-        imageBuffer = Buffer.concat([imageBuffer, data]);
-      });
+      Logger.debug('Snapshot requested: ' + request.width + ' x ' + request.height, this.cameraName);
+      Logger.info('Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' + (resolution.height > 0 ? resolution.height : 'native'), this.cameraName);
+  
+      let ffmpegArgs = this.videoConfig.stillImageSource || this.videoConfig.source;
+  
+      ffmpegArgs += // Still
+        ' -frames:v 1' +
+        (resolution.videoFilter ? ' -filter:v ' + resolution.videoFilter : '') +
+        ' -f image2 -';
+  
+      try {
       
-      ffmpeg.on('error', error => {
-        Logger.error('An error occurred while making snapshot request: ' + error, this.cameraName);
-      });
+        const ffmpeg = spawn(this.videoProcessor, ffmpegArgs.split(/\s+/), { env: process.env });
+  
+        let imageBuffer = Buffer.alloc(0);
+        Logger.debug('Snapshot command: ' + this.videoProcessor + ' ' + ffmpegArgs, this.cameraName);
+        
+        ffmpeg.stdout.on('data', data => {
+          imageBuffer = Buffer.concat([imageBuffer, data]);
+        });
+        
+        ffmpeg.on('error', error => {
+          Logger.error('An error occurred while making snapshot request: ' + error, this.cameraName);
+        });
+        
+        ffmpeg.on('close', () => {
+          this.streamSessions.closeSession(this.cameraName);
+          callback(undefined, imageBuffer);
+        });
+        
+      } catch (err) {
       
-      ffmpeg.on('close', () => {
-        callback(undefined, imageBuffer);
-      });
+        Logger.error(err, this.cameraName);
+        callback(err);
+        
+      }
       
-    } catch (err) {
+    } else {
     
-      Logger.error(err, this.cameraName);
-      callback(err);
-      
+      callback('Stream not allowed!');
+    
     }
   
   }
@@ -195,7 +207,6 @@ class Camera {
   
   async prepareStream(request, callback){
 
-    
     const videoReturnPort = await getPort();
     
     const videoSSRC = this.hap.CameraController.generateSynchronisationSource();
@@ -406,9 +417,12 @@ class Camera {
   
   handleStreamRequest(request, callback){
   
+    let allowStream = this.streamSessions.requestSession(this.cameraName);
+  
     switch (request.type) {
-    
       case 'start':
+        if(!allowStream)
+          return callback('Stream not allowed!');
         this.startStream(request, callback);
         break;
       case 'reconfigure':
@@ -468,6 +482,7 @@ class Camera {
       }
       
       delete this.ongoingSessions[sessionId];
+      this.streamSessions.closeSession(this.cameraName);
       Logger.info('Stopped video stream.', this.cameraName);
   
     }

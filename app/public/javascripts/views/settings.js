@@ -2,8 +2,9 @@
   'use strict';
   
   let username = getUsername();
+  let theme = getTheme();
   
-  const timeout = (ms) => new Promise((res) => setTimeout(res, ms));  
+  const timeout = (ms) => new Promise((res) => setTimeout(res, ms)); 
   
   let oldWidth = $('.page').width();
   let obj = $('.page');
@@ -88,236 +89,240 @@
     }
       
   });
+  
+  if(!theme){
+  
+    const toggleDarkSwitch = document.querySelector(
+      '.darkmode-switch input[type="checkbox"]'
+    );
     
-  const toggleDarkSwitch = document.querySelector(
-    '.darkmode-switch input[type="checkbox"]'
-  );
-  
-  function switchTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark'); //add this
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light'); //add this
+    function switchTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark'); //add this
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light'); //add this
+      }
     }
-  }
-  
-  toggleDarkSwitch.addEventListener('change', switchTheme, false);
-  
-  const currentTheme = localStorage.getItem('theme')
-    ? localStorage.getItem('theme')
-    : null;
-  
-  if (currentTheme === 'dark') {
-    toggleDarkSwitch.checked = true;
-  }
-  
-  const togglePinkSwitch = document.querySelector(
-    'input[type="radio"].switch-pink'
-  );
-  const toggleBlueSwitch = document.querySelector(
-    'input[type="radio"].switch-blue'
-  );
-  const toggleYellowSwitch = document.querySelector(
-    'input[type="radio"].switch-yellow'
-  );
-  const toggleGreenSwitch = document.querySelector(
-    'input[type="radio"].switch-green'
-  );
-  const toggleGraySwitch = document.querySelector(
-    'input[type="radio"].switch-gray'
-  );
-  
-  function switchToPinkTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.removeAttribute('data-theme-color');
-      localStorage.removeItem('theme-color'); //add this
-  
-      $('img').each(function () {
-        let imgSrc = $(this).attr('src');
-  
-        if (imgSrc.includes('_blue')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
-        } else if (imgSrc.includes('_yellow')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
-        } else if (imgSrc.includes('_green')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
-        } else if (imgSrc.includes('_gray')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
-        } else {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-        }
-  
-        if (imgSrc.includes('logo_')) {
-          let newSrc = '/images/web/' + imgSrc + '.png';
-          $(this).attr('src', newSrc);
-        }
-      });
+    
+    toggleDarkSwitch.addEventListener('change', switchTheme, false);
+    
+    const currentTheme = localStorage.getItem('theme')
+      ? localStorage.getItem('theme')
+      : null;
+    
+    if (currentTheme === 'dark') {
+      toggleDarkSwitch.checked = true;
     }
-  }
-  
-  togglePinkSwitch.addEventListener('change', switchToPinkTheme, false);
-  
-  function switchToBlueTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.setAttribute('data-theme-color', 'blue');
-      localStorage.setItem('theme-color', 'blue'); //add this
-  
-      $('img').each(function () {
-        let imgSrc = $(this).attr('src');
-  
-        if (imgSrc.includes('_blue')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
-        } else if (imgSrc.includes('_yellow')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
-        } else if (imgSrc.includes('_green')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
-        } else if (imgSrc.includes('_gray')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
-        } else {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-        }
-  
-        if (imgSrc.includes('logo_')) {
-          let newSrc = '/images/web/' + imgSrc + '_blue.png';
-          $(this).attr('src', newSrc);
-        }
-      });
+    
+    const togglePinkSwitch = document.querySelector(
+      'input[type="radio"].switch-pink'
+    );
+    const toggleBlueSwitch = document.querySelector(
+      'input[type="radio"].switch-blue'
+    );
+    const toggleYellowSwitch = document.querySelector(
+      'input[type="radio"].switch-yellow'
+    );
+    const toggleGreenSwitch = document.querySelector(
+      'input[type="radio"].switch-green'
+    );
+    const toggleGraySwitch = document.querySelector(
+      'input[type="radio"].switch-gray'
+    );
+    
+    function switchToPinkTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.removeAttribute('data-theme-color');
+        localStorage.removeItem('theme-color'); //add this
+    
+        $('img').each(function () {
+          let imgSrc = $(this).attr('src');
+    
+          if (imgSrc.includes('_blue')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
+          } else if (imgSrc.includes('_yellow')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
+          } else if (imgSrc.includes('_green')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
+          } else if (imgSrc.includes('_gray')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
+          } else {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+          }
+    
+          if (imgSrc.includes('logo_')) {
+            let newSrc = '/images/web/' + imgSrc + '.png';
+            $(this).attr('src', newSrc);
+          }
+        });
+      }
     }
-  }
-  
-  toggleBlueSwitch.addEventListener('change', switchToBlueTheme, false);
-  
-  function switchToYellowTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.setAttribute('data-theme-color', 'yellow');
-      localStorage.setItem('theme-color', 'yellow'); //add this
-  
-      $('img').each(function () {
-        let imgSrc = $(this).attr('src');
-  
-        if (imgSrc.includes('_blue')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
-        } else if (imgSrc.includes('_yellow')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
-        } else if (imgSrc.includes('_green')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
-        } else if (imgSrc.includes('_gray')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
-        } else {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-        }
-  
-        if (imgSrc.includes('logo_')) {
-          let newSrc = '/images/web/' + imgSrc + '_yellow.png';
-          $(this).attr('src', newSrc);
-        }
-      });
+    
+    togglePinkSwitch.addEventListener('change', switchToPinkTheme, false);
+    
+    function switchToBlueTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.setAttribute('data-theme-color', 'blue');
+        localStorage.setItem('theme-color', 'blue'); //add this
+    
+        $('img').each(function () {
+          let imgSrc = $(this).attr('src');
+    
+          if (imgSrc.includes('_blue')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
+          } else if (imgSrc.includes('_yellow')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
+          } else if (imgSrc.includes('_green')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
+          } else if (imgSrc.includes('_gray')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
+          } else {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+          }
+    
+          if (imgSrc.includes('logo_')) {
+            let newSrc = '/images/web/' + imgSrc + '_blue.png';
+            $(this).attr('src', newSrc);
+          }
+        });
+      }
     }
-  }
-  
-  toggleYellowSwitch.addEventListener('change', switchToYellowTheme, false);
-  
-  function switchToGreenTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.setAttribute('data-theme-color', 'green');
-      localStorage.setItem('theme-color', 'green'); //add this
-  
-      $('img').each(function () {
-        let imgSrc = $(this).attr('src');
-  
-        if (imgSrc.includes('_blue')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
-        } else if (imgSrc.includes('_yellow')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
-        } else if (imgSrc.includes('_green')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
-        } else if (imgSrc.includes('_gray')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
-        } else {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-        }
-  
-        if (imgSrc.includes('logo_')) {
-          let newSrc = '/images/web/' + imgSrc + '_green.png';
-          $(this).attr('src', newSrc);
-        }
-      });
+    
+    toggleBlueSwitch.addEventListener('change', switchToBlueTheme, false);
+    
+    function switchToYellowTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.setAttribute('data-theme-color', 'yellow');
+        localStorage.setItem('theme-color', 'yellow'); //add this
+    
+        $('img').each(function () {
+          let imgSrc = $(this).attr('src');
+    
+          if (imgSrc.includes('_blue')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
+          } else if (imgSrc.includes('_yellow')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
+          } else if (imgSrc.includes('_green')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
+          } else if (imgSrc.includes('_gray')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
+          } else {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+          }
+    
+          if (imgSrc.includes('logo_')) {
+            let newSrc = '/images/web/' + imgSrc + '_yellow.png';
+            $(this).attr('src', newSrc);
+          }
+        });
+      }
     }
-  }
-  
-  toggleGreenSwitch.addEventListener('change', switchToGreenTheme, false);
-  
-  function switchToGrayTheme(e) {
-    if (e.target.checked) {
-      document.documentElement.setAttribute('data-theme-color', 'gray');
-      localStorage.setItem('theme-color', 'gray'); //add this
-  
-      $('img').each(function () {
-        let imgSrc = $(this).attr('src');
-  
-        if (imgSrc.includes('_blue')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
-        } else if (imgSrc.includes('_yellow')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
-        } else if (imgSrc.includes('_green')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
-        } else if (imgSrc.includes('_gray')) {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
-        } else {
-          imgSrc = imgSrc.split('/');
-          imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-        }
-  
-        if (imgSrc.includes('logo_')) {
-          let newSrc = '/images/web/' + imgSrc + '_gray.png'; 
-          $(this).attr('src', newSrc);
-        }
-      });
+    
+    toggleYellowSwitch.addEventListener('change', switchToYellowTheme, false);
+    
+    function switchToGreenTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.setAttribute('data-theme-color', 'green');
+        localStorage.setItem('theme-color', 'green'); //add this
+    
+        $('img').each(function () {
+          let imgSrc = $(this).attr('src');
+    
+          if (imgSrc.includes('_blue')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
+          } else if (imgSrc.includes('_yellow')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
+          } else if (imgSrc.includes('_green')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
+          } else if (imgSrc.includes('_gray')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
+          } else {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+          }
+    
+          if (imgSrc.includes('logo_')) {
+            let newSrc = '/images/web/' + imgSrc + '_green.png';
+            $(this).attr('src', newSrc);
+          }
+        });
+      }
     }
-  }
+    
+    toggleGreenSwitch.addEventListener('change', switchToGreenTheme, false);
+    
+    function switchToGrayTheme(e) {
+      if (e.target.checked) {
+        document.documentElement.setAttribute('data-theme-color', 'gray');
+        localStorage.setItem('theme-color', 'gray'); //add this
+    
+        $('img').each(function () {
+          let imgSrc = $(this).attr('src');
+    
+          if (imgSrc.includes('_blue')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_blue.png')[0];
+          } else if (imgSrc.includes('_yellow')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_yellow.png')[0];
+          } else if (imgSrc.includes('_green')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_green.png')[0];
+          } else if (imgSrc.includes('_gray')) {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('_gray.png')[0];
+          } else {
+            imgSrc = imgSrc.split('/');
+            imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+          }
+    
+          if (imgSrc.includes('logo_')) {
+            let newSrc = '/images/web/' + imgSrc + '_gray.png'; 
+            $(this).attr('src', newSrc);
+          }
+        });
+      }
+    }
+    
+    toggleGraySwitch.addEventListener('change', switchToGrayTheme, false);
+    
+    const currentColorTheme = localStorage.getItem('theme-color')
+      ? localStorage.getItem('theme-color')
+      : togglePinkSwitch.click();
+    
+    if (currentColorTheme === 'pink') {
+      togglePinkSwitch.checked = true;
+    } else if (currentColorTheme === 'blue') {
+      toggleBlueSwitch.checked = true;
+    } else if (currentColorTheme === 'yellow') {
+      toggleYellowSwitch.checked = true;
+    } else if (currentColorTheme === 'green') {
+      toggleGreenSwitch.checked = true;
+    } else if (currentColorTheme === 'gray') {
+      toggleGraySwitch.checked = true;
+    }
   
-  toggleGraySwitch.addEventListener('change', switchToGrayTheme, false);
-  
-  const currentColorTheme = localStorage.getItem('theme-color')
-    ? localStorage.getItem('theme-color')
-    : togglePinkSwitch.click();
-  
-  if (currentColorTheme === 'pink') {
-    togglePinkSwitch.checked = true;
-  } else if (currentColorTheme === 'blue') {
-    toggleBlueSwitch.checked = true;
-  } else if (currentColorTheme === 'yellow') {
-    toggleYellowSwitch.checked = true;
-  } else if (currentColorTheme === 'green') {
-    toggleGreenSwitch.checked = true;
-  } else if (currentColorTheme === 'gray') {
-    toggleGraySwitch.checked = true;
   }
   
   $('.apply').click(function (e) {

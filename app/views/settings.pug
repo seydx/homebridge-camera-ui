@@ -272,28 +272,29 @@ block content
                                     - found = true
                                 if !found
                                   option= cam
-              .container.mbc-40
-                h3.settings-box-title=t('views.settings.views.general.themes_title')
-                ul.settings-box.w-100
-                  li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
-                    .col-8=t('views.settings.views.general.themes_darkmode')
-                    .col-4.text-right.text-color-pink
-                      label.form-switch.m-0.darkmode-switch
-                        input(type="checkbox", name="general[darkmode]")
-                        i
-                  li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
-                    .col-5=t('views.settings.views.general.themes_themes')
-                    .col-7.text-right.text-color-pink.position-relative
-                      input#switch-pink.theme-switches.switch-pink(type="radio", name="themes-group")
-                      label(for="switch-pink")
-                      input#switch-blue.theme-switches.switch-blue(type="radio", name="themes-group")
-                      label(for="switch-blue")
-                      input#switch-yellow.theme-switches.switch-yellow(type="radio", name="themes-group")
-                      label(for="switch-yellow")
-                      input#switch-green.theme-switches.switch-green(type="radio", name="themes-group")
-                      label(for="switch-green")
-                      input#switch-gray.theme-switches.switch-gray(type="radio", name="themes-group")
-                      label(for="switch-gray")
+              if !theme
+                .container.mbc-40
+                  h3.settings-box-title=t('views.settings.views.general.themes_title')
+                  ul.settings-box.w-100
+                    li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
+                      .col-8=t('views.settings.views.general.themes_darkmode')
+                      .col-4.text-right.text-color-pink
+                        label.form-switch.m-0.darkmode-switch
+                          input(type="checkbox", name="general[darkmode]")
+                          i
+                    li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
+                      .col-5=t('views.settings.views.general.themes_themes')
+                      .col-7.text-right.text-color-pink.position-relative
+                        input#switch-pink.theme-switches.switch-pink(type="radio", name="themes-group")
+                        label(for="switch-pink")
+                        input#switch-blue.theme-switches.switch-blue(type="radio", name="themes-group")
+                        label(for="switch-blue")
+                        input#switch-yellow.theme-switches.switch-yellow(type="radio", name="themes-group")
+                        label(for="switch-yellow")
+                        input#switch-green.theme-switches.switch-green(type="radio", name="themes-group")
+                        label(for="switch-green")
+                        input#switch-gray.theme-switches.switch-gray(type="radio", name="themes-group")
+                        label(for="switch-gray")
               if role === 'Master'
                 .container.mbc-40
                   h3.settings-box-title=t('views.settings.views.general.rooms_title')

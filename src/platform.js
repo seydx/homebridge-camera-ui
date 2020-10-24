@@ -15,7 +15,9 @@ const doorbellSensor = require('./accessories/doorbell.js');
 const Handler = require('./helper/handler.js');
 const Mqtt = require('./helper/mqtt.js');
 const Http = require('./helper/http.js');
-const Logger = require('./helper/logger.js');
+
+const Logger = require('../lib/logger.js');
+const StreamSessions = require('../lib/streamSessions.js');
 
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
@@ -37,7 +39,7 @@ function CameraUI (log, config, api) {
   if (!api||!config) 
     return;
 
-  Logger.init(log);
+  Logger.init(log, config.debug);
 
   this.api = api;
   this.accessories = [];
@@ -47,6 +49,8 @@ function CameraUI (log, config, api) {
   this.config.port = config.port || 8181;
   this.config.auth = config.auth || 'form';
   this.config.language = config.language || 'auto',
+  this.config.theme = config.theme || 'auto',
+  
   this.config.cameras = config.cameras || [];
   this.config.options = this.config.options || {};
   
@@ -111,6 +115,9 @@ function CameraUI (log, config, api) {
       }
       
     });
+    
+    //init stream sessions
+    this.streamSessions = new StreamSessions(this.cameraConfigs);
     
   }
   
@@ -222,7 +229,7 @@ CameraUI.prototype = {
     });
     
     //start ui after everything done
-    this.ui = new UserInterface(this.api, this.config, this.accessories);
+    this.ui = new UserInterface(this.api, this.config, this.accessories, this.streamSessions);
     await this.ui.init();
     
     if(this.config.reset && this.config.auth === 'form'){
@@ -307,7 +314,7 @@ CameraUI.prototype = {
     new doorbellSensor(accessory, cameraConfig, this);
 
     const Camera = new camera(this.config, cameraConfig, this.api, this.api.hap,
-      this.config.options.videoProcessor, this.config.options.interfaceName, accessory);
+      this.config.options.videoProcessor, this.config.options.interfaceName, accessory, this.streamSessions);
 
     accessory.configureController(Camera.controller);
 

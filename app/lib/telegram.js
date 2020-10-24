@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const { Telegraf } = require('telegraf');
 
@@ -43,8 +43,6 @@ module.exports = {
   
   send: async function(bot, telegram, content){
     
-    Logger.ui.info('Sending Telegram message to ChatID: ' + telegram.chatID);
-    
     try {
       
       if(content.message){
@@ -58,7 +56,7 @@ module.exports = {
         Logger.ui.debug('Telegram: Sending Photo ' + content.img);
         await bot.sendPhoto(telegram.chatID, {source: content.img});
       
-      } else { //content.video
+      } else if(content.video){ //content.video
       
         //await bot.sendMessage(telegram.chatID, content.txt);
         Logger.ui.debug('Telegram: Sending Video ' + content.vid);

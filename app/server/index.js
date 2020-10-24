@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../../src/helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 const app = require('./app');
 const database = require('../models/index');
@@ -13,11 +13,12 @@ const webhook = require('../lib/webhook');
 
 module.exports = class UserInterface {
   
-  constructor(api, config, accessories){
+  constructor(api, config, accessories, streamSessions){
 
     this.api = api;
     this.config = config;
     this.accessories = accessories;
+    this.streamSessions = streamSessions;
     
     //listener to close the server
     this.api.on('shutdown', () => {
@@ -40,7 +41,7 @@ module.exports = class UserInterface {
   
       //config camera streams    
       Logger.ui.debug('Configuring camera streams');
-      streams.init(this.accessories, this.config.ssl, this.config.options.videoProcessor, this.database.Settings());
+      streams.init(this.accessories, this.config.ssl, this.config.options.videoProcessor, this.database.Settings(), this.streamSessions);
       
       //config app
       Logger.ui.debug('Configuring app');
@@ -61,7 +62,7 @@ module.exports = class UserInterface {
   
       //start motion handler
       Logger.ui.debug('Configuring motion handler');
-      handler.init(this.database);
+      handler.init(this.database, this.streamSessions);
   
       //start webhook handler
       Logger.ui.debug('Configuring webhook handler');

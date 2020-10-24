@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('./logger.js');
+const Logger = require('../../lib/logger.js');
 const mqtt = require('mqtt');
 
 class Mqtt {

@@ -80,6 +80,16 @@ html
       window.location = event.target.href;
       }
       }
+      let theme = !{JSON.stringify(theme)};
+      if(theme){
+        let darkmode = theme.split('-')[0];
+        let themeColor = theme.split('-')[1];
+        themeColor = themeColor === 'pink' ? false : themeColor;
+        document.documentElement.setAttribute('data-theme', darkmode);
+        if(themeColor){
+          document.documentElement.setAttribute('data-theme-color', themeColor);
+        }
+      }
 block content
 if title && title !== 'CamViews' && title !== 'Login'
   footer#footer2.fixFoot(style="display: none")
@@ -122,7 +132,6 @@ if title && title !== 'Login'
   if title !== 'CamViews'
     script(type='text/javascript' src='/plugins/lightcase/lightcase.js' defer)
   script(type='text/javascript' src='/javascripts/utils/socket.js' defer)
-  script(type='text/javascript' src='/worker.js' defer)
   script(type='text/javascript').
     function getUsername(){
       return !{JSON.stringify(username)};
@@ -162,5 +171,8 @@ script(type='text/javascript').
   }
   function getTitle(){
     return !{JSON.stringify(title)};
+  }
+  function getTheme(){
+    return !{JSON.stringify(theme)};
   }
 block footscripts

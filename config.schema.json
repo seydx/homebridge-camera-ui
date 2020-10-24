@@ -26,13 +26,33 @@
       ],
       "required": true
     },
+    "theme": {
+      "title": "Theme",
+      "description": "UI Theme",
+      "type": "string",
+      "default": "auto",
+      "oneOf": [
+        { "title": "Auto", "enum": ["auto"] },
+        { "title": "Light Pink", "enum": ["light-pink"] },
+        { "title": "Light Blue", "enum": ["light-blue"] },
+        { "title": "Light Yellow", "enum": ["light-yellow"] },
+        { "title": "Light Green", "enum": ["light-green"] },
+        { "title": "Light Gray", "enum": ["light-gray"] },
+        { "title": "Dark Pink", "enum": ["dark-pink"] },
+        { "title": "Dark Blue", "enum": ["dark-blue"] },
+        { "title": "Dark Yellow", "enum": ["dark-yellow"] },
+        { "title": "Dark Green", "enum": ["dark-green"] },
+        { "title": "Dark Gray", "enum": ["dark-gray"] }
+      ],
+      "required": true
+    },
     "language": {
       "title": "Language",
       "type": "string",
       "description": "Standard language for the UI.",
-      "default": "AUTO",
+      "default": "Auto",
       "oneOf": [
-        { "title": "AUTO", "enum": ["auto"] },
+        { "title": "Auto", "enum": ["auto"] },
         { "title": "DE", "enum": ["de"] },
         { "title": "EN", "enum": ["en"] }
       ],
@@ -157,11 +177,6 @@
           "type": "string",
           "placeholder": "eth0",
           "description": "Selects which network interface to use for video streaming to HomeKit. If you have multiple active network interfaces in your system, you may need to set this. If not set, the first available network interface is used, and a mismatch will cause HomeKit to discard the video stream."
-        },
-        "ffmpegExecPath": {
-          "title": "FFMPEG Exec path",
-          "type": "string",
-          "description": "If you have problems executing ffmpeg, u can set here manually the exec path for ffmpeg."
         }
       }
     },
@@ -375,6 +390,7 @@
         "port",
         "auth",
         "language",
+        "theme",
         "debug",
         "reset"
       ]
@@ -490,8 +506,7 @@
       "expanded": false,
       "items": [
         "options.videoProcessor",
-        "options.interfaceName",
-        "options.ffmpegExecPath"
+        "options.interfaceName"
       ]
     },
     {

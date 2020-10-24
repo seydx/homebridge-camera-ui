@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('./logger.js');
+const Logger = require('../../lib/logger.js');
 const spawn = require('child_process').spawn;
 
 class FfmpegProcess {

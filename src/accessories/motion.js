@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('../helper/logger.js');
+const Logger = require('../../lib/logger.js');
 
 class motionService {
 

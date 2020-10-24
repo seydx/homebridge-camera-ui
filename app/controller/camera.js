@@ -3,8 +3,6 @@
 const express = require('express');
 const router = express.Router();
 
-const streams = require('../lib/streams');
-
 module.exports = (app, db_notifications, db_cameras) => {
   
   router.get('/:name', async (req, res, next) => { // eslint-disable-line no-unused-vars
@@ -16,10 +14,8 @@ module.exports = (app, db_notifications, db_cameras) => {
 
     let port = camera.socketPort || false;
     let id = title.replace(/\s+/g, '');
-    let ping = await db_cameras.pingCamera(title);
     
-    if(ping)
-      streams.start(title);
+    let ping = await db_cameras.pingCamera(title);
 
     let position = {
       size: Object.keys(res.locals.cameras).length,

@@ -3,8 +3,7 @@
 const express = require('express');
 const router = express.Router(); 
 
-const record = require('../lib/record');
-const streams = require('../lib/streams');                       
+const record = require('../lib/record');                   
 
 module.exports = (app, db_cameras) => {
 
@@ -14,11 +13,8 @@ module.exports = (app, db_cameras) => {
     
     for(const cam of Object.keys(res.locals.camview.cameras)){
       if(res.locals.camview.cameras[cam]) dyn++;
-      if(res.locals.camview.cameras[cam].active){
-        let ping = await db_cameras.pingCamera(cam);
-        if(ping)
-          streams.start(cam);
-      }
+      if(res.locals.camview.cameras[cam].active)
+        await db_cameras.pingCamera(cam);
     }
 
     dyn = dyn/2;
