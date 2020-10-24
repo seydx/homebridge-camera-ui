@@ -2,6 +2,8 @@
   'use strict';
   
   const timeout = (ms) => new Promise((res) => setTimeout(res, ms)); 
+
+  let theme = getTheme();
   
   //Toaster
   $.toastDefaults = {
@@ -182,40 +184,67 @@
     $('body').addClass('bg-color-white');
   }
   
-  //Restore theme if saved in localStorage
-  const currentTheme = localStorage.getItem('theme')
-    ? localStorage.getItem('theme')
-    : null;
-
-  if (currentTheme) {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-  }
-
-  const currentColorTheme = localStorage.getItem('theme-color')
-    ? localStorage.getItem('theme-color')
-    : null;
-
-  if (currentColorTheme) {
-    document.documentElement.setAttribute(
-      'data-theme-color',
-      currentColorTheme
-    );
-
-    $('img').each(function () {
-      let imgSrc = $(this).attr('src');
-      imgSrc = imgSrc.split('/');
-      imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
-      if (
-        imgSrc.includes('logo_') &&
-        !imgSrc.includes('_blue') &&
-        !imgSrc.includes('_yellow') &&
-        !imgSrc.includes('_green') &&
-        !imgSrc.includes('_gray')
-      ) {
-        let newSrc = '/images/web/' + imgSrc + '_' + currentColorTheme + '.png';  
-        $(this).attr('src', newSrc);
-      }
-    });
+  if(!theme){
+  
+    //Restore theme if saved in localStorage
+    const currentTheme = localStorage.getItem('theme')
+      ? localStorage.getItem('theme')
+      : null;
+  
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    }
+  
+    const currentColorTheme = localStorage.getItem('theme-color')
+      ? localStorage.getItem('theme-color')
+      : null;
+  
+    if (currentColorTheme) {
+      document.documentElement.setAttribute(
+        'data-theme-color',
+        currentColorTheme
+      );
+  
+      $('img').each(function () {
+        let imgSrc = $(this).attr('src');
+        imgSrc = imgSrc.split('/');
+        imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+        if (
+          imgSrc.includes('logo_') &&
+          !imgSrc.includes('_blue') &&
+          !imgSrc.includes('_yellow') &&
+          !imgSrc.includes('_green') &&
+          !imgSrc.includes('_gray')
+        ) {
+          let newSrc = '/images/web/' + imgSrc + '_' + currentColorTheme + '.png';  
+          $(this).attr('src', newSrc);
+        }
+      });
+    }
+  
+  } else {
+  
+    let themeColor = theme.split('-')[1];
+    themeColor = themeColor === 'pink' ? false : themeColor;
+    
+    if(themeColor){
+      $('img').each(function () {
+        let imgSrc = $(this).attr('src');
+        imgSrc = imgSrc.split('/');
+        imgSrc = imgSrc[imgSrc.length - 1].split('.png')[0];
+        if (
+          imgSrc.includes('logo_') &&
+          !imgSrc.includes('_blue') &&
+          !imgSrc.includes('_yellow') &&
+          !imgSrc.includes('_green') &&
+          !imgSrc.includes('_gray')
+        ) {
+          let newSrc = '/images/web/' + imgSrc + '_' + themeColor + '.png';  
+          $(this).attr('src', newSrc);
+        }
+      });
+    }
+  
   }
   
-})(jQuery);
+})(jQuery);    
