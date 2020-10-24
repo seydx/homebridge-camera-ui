@@ -199,7 +199,7 @@ module.exports = {
       cookie: {
         secure: config.ssl ? true : false,
         maxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000, //miliseconds,
-        originalMaxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000    
+        originalMaxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000
       }
     });   
     
@@ -381,6 +381,13 @@ module.exports = {
       ]
     }));
     
+    const theme = function (req, res, next) {
+      res.locals.theme = config.theme === 'auto' ? false : config.theme;
+      next();
+    };
+    
+    app.use(theme);
+    
     //define routes
     app.use('/', login(app, db_settings, autoSignout));
     app.use('/change', changeCr(app, db_settings, db_users, autoSignout));
@@ -408,6 +415,7 @@ module.exports = {
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
+      res.locals.theme = config.theme === 'auto' ? false : config.theme;
       
       if(err.status === 401){
         res.status(err.status);
