@@ -33,7 +33,7 @@ class Http {
           const name = decodeURIComponent(parseurl.query).split('=')[0];
           results = handler.automationHandler(parseurl.pathname, name);
           
-          Logger.debug('Received a new HTTP message ' + results + ' (' + name + ')');
+          Logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')');
           
         }
       
