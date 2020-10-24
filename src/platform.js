@@ -49,6 +49,8 @@ function CameraUI (log, config, api) {
   this.config.port = config.port || 8181;
   this.config.auth = config.auth || 'form';
   this.config.language = config.language || 'auto',
+  this.config.theme = config.theme || 'auto',
+  
   this.config.cameras = config.cameras || [];
   this.config.options = this.config.options || {};
   
