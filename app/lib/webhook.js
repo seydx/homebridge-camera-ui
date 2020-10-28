@@ -46,7 +46,7 @@ module.exports = {
         
         break;
       default:
-        Logger.ui.warn('Can not handle event (%s)', cmd);
+        Logger.ui.warn('Can not handle event (' + cmd + ')');
         return {
           status: 500,        
           error: true,
