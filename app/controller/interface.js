@@ -85,7 +85,7 @@ module.exports = (app, db_settings, db_users) => {
        
       }
       
-      Logger.ui.debug('Received a new HTTP message %s (%s)', results, target);
+      Logger.ui.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + target + ')');
       
     } else {
     
