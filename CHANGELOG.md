@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v3.1.3 - 2020-10-28
+- Fixed a bug where clearTimer (recordings) crashed homebridge
+- Better Debug
+
 ## v3.1.2 - 2020-10-24
 - New function to handle ffmpeg processes
 - It is now possible to change theme directly from config-ui
