@@ -152,7 +152,7 @@ module.exports = (db, camDb, recDb) => {
   
   async function remove(id){
     
-    Logger.ui.info('Removing recording (%s)', id);
+    Logger.ui.info('Removing recording (' + id + ')');
 
     let recPath = db.get('settings').get('recordings').get('path').value();
     
@@ -181,7 +181,7 @@ module.exports = (db, camDb, recDb) => {
         
       } catch(err) {
       
-        Logger.ui.error('An error occured during removing %s', recording.fileName);
+        Logger.ui.error('An error occured during removing ' + recording.fileName);
         Logger.ui.error(err);
       
       }
