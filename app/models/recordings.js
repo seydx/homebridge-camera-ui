@@ -245,6 +245,7 @@ module.exports = (db, camDb, recDb) => {
   
   return {
     get: get,
+    getRecording: getRecording,
     add: add,
     remove: remove,
     removeAll: removeAll
