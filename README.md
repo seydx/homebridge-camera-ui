@@ -191,9 +191,9 @@ See [CONTRIBUTING](https://github.com/SeydX/homebridge-camera-ui/CONTRIBUTING.md
 
 # Troubleshooting
 If you have any issues with the plugin then you can run this plugin in debug mode, which will provide some additional information. This might be useful for debugging issues. Just open your config ui and set debug to true!
-You can also edit your default file add following for more output
 
-``DEBUG=CameraUI*``
+
+https://github.com/SeydX/homebridge-camera-ui/wiki/Debug
 
 
 # Licens
