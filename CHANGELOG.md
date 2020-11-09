@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v3.1.4 - 2020-11-09
+- Rearranged webhook handler
+
 ## v3.1.3 - 2020-10-28
 - Fixed a bug where clearTimer (recordings) crashed homebridge
 - Better Debug
