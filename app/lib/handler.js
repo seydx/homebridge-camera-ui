@@ -85,14 +85,15 @@ module.exports = {
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
       
+      this.webHook(accessory);
+      
       let recordNotification = recActive ? streamSessions.requestSession(accessory.displayName) : false;
       
       let notification = await this.handleRecNot(accessory, type, recordNotification);
       
       if(recordNotification)
         streamSessions.closeSession(accessory.displayName);
-      
-      this.webHook(accessory);
+
       socket.io('notification', notification);
       socket.storeNots(notification);
       this.webPush(notification, accessory);
