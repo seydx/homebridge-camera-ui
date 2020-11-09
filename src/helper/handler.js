@@ -48,7 +48,8 @@ class Handler {
         active = path[1] != 'reset';  
       }
       
-      switch (path[0]) {
+      // switch over last element in path array
+      switch (path[path.length-1]) {
         case 'motion':
           Logger.debug('Motion event triggered.');
           return this.motionHandler(accessory, active);
