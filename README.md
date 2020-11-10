@@ -146,7 +146,7 @@ This plugin has been verified to work with the following apps/systems:
 - macOS Catalina 10.15
 - Apple Home
 - All 3rd party apps like Elgato Eve etc
-- Homebridge v1.2.3
+- Homebridge v1.1.6
 
 ### Browser
 
