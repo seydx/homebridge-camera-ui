@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v3.1.5 - 2020-12-01
+- Added ping support for local cameras
+
 ## v3.1.4 - 2020-11-09
 - Rearranged webhook handler
 
