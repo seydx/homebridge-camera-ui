@@ -5,6 +5,9 @@ const tcpp = require('tcp-ping');
 module.exports = {
 
   ping: function(camera){
+  
+    if(camera.source.split('-i ')[1].startsWith('/'))
+      return true;
     
     let addresse = this.getHost(camera);
     
