@@ -169,7 +169,7 @@ See [Tested Cameras](https://sunoo.github.io/homebridge-camera-ffmpeg/configs/) 
 
 # FAQ
 
-Please check our [FAQ](https://github.com/SeydX/homebridge-camera-ui/FAQ.md) before you open an issue.
+Please check our [FAQ](https://github.com/SeydX/homebridge-camera-ui/wiki/FAQ) before you open an issue.
 
 
 # Contributing
