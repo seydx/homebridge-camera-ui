@@ -43,26 +43,26 @@ const subscribe = require('../controller/subscribe');
 
 var app, sessionMiddleware;
 
-module.exports = {
+module.exports = { 
 
   init: function(config, accessories, database, configPath){
 
     const auth_ = require('./middlewares/auth')(config.auth, database.Users());
     const redirect_ = require('./middlewares/redirect')(accessories);
-
+    
     let port = config.port;
     let debugMode = config.debug;
     let lang = config.language === 'auto' ? false : [config.language];
-
+    
     let db_cameras = database.Cameras();
     let db_notifications = database.Notifications();
     let db_recordings = database.Recordings();
     let db_settings = database.Settings();
-    let db_users = database.Users();
-
+    let db_users = database.Users();     
+    
     let autoSignout = {};
-    let profile = db_settings.getProfile();
-
+    let profile = db_settings.getProfile();    
+    
     //i18n
     i18next
       .use(i18nextBackend)
@@ -77,16 +77,16 @@ module.exports = {
           order: ['header', 'navigator'],
           caches: ['cookie']
         },
-        whitelist: lang,
+        whitelist: lang, 
         fallbackLng: 'en',
         preload: ['en', 'de', 'nl']
       });
-
+    
     //Passport
     passport.use(new LocalStrategy({
       usernameField: 'username',
       passwordField: 'password'
-    },
+    }, 
     async function (username, password, cb) {
       let user = db_users.getUser(username);
       if(!user)
@@ -111,31 +111,31 @@ module.exports = {
       }
     }
     ));
-
+    
     // tell passport how to serialize the user
     passport.serializeUser((user, done) => {
       done(null, user.id);
     });
-
+    
     passport.deserializeUser((id, done) => {
       let user = db_users.getUser(false, false, id);
       done(null, user || false);
     });
-
+    
     //Express Server
     app = express();
     app.set('port', this.normalizePort(port));
-
+    
     //Debug
     if(debugMode)
       app.use(logger('dev'));
 
     //init i18n
     app.use(i18nextMiddleware.handle(i18next));
-
+    
     //compress
     app.use(compression());
-
+    
     // set some headers to help secure the app
     app.use(helmet());
     app.use(
@@ -151,12 +151,12 @@ module.exports = {
         },
       })
     );
-
+    
     // view engine setup
     app.set('views', path.join(__dirname, '..', 'views'));
     app.set('view engine', 'pug');
     app.set('view options', { layout: false });
-
+    
     app.use(favicon(path.join(__dirname, '..', 'public', 'images/favicons', 'favicon.ico')));
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
@@ -166,10 +166,10 @@ module.exports = {
     app.use(flash());
     app.use(device.capture());
     device.enableDeviceHelpers(app);
-
+    
     //multer
     const storage = multer.diskStorage({
-      destination: function(req, file, cb) {
+      destination: function(req, file, cb) { 
         let dest = configPath + '/db/users/';
         cb(null, dest);
       },
@@ -178,10 +178,10 @@ module.exports = {
       }
     });
     const upload = multer({ storage: storage });
-
+    
     if(config.ssl)
       app.set('trust proxy', 1);
-
+     
     sessionMiddleware = session({
       genid: (req) => {
         return uuidv4();
@@ -201,29 +201,29 @@ module.exports = {
         maxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000, //miliseconds,
         originalMaxAge: isNaN(parseInt(profile.logoutTimer)) ? 2147483648 * 1000 : profile.logoutTimer * 60 * 60 * 1000
       }
-    });
-
+    });   
+    
     app.use(sessionMiddleware);
     app.use(passport.initialize());
     app.use(passport.session());
-
+    
     app.use(redirect_.session.unless({
       path: [
-        {
+        { 
           url: '/logout',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/files',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/subscribe',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/interface',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         }
       ],
       ext: [
@@ -232,28 +232,28 @@ module.exports = {
         'mp4'
       ]
     }));
-
+    
     app.use(auth_.ensureAuthenticated.unless({
       path: [
-        {
+        { 
           url: '/camera',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/cameras',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/notifications',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/recordings',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/interface',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         }
       ],
       ext: [
@@ -262,44 +262,44 @@ module.exports = {
         'mp4'
       ]
     }));
-
+    
     app.use(auth_.ensureAdmin.unless({
       path: [
-        {
+        { 
           url: '/',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/change',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/logout',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/dashboard',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/camviews',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/settings',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/files',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/subscribe',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/interface',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         }
       ],
       ext: [
@@ -308,11 +308,11 @@ module.exports = {
         'mp4'
       ]
     }));
-
+    
     const locals = function (req, res, next) {
-
+    
       let auth = config.auth === 'form';
-
+    
       Logger.ui.debug({
         userID: req.session.userID ? req.session.userID : false,
         message: 'locals',
@@ -320,58 +320,58 @@ module.exports = {
         authenticated: req.isAuthenticated(),
         noAuth: !auth || false
       });
-
+  
       res.locals.noAuth = req.session.noAuth;
       res.locals.username = req.session.username;
       res.locals.role = req.session.role;
       res.locals.photo = req.session.photo;
-
+      
       res.locals.dashboard = db_settings.getDashboard();
       res.locals.camview = db_settings.getCamviews();
       res.locals.cameras = db_cameras.getCameras();
       res.locals.notifications = db_notifications.getNots();
-      res.locals.not_size = res.locals.notifications.length;
+      res.locals.not_size = res.locals.notifications.length; 
       res.locals.lastNotifications = db_notifications.getLastNotifications();
       res.locals.settings = db_settings.get();
       res.locals.keys = db_settings.getWebpush();
       res.locals.users = db_users.get();
-
+      
       res.locals.camNames = accessories.map(accessory => accessory.displayName);
-
+      
       res.locals.ssl = config.ssl ? true : false;
       res.locals.flash = req.flash();
-
+      
       next();
-
+      
     };
-
+    
     locals.unless = unless;
-
+    
     app.use(locals.unless({
       path: [
-        {
+        { 
           url: '/',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/change',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/logout',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/files',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/subscribe',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         },
-        {
+        { 
           url: '/interface',
-          methods: ['GET', 'POST']
+          methods: ['GET', 'POST'] 
         }
       ],
       ext: [
@@ -380,14 +380,14 @@ module.exports = {
         'mp4'
       ]
     }));
-
+    
     const theme = function (req, res, next) {
       res.locals.theme = config.theme === 'auto' ? false : config.theme;
       next();
     };
-
+    
     app.use(theme);
-
+    
     //define routes
     app.use('/', login(app, db_settings, autoSignout));
     app.use('/change', changeCr(app, db_settings, db_users, autoSignout));
@@ -402,21 +402,21 @@ module.exports = {
     app.use('/interface', interFace(app, db_settings, db_users));
     app.use('/files', files(app, db_settings, configPath));
     app.use('/subscribe', subscribe(app, db_settings));
-
+    
     app.use((req, res, next) => {
       next(createError(404));
-    });
-
+    }); 
+    
     // error handler
     app.use(function(err, req, res, next) {
-
-      Logger.ui.error(err.message);
-
+    
+      Logger.ui.error(err.message); 
+      
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
       res.locals.theme = config.theme === 'auto' ? false : config.theme;
-
+      
       if(err.status === 401){
         res.status(err.status);
         res.render('unauthorised', {status: err.status, message: res.locals.t('views.error.unauthorized')});
@@ -430,37 +430,37 @@ module.exports = {
         res.status(err.status || 500);
         res.render('error', {status: err.status, message: res.locals.message});
       }
-
+    
     });
-
+    
     return;
-
+    
   },
-
+  
   normalizePort: function(val) {
-
+    
     let port = parseInt(val, 10);
 
     if (isNaN(port))
       return val;
-
+      
     if (port >= 0)
       return port;
 
     return false;
-
+    
   },
-
+  
   get: function(){
-
+  
     return app;
-
+  
   },
-
+  
   appSession: function(){
-
-    return sessionMiddleware;
-
+  
+    return sessionMiddleware;  
+    
   }
-
+  
 };
