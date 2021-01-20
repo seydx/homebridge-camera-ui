@@ -19,7 +19,7 @@ CameraUI is a homebridge user interface to control your cameras. It supports alm
 - Config UI X Support
 - and much mure...
 
-**Supported Languages:** DE | EN
+**Supported Languages:** DE | EN | NL
 
 ## Status
 
