@@ -54,7 +54,8 @@
       "oneOf": [
         { "title": "Auto", "enum": ["auto"] },
         { "title": "DE", "enum": ["de"] },
-        { "title": "EN", "enum": ["en"] }
+        { "title": "EN", "enum": ["en"] },
+        { "title": "NL", "enum": ["nl"] }
       ],
       "required": true
     },
