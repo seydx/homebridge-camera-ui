@@ -73,7 +73,7 @@
     "session-file-store": "^1.5.0",
     "socket.io": "^2.3.0",
     "spdy": "4.0.2",
-    "systeminformation": "^4.27.8",
+    "systeminformation": "^5.0.9",
     "telegraf": "^3.38.0",
     "tcp-ping": "^0.1.1",
     "uuid": "^8.3.1",
