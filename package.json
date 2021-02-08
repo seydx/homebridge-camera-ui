@@ -74,7 +74,7 @@
     "socket.io": "^2.3.0",
     "spdy": "4.0.2",
     "systeminformation": "^4.27.8",
-    "telegraf": "^3.38.0",
+    "telegraf": "^4.0.3",
     "tcp-ping": "^0.1.1",
     "uuid": "^8.3.1",
     "web-push": "^3.4.4"
