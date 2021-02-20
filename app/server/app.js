@@ -79,7 +79,7 @@ module.exports = {
         },
         whitelist: lang, 
         fallbackLng: 'en',
-        preload: ['en', 'de']
+        preload: ['en', 'de', 'nl']
       });
     
     //Passport

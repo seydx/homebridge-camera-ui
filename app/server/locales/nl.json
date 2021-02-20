@@ -1,0 +1,277 @@
+{
+  "views": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welkom",
+      "hello": "Hallo",
+      "undertitle": "Onderstaand kunt u uw favoriete streams bekijken",
+      "offline": "offline!"
+    },
+    "cameras": {
+      "title": "Camera's",
+      "notification_title": "Laatste notificatie",
+      "notifications_title": "Laatste notificaties",
+      "notification_info": "Bewegingsdetectie aan",
+      "notification_nodata": "Geen data",
+      "offline": "offline!"
+    },
+    "camera": {
+      "notification_title": "Laatste notificatie",
+      "notifications_title": "Latest Notifications",
+      "notification_info": "Laatste notificaties",
+      "notification_nodata": "Geen data",
+      "previous_camera": "Vorige camera",
+      "next_camera": "Volgende camera",
+      "offline": "offline!"
+    },
+    "recordings": {
+      "title": "Opnames",
+      "room": "Kamer",
+      "info": "Dit bestand is opgenomen op",
+      "btn_removeall": "Verwijder alle",
+      "no_recordings": "Geen opnames",
+      "download": "Download",
+      "error": "Er is een fout opgetreden!",
+      "rec_removed": "Opname @ verwijderd!",
+      "all_removed": "Alle opnames verwijderd!"
+    },
+    "notifications": {
+      "title": "Notificaties",
+      "movement": "Beweging",
+      "btn_removeall": "Verwijder alle",
+      "no_notifications": "Geen notificaties",
+      "img_notification": "Notificatie afbeelding",
+      "error": "r is een fout opgetreden!",
+      "not_removed": "Notificatie @ verwijderd!",
+      "all_removed": "Alle notificaties verwijderd!"
+    },
+    "settings": {
+      "title": "Instellingen",
+      "apply": "Toepassen",
+      "cancel": "Annuleren",
+      "reset": "Herstel",
+      "reset_confirm": "Bevestig herstel",
+      "reset_info": "Wanneer u op Herstel klikt zullen alle opgeslagen gegevens permanent verwijderd worden! Weet u het zeker?",
+      "reset_btn_reset": "Herstel",
+      "reset_btn_close": "Sluit",
+      "select_never": "Nooit",
+      "subnavigation": {
+        "profile": "Profiel",
+        "general": "Algemeen",
+        "dashboard": "Dashboard",
+        "cameras": "Camera's",
+        "recordings": "Opnames",
+        "notifications": "Notificaties",
+        "camviews": "CamViews",
+        "webhook": "Webhook"
+      },
+      "popup": {
+        "btn_close": "Sluit"
+      },
+      "views": {
+        "profile": {
+          "account_title": "Account",
+          "account_undertitle": "Algemene informatie",
+          "account_name": "Naam",
+          "account_signout": "Log uit na (uur)",
+          "password_title": "Wachtwoord",
+          "password_undertitle": "Wijzig uw wachtwoord",
+          "password_old": "Oud wachtwoord",
+          "password_new": "Nieuw wachtwoord",
+          "password_confirm": "Bevestig nieuw wachtwoord",
+          "user_title": "Gebruiker",
+          "user_undertitle": "Overzicht geregistreerde gebruikers",
+          "user_new": "Nieuwe gebruiker",
+          "user_new_name": "Naam",
+          "user_new_username": "Gebruikersnaam",
+          "user_new_password": "Wachtwoord",
+          "user_new_role": "Rol",
+          "user_new_add": "Nieuwe gebruiker toevoegen",
+          "user_role_admin": "Administrator",
+          "user_role_user": "Gebruiker",
+          "invalid_username": "Gebruikersnaam ongeldig!"
+        },
+        "general": {
+          "title": "Algemeen",
+          "athome": "Thuis",
+          "athome_info": "Indien ingeschakeld, zullen alle inkomende notificaties en opnames uitgeschakeld worden voor NIET uitgesloten camera's!",
+          "exclude": "Uitsluiten",
+          "exclude_info": "Uitgesloten camera's worden niet beïnvloed door 'Thuis'. Deze camera's blijven notificaties versturen en opnames maken.",
+          "themes_title": "Thema",
+          "themes_darkmode": "Donkere modus",
+          "themes_themes": "Thema's",
+          "rooms_title": "Kamers",
+          "rooms_name": "Naam van kamer",
+          "rooms_name_standard": "Standaard",
+          "nothing_selected": "Niets geselecteerd"
+        },
+        "dashboard": {
+          "title": "Dashboard",
+          "title_cameras": "Camera's",
+          "timer": "Afbeelding ververstijd (seconden)",
+          "timer_info": "Tijd in seconden om een nieuwe Snapshot te maken van een camera (als livestream uitgeschakeld is)",
+          "favourite": "Favoriet",
+          "favourite_info": "Wanneer ingeschakeld zal deze camera worden weergegeven in het dashboard.",
+          "livestream": "Livestream",
+          "livestream_info": "Indien ingeschakeld zal deze camera een livestream laten zien. Indien uitgeschakeld, zal er een Snapshot worden weergegeven, gegenereerd na een specifieke ververstijd (zie Afbeelding ververstijd)."
+        },
+        "cameras": {
+          "title": "Camera's",
+          "info": "Camera informatie",
+          "room": "Selecteer kamer",
+          "video": "Video resolutie",
+          "audio": "Audio inschakelen"
+        },
+        "recordings": {
+          "title": "Opnames",
+          "active": "Actief",
+          "active_info": "Indien ingeschakeld zullen opnames ingeschakeld worden voor alle camera's. Opnames zullen gemaakt worden op basis van beweging.",
+          "type": "Opname type",
+          "type_info": "Kies tussen Snapshot of Video. Bij Snapshot worden opnames opgeslagen als afbeelding met het JPEG-bestandstype. Bij Video worden opnames opgeslagen als video met het MP4-bestandstype.",
+          "type_snapshot": "Snapshot",
+          "type_video": "Video",
+          "timer": "Opnametimer (seconden)",
+          "timer_info": "Timer in seconden voor video opnames (indien opname type video is).",
+          "store": "Opslag pad",
+          "store_info": "Pad om opgenomen bestanden op te slaan",
+          "remove": "Verwijder na (dagen)",
+          "remove_info": "Timer in dagen om automatisch opgenomen bestanden te verwijderen."
+        },
+        "notifications": {
+          "title": "Notificaties",
+          "remove": "Verwijder na (uur)",
+          "remove_info": "Timer in uren om automatisch notificaties te verwijderen uit de cache en interface.",
+          "remove_banner": "Verwijder banner na (seconden)",
+          "remove_banner_info": "Timer in seconden om inkomende notificatie banners te sluiten."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "active": "Actief",
+          "active_info": "Schakelt het versturen van Telegram-notificaties in bij een bewegingsmelding.",
+          "token": "Token",
+          "token_info": "De token gegeven door @BotFather bij het maken van de Telegram-bot.",
+          "chatid": "Chat ID",
+          "chatid_info": "Het chat ID gegeven door de bot nadat er '/start' naartoe verstuurd is.",
+          "motion_text": "Tekst bij beweging",
+          "motion_text_info": "Aangepate tekst in Telegram voor bewegingsmeldingen. (@ zal vervangen worden door de cameranaam).",
+          "type_snapshot": "Snapshot",
+          "type_video": "Video",
+          "type_text": "Tekst",
+          "type_info": "U kunt kiezen tussen verschillende opties voor Telegram notificaties. Video en Snapshot zal alleen werken als opnamen zijn geactiveerd!"
+        },
+        "camviews": {
+          "title": "CamViews",
+          "title_cameras": "Camera's",
+          "timer": "Afbeelding ververs timer (seconden)",
+          "timer_info": "Timer in seconden om een nieuwe Snapshot te genereren voor een camera (indien livestream is uitgeschakeld)",
+          "favourite": "Favoriet",
+          "favourite_info": "Indien ingeschakeld, zal de camera weergegeven worden in het dashboard.",
+          "livestream": "Livestream",
+          "livestream_info": "Indien ingeschakeld, zal de camera een Livestream tonen. Indien uitgeschakeld, zullen er Snapshots gegenereerd worden op basis van de ingestelde timer (zie Afbeelding ververs timer)."
+        },
+        "webhook": {
+          "title": "Webhook",
+          "title_endpoint": "Endpoint",
+          "title_endpoints": "Endpoints",
+          "placeholder": "http://trigger.de/test?trigger=true",
+          "active": "Actief",
+          "active_info": "Indien ingeschakeld, zal de webhook aangeroepen worden tijdens de detectie van beweging.",
+          "status": "Status",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "endpoints_athome": "Thuis",
+          "on": "Aan",
+          "on_info": "Trigger de Webhook Endpoint tijdens bewegingsdetectie.",
+          "off": "Uit",
+          "trigger": "Trigger"
+        }
+      }
+    },
+    "camviews": {
+      "title": "CamViews",
+      "btn_fullscreen": "Volledig scherm",
+      "btn_close": "Sluit",
+      "btn_logout": "Uitloggen",
+      "btn_back": "Terug",
+      "btn_positions": "Posities opslaan",
+      "btn_positions_saved": "Opgeslagen!",
+      "lastnotification": "Laatste beweging",
+      "nodata": "Geen data",
+      "offline": "offline!"
+    },
+    "login": {
+      "title": "Inloggen",
+      "welcome_desktop": "Welkom bij",
+      "welcome_mobile": "Welkom",
+      "undertitle_desktop": "Een Homebridge gebruikersinterface voor besturing van",
+      "undertitle2_desktop": "uw camera's",
+      "undertitle_mobile": "uw streams voorbereiden",
+      "username": "Gebruikersnaam",
+      "password": "Wachtwoord",
+      "forgotpw": "Wachtwoord vergeten?",
+      "forgotpw_info": "Indien u uw wachtwoord bent vergeten, kunt u het administrator-account resetten door 'reset' op true te zetten in uw configuratiebestand.",
+      "signin": "Inloggen",
+      "loading": "Laden",
+      "go": "Ga",
+      "anonym": "Anoniem",
+      "guest": "Gast",
+      "incorrect_cr": "Incorrecte gebruikersnaam/wachtwoord!"
+    },
+    "change": {
+      "welcome": "Welkom",
+      "undertitle": "Wijzig uw inloggegevens om door te gaan",
+      "username": "Gebruikersnaam",
+      "username_new": "Nieuwe gebruikersnaam",
+      "password": "Wachtwoord",
+      "password_new": "Nieuw wachtwoord",
+      "save_signin": "Opslaan & inloggen",
+      "loading": "Laden",
+      "same_username": "Gebruikersnaam en Nieuwe gebruikersnaam mogen niet hetzelfde zijn!",
+      "same_pw": "Wachtwoord en Nieuw wachtwoord mogen niet hetzelfde zijn!",
+      "wrong_pw": "Verkeerd wachtwoord!",
+      "empty": "Vul alle lege velden in!",
+      "incorrect_cr": "Incorrecte gebruikersnaam/wachtwoord!"
+    },
+    "logout": {
+      "title": "Tot ziens",
+      "undertitle": "u wordt uitgelogd"
+    },
+    "error": {
+      "goback": "Ga terug",
+      "restricted": "Beperkt!",
+      "stop": "Stop!",
+      "unauthorized": "Geen toegang!",
+      "login": "Login",
+      "dashboard": "Dashboard",
+      "ooops": "Oeps!",
+      "notfound": "Niets gevonden!"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "cameras": "Camera's",
+    "recordings": "Opnames",
+    "notifications": "Notificaties",
+    "settings": "Instellingen",
+    "camviews": "CamViews",
+    "logout": "Uitloggen"
+  },
+  "breadcrumb": {
+    "all": "Alle",
+    "allnotifications": "Alle notificaties",
+    "allrecordings": "All opnames",
+    "allcameras": "Alle camera's",
+    "filter": "Filter",
+    "filter_standard": "Standaard"
+  },
+  "banner": {
+    "title": "Notificaties",
+    "camera_title": "Camera",
+    "motion_info": "Nieuwe beweging gedetecteerd",
+    "doorbell_info": "Deurbel afgegaan"
+  },
+  "toast": {
+    "not_info": "U heeft @ ongelezen notificaties",
+    "not_info_x": "U heeft @ ongelezen notificaties"
+  }
+}
