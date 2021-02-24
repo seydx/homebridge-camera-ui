@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.0 - 2020-02-24
+- Added new language: Dutch
+- Updated dependencies
 
 ## v3.1.5 - 2020-12-01
 - Added ping support for local cameras
