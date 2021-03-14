@@ -1,9 +1,9 @@
 'use strict';
 
 const Logger = require('../../lib/logger.js');
+const url = require('url');
 
 const http = require('http');
-const url = require('url');
 
 class Http {
 
@@ -40,7 +40,7 @@ class Http {
       }
       
       response.writeHead(results.error ? 500 : 200);
-      response.write(results.message);
+      response.write(JSON.stringify(results));
       response.end();
     
     });

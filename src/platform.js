@@ -22,13 +22,11 @@ const StreamSessions = require('../lib/streamSessions.js');
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
 
-var Accessory, Service, Characteristic, UUIDGen;
+var Accessory, UUIDGen;
 
 module.exports = function (homebridge) {
 
   Accessory = homebridge.platformAccessory;
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
   
   return CameraUI;
@@ -92,15 +90,26 @@ function CameraUI (log, config, api) {
       }
       
       if (!cameraConfig.videoConfig) {
-        Logger.warn('The videoConfig section is missing from the config. This camera will be skipped.', cameraConfig.name);
-        error = true;
-      } else if (!cameraConfig.videoConfig.source) {
-        Logger.warn('There is no source configured for this camera. This camera will be skipped.', cameraConfig.name);
+        Logger('The videoConfig section is missing from the config. This camera will be skipped.', cameraConfig.name);
         error = true;
       } else {
-        const sourceArgs = cameraConfig.videoConfig.source.split(/\s+/);
-        if (!sourceArgs.includes('-i')) {
-          Logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', cameraConfig.name);
+        if (!cameraConfig.videoConfig.source) {
+          Logger.warn('There is no source configured for this camera. This camera will be skipped.', cameraConfig.name);
+          error = true;
+        } else {
+          const sourceArgs = cameraConfig.videoConfig.source.split(/\s+/);
+          if (!sourceArgs.includes('-i')) {
+            Logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', cameraConfig.name);
+          }
+        }
+        if (cameraConfig.videoConfig.stillImageSource) {
+          const stillArgs = cameraConfig.videoConfig.stillImageSource.split(/\s+/);
+          if (!stillArgs.includes('-i')) {
+            Logger.warn('The stillImageSource for this camera is missing "-i", it is likely misconfigured.', cameraConfig.name);
+          }
+        }
+        if (cameraConfig.videoConfig.vcodec === 'copy' && !!cameraConfig.videoConfig.videoFilter) {
+          Logger.warn('A videoFilter is defined, but the copy vcodec is being used. This will be ignored.', cameraConfig.name);
         }
       }
 
@@ -177,10 +186,7 @@ CameraUI.prototype = {
       this.config.ssl = false;
     }
 
-    for (const entry of this.cameraConfigs.entries()) {
-    
-      let uuid = entry[0];
-      let cameraConfig = entry[1];
+    for (const [uuid, cameraConfig] of this.cameraConfigs) {
     
       if (cameraConfig.unbridge) {
       
@@ -314,7 +320,7 @@ CameraUI.prototype = {
     new doorbellSensor(accessory, cameraConfig, this);
 
     const Camera = new camera(this.config, cameraConfig, this.api, this.api.hap,
-      this.config.options.videoProcessor, this.config.options.interfaceName, accessory, this.streamSessions);
+      this.config.options.videoProcessor, accessory, this.streamSessions);
 
     accessory.configureController(Camera.controller);
 

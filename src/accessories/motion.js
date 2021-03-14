@@ -61,7 +61,7 @@ class motionService {
         .on('set', (state, callback) => {
           Logger.info('Motion Switch ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
           this.platform.setHandler('motion', accessory, state, 1);
-          callback(null, state);
+          callback();
         });
     
     } else {

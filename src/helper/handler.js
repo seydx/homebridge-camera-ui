@@ -48,23 +48,27 @@ class Handler {
         active = path[1] != 'reset';  
       }
       
+      let data;
+      
       // switch over last element in path array
       switch (path[path.length-1]) {
         case 'motion':
           Logger.debug('Motion event triggered.');
-          return this.motionHandler(accessory, active);
+          data = this.motionHandler(accessory, active);
           break;
         case 'doorbell':
           Logger.debug('Doorbell event triggered.');
-          return this.doorbellHandler(accessory, active);
+          data = this.doorbellHandler(accessory, active);
           break;
         default:
           Logger.debug('Can not handle event ' + path[0]);
-          return {
+          data = {
             error: true,
             message: 'First directory level must be "motion" or "doorbell", got "' + path[0] + '".'
           };
       }
+      
+      return data;
       
     } else {
     
@@ -107,7 +111,11 @@ class Handler {
         if (motionTrigger)
           motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
         
-        let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
+        if (cameraConfig.motionDoorbell) {
+          this.doorbellHandler(accessory, true);
+        }
+        
+        let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 1) : 1;
         
         if (timeoutConfig < minimumTimeout)
           timeoutConfig = minimumTimeout;
@@ -117,7 +125,7 @@ class Handler {
           const timer = setTimeout(() => {
             
             Logger.info('Motion handler timeout.', accessory.displayName);
-            
+            this.motionTimers.delete(accessory.UUID);
             motionSensor.updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
             
             if (motionTrigger)
@@ -131,7 +139,8 @@ class Handler {
         
         return {
           error: false,
-          message: 'Motion switched on.'
+          message: 'Motion switched on.',
+          cooldownActive: !!timeout
         };
         
       } else {
@@ -140,6 +149,9 @@ class Handler {
         
         if (motionTrigger)
           motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
+
+        if (cameraConfig.motionDoorbell)
+          this.doorbellHandler(accessory, false);
 
         return {
           error: false,
@@ -196,7 +208,7 @@ class Handler {
             const timer = setTimeout(() => {
            
               Logger.debug('Doorbell handler timeout.', accessory.displayName);
-            
+              this.doorbellTimers.delete(accessory.UUID);
               doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
           
             }, timeoutConfig * 1000);

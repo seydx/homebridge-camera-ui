@@ -54,7 +54,7 @@ class doorbellService {
         .on('set', (state, callback) => {
           Logger.info('Doorbell ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
           this.platform.setHandler('doorbell', accessory, state, 1);
-          callback(null, state);
+          callback();
         });
       
     } else {
