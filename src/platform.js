@@ -1,7 +1,5 @@
 'use strict';
 
-const networkInterfaceDefault = require('systeminformation').networkInterfaceDefault; 
-const os = require('os');
 const fs = require('fs-extra');
 const { v4: uuidv4 } = require('uuid');
 
@@ -127,41 +125,6 @@ function CameraUI (log, config, api) {
     
     //init stream sessions
     this.streamSessions = new StreamSessions(this.cameraConfigs);
-    
-  }
-  
-  if(!this.config.options.interfaceName) {
-  
-    Logger.debug('Missing interface name in config.json - Looking for interface names..');
-  
-    const interfaces = os.networkInterfaces();
-    const publicNics = [];
-    
-    for (const entry of Object.entries(interfaces)) {
-    
-      let nic = entry[0];
-      let details = entry[1];
-    
-      const externalInfo = details.find((info) => {
-        return !info.internal;
-      });
-      
-      if (externalInfo) {
-        publicNics.push(nic);
-      }
-      
-    }
-    
-    if (publicNics.length > 1) {
-    
-      networkInterfaceDefault()
-        .then((defaultInterfaceName) => {
-          Logger.info('Multiple network interfaces detected ("' + publicNics.join('", "') + '"). ' +
-            'If you encounter issues with streaming video you may need to set interfaceName. ' +
-            'If not set, "' + defaultInterfaceName + '" will be used.');
-        });  
-                  
-    }
     
   }
   
