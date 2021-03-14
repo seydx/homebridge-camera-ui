@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.2.1 - 2021-03-14
+- Bugfixes & Improvements with HB 1.3
+- Bump dependencies
+
 ## v3.2.0 - 2020-02-24
 - Added new language: Dutch
 - Updated dependencies
