@@ -154,9 +154,12 @@ CameraUI.prototype = {
       if (cameraConfig.unbridge) {
       
         const accessory = new Accessory(cameraConfig.name, uuid);
+        accessory.context.videoConfig = cameraConfig.videoConfig;
+        
         Logger.info('Configuring unbridged accessory...', accessory.displayName);
         this.setupAccessory(accessory, cameraConfig);
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+        
         this.accessories.push(accessory);
         
       } else {
@@ -185,9 +188,12 @@ CameraUI.prototype = {
       const cameraConfig = this.cameraConfigs.get(accessory.UUID);
       
       try {
-      
-        if (!cameraConfig || cameraConfig.unbridge)
+          
+        if(!cameraConfig){
           this.removeAccessory(accessory);
+        } else if(cameraConfig.unbridge){
+          this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        }  
     
       } catch(err) {
      
