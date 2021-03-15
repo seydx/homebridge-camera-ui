@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.2.2 - 2021-03-15
+- Fixed a bug where unbridged cameras was not available for the UI
+- UI camera ping improvements
+
 ## v3.2.1 - 2021-03-14
 - Bugfixes & Improvements with HB 1.3
 - Bump dependencies
