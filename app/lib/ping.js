@@ -17,7 +17,7 @@ module.exports = {
     let host = addresse.host;
     let port = addresse.port;
     
-    Logger.debug('Pinging ' + protocol + host + (port ? ':' + port : ''));
+    Logger.ui.debug('Pinging ' + protocol + host + (port ? ':' + port : ''));
     
     let res = await pingIt.promise.probe(host, {
       timeout: 10,

@@ -22,7 +22,10 @@ module.exports = {
         startedStreams[accessory.displayName] = {};
          
         let url = accessory.context.videoConfig.source;
-        url = url ? url.split(' ') : false;
+        
+        url = url.split(' ').find(sub => sub === '-stimeout')
+          ? url.split(' ')
+          : url.replace('-i', '-stimeout 10000000 -i').split(' ')
         
         let audio = cameras[accessory.displayName].audio;
         let videoSize = cameras[accessory.displayName].resolutions;
