@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.2.3 - 2021-03-15
+- Added "-stimeout" 10s to stream if not defined to avoid hanging ffmpeg processes
+- Fixed UI Debug
+
 ## v3.2.2 - 2021-03-15
 - Fixed a bug where unbridged cameras was not available for the UI
 - UI camera ping improvements
