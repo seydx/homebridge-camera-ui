@@ -11,7 +11,7 @@
       "default": "CameraUI"
     },
     "port": {
-      "title": "CameraUI Port",
+      "title": "User Interface Port",
       "type": "integer",
       "description": "User Interface port"
     },
@@ -380,21 +380,12 @@
     }
   },
   "layout": [
-    {
-      "type": "section",
-      "title": "User Interface",
-      "expandable": true,
-      "expanded": false,
-      "orderable": false,
-      "items": [
-        "port",
-        "auth",
-        "language",
-        "theme",
-        "debug",
-        "reset"
-      ]
-    },
+    "port",
+    "auth",
+    "language",
+    "theme",
+    "debug",
+    "reset",
     {
       "type": "section",
       "title": "Cameras",
