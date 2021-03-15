@@ -1,32 +1,30 @@
 'use strict';
 
-const tcpp = require('tcp-ping');
+const Logger = require('../../lib/logger.js');
+
+const pingIt = require('ping');
 
 module.exports = {
 
-  ping: function(camera){
+  ping: async function(camera){
   
     if(camera.source.split('-i ')[1].startsWith('/'))
       return true;
     
     let addresse = this.getHost(camera);
     
+    let protocol = addresse.protocol;
     let host = addresse.host;
     let port = addresse.port;
     
-    return new Promise((resolve, reject) => {
-    
-      tcpp.ping({address: host, port: port, timeout: 250, attempts: 2}, (err, data) => {
-        
-        if(err) reject(err);
-         
-        let available = data.min !== undefined;
-         
-        resolve(available);
-      
-      });
-     
+    let res = await pingIt.promise.probe(host, {
+      timeout: 10,
+      extra: ['-i', '2'],
     });
+    
+    let available = res && res.alive;
+    
+    return available;
     
   },
   
@@ -49,6 +47,7 @@ module.exports = {
     }
     
     return {
+      protocol: protocol,
       host: host,
       port: port || 554
     };
