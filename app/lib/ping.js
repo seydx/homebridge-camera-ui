@@ -17,6 +17,8 @@ module.exports = {
     let host = addresse.host;
     let port = addresse.port;
     
+    Logger.debug('Pinging ' + protocol + host + (port ? ':' + port : ''));
+    
     let res = await pingIt.promise.probe(host, {
       timeout: 10,
       extra: ['-i', '2'],
@@ -49,7 +51,7 @@ module.exports = {
     return {
       protocol: protocol,
       host: host,
-      port: port || 554
+      port: port
     };
     
   }
