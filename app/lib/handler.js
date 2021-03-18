@@ -6,13 +6,11 @@ const Telegram = require('./telegram');
 const record = require('./record');
 const socket = require('../server/socket');
 
-const http = require('http');
-const https = require('https');
-const URL = require('url').URL;
-
 const crypto = require('crypto');
+const got = require('got');
 const moment = require('moment');
 const Rekognition = require('node-rekognition');  
+const URL = require('url').URL;
 const webpush = require('web-push');
 
 const cleartimer = require('./cleartimer');
@@ -24,38 +22,6 @@ const stringIsAValidUrl = (s) => {
   } catch (err) {
     return false;
   }
-};
-
-const splitUrl = (url) => {
-
-  function protocol(){
-    return url.protocol + '//';
-  }
-  
-  function hostname(){
-    return url.hostname;
-  }
-  
-  function port(){
-    return url.port;
-  }
-  
-  function pathname(){
-    return url.pathname;
-  }
-  
-  function params(){
-    return url.search;
-  }
-  
-  return {
-    protocol: protocol,
-    hostname: hostname,
-    port: port,
-    pathname: pathname,
-    params: params
-  };
-
 };
 
 var database, webpushhh, telegramCredentials, telegramBot, streamSessions, rekognition;  
@@ -106,18 +72,18 @@ module.exports = {
 
       let detected = accessory.context.rekognition && accessory.context.rekognition.active && rekognition
         ? await this.handleImageDetection(accessory, imageBuffer)
-        : true;
+        : undefined;
         
-      if(detected){
-      
-        //Trigger webhook with information about accessory
-        this.webHook(accessory);
+      if(detected || detected === undefined){
       
         //Notification Info
         const notification = this.handleNotification(accessory, type, motionInfo, detected);
   
         //Recording Info
         const recording = this.handleRecording(accessory, type, notification, motionInfo);
+
+        //Trigger webhook with information about accessory
+        this.webHook(accessory, notification);
 
         if(motionInfo.record){
 
@@ -226,8 +192,10 @@ module.exports = {
       
       Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + detected.toString() : 'not found!'), accessory.displayName);
       
-      if(!detected)
+      if(!detected.length){
         Logger.ui.debug(imageLabels);     //for debugging
+        detected = false;
+      }
       
       return detected;
       
@@ -242,7 +210,7 @@ module.exports = {
   
   },
 
-  webHook: function(accessory, imgBuffer){
+  webHook: async function(accessory, notification){
     
     const webhook = database.db.get('settings').get('webhook').value();
     
@@ -254,42 +222,23 @@ module.exports = {
       
         Logger.ui.debug('Trigger Webhook endpoint ' + webhook.cameras[accessory.displayName].endpoint, accessory.displayName);
         
-        let protocol = splitUrl(validUrl).protocol() === 'https://' ? https : http;
-        /*let hostname = splitUrl(validUrl).hostname();
-        let port = splitUrl(validUrl).port();
-        let pathname = splitUrl(validUrl).pathname();
-        let params = splitUrl(validUrl).params();*/
-
-        protocol.get(webhook.cameras[accessory.displayName].endpoint, resp => {
+        try {
           
-          //console.log(resp)
-        
-          /*protocol.request({ 
-             host: hostname, 
-             port: port,
-             path: pathname + params,
-             method: 'GET',
-             rejectUnauthorized: false,
-             requestCert: true,
-             agent: false
-           }, resp => { */
-         
-          let data = '';
-        
-          // A chunk of data has been recieved.
-          resp.on('data', (chunk) => {
-            data += chunk;
-          });
-        
-          // The whole response has been received. Print out the result.
-          resp.on('end', () => {
-            Logger.ui.debug('Webhook Endpoint triggered successfully!', accessory.displayName);
-            Logger.ui.debug('Data: ' + data.toString());
-          });
-        
-        }).on('error', (err) => {
+          let config = {
+            method: 'POST',
+            responseType: 'json',
+            json: notification
+          };
+          
+          await got(webhook.cameras[accessory.displayName].endpoint, config);
+          
+          Logger.ui.debug('Payload was sent successfully to ' + webhook.cameras[accessory.displayName].endpoint, accessory.displayName);
+          
+        } catch(err){
+          
           Logger.ui.error('Error: ' + err.message, accessory.displayName);
-        });
+          
+        }
       
       } else {
      

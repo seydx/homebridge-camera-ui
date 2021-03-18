@@ -174,7 +174,6 @@
           "title": "Webhook",
           "title_endpoint": "Endpoint",
           "title_endpoints": "Endpoints",
-          "placeholder": "http://trigger.de/test?trigger=true",
           "active": "Actief",
           "active_info": "Indien ingeschakeld, zal de webhook aangeroepen worden tijdens de detectie van beweging.",
           "status": "Status",

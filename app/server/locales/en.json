@@ -174,7 +174,6 @@
           "title": "Webhook",
           "title_endpoint": "Endpoint",
           "title_endpoints": "Endpoints",
-          "placeholder": "http://trigger.de/test?trigger=true",
           "active": "Active",
           "active_info": "If enabled, the motion handler will additionally trigger given webhook endpoint on motion detection.",
           "status": "Status",

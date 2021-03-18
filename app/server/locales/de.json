@@ -174,7 +174,6 @@
           "title": "Webhook",
           "title_endpoint": "Endpunkt",
           "title_endpoints": "Endpunkte",
-          "placeholder": "http://trigger.de/test?trigger=true",
           "active": "Active",
           "active_info": "Wenn diese Option aktiv ist, wird beim Erkennen einer Bewegung zusätzlich der in den Einstellungen gegebene Webhook Endpunkt getriggert.",
           "status": "Status",

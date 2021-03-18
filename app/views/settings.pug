@@ -712,7 +712,7 @@ block content
                         .col-4.text-right.text-color-pink
                           .form-group.m-0.w-100.mb-2
                             label
-                              input.form-control.form-control(type="text", placeholder=t('views.settings.views.webhook.placeholder'), name="webhook[cameras][" + cam + "][endpoint]", value=settings.webhook.cameras[cam].endpoint, data-name=t('views.settings.views.webhook.title_endpoint'))
+                              input.form-control.form-control(type="text", placeholder="https://webhook.site/88e98f7e" name="webhook[cameras][" + cam + "][endpoint]", value=settings.webhook.cameras[cam].endpoint, data-name=t('views.settings.views.webhook.title_endpoint'))
                 .container.d-flex.justify-content-end.mt-4.mb-5
                   a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
                   button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
