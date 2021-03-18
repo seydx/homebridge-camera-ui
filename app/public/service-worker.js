@@ -155,7 +155,8 @@ self.addEventListener('fetch', (event) => {
      event.request.url.endsWith('/cameras') ||
      event.request.url.includes('/camera/') ||
      event.request.url.includes('/files/') ||
-     event.request.url.endsWith('/files') ||
+     event.request.url.endsWith('/files') ||     
+     event.request.url.includes('/interface') ||
      event.request.url.endsWith('/recordings') ||
      event.request.url.includes('/recordings/') ||
      event.request.url.endsWith('/notifications') ||
