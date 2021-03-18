@@ -113,7 +113,7 @@ module.exports = {
       //Get Snapshot Buffer
       const imageBuffer = await record.getSnapshot(recording.camera); 
 
-      let detected = accessory.context.rekognition.active && rekognition
+      let detected = accessory.context.rekognition && accessory.context.rekognition.active && rekognition
         ? await this.handleImageDetection(accessory, imageBuffer)
         : true;
         
