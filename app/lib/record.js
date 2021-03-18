@@ -10,7 +10,7 @@ module.exports = {
     
     return new Promise((resolve, reject) => {
     
-      Logger.ui.debug('Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720), camera.originName);
+      Logger.ui.debug('Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720), (camera.originName || camera.displayName));
       
       let ffmpegArgs = camera.source || camera.stillImageSource;
       ffmpegArgs = ffmpegArgs.replace('-i', '-nostdin -y -i');
@@ -26,19 +26,19 @@ module.exports = {
         
       let imageBuffer = Buffer.alloc(0);
       
-      Logger.ui.debug('Snapshot command: ' + (camera.videoProcessor||'ffmpeg') + ' ' + ffmpegArgs, camera.originName);
+      Logger.ui.debug('Snapshot command: ' + (camera.videoProcessor||'ffmpeg') + ' ' + ffmpegArgs, (camera.originName || camera.displayName));
           
       ffmpeg.stdout.on('data', data => {
         imageBuffer = Buffer.concat([imageBuffer, data]);
       });
               
       ffmpeg.on('error', error => {
-        Logger.ui.error('An error occurred while making snapshot buffer: ' + error, camera.originName);
+        Logger.ui.error('An error occurred while making snapshot buffer: ' + error, (camera.originName || camera.displayName));
         reject(error);
       });
               
       ffmpeg.on('close', () => {
-        Logger.ui.debug('Snapshot buffer created.', camera.originName);
+        Logger.ui.debug('Snapshot buffer created.', (camera.originName || camera.displayName));
         resolve(imageBuffer);
       });  
       

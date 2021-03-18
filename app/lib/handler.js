@@ -104,20 +104,20 @@ module.exports = {
       //Motion Info
       const motionInfo = this.createMotionInfo(accessory);
 
-      //Notification Info
-      const notification = this.handleNotification(accessory, type, motionInfo);
-
-      //Recording Info
-      const recording = this.handleRecording(accessory, type, notification, motionInfo);
-
       //Get Snapshot Buffer
-      const imageBuffer = await record.getSnapshot(recording.camera); 
+      const imageBuffer = await record.getSnapshot(accessory.context.videoConfig); 
 
       let detected = accessory.context.rekognition && accessory.context.rekognition.active && rekognition
         ? await this.handleImageDetection(accessory, imageBuffer)
         : true;
         
       if(detected){
+      
+        //Notification Info
+        const notification = this.handleNotification(accessory, type, motionInfo);
+  
+        //Recording Info
+        const recording = this.handleRecording(accessory, type, notification, motionInfo);
 
         if(motionInfo.record){
 
@@ -217,14 +217,25 @@ module.exports = {
   
   handleImageDetection: async function(accessory, imgBuffer){
     
-    Logger.ui.debug('Analyzing image for following labels: ' + accessory.context.rekognition.labels.toString(), accessory.displayName);
-  
-    const imageLabels = await rekognition.detectLabels(imgBuffer);
-    let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name) && img.Confidence >= accessory.context.rekognition.confidence);
+    try {
     
-    Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + JSON.stringify(detected) : 'not found!'), accessory.displayName);
+      Logger.ui.debug('Analyzing image for following labels: ' + accessory.context.rekognition.labels.toString(), accessory.displayName);
     
-    return detected;
+      const imageLabels = await rekognition.detectLabels(imgBuffer);
+      let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name) && img.Confidence >= accessory.context.rekognition.confidence);
+      
+      Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + JSON.stringify(detected) : 'not found!'), accessory.displayName);
+      
+      return detected;
+      
+    } catch(err){
+    
+      Logger.ui.error('Can not analyze image, an error occured!');
+      Logger.ui.error(err.message);
+      
+      return false;
+    
+    }
   
   },
 
