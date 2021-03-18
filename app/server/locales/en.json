@@ -38,6 +38,7 @@
     "notifications": {
       "title": "Notifications",
       "movement": "Movement",
+      "labels": "Labels",
       "btn_removeall": "Remove All",
       "no_notifications": "No Notifications",
       "img_notification": "Notification Image",
@@ -179,11 +180,15 @@
           "status": "Status",
           "status_online": "Online",
           "status_offline": "Offline",
-          "endpoints_athome": "At Home",
-          "on": "On",
           "on_info": "Trigger Webhook Endpoint on motion detection.",
-          "off": "Off",
-          "trigger": "Trigger"
+          "athome_endpoint": "At Home",
+          "athome_on": "On",
+          "athome_off": "Off",
+          "athome_trigger": "Trigger",
+          "exclude_endpoint": "Exclude",
+          "exclude_add": "Add",
+          "exclude_del": "Remove",
+          "exclude_clear": "Clear"
         }
       }
     },

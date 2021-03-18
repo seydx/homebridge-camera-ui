@@ -14,8 +14,7 @@ module.exports = (app, db_settings, db_users) => {
   
   router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
   
-    let validTargets = ['atHome'];
-    let validCmds = ['true', 'false', 'trigger'];
+    let validTargets = ['atHome', 'addExclude', 'delExclude', 'clearExclude'];
       
     let results = {
       status: 500,
@@ -31,57 +30,55 @@ module.exports = (app, db_settings, db_users) => {
       let cmd = decodeURIComponent(parseurl.query).split('=')[1].split('&')[0];
        
       let validTrgt = validTargets.some(trgt => target.includes(trgt));
-      let validCmd = validCmds.some(cmnd => cmd.includes(cmnd));
        
-      if(validTrgt && validCmd){
+      if(validTrgt){
        
         let credentials = {
           username: parseurl.query.includes('username=') ? decodeURIComponent(parseurl.query).split('username=')[1].split('&')[0] : false,
           password: parseurl.query.includes('password=') ? decodeURIComponent(parseurl.query).split('password=')[1] : false,
         };
           
-        if(!credentials.username || !credentials.password)
+        if(!credentials.username || !credentials.password){
+          
           results = {
             status: 401,
             error: true,
             message: 'No Credentials!'
           };
-          
-        let user = db_users.getUser(credentials.username);
-         
-        if(!user)
-          results = {
-            status: 401,
-            error: true,
-            message: 'Can not verify User!'
-          };
-          
-        let match = await bcrypt.compare(credentials.password, user.hashedpassword);
-          
-        if(!match)
-          results = {
-            status: 401,
-            error: true,
-            message: 'Can not verify User!'
-          };
-          
-        results = await webhook.automationHandler(target, cmd);
-       
-      } else {
-       
-        if(!validTrgt)
-          results = {
-            status: 500,
-            error: true,
-            message: ('Target [' + target + '] not supported!')
-          };
+        
+        } else {
+        
+          let user = db_users.getUser(credentials.username);
            
-        if(!validCmd)
-          results = {
-            status: 500,
-            error: true,
-            message: ('Command [' + cmd + '] not supported!')
-          };
+          if(!user){
+          
+            results = {
+              status: 401,
+              error: true,
+              message: 'Can not verify User!'
+            };
+         
+          } else {
+          
+            let match = await bcrypt.compare(credentials.password, user.hashedpassword);
+              
+            if(!match){
+              
+              results = {
+                status: 401,
+                error: true,
+                message: 'Can not verify User!'
+              };
+            
+            } else {
+            
+              results = await webhook.automationHandler(target, cmd);
+            
+            }
+          
+          } 
+        
+        }
        
       }
       

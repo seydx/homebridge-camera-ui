@@ -802,20 +802,38 @@ block content
                       .col-12.no-border
                         a(href="#athome_endpoints" data-toggle="collapse" aria-expanded="false" aria-controls="athome_endpoints")
                           i.fas.fa-chevron-circle-down.text-color-pink#athome_arrow
-                        span=' ' + t('views.settings.views.webhook.endpoints_athome')
+                        span=' ' + t('views.settings.views.webhook.athome_endpoint')
                       .col
                         #athome_endpoints.collapse.multi-collapse
                           .card.no-shadow
                             ul
                               li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
-                                .col-4.text-left.p-1=t('views.settings.views.webhook.on')
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.athome_on')
                                 .col-8.text-right.p-1 /interface?atHome=true&username=admin&password=admin
                               li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
-                                .col-4.text-left.p-1=t('views.settings.views.webhook.off')
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.athome_off')
                                 .col-8.text-right.p-1 /interface?atHome=false&username=admin&password=admin
                               li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
-                                .col-4.text-left.p-1=t('views.settings.views.webhook.trigger')
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.athome_trigger')
                                 .col-8.text-right.p-1 /interface?atHome=trigger&username=admin&password=admin
+                    li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.mt-2
+                      .col-12.no-border
+                        a(href="#exclude_endpoints" data-toggle="collapse" aria-expanded="false" aria-controls="exclude_endpoints")
+                          i.fas.fa-chevron-circle-down.text-color-pink#exclude_arrow
+                        span=' ' + t('views.settings.views.webhook.exclude_endpoint')
+                      .col
+                        #exclude_endpoints.collapse.multi-collapse
+                          .card.no-shadow
+                            ul
+                              li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.exclude_add')
+                                .col-8.text-right.p-1 /interface?addExclude=CAMERA&username=admin&password=admin
+                              li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.exclude_del')
+                                .col-8.text-right.p-1 /interface?delExclude=CAMERA&username=admin&password=admin
+                              li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
+                                .col-4.text-left.p-1=t('views.settings.views.webhook.exclude_clear')
+                                .col-8.text-right.p-1 /interface?clearxclude=true&username=admin&password=admin
                 .container.d-flex.justify-content-end.mt-4.mb-5
                   a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
                   button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')               

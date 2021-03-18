@@ -66,7 +66,7 @@ module.exports = (db) => {
     
   }
   
-  function add(accessory, type, time, rndm, recordNotification){
+  function add(accessory, type, time, rndm, recordNotification, detected){
   
     let room = db.get('settings').get('cameras').get(accessory.displayName).get('room').value();
     let fileType = db.get('settings').get('recordings').get('type').value();
@@ -85,7 +85,8 @@ module.exports = (db) => {
       timestamp: time.timestamp,
       time: time.time,
       storing: recordNotification,
-      hideBanner: hideBanner
+      hideBanner: hideBanner,
+      labels: detected || 'no label'
     };
     
     Logger.ui.info('Adding new notification ' + notification.id);

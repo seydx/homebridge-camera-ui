@@ -38,6 +38,7 @@
     "notifications": {
       "title": "Benachrichtigungen",
       "movement": "Bewegung",
+      "labels": "Labels",
       "btn_removeall": "Alles löschen",
       "no_notifications": "Keine Benachrichtigungen",
       "img_notification": "Benachrichtigungsbild",
@@ -179,11 +180,15 @@
           "status": "Status",
           "status_online": "Online",
           "status_offline": "Offline",
-          "endpoints_athome": "Zu Hause",
-          "on": "On",
           "on_info": "Webhook Endpunkt zum Triggern bei einer Bewegung.",
-          "off": "Off",
-          "trigger": "Trigger"
+          "athome_endpoint": "Zu Hause",
+          "athome_on": "On",
+          "athome_off": "Off",
+          "athome_trigger": "Trigger",
+          "exclude_endpoint": "Ausschließen",
+          "exclude_add": "Hinzufügen",
+          "exclude_del": "Löschen",
+          "exclude_clear": "Leeren"
         }
       }
     },

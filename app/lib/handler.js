@@ -114,7 +114,7 @@ module.exports = {
         this.webHook(accessory);
       
         //Notification Info
-        const notification = this.handleNotification(accessory, type, motionInfo);
+        const notification = this.handleNotification(accessory, type, motionInfo, detected);
   
         //Recording Info
         const recording = this.handleRecording(accessory, type, notification, motionInfo);
@@ -185,9 +185,9 @@ module.exports = {
   
   },
   
-  handleNotification: function(accessory, type, notificationData){
+  handleNotification: function(accessory, type, notificationData, detected){
     
-    let notification = database.Notifications().add(accessory, type, notificationData.time, notificationData.hash, notificationData.record);
+    let notification = database.Notifications().add(accessory, type, notificationData.time, notificationData.hash, notificationData.record, detected);
     
     //clearTimer
     let notTimer = database.db.get('settings').get('notifications').get('clearTimer').value();
@@ -202,14 +202,14 @@ module.exports = {
   
   handleRecording: function(accessory, type, notification, notificationData){
 
-    let camera = database.Recordings().add(accessory, type, notificationData.time, notificationData.hash); 
+    let camera = database.Recordings().add(accessory, type, notificationData.time, notificationData.hash, notification.labels); 
     
     //clearTimer
     let recTimer = database.db.get('settings').get('recordings').get('removeAfter').value();
     recTimer = isNaN(parseInt(recTimer)) ? false : parseInt(recTimer);
     
     if(recTimer)
-      cleartimer.setNotification(notification.id, recTimer);  
+      cleartimer.setRecording(notification.id, recTimer);  
       
     return camera; 
   
@@ -222,12 +222,12 @@ module.exports = {
       Logger.ui.debug('Analyzing image for following labels: ' + accessory.context.rekognition.labels.toString(), accessory.displayName);
     
       const imageLabels = await rekognition.detectLabels(imgBuffer);
-      let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name.toLowerCase()) && img.Confidence >= accessory.context.rekognition.confidence);
+      let detected = imageLabels.Labels.filter(label => label && accessory.context.rekognition.labels.includes(label.Name.toLowerCase()) && label.Confidence >= accessory.context.rekognition.confidence).map(label => label.Name);
       
-      Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + JSON.stringify(detected) : 'not found!'), accessory.displayName);
+      Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + detected.toString() : 'not found!'), accessory.displayName);
       
       if(!detected)
-        Logger.ui.debug(imageLabels)     //for debugging
+        Logger.ui.debug(imageLabels);     //for debugging
       
       return detected;
       
@@ -242,7 +242,7 @@ module.exports = {
   
   },
 
-  webHook: function(accessory){
+  webHook: function(accessory, imgBuffer){
     
     const webhook = database.db.get('settings').get('webhook').value();
     

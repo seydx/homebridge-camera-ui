@@ -38,6 +38,7 @@
     "notifications": {
       "title": "Notificaties",
       "movement": "Beweging",
+      "labels": "Labels",
       "btn_removeall": "Verwijder alle",
       "no_notifications": "Geen notificaties",
       "img_notification": "Notificatie afbeelding",
@@ -179,11 +180,15 @@
           "status": "Status",
           "status_online": "Online",
           "status_offline": "Offline",
-          "endpoints_athome": "Thuis",
-          "on": "Aan",
           "on_info": "Trigger de Webhook Endpoint tijdens bewegingsdetectie.",
-          "off": "Uit",
-          "trigger": "Trigger"
+          "athome_endpoint": "Thuis",
+          "athome_on": "Aan",
+          "athome_off": "Uit",
+          "athome_trigger": "Trigger",
+          "exclude_endpoint": "Exclusief",
+          "exclude_add": "Toevoegen",
+          "exclude_del": "Verwijder",
+          "exclude_clear": "Clear"
         }
       }
     },

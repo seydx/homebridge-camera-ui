@@ -46,7 +46,7 @@ module.exports = (db, camDb, recDb) => {
           .filter(rec => rec && rec.length > 0 && !rec.includes('@') && (rec.includes('_1_') || rec.includes('_0_')))
           .map(rec => {
             
-            let id = rec.split('-')[1];
+            let id = rec.split('-')[1]; 
             let timestamp = rec.split('-')[2].split('_')[0];
             
             let originName = rec.split('-')[0].replace(/\_/g, ' '); // eslint-disable-line no-useless-escape

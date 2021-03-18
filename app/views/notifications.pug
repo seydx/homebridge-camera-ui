@@ -99,6 +99,7 @@ block content
             form#nots.row.justify-content-center.pbc-30
               each val,index in notifications
                 - notification = notifications[index];
+                - labels = notification.labels || 'no label';
                 - room = notification.room.replace(/\s/g,"");
                 a.col-12.notification-deck.position-relative(href=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? ".mp4" : ".jpeg") : "/images/web/no_recordings.png", data-filterable='yes', class=room, data-target=notification.id, data-rel="lightcase")
                   if role === 'Master'
@@ -111,6 +112,9 @@ block content
                       p.m-0.notification-text 
                         b.text-color-pink=t('views.notifications.movement') + ': '
                         span= notification.time
+                      p.m-0.notification-text 
+                        b.text-color-pink=t('views.notifications.labels') + ': '
+                        span= labels
                     .col-3.text-right
                       img(onerror="this.onerror=null;this.src='/images/web/noimg.png';", src=notification.storing ? "/files/" + notification.id + (notification.fileType === "Video" ? "@2.jpeg" : ".jpeg") : "/images/web/logo_transparent-256.png", width="45", height="45", alt=t('views.notifications.img_notification'), class="notification-img")
             if notsize
