@@ -333,8 +333,8 @@ CameraUI.prototype = {
           ? cameraConfig.rekognition.confidence
           : 90,
         labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
-          ? cameraConfig.rekognition.labels
-          : ['Human', 'Person', 'Face']
+          ? cameraConfig.rekognition.labels.map(label => label && label.toLowerCase()).filter(label => label)
+          : ['human', 'person', 'face']
       };
     }
     
