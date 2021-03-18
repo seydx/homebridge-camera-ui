@@ -412,7 +412,7 @@
                 "title": "Motion Reset Message",
                 "type": "string",
                 "placeholder": "OFF",
-                "description": "The message to watch for to trigger motion resets. Will use the name of the camera if blank."
+                "description": "The message to watch for to trigger motion resets."
               },                                                                             
               "doorbellTopic": {
                 "title": "Doorbell Topic",
