@@ -98,9 +98,6 @@ module.exports = {
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
       
-      //Trigger webhook with information about accessory
-      this.webHook(accessory);
-      
       //Motion Info
       const motionInfo = this.createMotionInfo(accessory);
 
@@ -112,6 +109,9 @@ module.exports = {
         : true;
         
       if(detected){
+      
+        //Trigger webhook with information about accessory
+        this.webHook(accessory);
       
         //Notification Info
         const notification = this.handleNotification(accessory, type, motionInfo);
@@ -222,9 +222,12 @@ module.exports = {
       Logger.ui.debug('Analyzing image for following labels: ' + accessory.context.rekognition.labels.toString(), accessory.displayName);
     
       const imageLabels = await rekognition.detectLabels(imgBuffer);
-      let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name) && img.Confidence >= accessory.context.rekognition.confidence);
+      let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name.toLowerCase()) && img.Confidence >= accessory.context.rekognition.confidence);
       
       Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + JSON.stringify(detected) : 'not found!'), accessory.displayName);
+      
+      if(!detected)
+        Logger.ui.debug(imageLabels)     //for debugging
       
       return detected;
       
