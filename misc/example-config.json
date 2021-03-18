@@ -14,85 +14,108 @@
             "name": "CameraUI",
             "port": 3333,
             "auth": "form",
-            "debug": true,
-            "reset": false,
+            "theme": "auto",
             "language": "auto",
+            "debug": false,
+            "reset": false,
             "mqtt": {
                 "active": true,
                 "host": "192.168.178.123",
-                "port": 1883,
-                "topic": "homebridge/motion",
-                "on_message": "ON"
+                "port": 1883
             },
             "http": {
-                "active": false,
+                "active": true,
                 "port": 7777,
                 "localhttp": false
             },
             "ssl": {
-                "active": false,
-                "key": "/path/to/key/server.key",
-                "cert": "/path/to/cert/server.crt"
+                "active": true,
+                "key": "/var/lib/homebridge/mysite.key",
+                "cert": "/var/lib/homebridge/mysite.crt"
             },
             "options": {
-                "videoProcessor": "ffmpeg",
-                "interfaceName": "eth0"
+                "videoProcessor": "ffmpeg"
+            },
+            "aws": {
+                "accessKeyId": "LIKJSBDFIUFVBSDIVUS",
+                "secretAccessKey": "ADESÖLKJFBASDfoubasdu+CB4C5",
+                "region": "eu-central-1"
             },
             "cameras": [
                 {
-                    "name": "DLink One",
-                    "manufacturer": "DLink",
-                    "model": "DLink 123",
-                    "serialNumber": "12345",
+                    "name": "Sricam",
+                    "manufacturer": "Sricam",
+                    "model": "IP Camera",
+                    "serialNumber": "873190",
                     "firmwareRevision": "1.0",
                     "motion": true,
-                    "switches": true,
-                    "motionTimeout": 0,
+                    "doorbell": false,
+                    "switches": false,
+                    "motionTimeout": 1,
+                    "motionDoorbell": false,
+                    "unbridge": true,
                     "videoConfig": {
-                        "source": "-i rtsp://192.168.178.1/onvif1",
-                        "stillImageSource": "-i rtsp://192.168.178.1/onvif1",
-                        "maxStreams": 2,
+                        "source": "-rtsp_transport udp -i rtsp://192.111.147.12/onvif1",
+                        "stillImageSource": "-i rtsp://192.111.147.12/onvif1",
+                        "maxStreams": 4,
                         "maxWidth": 1280,
                         "maxHeight": 720,
                         "maxFPS": 30,
-                        "socketPort": 8100,
-                        "debug": true
-                    }
-                },
-                {
-                    "name": "Xiaomi Home",
-                    "manufacturer": "Xiaomi",
-                    "model": "Xiaomi 123",
-                    "serialNumber": "123456",
-                    "firmwareRevision": "1.0",
-                    "motion": false,
-                    "videoConfig": {
-                        "source": "-i rtsp://192.168.178.11/ch0_0.h264",
-                        "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",
-                        "maxStreams": 2,
-                        "maxWidth": 1920,
-                        "maxHeight": 1080,
-                        "maxFPS": 25,
-                        "maxBitrate": 1000,
-                        "socketPort": 8200
+                        "audio": true,
+                        "socketPort": 8100
+                    },
+                    "mqtt": {
+                        "motionTopic": "sricam/motion",
+                        "motionMessage": "ON",
+                        "motionResetTopic": "sricam/motion",
+                        "motionResetMessage": "OFF"
+                    },
+                    "rekognition": {
+                        "active": true,
+                        "confidence": 90,
+                        "labels": [
+                            "Human",
+                            "Face",
+                            "Person"
+                        ]
                     }
                 },
                 {
                     "name": "Yi Dome",
                     "manufacturer": "Yi",
-                    "model": "Yi 123",
-                    "serialNumber": "123456",
+                    "model": "IP Camera",
+                    "serialNumber": "873190",
                     "firmwareRevision": "1.0",
-                    "motion": false,
+                    "motion": true,
+                    "doorbell": true,
+                    "switches": false,
+                    "motionTimeout": 1,
+                    "unbridge": true,
                     "videoConfig": {
-                        "source": "-i rtsp://192.168.178.11/ch0_0.h264",
-                        "stillImageSource": "-i rtsp://192.168.178.11/ch0_0.h264",
-                        "maxStreams": 2,
+                        "source": "-rtsp_transport tcp -i rtsp://192.111.222.11/ch0_0.h264",
+                        "stillImageSource": "-i rtsp://192.111.222.11/ch0_0.h264",
+                        "maxStreams": 4,
                         "maxWidth": 1920,
                         "maxHeight": 1080,
                         "maxFPS": 25,
                         "maxBitrate": 1000,
+                        "audio": false,
                         "socketPort": 8300
+                    },
+                    "mqtt": {
+                        "motionTopic": "yicam_dome_keller/motion",
+                        "motionMessage": "ON",
+                        "motionResetTopic": "yicam_dome_keller/motion",
+                        "motionResetMessage": "OFF"
+                    },
+                    "rekognition": {
+                        "active": true,
+                        "confidence": 90,
+                        "labels": [
+                            "Human",
+                            "Face",
+                            "Person"
+                        ]
                     }
                 }
             ],
