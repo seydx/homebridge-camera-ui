@@ -190,7 +190,7 @@ module.exports = {
       const imageLabels = await rekognition.detectLabels(imgBuffer);
       let detected = imageLabels.Labels.filter(label => label && accessory.context.rekognition.labels.includes(label.Name.toLowerCase()) && label.Confidence >= accessory.context.rekognition.confidence).map(label => label.Name);
       
-      Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + detected.toString() : 'not found!'), accessory.displayName);
+      Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected.length ? 'found: ' + detected.toString() : 'not found!'), accessory.displayName);
       
       if(!detected.length){
         Logger.ui.debug(imageLabels);     //for debugging
