@@ -120,55 +120,6 @@ function CameraUI (log, config, api) {
           Logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', cameraConfig.name);
         
         } else {
-        
-          if(cameraConfig.mqtt && this.config.mqtt){
-          
-            //setup mqtt topics
-            if(cameraConfig.mqtt.motionTopic){
-              const mqttOptions = {
-                motionTopic: cameraConfig.mqtt.motionTopic,
-                motionMessage: cameraConfig.mqtt.motionMessage || 'ON',
-                motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
-                camera: cameraConfig.name,
-                motion: true
-              };
-              this.mqttConfigs.set(mqttOptions.motionTopic, mqttOptions);
-            }  
-              
-            if(cameraConfig.mqtt.motionResetTopic && cameraConfig.mqtt.motionResetTopic !== cameraConfig.mqtt.motionTopic){  
-              const mqttOptions = {
-                motionResetTopic: cameraConfig.mqtt.motionResetTopic,
-                motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
-                camera: cameraConfig.name,
-                motion: true,
-                reset: true
-              };
-              this.mqttConfigs.set(mqttOptions.motionResetTopic, mqttOptions);
-            }
-            
-            if(cameraConfig.mqtt.doorbellTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionResetTopic){
-              const mqttOptions = {
-                doorbellTopic: cameraConfig.mqtt.doorbellTopic,
-                doorbellMessage: cameraConfig.mqtt.doorbellMessage || 'ON',
-                camera: cameraConfig.name,
-                doorbell: true
-              };
-              this.mqttConfigs.set(mqttOptions.doorbellTopic, mqttOptions);
-            }
-        
-          }
-          
-          if(cameraConfig.rekognition){
-            cameraConfig.rekognition = {
-              active: cameraConfig.rekognition.active || false,
-              confidence: cameraConfig.rekognition.confidence > 0
-                ? cameraConfig.rekognition.confidence
-                : 90,
-              labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
-                ? cameraConfig.rekognition.labels
-                : ['Human', 'Person', 'Face']
-            };
-          }
           
           this.cameraConfigs.set(uuid, cameraConfig);
         
@@ -222,10 +173,6 @@ CameraUI.prototype = {
       
         const accessory = new Accessory(cameraConfig.name, uuid);
         
-        accessory.context.videoConfig = cameraConfig.videoConfig;
-        accessory.context.mqtt = cameraConfig.mqtt;
-        accessory.context.rekognition = cameraConfig.rekognition;
-        
         Logger.info('Configuring unbridged accessory...', accessory.displayName);
         
         this.setupAccessory(accessory, cameraConfig);
@@ -240,10 +187,6 @@ CameraUI.prototype = {
         if (!cachedAccessory) {
         
           const accessory = new Accessory(cameraConfig.name, uuid);
-          
-          accessory.context.videoConfig = cameraConfig.videoConfig;
-          accessory.context.mqtt = cameraConfig.mqtt;
-          accessory.context.rekognition = cameraConfig.rekognition;
       
           Logger.info('Configuring bridged accessory...', accessory.displayName);
           
@@ -345,6 +288,59 @@ CameraUI.prototype = {
       AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.SerialNumber, cameraConfig.serialNumber || 'SerialNumber');
       AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, cameraConfig.firmwareRevision || packageFile.version);
     }
+    
+    if(cameraConfig.mqtt && this.config.mqtt){
+    
+      //setup mqtt topics
+      if(cameraConfig.mqtt.motionTopic){
+        const mqttOptions = {
+          motionTopic: cameraConfig.mqtt.motionTopic,
+          motionMessage: cameraConfig.mqtt.motionMessage || 'ON',
+          motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
+          camera: cameraConfig.name,
+          motion: true
+        };
+        this.mqttConfigs.set(mqttOptions.motionTopic, mqttOptions);
+      }  
+        
+      if(cameraConfig.mqtt.motionResetTopic && cameraConfig.mqtt.motionResetTopic !== cameraConfig.mqtt.motionTopic){  
+        const mqttOptions = {
+          motionResetTopic: cameraConfig.mqtt.motionResetTopic,
+          motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
+          camera: cameraConfig.name,
+          motion: true,
+          reset: true
+        };
+        this.mqttConfigs.set(mqttOptions.motionResetTopic, mqttOptions);
+      }
+      
+      if(cameraConfig.mqtt.doorbellTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionResetTopic){
+        const mqttOptions = {
+          doorbellTopic: cameraConfig.mqtt.doorbellTopic,
+          doorbellMessage: cameraConfig.mqtt.doorbellMessage || 'ON',
+          camera: cameraConfig.name,
+          doorbell: true
+        };
+        this.mqttConfigs.set(mqttOptions.doorbellTopic, mqttOptions);
+      }
+  
+    }
+    
+    if(cameraConfig.rekognition){
+      cameraConfig.rekognition = {
+        active: cameraConfig.rekognition.active || false,
+        confidence: cameraConfig.rekognition.confidence > 0
+          ? cameraConfig.rekognition.confidence
+          : 90,
+        labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
+          ? cameraConfig.rekognition.labels
+          : ['Human', 'Person', 'Face']
+      };
+    }
+    
+    accessory.context.videoConfig = cameraConfig.videoConfig;
+    accessory.context.mqtt = cameraConfig.mqtt;
+    accessory.context.rekognition = cameraConfig.rekognition;
     
     new motionSensor(this.api, accessory, cameraConfig, this.handler);
     new doorbellSensor(this.api, accessory, cameraConfig, this.handler);
