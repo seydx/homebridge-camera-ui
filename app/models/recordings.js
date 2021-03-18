@@ -2,8 +2,6 @@
 
 const Logger = require('../../lib/logger.js');
 
-const record = require('../lib/record');
-
 const moment = require('moment');
 const fs = require('fs-extra');
 const path = require('path');
@@ -34,7 +32,7 @@ module.exports = (db, camDb, recDb) => {
   async function get(){
     
     let recordings = [];
-    let recPath = db.get('settings').get('recordings').get('path').value();
+    let recPath = db.get('settings').get('recordings').get('path').value();                  
     
     try {
     
@@ -51,12 +49,12 @@ module.exports = (db, camDb, recDb) => {
             let id = rec.split('-')[1];
             let timestamp = rec.split('-')[2].split('_')[0];
             
-            let originName = rec.split('-')[0].replace(/\_/g, ' ');
+            let originName = rec.split('-')[0].replace(/\_/g, ' '); // eslint-disable-line no-useless-escape
             let room = db.get('settings').get('cameras').get(originName).get('room').value();
           
             let recording = {
               id: id,
-              name: rec.split('-')[0].replace(/\_/g, ''),
+              name: rec.split('-')[0].replace(/\_/g, ''), // eslint-disable-line no-useless-escape
               originName: originName,
               fileName: rec,
               type: rec.includes('_m') ? 'motion' : 'doorbell',
@@ -97,56 +95,37 @@ module.exports = (db, camDb, recDb) => {
   
   }
   
-  async function add(accessory, type, time, rndm){
+  function add(accessory, type, time, rndm){
     
-    try {
-      
-      let room = db.get('settings').get('cameras').get(accessory.displayName).get('room').value();
-      let storing = db.get('settings').get('recordings').get('active').value();
-      let fileType = db.get('settings').get('recordings').get('type').value();
-      let recPath = db.get('settings').get('recordings').get('path').value();
-      let recTimer = db.get('settings').get('recordings').get('timer').value();
-      
-      let id = accessory.displayName.replace(/\s/g,'_') + '-' + rndm + '-' + time.timestamp + '_' + (storing ? '1' : '0') + '_' + (type === 'motion' ? 'm' : 'd');
-      
-      let recording = {
-        id: id,
-        name: accessory.displayName.replace(/\s+/g, ''),
-        originName: accessory.displayName,
-        fileName: id + (fileType === 'Snapshot' ? '.jpeg' : '.mp4'),
-        type: type,
-        fileType: fileType,
-        room: room,
-        timestamp: time.timestamp,
-        time: time.time,
-        storing: storing
-      };
-      
-      Logger.ui.info('Adding new recording ' + recording.fileName);
-      
-      recDb.get('recordings').push(recording).write();
-      
-      let camera = camDb.get('cameras').get(accessory.displayName).value();
-      
-      if(fileType === 'Snapshot'){
-        
-        await record.getSnapshot(camera, recording, recPath, false);
-        
-      } else if(fileType === 'Video'){
-        
-        await record.getSnapshot(camera, recording, recPath, true);
-        await record.getVideo(camera, recording, recPath, recTimer);
-        
-      }
+    let room = db.get('settings').get('cameras').get(accessory.displayName).get('room').value();
+    let storing = db.get('settings').get('recordings').get('active').value();
+    let fileType = db.get('settings').get('recordings').get('type').value();
     
-    } catch(err) {
+    let id = accessory.displayName.replace(/\s/g,'_') + '-' + rndm + '-' + time.timestamp + '_' + (storing ? '1' : '0') + '_' + (type === 'motion' ? 'm' : 'd');
     
-      Logger.ui.error('An error occured during creating new database entry!', accessory.displayName);
-      Logger.ui.error(err);
+    let recording = {
+      id: id,
+      name: accessory.displayName.replace(/\s+/g, ''),
+      originName: accessory.displayName,
+      fileName: id + (fileType === 'Snapshot' ? '.jpeg' : '.mp4'),
+      type: type,
+      fileType: fileType,
+      room: room,
+      timestamp: time.timestamp,
+      time: time.time,
+      storing: storing
+    };
     
-    }
+    Logger.ui.info('Adding new recording ' + recording.fileName);
     
-    return;
+    recDb.get('recordings').push(recording).write();
+    
+    let camera = camDb.get('cameras').get(accessory.displayName).value();
+    
+    return {
+      camera: camera,
+      info: recording
+    };
     
   }
   
@@ -221,7 +200,7 @@ module.exports = (db, camDb, recDb) => {
           
         }
       
-      }else {
+      } else {
       
         if(room.includes('all')){
           Logger.ui.info('Removing all recordings!');

@@ -1,27 +1,26 @@
 'use strict';
 
 const Logger = require('../../lib/logger.js');
+const fs = require('fs-extra');
 const spawn = require('child_process').spawn;    
 
 module.exports = {
   
-  getSnapshot: function(camera,recording,recPath,additional){
+  getSnapshot: function(camera){
     
     return new Promise((resolve, reject) => {
     
-      Logger.ui.debug('Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720) + ' ' + (additional ? ' (This snapshot will be created additional to the video as preview file)' : ''), camera.originName);
+      Logger.ui.debug('Snapshot requested: ' + (camera.maxWidth||1280) + ' x ' + (camera.maxHeight||720), camera.originName);
       
       let ffmpegArgs = camera.source || camera.stillImageSource;
       ffmpegArgs = ffmpegArgs.replace('-i', '-nostdin -y -i');
       
-      let snapPath =  recording ? recPath + '/' + recording.id + (additional ? '@2' : '') + '.jpeg' : false;
-
       ffmpegArgs += // Still
         ' -frames:v 1' +
         ' -filter:v' +
         ' scale=\'min(' + (camera.maxWidth||1280) + ',iw)\':\'min('+ (camera.maxHeight||720) + ',ih)\':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2' + 
         (camera.videoFilter ? ' -filter:v ' + camera.videoFilter : '') +
-        (recording ? ' ' + snapPath + ' -f image2 -' : ' -f image2 -');
+        ' -f image2 -';
 
       const ffmpeg = spawn('ffmpeg', ffmpegArgs.split(/\s+/), { env: process.env });
         
@@ -34,12 +33,12 @@ module.exports = {
       });
               
       ffmpeg.on('error', error => {
-        Logger.ui.error('An error occurred while making snapshot request: ' + error, camera.originName);
+        Logger.ui.error('An error occurred while making snapshot buffer: ' + error, camera.originName);
         reject(error);
       });
               
       ffmpeg.on('close', () => {
-        recording ? Logger.ui.debug('Snapshot stored to ' + snapPath, camera.originName) : Logger.ui.debug('Snapshot created.', camera.originName);
+        Logger.ui.debug('Snapshot buffer created.', camera.originName);
         resolve(imageBuffer);
       });  
       
@@ -47,7 +46,23 @@ module.exports = {
     
   },
   
-  getVideo: function(camera, recording, recPath, recTimer){
+  storeSnapshot: async function(camera, imageBuffer, recording, recPath, additional){
+    
+    try {
+      
+      let snapPath =  recPath + '/' + recording.id + (additional ? '@2' : '') + '.jpeg';
+      await fs.outputFile(snapPath, imageBuffer, {encoding: 'base64'});
+      
+    } catch(err){
+      
+      Logger.ui.error('An error occured while storing image from buffer!', camera.originName);
+      Logger.ui.error(err);
+      
+    }
+
+  },
+  
+  storeVideo: function(camera, recording, recPath, recTimer){
     
     return new Promise((resolve, reject) => {
       

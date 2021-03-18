@@ -50,10 +50,13 @@ module.exports = {
         Logger.ui.debug('Telegram: Sending Message ' + content.txt);
         await bot.sendMessage(telegram.chatID, content.txt);
       
-      } else if(content.photo){
+      } else if(content.photo || content.buffer){
       
         //await bot.sendMessage(telegram.chatID, content.txt);
-        Logger.ui.debug('Telegram: Sending Photo ' + content.img);
+        if(content.photo)
+          Logger.ui.debug('Telegram: Sending Photo ' + content.img);
+        if(content.buffer)
+          Logger.ui.debug('Telegram: Sending Image Buffer');
         await bot.sendPhoto(telegram.chatID, {source: content.img});
       
       } else if(content.video){ //content.video

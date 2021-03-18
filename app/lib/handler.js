@@ -3,15 +3,17 @@
 const Logger = require('../../lib/logger.js');
 
 const Telegram = require('./telegram');
+const record = require('./record');
 const socket = require('../server/socket');
 
 const http = require('http');
 const https = require('https');
 const URL = require('url').URL;
 
-const moment = require('moment');
-const webpush = require('web-push');
 const crypto = require('crypto');
+const moment = require('moment');
+const Rekognition = require('node-rekognition');  
+const webpush = require('web-push');
 
 const cleartimer = require('./cleartimer');
 
@@ -56,15 +58,26 @@ const splitUrl = (url) => {
 
 };
 
-var database, webpushhh, telegramCredentials, telegramBot, streamSessions;  
+var database, webpushhh, telegramCredentials, telegramBot, streamSessions, rekognition;  
 
 module.exports = {
 
-  init(db, sessions){
+  init(db, sessions, awsCredentials){
   
     database = db;
     streamSessions = sessions;
     
+    if(awsCredentials){
+    
+      try {
+        rekognition = new Rekognition(awsCredentials);
+      } catch(err) {
+        Logger.ui.error('Bad AWS credentials!');
+        rekognition = false;
+      }
+    
+    }
+
     telegramCredentials = {
       token: database.db.get('settings').get('telegram').get('token').value(),
       chatID: database.db.get('settings').get('telegram').get('chatID').value()
@@ -78,27 +91,67 @@ module.exports = {
     
     const atHome = database.db.get('settings').get('general').get('atHome').value();
     const exclude = database.db.get('settings').get('general').get('exclude').value();
+    const recPath = database.db.get('settings').get('recordings').get('path').value();
+    const recTimer = database.db.get('settings').get('recordings').get('timer').value();
     
     if(active && (!atHome || atHome && exclude.includes(accessory.displayName))){
-      
-      const recActive = database.db.get('settings').get('recordings').get('active').value();
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
       
+      //Trigger webhook with information about accessory
       this.webHook(accessory);
       
-      let recordNotification = recActive ? streamSessions.requestSession(accessory.displayName) : false;
-      
-      let notification = await this.handleRecNot(accessory, type, recordNotification);
-      
-      if(recordNotification)
-        streamSessions.closeSession(accessory.displayName);
+      //Motion Info
+      const motionInfo = this.createMotionInfo(accessory);
 
-      socket.io('notification', notification);
-      socket.storeNots(notification);
-      this.webPush(notification, accessory);
-      this.teleGram(notification, accessory, recordNotification);
+      //Notification Info
+      const notification = this.handleNotification(accessory, type, motionInfo);
+
+      //Recording Info
+      const recording = this.handleRecording(accessory, type, notification, motionInfo);
+
+      //Get Snapshot Buffer
+      const imageBuffer = await record.getSnapshot(recording.camera); 
+
+      let detected = accessory.context.rekognition.active && rekognition
+        ? await this.handleImageDetection(accessory, imageBuffer)
+        : true;
+        
+      if(detected){
+
+        if(motionInfo.record){
+
+          //Send notification with picture before creating video
+          this.teleGram(notification, accessory, motionInfo.record, imageBuffer);
+
+          //Store Snapshot/Video
+          await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, true);
+          await record.storeVideo(recording.camera, recording.info, recPath, recTimer);
+          
+          streamSessions.closeSession(accessory.displayName);
+          
+          socket.io('notification', notification);
+          socket.storeNots(notification);
+          this.webPush(notification, accessory);  
+          
+        } else {
+
+          //Store Snapshot
+          await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, false);
+          
+          socket.io('notification', notification);
+          socket.storeNots(notification);
+          this.webPush(notification, accessory);  
+          this.teleGram(notification, accessory, motionInfo.record);
+          
+        }
+        
+      } else {
       
+        Logger.ui.debug('Skip storing movement. Configured label not detected.', accessory.displayName);
+      
+      }
+
     } else {
       
       if(active && atHome && !exclude.includes(accessory.displayName)){
@@ -111,8 +164,12 @@ module.exports = {
   
   },
   
-  handleRecNot: async function(accessory, type, recordNotification){
+  createMotionInfo: function(accessory){
   
+    const recActive = database.db.get('settings').get('recordings').get('active').value();
+  
+    let recordNotification = recActive ? streamSessions.requestSession(accessory.displayName) : false;
+
     let time = {
       time: moment().format('DD.MM.YYYY, HH:mm:ss'),
       timestamp: moment().unix()
@@ -120,30 +177,57 @@ module.exports = {
     
     let rndm = crypto.randomBytes(5).toString('hex');
     
-    let notification = database.Notifications().add(accessory, type, time, rndm, recordNotification);
+    return {
+      record: recordNotification,
+      time: time,
+      hash: rndm
+    };
+  
+  },
+  
+  handleNotification: function(accessory, type, notificationData){
     
-    if(recordNotification) 
-      await database.Recordings().add(accessory, type, time, rndm); 
+    let notification = database.Notifications().add(accessory, type, notificationData.time, notificationData.hash, notificationData.record);
     
     //clearTimer
-       
     let notTimer = database.db.get('settings').get('notifications').get('clearTimer').value();
     notTimer = isNaN(parseInt(notTimer)) ? false : parseInt(notTimer);
     
     if(notTimer)
       cleartimer.setNotification(notification.id, notTimer);
+      
+    return notification; 
+  
+  },
+  
+  handleRecording: function(accessory, type, notification, notificationData){
+
+    let camera = database.Recordings().add(accessory, type, notificationData.time, notificationData.hash); 
     
+    //clearTimer
     let recTimer = database.db.get('settings').get('recordings').get('removeAfter').value();
     recTimer = isNaN(parseInt(recTimer)) ? false : parseInt(recTimer);
     
     if(recTimer)
       cleartimer.setNotification(notification.id, recTimer);  
       
-    return notification; 
+    return camera; 
   
   },
   
+  handleImageDetection: async function(accessory, imgBuffer){
+    
+    Logger.ui.debug('Analyzing image for following labels: ' + accessory.context.rekognition.labels.toString(), accessory.displayName);
   
+    const imageLabels = await rekognition.detectLabels(imgBuffer);
+    let detected = imageLabels.Labels.find(img => img && accessory.context.rekognition.labels.includes(img.Name) && img.Confidence >= accessory.context.rekognition.confidence);
+    
+    Logger.ui.debug('Label with confidence >= ' + accessory.context.rekognition.confidence + '% ' + (detected ? 'found: ' + JSON.stringify(detected) : 'not found!'), accessory.displayName);
+    
+    return detected;
+  
+  },
+
   webHook: function(accessory){
     
     const webhook = database.db.get('settings').get('webhook').value();
@@ -203,11 +287,14 @@ module.exports = {
     
   },
   
-  teleGram: async function(notification, accessory, recordNotification){ 
+  teleGram: async function(notification, accessory, recordNotification, imageBuffer){ 
     
     const tlgrm = database.db.get('settings').get('telegram').value();
     const tlgrmCameraType = tlgrm.cameras[accessory.displayName].type;
     const recType = database.db.get('settings').get('recordings').get('type').value();
+    
+    if(imageBuffer && (!tlgrmCameraType === 'Snapshot' || !recordNotification))
+      return;
     
     if((tlgrmCameraType === 'Text')||(tlgrmCameraType === 'Snapshot' && recordNotification)||(tlgrmCameraType === 'Video' && recordNotification && recType === 'Video')){
       
@@ -244,14 +331,25 @@ module.exports = {
         
         motionTxt = motionTxt && motionTxt.includes('@') ? motionTxt.replace('@', accessory.displayName) : (accessory.displayName + ': New motion detected!');
         
-        Telegram.send(telegramBot, tlgrm, {
-          message: tlgrmCameraType === 'Text' ? true : false,
-          photo: tlgrmCameraType === 'Snapshot' && recordNotification ? true : false,
-          video: tlgrmCameraType === 'Video' && recordNotification && recType === 'Video' ? true : false,
-          txt: motionTxt,
-          img: tlgrmCameraType === 'Snapshot' && recType === 'Video' ? recPath + '/' + notification.id + '@2.jpeg' : recPath + '/' + notification.id + '.jpeg',
-          vid: recPath + '/' + notification.id + '.mp4'
-        });
+        if(imageBuffer && tlgrmCameraType === 'Snapshot' && recordNotification){
+          
+          Telegram.send(telegramBot, tlgrm, {
+            buffer: true,
+            img: imageBuffer
+          });
+          
+        } else {
+          
+          Telegram.send(telegramBot, tlgrm, {
+            message: tlgrmCameraType === 'Text' ? true : false,
+            photo: tlgrmCameraType === 'Snapshot' && recordNotification ? true : false,
+            video: tlgrmCameraType === 'Video' && recordNotification && recType === 'Video' ? true : false,
+            txt: motionTxt,
+            img: tlgrmCameraType === 'Snapshot' && recType === 'Video' ? recPath + '/' + notification.id + '@2.jpeg' : recPath + '/' + notification.id + '.jpeg',
+            vid: recPath + '/' + notification.id + '.mp4'
+          });
+          
+        }
         
       }
       

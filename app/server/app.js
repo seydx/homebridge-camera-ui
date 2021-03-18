@@ -183,7 +183,7 @@ module.exports = {
       app.set('trust proxy', 1);
      
     sessionMiddleware = session({
-      genid: (req) => {
+      genid: (req) => { // eslint-disable-line no-unused-vars
         return uuidv4();
       },
       secret: database.session.get('key').value(),
@@ -408,7 +408,7 @@ module.exports = {
     }); 
     
     // error handler
-    app.use(function(err, req, res, next) {
+    app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
     
       Logger.ui.error(err.message); 
       

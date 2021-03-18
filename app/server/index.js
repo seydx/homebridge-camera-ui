@@ -20,6 +20,13 @@ module.exports = class UserInterface {
     this.accessories = accessories;
     this.streamSessions = streamSessions;
     
+    if(this.config.aws && this.config.aws.accessKeyId && this.config.aws.secretAccessKey && this.config.aws.region)
+      this.aws = {
+        accessKeyId: this.config.aws.accessKeyId,
+        secretAccessKey: this.config.aws.secretAccessKey,
+        region: this.config.aws.region
+      };
+    
     //listener to close the server
     this.api.on('shutdown', () => {
       server.close();
@@ -62,7 +69,7 @@ module.exports = class UserInterface {
   
       //start motion handler
       Logger.ui.debug('Configuring motion handler');
-      handler.init(this.database, this.streamSessions);
+      handler.init(this.database, this.streamSessions, this.aws);
   
       //start webhook handler
       Logger.ui.debug('Configuring webhook handler');

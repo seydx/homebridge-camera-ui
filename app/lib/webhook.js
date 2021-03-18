@@ -15,8 +15,11 @@ module.exports = {
   },
   
   automationHandler: async function(cmd, state){
+  
+    let msg;
     
     switch (cmd) {
+    
       case 'atHome':
       
         Logger.ui.info('At Home event triggered.');
@@ -38,21 +41,27 @@ module.exports = {
         
         database.db.get('settings').get('general').set('atHome', state).write();
         
-        return {
+        msg = {
           status: 200,        
           error: false,
           message: state ? 'AtHome switched on.' : 'AtHome switched off.'
         };
         
         break;
+     
       default:
+      
         Logger.ui.warn('Can not handle event (' + cmd + ')');
-        return {
+        
+        msg = {
           status: 500,        
           error: true,
           message: 'Command (' + cmd + ') not found!'
         };
+    
     }
+    
+    return msg;
   
   }
 

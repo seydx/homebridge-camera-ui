@@ -25,7 +25,7 @@ module.exports = {
         
         url = url.split(' ').find(sub => sub === '-stimeout')
           ? url.split(' ')
-          : url.replace('-i', '-stimeout 10000000 -i').split(' ')
+          : url.replace('-i', '-stimeout 10000000 -i').split(' ');
         
         let audio = cameras[accessory.displayName].audio;
         let videoSize = cameras[accessory.displayName].resolutions;

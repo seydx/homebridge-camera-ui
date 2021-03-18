@@ -7,7 +7,7 @@ const record = require('../lib/record');
 
 module.exports = (app, db_settings, db_cameras) => {
   
-  router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-
+  router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     for(const cam of Object.keys(res.locals.dashboard.cameras))
       if(res.locals.dashboard.cameras[cam].active)
