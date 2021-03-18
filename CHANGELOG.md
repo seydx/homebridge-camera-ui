@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.3.0 - NEXT
+- NEW: Image Rekognition
+  - Image Rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images.
+- BETTER: Telegram Notification
+  - Now it is possible that the image is sent immediately via Telegram without saving the image/video before. (Recording must be active under setting and Telegram must be set to 'Snapshot' for the camera).
+- Refactored config.schema.json
+- Refactored MQTT/HTTP and automation handler
+- Added TLS option to MQTT
+- Added timeout to ffmpeg streams
+- Fixed incorrect ffmpeg stream sessions
+- General improvements & bugfixes
+- Added more debug
+- Bump deps
+
 ## v3.2.3 - 2021-03-15
 - Added "-stimeout" 10s to stream if not defined to avoid hanging ffmpeg processes
 - Fixed UI Debug
