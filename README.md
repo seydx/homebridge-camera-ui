@@ -13,6 +13,7 @@ CameraUI is a homebridge user interface to control your cameras. It supports alm
 - Full functional Web App with push notifications
 - Multi-language support
 - **CamViews**: A resizable, drag & drop camera overview
+- **Image Rekognition** with AWS
 - Telegram and Webhook Support
 - Record Snapshot/Video on movement detection
 - Beautiful User Interface with Themes and Darkmode
@@ -97,8 +98,16 @@ See [Example Config](https://github.com/SeydX/homebridge-camera-ui/edit/master/m
 To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/2b59ce5ae51204c1920c3105c44a92c16ea8bf01/misc/example-config.json#L59) for more details.
 
 
-# Usage
+# Image Rekognition
 
+camera.ui uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
+
+This makes it possible to analyze every movement before this is stored or sent as a notification.
+
+To use image rekognition, you need to set up a AWS account with an IAM user. More Infos: [AWS Image Rekognition](https://aws.amazon.com/rekognition/?nc1=h_ls&blog-cards.sort-by=item.additionalFields.createdDate&blog-cards.sort-order=desc)
+
+
+# Usage
 
  ### Login
 On first login attempt, the interface will prompt you to change the credentials to continue. The Login screen is adjusted for all available screens.
@@ -134,7 +143,6 @@ The Interface also provides you with a notifications section to not miss any not
 You can change your credentials, user image, themes and much more under settings!
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/settings_white.png" align="center" alt="camera.ui">
-
 
 # Supported clients
 
