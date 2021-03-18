@@ -158,15 +158,17 @@ function CameraUI (log, config, api) {
         
           }
           
-          cameraConfig.rekognition = {
-            active: cameraConfig.rekognition.active || false,
-            confidence: cameraConfig.rekognition.confidence > 0
-              ? cameraConfig.rekognition.confidence
-              : 90,
-            labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
-              ? cameraConfig.rekognition.labels
-              : ['Human', 'Person', 'Face']
-          };
+          if(cameraConfig.rekognition){
+            cameraConfig.rekognition = {
+              active: cameraConfig.rekognition.active || false,
+              confidence: cameraConfig.rekognition.confidence > 0
+                ? cameraConfig.rekognition.confidence
+                : 90,
+              labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
+                ? cameraConfig.rekognition.labels
+                : ['Human', 'Person', 'Face']
+            };
+          }
           
           this.cameraConfigs.set(uuid, cameraConfig);
         
