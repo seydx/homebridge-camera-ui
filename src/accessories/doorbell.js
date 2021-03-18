@@ -4,14 +4,12 @@ const Logger = require('../../lib/logger.js');
 
 class doorbellService {
 
-  constructor (accessory, cameraConfig, platform) {
+  constructor (api, accessory, cameraConfig, handler) {
     
-    this.platform = platform;
-    
-    this.api = platform.api;
-    this.config = platform.config;
+    this.api = api;
     this.cameraConfig = cameraConfig;
     this.accessory = accessory;
+    this.handler = handler;
     
     this.getService(this.accessory);
 
@@ -53,7 +51,7 @@ class doorbellService {
         .getCharacteristic(this.api.hap.Characteristic.On)
         .on('set', (state, callback) => {
           Logger.info('Doorbell ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
-          this.platform.setHandler('doorbell', accessory, state, 1);
+          this.handler.doorbellHandler(accessory, state, 1);
           callback();
         });
       

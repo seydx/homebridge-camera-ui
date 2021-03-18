@@ -4,14 +4,12 @@ const Logger = require('../../lib/logger.js');
 
 class motionService {
 
-  constructor (accessory, cameraConfig, platform) {
-
-    this.platform = platform;
+  constructor (api, accessory, cameraConfig, handler) {
     
-    this.api = platform.api;
-    this.config = platform.config;
+    this.api = api;
     this.cameraConfig = cameraConfig;
     this.accessory = accessory;
+    this.handler = handler;
     
     this.getService(this.accessory);
 
@@ -60,7 +58,7 @@ class motionService {
         .getCharacteristic(this.api.hap.Characteristic.On)
         .on('set', (state, callback) => {
           Logger.info('Motion Switch ' + (state ? 'activated!' : 'deactivated!'), accessory.displayName);
-          this.platform.setHandler('motion', accessory, state, 1);
+          this.handler.motionHandler(accessory, state, 1);
           callback();
         });
     
