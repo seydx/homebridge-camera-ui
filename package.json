@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "3.3.0-beta.4",
+  "version": "3.3.0-beta.5",
   "description": "Camera User Interface for Homebridge",
   "main": "index.js",
   "devDependencies": {},
