@@ -65,9 +65,7 @@ The default username is ``admin`` and the default password is ``admin``.
             "mqtt": {
                 "active": false,
                 "host": "192.168.178.123",
-                "port": 1883,
-                "topic": "homebridge/motion",
-                "on_message": "ON"
+                "port": 1883
             },
             "http": {
                 "active": false,
@@ -80,8 +78,7 @@ The default username is ``admin`` and the default password is ``admin``.
                 "cert": "/path/to/cert/server.crt"
             },
             "options": {
-                "videoProcessor": "ffmpeg",
-                "interfaceName": "eth0"
+                "videoProcessor": "ffmpeg"
             },
             "cameras": [ ... ],
             "platform": "CameraUI"
