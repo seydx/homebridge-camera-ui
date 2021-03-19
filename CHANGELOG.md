@@ -7,6 +7,8 @@
   - Now it is possible that the image is sent immediately via Telegram without saving the image/video before. (Recording must be active under setting and Telegram must be set to 'Snapshot' for the camera).
 - Webhook
   - Motion detection data is now sent along as payload
+- Endpoints
+  - Added "exclude" as a new endpoint to trigger via webhook
 - Refactored config.schema.json
 - Refactored MQTT/HTTP and automation handler
 - Added TLS option to MQTT
