@@ -1,6 +1,6 @@
 (async function ($) {
   'use strict';
-  
+
   let username = getUsername();
   let theme = getTheme();
   
@@ -378,9 +378,9 @@
               },
               100
             );
-            $('.scrollitem').removeClass('active');
+            $('.scrollitem').removeClass('subActive');
             let item = $('.scrollitem').get(0);
-            $(item).addClass('active');
+            $(item).addClass('subActive');
             $('#preloader').velocity({ opacity: 0, display: 'none' }, { delay: 500 });
           },
         });
@@ -488,14 +488,37 @@
             id +
             '" class="fa fa-minus-circle removeRoom"></i></div></li>'
       );
+      
+      $('.availableRooms').append('<option value="' + $('#roomName').val() + '">' + $('#roomName').val() + '</option>');
         
       $('#roomName').val('');
+      
+    } else {
+    
+      $('#roomName').popover({
+        title: window.i18next.t('views.settings.views.general.rooms_name_error_title'), 
+        content: window.i18next.t('views.settings.views.general.rooms_name_error_text'),
+        placement: 'top'
+      });
+    
+      $('#roomName').popover('enable');
+      $('#roomName').popover('show');
+    
     }
+    
+  });
+  
+  $('#roomName').on('shown.bs.popover', function () {
+    setTimeout(() => {
+      $('#roomName').popover('hide');
+      $('#roomName').popover('disable');
+    }, 3000);
   });
   
   $('#rooms').on('click', '.removeRoom', function (e) {
     let idRoom = $(this).attr('data-target');
     $('#' + idRoom).remove();
+    $('.availableRooms option[value="' + idRoom + '"]').remove();
   });
   
   $('#profileImage').click(function (e) {
@@ -517,9 +540,28 @@
   
   $('.scrollitem').click(function (e) {
     e.preventDefault();
-  
-    $('.scrollitem').removeClass('active');
-    $(this).addClass('active');
+    
+    $($('.subActive').attr('href')).animate(
+      {
+        opacity: 0
+      },
+      { duration: 500, queue: false }
+    );
+    
+    $('.scrollitem').removeClass('subActive');
+    
+    $(this).addClass('subActive');
+    
+    $($(this).attr('href')).animate(
+      {
+        opacity: 100
+      },
+      { duration: 500, queue: false }
+    );
+    
+    $('.page').velocity({
+      height: $($(this).attr('href')).children('.innerContainer').height()
+    });
   
     let index = $(this).index();
     let width = index > lastIndexx ? -$('.page').width() : $('.page').width();
@@ -625,7 +667,7 @@
       
     if (d == 'left') {
       if (lastItem !== lastIndexx) {
-        $('.scrollitem').removeClass('active');
+        $('.scrollitem').removeClass('subActive');
   
         let newVal = lastLeft - oldWidth;
         lastLeft = newVal;
@@ -635,11 +677,14 @@
   
         let idBefore = $(obj[lastIndexx - 1])[0];
         let idAfter = $(obj[lastIndexx + 1])[0];
-  
         let url = 'a[href="#' + id + '"]';
         let linkActive = $(url);
   
-        linkActive.addClass('active');
+        linkActive.addClass('subActive');
+        
+        $('.page').velocity({
+          height: $('#' + id).children('.innerContainer').height()
+        });
   
         let eleWidth = linkActive.outerWidth() + 25;  
         let eLeft = $(linkActive).offset().left;
@@ -673,7 +718,7 @@
         );
   
         if ($(idBefore).length)
-          $(idBefore).velocity(
+          $(idBefore).animate(
             {
               opacity: 0
             },
@@ -684,7 +729,7 @@
       }
     } else if (d == 'right') {
       if (lastIndexx !== 0) {
-        $('.scrollitem').removeClass('active');
+        $('.scrollitem').removeClass('subActive');
   
         let newVal = lastLeft + oldWidth;
         lastLeft = newVal;
@@ -693,11 +738,15 @@
         let id = $(obj[lastIndexx])[0].id;
         let url = 'a[href="#' + id + '"]';
         let linkActive = $(url);
-  
+
         let idBefore = $(obj[lastIndexx - 1])[0];
         let idAfter = $(obj[lastIndexx + 1])[0];
   
-        linkActive.addClass('active');
+        linkActive.addClass('subActive');
+        
+        $('.page').velocity({
+          height: $('#' + id).children('.innerContainer').height()
+        });
           
         let eleWidth = linkActive.outerWidth();  
         let eLeft = $(linkActive).offset().left - 25;
@@ -732,7 +781,7 @@
         );
   
         if ($(idAfter).length)
-          $(idAfter).velocity(
+          $(idAfter).animate(
             {
               opacity: 0
             },

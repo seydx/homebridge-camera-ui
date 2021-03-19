@@ -2540,7 +2540,7 @@ nav {
   background: rgb(255 255 255 / 24%);
 }
 
-.btn-settings.active {
+.btn-settings.subActive {
   background: rgb(255 255 255 / 24%);
 }
 
@@ -2668,6 +2668,10 @@ nav {
 
 .settings-cameras-text-area {
   border-top: 1px solid var(--secondary-font-color);
+}
+
+.page {
+  overflow: hidden;
 }
 
 input[type="file"] {
@@ -3476,7 +3480,6 @@ input[type="file"] {
 .notification-text {
   font-size: 12px;
   color: var(--secondary-font-color);
-  margin-top: 5px!important;
 }
 
 .notification-deck-remove {
