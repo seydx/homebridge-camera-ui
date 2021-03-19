@@ -104,6 +104,8 @@
           "rooms_title": "Kamers",
           "rooms_name": "Naam van kamer",
           "rooms_name_standard": "Standaard",
+          "rooms_name_error_title": "Fout",
+          "rooms_name_error_text": "De ingevoerde kamernaam mag niet leeg zijn of al bestaan!",
           "nothing_selected": "Niets geselecteerd"
         },
         "dashboard": {

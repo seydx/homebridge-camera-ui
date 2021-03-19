@@ -104,6 +104,8 @@
           "rooms_title": "Räume",
           "rooms_name": "Raum Name",
           "rooms_name_standard": "Standard",
+          "rooms_name_error_title": "Fehler",
+          "rooms_name_error_text": "Der eingegebene Raumname darf nicht leer sein oder bereits existieren!",
           "nothing_selected": "Nichts ausgewählt"
         },
         "dashboard": {
