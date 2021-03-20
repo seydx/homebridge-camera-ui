@@ -807,12 +807,10 @@ block content
                     h3.settings-box-title=t('views.settings.views.webhook.title_endpoints')
                     ul.settings-box.w-100
                       li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
-                        .col-12.no-border
-                          a(href="#athome_endpoints" data-toggle="collapse" aria-expanded="false" aria-controls="athome_endpoints")
-                            i.fas.fa-chevron-circle-down.text-color-pink#athome_arrow
+                        .col-12.no-border.settings-box-inner-title
                           span=' ' + t('views.settings.views.webhook.athome_endpoint')
                         .col
-                          #athome_endpoints.collapse.multi-collapse
+                          #athome_endpoints
                             .card.no-shadow
                               ul
                                 li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
@@ -825,12 +823,10 @@ block content
                                   .col-4.text-left.p-1=t('views.settings.views.webhook.athome_trigger')
                                   .col-8.text-right.p-1 /interface?atHome=trigger&username=admin&password=admin
                       li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.mt-2
-                        .col-12.no-border
-                          a(href="#exclude_endpoints" data-toggle="collapse" aria-expanded="false" aria-controls="exclude_endpoints")
-                            i.fas.fa-chevron-circle-down.text-color-pink#exclude_arrow
+                        .col-12.no-border.settings-box-inner-title
                           span=' ' + t('views.settings.views.webhook.exclude_endpoint')
                         .col
-                          #exclude_endpoints.collapse.multi-collapse
+                          #exclude_endpoints
                             .card.no-shadow
                               ul
                                 li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
@@ -849,4 +845,3 @@ block footscripts
   script(type='text/javascript' src='/javascripts/modules/jquery.serializeJSON.js' defer)
   script(type='text/javascript' src='/javascripts/modules/bootstrap-select.min.js' defer)
   script(type='text/javascript' src='/javascripts/views/settings.js' defer)
-  
