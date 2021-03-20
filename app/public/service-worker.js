@@ -129,7 +129,7 @@ const urlsToCache = [
   '/plugins/shuffle/shuffle.min.js',
   '/plugins/daterangepicker/moment.min.js',
   '/plugins/daterangepicker/daterangepicker.css',
-  '/plugins/daterangepicker/daterangepicker.js',
+  '/plugins/daterangepicker/daterangepicker.min.js',
   //'/sounds/notification.wav',
   '/www/config.xml',
   '/www/manifest.json',

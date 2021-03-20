@@ -51,10 +51,12 @@ $('.dropdown-item').on('click', function(e) {
   if($(this).hasClass('filter-dropdown-active')){
   
     $(this).removeClass('filter-dropdown-active');
+    $(this).addClass('filter-dropdown-notactive');
     collectedItems = collectedItems.filter(item => item && item != selectedGrp);
   
   } else {
   
+    $(this).removeClass('filter-dropdown-notactive');
     $(this).addClass('filter-dropdown-active');
     if(!collectedItems.includes(selectedGrp))
        collectedItems.push(selectedGrp)
@@ -73,8 +75,8 @@ if(pageTitle !== 'Cameras'){
   ranges[window.i18next.t('datepicker.yesterday')]  = [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')];
   ranges[window.i18next.t('datepicker.last7days')]  = [moment().subtract(6, 'days').startOf('day'), moment()];
   ranges[window.i18next.t('datepicker.last30days')] = [moment().subtract(29, 'days').startOf('day'), moment()];
-  ranges[window.i18next.t('datepicker.thismonth')]  = [moment().startOf('month'), moment().endOf('month')];
-  ranges[window.i18next.t('datepicker.lastmonth')]  = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];
+  /*ranges[window.i18next.t('datepicker.thismonth')]  = [moment().startOf('month'), moment().endOf('month')];
+  ranges[window.i18next.t('datepicker.lastmonth')]  = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];*/
   
   $('input[name="daterange"]').daterangepicker({
       "showDropdowns": true,

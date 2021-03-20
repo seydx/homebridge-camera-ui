@@ -654,28 +654,6 @@
       }
   
       $(obj).css('left', leftValue);
-      
-      let activePage;
-      
-      if($('#profile').visible( true )){
-        activePage = $('#profile');
-      } else if($('#general').visible( true )){
-        activePage = $('#general');
-      } else if($('#dashboard').visible( true )){
-        activePage = $('#dashboard');
-      } else if($('#cameras').visible( true )){
-        activePage = $('#cameras');
-      } else if($('#recordings').visible( true )){
-        activePage = $('#recordings');
-      } else if($('#notifications').visible( true )){
-        activePage = $('#notifications');
-      } else if($('#camview').visible( true )){
-        activePage = $('#camview');
-      } else if($('#webhook').visible( true )){
-        activePage = $('#webhook');
-      }
-      
-      $('.page').css('height', activePage.children('.innerContainer').height());
   
       $(window).scrollTop(0);
     }
