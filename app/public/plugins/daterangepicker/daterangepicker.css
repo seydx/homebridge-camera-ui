@@ -239,6 +239,9 @@
   border-radius: 5px;
   background: var(--third-bg-color);
   color: var(--primary-font-color);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .daterangepicker select.monthselect {
@@ -263,11 +266,14 @@
   border-radius: 5px;
   background: var(--third-bg-color);
   color: var(--primary-font-color);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .daterangepicker .calendar-time {
   text-align: center;
-  margin: 4px auto 0 auto;
+  margin: 14px auto 0 auto;
   line-height: 30px;
   position: relative;
 }
@@ -288,9 +294,10 @@
 }
 
 .daterangepicker .drp-selected {
-  display: inline-block;
+  display: none;
   font-size: 12px;
-  padding-right: 8px;
+  float: left;
+  margin-top: 8px;
 }
 
 .daterangepicker .drp-buttons .btn {
@@ -351,8 +358,8 @@
 }
 
 .daterangepicker .ranges li:hover {
-  background-color: #eee;
-  color: var(--secondary-font-color);
+  background-color: var(--primary-color);
+  color: #fff!important;
 }
 
 .daterangepicker .ranges li.active {
@@ -368,6 +375,13 @@
 
   .daterangepicker .ranges ul {
     width: 140px;
+  }
+  .daterangepicker .calendar-time {
+    margin-top: 4px;
+  }
+  
+  .daterangepicker .drp-selected {
+    display: inline-block;
   }
 
   .daterangepicker.single .ranges ul {

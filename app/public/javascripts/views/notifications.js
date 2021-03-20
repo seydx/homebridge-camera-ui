@@ -41,10 +41,11 @@
           
           setTimeout(()=>{
             if(!$('.shuffle-item').length){
-              $('#removeAllNotifications').hide();   
+              $('#removeAllNotifications').fadeOut();   
               $('.nots-container').append(
-                '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+                '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" style="display: none;" />'
               );
+              $('.mw-470').fadeIn();
             }
           }, 500);    
         
@@ -91,10 +92,11 @@
             
             setTimeout(()=>{
               if(!$('.shuffle-item').length){
-                $('#removeAllNotifications').hide();   
+                $('#removeAllNotifications').fadeOut();   
                 $('.nots-container').append(
-                  '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+                  '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" style="display: none;" />'
                 );
+                $('.mw-470').fadeIn();
               }
             }, 500);
               

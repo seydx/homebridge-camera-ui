@@ -771,6 +771,18 @@ iframe {
 # Utilitiyz
 --------------------------------------------------------------*/
 
+.toast-container > .toast {
+
+  margin: 10px!important;
+
+}
+
+.toast-header {
+
+  padding: 10px!important;
+
+}
+
 .overflow-hidden {
   overflow: hidden!important;
 }
@@ -2516,6 +2528,9 @@ nav {
   font-size: 12px;
   border-bottom: 3px solid var(--secondary-color);
   color: #ffffff;
+  -webkit-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
 }
 
 .undertitle {
@@ -2538,6 +2553,10 @@ nav {
   z-index: 999;
   margin-top: -65px;
   height: 70px!important;
+  position: fixed;
+  -webkit-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
 }
 
 .dropdown-item:hover {
@@ -2562,6 +2581,9 @@ nav {
   font-size: 12px;
   border-bottom: 3px solid var(--secondary-color);
   color: #ffffff;
+  -webkit-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
 }
 
 .filter-text {
@@ -2590,24 +2612,24 @@ nav {
   color: #ffffff;
   border-radius: 5px;
 }
-
+                                       
 #reportrange {
   background: none!important;
   border: none!important;
 }
 
 .report-field {
-  width: 16px;
-  height: 20px;
   padding: 0;
-  margin: 0;
   background-image: url(/images/web/calendar.png);
   background-repeat: no-repeat;
   background-position: center center;
   color: transparent;
-  background-color: transparent;
-  background-size: contain;
   cursor: pointer;
+  background-color: var(--secondary-color);
+  border-radius: 20px;
+  width: 30px;
+  height: 30px;
+  background-size: 15px;
 }
 
 .mt-breadcrumb-filter {
@@ -2632,6 +2654,9 @@ nav {
   min-height: 50px;
   position: fixed;
   z-index: 999;
+  -webkit-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px -1px rgba(0,0,0,0.3);
 }
 
 .mt-breadcrumb-settings {
@@ -3480,7 +3505,7 @@ input[type="file"] {
   font-size: 13px;
   cursor: pointer;
   line-height: 2.2;
-  font-weight: bold;
+  font-weight: bold;   
 }
 
 #removeAllRecordings {
@@ -4397,6 +4422,15 @@ a>i:hover {
 }
 
 @media (min-width: 400px) {
+  .filter-dropdown-title {
+    font-size: 15px;
+  }
+  .filter-dropdown-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 480px) {
   .filter-text {
     display: inline-flex;
   }
@@ -4413,8 +4447,6 @@ a>i:hover {
     top: 50px;
   }
 }
-
-@media (min-width: 480px) {}
 
 @media (min-width: 576px) {}
 

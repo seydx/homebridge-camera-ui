@@ -126,6 +126,8 @@ if(pageTitle !== 'Cameras'){
       "cancelClass": "btn btn-secondary m-0 ml-1"
   }, function(start, end, label) {
   
+    $('.dropdown-item').removeClass('filter-dropdown-active');
+  
     shuffle.filter(element => {
       
       let dateAttr = $(element).attr('data-date-created');
