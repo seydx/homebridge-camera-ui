@@ -2668,6 +2668,12 @@ nav {
   font-weight: 600;
 }
 
+.settings-box-inner-title {
+  background: var(--primary-color);
+  padding: 10px;
+  border-radius: 5px;
+}
+
 #settings ul {
   list-style: none;
   padding: 10px;
