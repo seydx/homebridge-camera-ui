@@ -398,7 +398,7 @@ module.exports = {
     app.use('/camviews', camviews(app, db_cameras));
     app.use('/notifications', notifications(app, db_notifications));
     app.use('/settings', settings(app, upload, db_settings, db_users));
-    app.use('/recordings', recordings(app, db_settings, db_recordings));
+    app.use('/recordings', recordings(app, db_settings, db_cameras, db_recordings));
     app.use('/interface', interFace(app, db_settings, db_users));
     app.use('/files', files(app, db_settings, configPath));
     app.use('/subscribe', subscribe(app, db_settings));

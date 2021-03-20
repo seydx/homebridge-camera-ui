@@ -1,5 +1,7 @@
 'use strict';
 
+const Logger = require('../../lib/logger.js');
+
 const express = require('express');
 const router = express.Router();
 
@@ -32,12 +34,14 @@ module.exports = (app, db_settings, db_cameras) => {
         
       } catch(err) {
         
+        Logger.ui.error(err);
         res.status(500).send(err);
         
       }
     
     } else {
     
+      Logger.ui.error('Camera not found!');
       res.status(500).send('Camera not found!');
     
     }

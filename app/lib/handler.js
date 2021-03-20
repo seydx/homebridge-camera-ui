@@ -24,7 +24,9 @@ const stringIsAValidUrl = (s) => {
   }
 };
 
-var database, webpushhh, telegramCredentials, telegramBot, streamSessions, rekognition;  
+var database, webpushhh, telegramCredentials, telegramBot, streamSessions, rekognition;
+
+const movementHandler = {}; 
 
 module.exports = {
 
@@ -59,62 +61,99 @@ module.exports = {
     const exclude = database.db.get('settings').get('general').get('exclude').value();
     const recPath = database.db.get('settings').get('recordings').get('path').value();
     const recTimer = database.db.get('settings').get('recordings').get('timer').value();
+    const recActive = database.db.get('settings').get('recordings').get('active').value();
     
     if(active && (!atHome || atHome && exclude.includes(accessory.displayName))){
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
-      
-      //Motion Info
-      const motionInfo = this.createMotionInfo(accessory);
-
-      //Get Snapshot Buffer
-      const imageBuffer = await record.getSnapshot(accessory.context.videoConfig); 
-
-      let detected = accessory.context.rekognition && accessory.context.rekognition.active && rekognition
-        ? await this.handleImageDetection(accessory, imageBuffer)
-        : undefined;
         
-      if(detected || detected === undefined){
+      if(!movementHandler[accessory.displayName]){
       
-        //Notification Info
-        const notification = this.handleNotification(accessory, type, motionInfo, detected);
-  
-        //Recording Info
-        const recording = this.handleRecording(accessory, type, notification, motionInfo);
-
-        //Trigger webhook with information about accessory
-        this.webHook(accessory, notification);
-
-        if(motionInfo.record){
-
-          //Send notification with picture before creating video
-          this.teleGram(notification, accessory, motionInfo.record, imageBuffer);
-
-          //Store Snapshot/Video
-          await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, true);
-          await record.storeVideo(recording.camera, recording.info, recPath, recTimer);
+        //movement wip = true
+        movementHandler[accessory.displayName] = true; 
+        
+        //Motion Info
+        const motionInfo = this.createMotionInfo(recActive);
+        
+        //reserve session for movement
+        if(recActive){
+        
+          //recording is active, lets save a place at sessionHandler
+          let allowStream = streamSessions.requestSession(accessory.displayName);
+      
+          if(allowStream){
+            
+            //Get Snapshot Buffer
+            const imageBuffer = await record.getSnapshot(accessory.context.videoConfig); 
+      
+            let detected = accessory.context.rekognition && accessory.context.rekognition.active && rekognition
+              ? await this.handleImageDetection(accessory, imageBuffer)
+              : undefined;
+              
+            if(detected || detected === undefined){
+            
+              //Notification Info
+              const notification = this.handleNotification(accessory, type, motionInfo, detected);
+        
+              //Recording Info
+              const recording = this.handleRecording(accessory, type, notification, motionInfo);
+      
+              //Trigger webhook with information about accessory
+              this.webHook(accessory, notification);
           
-          streamSessions.closeSession(accessory.displayName);
+              if(notification.fileType === 'Video'){
+              
+                //Send notification with picture before creating video
+                this.teleGram(notification, accessory, motionInfo.record, imageBuffer);
+      
+                //Store Snapshot/Video
+                await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, true);
+                await record.storeVideo(recording.camera, recording.info, recPath, recTimer, streamSessions);
+                
+                socket.io('notification', notification);
+                socket.storeNots(notification);
+                this.webPush(notification, accessory); 
+                
+                //Handle Push
+                this.handlePush(accessory, notification, motionInfo, true, true);
+              
+              } else {
+              
+                //Store Snapshot
+                await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, false);
+                
+                //Handle Push
+                this.handlePush(accessory, notification, motionInfo, true, false);
+              
+              }
+              
+            } else {
+            
+              Logger.ui.debug('Skip handling movement. Configured label not detected.', accessory.displayName);
+            
+            }
           
-          socket.io('notification', notification);
-          socket.storeNots(notification);
-          this.webPush(notification, accessory);  
+            streamSessions.closeSession(accessory.displayName);
           
+          }
+        
         } else {
+        
+          //recording not active, handle only movement
+          
+          //Notification Info
+          const notification = this.handleNotification(accessory, type, motionInfo);
+          
+          //Handle Push
+          this.handlePush(accessory, notification, motionInfo);
 
-          //Store Snapshot
-          await record.storeSnapshot(recording.camera, imageBuffer, recording.info, recPath, false);
-          
-          socket.io('notification', notification);
-          socket.storeNots(notification);
-          this.webPush(notification, accessory);  
-          this.teleGram(notification, accessory, motionInfo.record);
-          
         }
         
+        movementHandler[accessory.displayName] = false; 
+      
       } else {
       
-        Logger.ui.debug('Skip storing movement. Configured label not detected.', accessory.displayName);
+        Logger.ui.warn('Can not handle movement, another movement currently in progress for this camera', accessory.displayName);
       
       }
 
@@ -130,11 +169,7 @@ module.exports = {
   
   },
   
-  createMotionInfo: function(accessory){
-  
-    const recActive = database.db.get('settings').get('recordings').get('active').value();
-  
-    let recordNotification = recActive ? streamSessions.requestSession(accessory.displayName) : false;
+  createMotionInfo: function(recActive){
 
     let time = {
       time: moment().format('DD.MM.YYYY, HH:mm:ss'),
@@ -144,7 +179,7 @@ module.exports = {
     let rndm = crypto.randomBytes(5).toString('hex');
     
     return {
-      record: recordNotification,
+      record: recActive,
       time: time,
       hash: rndm
     };
@@ -207,6 +242,20 @@ module.exports = {
       return false;
     
     }
+  
+  },
+  
+  handlePush: function(accessory, notification, motionInfo, whSend, tgSend){
+
+    socket.io('notification', notification);
+    socket.storeNots(notification);
+    this.webPush(notification, accessory);
+    
+    if(!whSend)
+      this.webHook(accessory, notification); 
+    
+    if(!tgSend)
+      this.teleGram(notification, accessory, motionInfo.record);
   
   },
 
