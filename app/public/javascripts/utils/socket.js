@@ -237,15 +237,10 @@
         $('.mw-470').remove();
       }
          
-      $('form').prepend('<a class="col-12 notification-deck position-relative ' + notification.room.replace(/\s/g,'') + '" href="' + url_path + '" data-filterable="yes" data-target="' + notification.id + '" data-rel="lightcase" style="opacity: 0; display: none!important">' + (isMobile() === false ? '<i class="removeNotification fa fa-times-circle text-color-pink notification-remove" style="display: none;"></i>' : '<div class="notification-deck-remove">X</div>') + '<div class="row justify-content-center"><div class="col-9"><h3 class="m-0 notification-title">' + notification.originName + ' (' + notification.room + ')' + '</h3><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.movement') + ': </b><span>' + notification.time + '</span></p></div><div class="col-3 text-right"><img class="notification-img" onerror="this.onerror=null;this.src=\'/images/web/noimg.png\';" src="' + img_url_path + '" width="45" height="45" alt="' + window.i18next.t('views.notifications.img_notification') + '"/></div></div></a>');
-             
-      $('[data-target="' + notification.id + '"]')
-        .velocity({ opacity: 1, display: 'block' }, 500);  
-            
-      if(!($('#removeAllNotifications').length) && role && role === 'Master'){
-        $('.nots-container').append('<div class="remover d-flex justify-content-center" style="opacity: 0; display: none;"><div class="btn logout" id="removeAllNotifications">' + window.i18next.t('views.notifications.btn_removeall') + '</div></div>');
-        $('.remover').velocity({ opacity: 1, display: 'block' }, 500);  
-      }
+      $('#shuffledCards').prepend('<a class="filter-cards col-12 notification-deck ' + notification.room.replace(/\s/g,'') + '" href="' + url_path + '" data-filterable="yes" data-target="' + notification.id + '" data-rel="lightcase" data-groups="[' + notification.fileType  + ', ' + notification.room  + ', ' + notification.originName  + ']" data-date-created="' + notification.time + '" data-title="' + notification.originName + '"><i class="removeNotification fa fa-times-circle text-color-pink notification-remove" style="display: none; opacity: 0;"></i><div class="notification-deck-remove">X</div><div class="row justify-content-center"><div class="col-9"><h3 class="m-0 notification-title">' + notification.originName + ' (' + notification.room + ')' + '</h3><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.movement') + ': </b><span>' + notification.time + '</span></p><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.labels') + ': </b><span>' + notification.labels + '</span></p></div><div class="col-3 text-right"><img class="notification-img" onerror="this.onerror=null;this.src=\'/images/web/noimg.png\';" src="' + img_url_path + '" width="45" height="45" alt="' + window.i18next.t('views.notifications.img_notification') + '"></div></div></a>');
+        
+      shuffle.add($('[data-target="' + notification.id + '"]'));
+      $('#removeAllNotifications').show();
         
       if(role && role === 'Master'){
         $('.notification-deck').unbind();
@@ -301,7 +296,7 @@
             $(this).remove(); 
                 
             if (!notifications.length) {
-              $('#removeAllNotifications').remove();
+              $('#removeAllNotifications').hide();
               $('.nots-container').append(
                 '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
               );

@@ -17,19 +17,6 @@
       }
     }
   });
-
-  if(role && role === 'Master'){
-    $('.video-cards').hover(
-      function () {
-        let removeBtn = $(this).children()[0];
-        $(removeBtn).velocity({ opacity: 1, display: 'block' },0);
-      },
-      function () {
-        let removeBtn = $(this).children()[0];
-        $(removeBtn).velocity({ opacity: 0, display: 'none' },0);
-      }
-    );
-  }
     
   $('#recs').on('click', function (e) {
       
@@ -50,21 +37,23 @@
           jqXHR
         ) {
           if (jqXHR.status === 200) {
-            $(light).velocity({ opacity: 0, display: 'none' }).then( function () {
-              $(light).remove();
-              
-              let removedInfo = window.i18next.t('views.recordings.rec_removed');
-              removedInfo = removedInfo.replace('@', id);
-              
-              $.snack('success', removedInfo, 3000);
-  
-              let recs = $('#recs').children();
-  
-              if (!recs.length) {
-                $('#removeAllRecordings').remove();
-                $('#recordings').append('<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />');
-              }
-            });
+          
+            shuffle.remove($(light));
+          
+            let removedInfo = window.i18next.t('views.recordings.rec_removed');
+            removedInfo = removedInfo.replace('@', id);
+            
+            $.snack('success', removedInfo, 3000);
+
+            setTimeout(()=>{
+              if(!$('.shuffle-item').length){
+                $('#removeAllRecordings').hide();   
+                $('#recordings').append(
+                  '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />'
+                ); 
+              }  
+            }, 500);     
+
           } else {
             console.log('Error');
             $.snack('error', window.i18next.t('views.recordings.error'), 3000);
@@ -77,40 +66,37 @@
       
   });
    
-  $('#recordings').on('click', '#removeAllRecordings', function (e) {
+  $('#removeAllRecordings').on('click', function (e) {
+  
+    let filteredItems = [];
     
-    let allBoxes = $('.filterBtn:checkbox');
-    let room = [];
-    
-    allBoxes.each(function () {
-      if(this.checked)
-        room.push(this.value);
+    $('.shuffle-item--visible').each(function(){
+      filteredItems.push($(this).attr('data-target'));
     });
     
     $.ajax({
       url: '/recordings',
       type: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({ all: true, room: room }),
+      data: JSON.stringify({ all: true, items: filteredItems }),
       success: function(data, textStatus, jqXHR){
         
-        let newTarget = $('.video-cards');
-        let found = false;        
-        
-        newTarget.each(function(){
-          if($(this).css('display') !== 'none'){
-            found = true;
-            $(this).remove();                   
-          }            
-        });
-        
-        if(found){
+        if($('.video-cards').length){
+          
+          shuffle.remove($('.video-cards'));
+          
           $.snack('success', window.i18next.t('views.recordings.all_removed'), 3000);
-          $('#removeAllRecordings').remove();   
-          $('#recordings').append(
-            '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />'
-          );                
-        }                    
+
+          setTimeout(()=>{
+            if(!$('.shuffle-item').length){
+              $('#removeAllRecordings').hide();   
+              $('#recordings').append(
+                '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" />'
+              ); 
+            }  
+          }, 500);               
+        
+        }                  
 
       },
       error: function(jqXHR, textStatus, error){

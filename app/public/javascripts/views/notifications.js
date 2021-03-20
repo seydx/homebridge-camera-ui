@@ -18,40 +18,37 @@
     );
   }
   
-  $('#notifications').on('click', '#removeAllNotifications', function (e) {
+  $('#removeAllNotifications').on('click', function (e) {
+  
+    let filteredItems = [];
     
-    let allBoxes = $('.filterBtn:checkbox');
-    let room = [];
-    
-    allBoxes.each(function () {
-      if(this.checked)
-        room.push(this.value);
+    $('.shuffle-item--visible').each(function(){
+      filteredItems.push($(this).attr('data-target'));
     });
     
     $.ajax({
       url: '/notifications',
       type: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({ all: true, room: room }),
+      data: JSON.stringify({ all: true, items: filteredItems }),
       success: function(data, textStatus, jqXHR){
       
-        let newTarget = $('.notification-deck');
-        let found = false;        
-        
-        newTarget.each(function(){
-          if($(this).css('display') !== 'none'){
-            found = true;
-            $(this).remove();                   
-          }            
-        });
-        
-        if(found){
+        if($('.notification-deck').length){
+          
+          shuffle.remove($('.notification-deck'));
+          
           $.snack('success', window.i18next.t('views.notifications.all_removed'), 3000);
-          $('#removeAllNotifications').remove();   
-          $('.nots-container').append(
-            '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
-          );              
-        } 
+          
+          setTimeout(()=>{
+            if(!$('.shuffle-item').length){
+              $('#removeAllNotifications').hide();   
+              $('.nots-container').append(
+                '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+              );
+            }
+          }, 500);    
+        
+        }  
 
       },
       error: function(jqXHR, textStatus, error){
@@ -84,25 +81,23 @@
           jqXHR
         ) {
           if (jqXHR.status === 200) {
-            $(light)
-              .velocity({ opacity: 0, display: 'none' }, { duration: 500 })
-              .then( function () {
-                $(light).remove();
-                
-                let removedInfo = window.i18next.t('views.notifications.not_removed');
-                removedInfo = removedInfo.replace('@', id);
+          
+            shuffle.remove($(light));
+            
+            let removedInfo = window.i18next.t('views.notifications.not_removed');
+            removedInfo = removedInfo.replace('@', id);
+          
+            $.snack('success', removedInfo, 3000);
+            
+            setTimeout(()=>{
+              if(!$('.shuffle-item').length){
+                $('#removeAllNotifications').hide();   
+                $('.nots-container').append(
+                  '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
+                );
+              }
+            }, 500);
               
-                $.snack('success', removedInfo, 3000);
-  
-                let notifications = $('#nots').children();
-  
-                if (!notifications.length) {
-                  $('#removeAllNotifications').remove();
-                  $('.nots-container').append(
-                    '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
-                  );
-                }
-              });
           } else {
             console.log('Error');
             $.snack('error', window.i18next.t('views.notifications.error'), 3000);
