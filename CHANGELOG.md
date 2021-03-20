@@ -5,6 +5,8 @@
   - Added Image Rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each cam. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
 - Telegram Notification
   - Now it is possible that the image is sent immediately via Telegram without saving the image/video before. (Recording must be active under setting and Telegram must be set to 'Snapshot' for the camera).
+- New Filter Function
+  - Discover the completely redesigned filter function of camera.ui. It is now possible to filter by camera, room, type and even time.
 - Webhook
   - Motion detection data is now sent along as payload
 - Endpoints
@@ -14,6 +16,7 @@
 - Added TLS option to MQTT
 - Added timeout to ffmpeg streams
 - Fixed incorrect ffmpeg stream sessions
+- Fixed motion handling
 - UI improvements
 - General improvements & bugfixes
 - Added more debug
