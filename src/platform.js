@@ -208,7 +208,7 @@ CameraUI.prototype = {
       
       try {
           
-        if(!cameraConfig){
+        if(!cameraConfig && !cameraConfig.unbridge){
           this.removeAccessory(accessory);
         } else if(cameraConfig.unbridge){
           this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);

@@ -58,7 +58,7 @@ class Handler {
     
   }
   
-  motionHandler(accessory, active, minimumTimeout){
+  motionHandler(accessory, active){
   
     const motionSensor = accessory.getService(this.api.hap.Service.MotionSensor);
     
@@ -67,8 +67,6 @@ class Handler {
       let cameraConfig = this.cameraConfigs.get(accessory.UUID);
 
       Logger.debug('Switch motion detect ' + (active ? 'on.' : 'off.'), accessory.displayName);
-      
-      handler.handleMotion(accessory, cameraConfig, active, 'motion');
       
       const timeout = this.motionTimers.get(accessory.UUID);
       
@@ -83,26 +81,32 @@ class Handler {
       
       if (active) {
       
-        motionSensor.updateCharacteristic(this.api.hap.Characteristic.MotionDetected, true);
+        handler.handleMotion(accessory, cameraConfig, 'motion');
+      
+        motionSensor
+          .updateCharacteristic(this.api.hap.Characteristic.MotionDetected, true);
         
         if (motionTrigger)
-          motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
+          motionTrigger
+            .updateCharacteristic(this.api.hap.Characteristic.On, true);
         
         if (cameraConfig.motionDoorbell)
           this.doorbellHandler(accessory, true, true);
         
-        let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 1) : 1;
-        
-        if (timeoutConfig < minimumTimeout)
-          timeoutConfig = minimumTimeout;
+        let timeoutConfig = !isNaN(parseInt(cameraConfig.motionTimeout))
+          ? cameraConfig.motionTimeout
+          : 1;
 
         if (timeoutConfig > 0) {
           
           const timer = setTimeout(() => {
             
             Logger.info('Motion handler timeout.', accessory.displayName);
+            
             this.motionTimers.delete(accessory.UUID);
-            motionSensor.updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
+            
+            motionSensor
+              .updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
             
             if (motionTrigger)
               motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
@@ -121,10 +125,12 @@ class Handler {
         
       } else {
       
-        motionSensor.updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
+        motionSensor
+          .updateCharacteristic(this.api.hap.Characteristic.MotionDetected, false);
         
         if (motionTrigger)
-          motionTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
+          motionTrigger
+            .updateCharacteristic(this.api.hap.Characteristic.On, false);
 
         if (cameraConfig.motionDoorbell)
           this.doorbellHandler(accessory, false, true);
@@ -157,9 +163,6 @@ class Handler {
       
       Logger.debug('Switch doorbell ' + (active ? 'on.' : 'off.'), accessory.displayName);
       
-      if(!fromMotion)
-        handler.handleMotion(accessory, cameraConfig, active, 'doorbell');
-      
       const timeout = this.doorbellTimers.get(accessory.UUID);
       
       if (timeout) {
@@ -170,23 +173,32 @@ class Handler {
       const doorbellTrigger = accessory.getServiceById(this.api.hap.Service.Switch, 'DoorbellTrigger');
       
       if (active) {
+      
+        if(!fromMotion)
+          handler.handleMotion(accessory, cameraConfig, 'doorbell');
         
-        doorbell.updateCharacteristic(this.api.hap.Characteristic.ProgrammableSwitchEvent,
-          this.api.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
+        doorbell
+          .updateCharacteristic(this.api.hap.Characteristic.ProgrammableSwitchEvent, this.api.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
         
         if (doorbellTrigger) {
         
-          doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, true);
+          doorbellTrigger
+            .updateCharacteristic(this.api.hap.Characteristic.On, true);
           
-          let timeoutConfig = cameraConfig ? (cameraConfig.motionTimeout || 0) : 1;
+          let timeoutConfig = !isNaN(parseInt(cameraConfig.motionTimeout))
+            ? cameraConfig.motionTimeout
+            : 1;
           
           if (timeoutConfig > 0) {
           
             const timer = setTimeout(() => {
            
               Logger.debug('Doorbell handler timeout.', accessory.displayName);
+              
               this.doorbellTimers.delete(accessory.UUID);
-              doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
+              
+              doorbellTrigger
+                .updateCharacteristic(this.api.hap.Characteristic.On, false);
           
             }, timeoutConfig * 1000);
             
@@ -204,7 +216,8 @@ class Handler {
       } else {
         
         if (doorbellTrigger)
-          doorbellTrigger.updateCharacteristic(this.api.hap.Characteristic.On, false);
+          doorbellTrigger
+            .updateCharacteristic(this.api.hap.Characteristic.On, false);
 
         return {
           error: false,
