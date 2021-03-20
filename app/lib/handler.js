@@ -55,7 +55,7 @@ module.exports = {
   
   },
   
-  handleMotion: async function(accessory, cameraConfig, active, type){
+  handleMotion: async function(accessory, cameraConfig, type){
     
     const atHome = database.db.get('settings').get('general').get('atHome').value();
     const exclude = database.db.get('settings').get('general').get('exclude').value();
@@ -63,7 +63,7 @@ module.exports = {
     const recTimer = database.db.get('settings').get('recordings').get('timer').value();
     const recActive = database.db.get('settings').get('recordings').get('active').value();
     
-    if(active && (!atHome || atHome && exclude.includes(accessory.displayName))){
+    if(!atHome || (atHome && exclude.includes(accessory.displayName))){
           
       Logger.ui.debug('New ' + (type === 'motion' ? 'Motion' : 'Doorbell') + ' Alert', accessory.displayName);
         
@@ -159,11 +159,7 @@ module.exports = {
 
     } else {
       
-      if(active && atHome && !exclude.includes(accessory.displayName)){
-      
-        Logger.ui.debug('Skip motion trigger. At Home is active and ' + accessory.displayName + ' is not excluded!');
-     
-      }
+      Logger.ui.debug('Skip motion trigger. At Home is active and ' + accessory.displayName + ' is not excluded!');
       
     }
   

@@ -3,15 +3,14 @@
 const Logger = require('../../lib/logger.js');
 const Stream = require('@seydx/node-rtsp-stream');
 
-var db, streamSessions;
+var db;
 const startedStreams = {};
 
 module.exports = {
 
-  init: function(accessories, ssl, ffmpegPath, db_settings, sessions){
+  init: function(accessories, ssl, ffmpegPath, db_settings, streamSessions){
 
     db = db_settings;
-    streamSessions = sessions;
     
     let cameras = db.getCameras();
 
@@ -33,13 +32,13 @@ module.exports = {
         
         rate = rate ? (rate < 20 ? 20 : rate) : 20;
         
-        startedStreams[accessory.displayName] = new Stream({
+        const options = {
           name: accessory.displayName,
           streamUrl: url,
           wsPort: accessory.context.videoConfig.socketPort,
           width: accessory.context.videoConfig.maxWidth||1280,
           height: accessory.context.videoConfig.maxHeight||720,
-          reloadTimer: 30,
+          reloadTimer: 10,
           ffmpegOptions: {
             '-s': videoSize,
             '-b:v': '299k',
@@ -50,12 +49,12 @@ module.exports = {
           },
           ssl: ssl,
           ffmpegPath: ffmpegPath 
-        }, Logger, streamSessions);
+        };
         
         if(audio){
           
-          startedStreams[accessory.displayName].options.ffmpegOptions = {
-            ...startedStreams[accessory.displayName].options.ffmpegOptions,
+          options.ffmpegOptions = {
+            ...options.ffmpegOptions,
             '-codec:a': 'mp2',
             '-bf': '0',
             '-ar': '44100',
@@ -65,13 +64,20 @@ module.exports = {
         
         }
         
-        if(startedStreams[accessory.displayName].wsPort && startedStreams[accessory.displayName].streamUrl){
-          startedStreams[accessory.displayName].pipeStreamToSocketServer();
-        } else {
-          if(!startedStreams[accessory.displayName].wsPort)
-            Logger.ui.warn('Can not start stream server - Socket Port not defined in videoConfig!', startedStreams[accessory.displayName].name);
-          if(!startedStreams[accessory.displayName].streamUrl)
-            Logger.ui.warn('Can not start stream server - Source not defined in videoConfig!', startedStreams[accessory.displayName].name);
+        startedStreams[accessory.displayName] = new Stream(options, Logger, streamSessions);
+        
+        if(options.wsPort && options.streamUrl){
+        
+          startedStreams[accessory.displayName].pipeStreamToServer();
+        
+        } else if(!options.wsPort){
+        
+          Logger.ui.warn('Can not start stream server - Socket Port not defined in videoConfig!', accessory.displayName.name);
+        
+        } else if(!options.streamUrl){
+        
+          Logger.ui.warn('Can not start stream server - Source not defined in videoConfig!', accessory.displayName.name);
+        
         }
       
       }
@@ -93,9 +99,6 @@ module.exports = {
   },
   
   set: function(camera, options){
-  
-    Logger.ui.debug('Adding new stream parameter', camera);
-    Logger.ui.debug(options);
     
     for (const [ key, value ] of Object.entries(options))
       startedStreams[camera].options.ffmpegOptions[key] = value;
@@ -106,8 +109,6 @@ module.exports = {
   
   del: function(camera, options){
   
-    Logger.ui.debug('Removing stream parameter ' + options, camera);
-  
     for(const prop in options)
       delete startedStreams[camera].options.ffmpegOptions[prop];
     
@@ -116,21 +117,16 @@ module.exports = {
   },
   
   stop: function(camera){
-  
-    Logger.ui.debug('Stopping stream', camera);
-  
+
     startedStreams[camera].stopStream();
-    streamSessions.closeSession(camera);
     
     return;
   
   },
   
   close: function(camera){
-  
-    Logger.ui.debug('Closing stream server', camera);
-  
-    startedStreams[camera].stopAll();
+
+    startedStreams[camera].destroy();
     
     return;
   
@@ -138,13 +134,11 @@ module.exports = {
   
   quit: function(){
   
-    Logger.ui.debug('Stopping all stream server!');
-  
     for(const camera of Object.keys(startedStreams))
-      startedStreams[camera].stopAll();
+      startedStreams[camera].destroy();
       
     return;
   
-  },
+  }
 
 };

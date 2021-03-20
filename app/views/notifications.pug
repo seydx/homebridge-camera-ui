@@ -97,7 +97,7 @@ block content
                 a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Snapshot')=t('breadcrumb.snapshot')
             form.form-inline.float-right
               #reportrange
-                input.report-field(type="text" name="daterange" value=t('breadcrumb.selectDate') readonly)
+                input.report-field.text-center(type="text" name="daterange" value=t('breadcrumb.selectDate') readonly)
             .filter-icon.d-flex.justify-content-center
               i#dataFilter.fas.fa-filter     
             if notifications.length && role === 'Master'

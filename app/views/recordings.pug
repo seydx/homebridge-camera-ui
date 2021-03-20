@@ -111,7 +111,7 @@ block content
                 a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Snapshot')=t('breadcrumb.snapshot')
             form.form-inline.float-right
               #reportrange
-                input.report-field(type="text" name="daterange" value=t('breadcrumb.selectDate') readonly)
+                input.report-field.text-center(type="text" name="daterange" value=t('breadcrumb.selectDate') readonly)
             .filter-icon.d-flex.justify-content-center
               i#dataFilter.fas.fa-filter     
             if recordings.length && role === 'Master'
@@ -145,7 +145,7 @@ block content
                           .col-5
                             .btn.camview.removeRecording=t('views.settings.views.webhook.exclude_del')
                           .col.d-flex.justify-content-end
-                            a.recording-dl.text-center(href="/recordings/" + recording.fileName target="_self")
+                            a.recording-dl.text-center(href="/recordings/" + recording.fileName download=recording.fileName)
                               i.fas.fa-download
                       else
                         a.d-flex.justify-content-end.mt-3.recording-dl(href="/recordings/" + recording.fileName target="_self")
