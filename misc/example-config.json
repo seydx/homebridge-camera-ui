@@ -1,125 +1,119 @@
 {
-    "bridge": {
-        "name": "Homebridge",
-        "username": "0E:15:CC:8A:E9:1E",
-        "port": 51609,
-        "pin": "983-44-986"
-    },
-    "plugins": [
-        "homebridge-camera-ui"
-    ],
-    "accessories": [],
-    "platforms": [
+  "bridge": {
+    "name": "Homebridge",
+    "username": "0E:15:CC:8A:E9:1E",
+    "port": 51609,
+    "pin": "983-44-986"
+  },
+  "plugins": [
+    "homebridge-camera-ui"
+  ],
+  "accessories": [],
+  "platforms": [
+    {
+      "name": "CameraUI",
+      "port": 3333,
+      "auth": "form",
+      "theme": "auto",
+      "language": "auto",
+      "debug": true,
+      "reset": false,
+      "mqtt": {
+        "active": true,
+        "host": "192.168.178.111",
+        "port": 1883
+      },
+      "http": {
+        "active": true,
+        "port": 2525,
+        "localhttp": false
+      },
+      "ssl": {
+        "active": true,
+        "key": "/var/lib/homebridge/mysite.key",
+        "cert": "/var/lib/homebridge/mysite.crt"
+      },
+      "options": {
+        "videoProcessor": "ffmpeg"
+      },
+      "aws": {
+        "accessKeyId": "aswdfasdfsaswae",
+        "secretAccessKey": "DsZtNawer24352435asdfsdfsdop+CB4C5",
+        "region": "eu-central-1"
+      },
+      "cameras": [
         {
-            "name": "CameraUI",
-            "port": 3333,
-            "auth": "form",
-            "theme": "auto",
-            "language": "auto",
-            "debug": false,
-            "reset": false,
-            "mqtt": {
-                "active": true,
-                "host": "192.168.178.123",
-                "port": 1883
-            },
-            "http": {
-                "active": true,
-                "port": 7777,
-                "localhttp": false
-            },
-            "ssl": {
-                "active": true,
-                "key": "/var/lib/homebridge/mysite.key",
-                "cert": "/var/lib/homebridge/mysite.crt"
-            },
-            "options": {
-                "videoProcessor": "ffmpeg"
-            },
-            "aws": {
-                "accessKeyId": "LIKJSBDFIUFVBSDIVUS",
-                "secretAccessKey": "ADESÖLKJFBASDfoubasdu+CB4C5",
-                "region": "eu-central-1"
-            },
-            "cameras": [
-                {
-                    "name": "Sricam",
-                    "manufacturer": "Sricam",
-                    "model": "IP Camera",
-                    "serialNumber": "873190",
-                    "firmwareRevision": "1.0",
-                    "motion": true,
-                    "doorbell": false,
-                    "switches": false,
-                    "motionTimeout": 1,
-                    "motionDoorbell": false,
-                    "unbridge": true,
-                    "videoConfig": {
-                        "source": "-rtsp_transport udp -i rtsp://192.111.147.12/onvif1",
-                        "stillImageSource": "-i rtsp://192.111.147.12/onvif1",
-                        "maxStreams": 4,
-                        "maxWidth": 1280,
-                        "maxHeight": 720,
-                        "maxFPS": 30,
-                        "audio": true,
-                        "socketPort": 8100
-                    },
-                    "mqtt": {
-                        "motionTopic": "sricam/motion",
-                        "motionMessage": "ON",
-                        "motionResetTopic": "sricam/motion",
-                        "motionResetMessage": "OFF"
-                    },
-                    "rekognition": {
-                        "active": true,
-                        "confidence": 90,
-                        "labels": [
-                            "Human",
-                            "Face",
-                            "Person"
-                        ]
-                    }
-                },
-                {
-                    "name": "Yi Dome",
-                    "manufacturer": "Yi",
-                    "model": "IP Camera",
-                    "serialNumber": "873190",
-                    "firmwareRevision": "1.0",
-                    "motion": true,
-                    "doorbell": true,
-                    "switches": false,
-                    "motionTimeout": 1,
-                    "unbridge": true,
-                    "videoConfig": {
-                        "source": "-rtsp_transport tcp -i rtsp://192.111.222.11/ch0_0.h264",
-                        "stillImageSource": "-i rtsp://192.111.222.11/ch0_0.h264",
-                        "maxStreams": 4,
-                        "maxWidth": 1920,
-                        "maxHeight": 1080,
-                        "maxFPS": 25,
-                        "maxBitrate": 1000,
-                        "audio": false,
-                        "socketPort": 8300
-                    },
-                    "mqtt": {
-                        "motionTopic": "yicam_dome_keller/motion",
-                        "motionMessage": "ON",
-                        "motionResetTopic": "yicam_dome_keller/motion",
-                        "motionResetMessage": "OFF"
-                    },
-                    "rekognition": {
-                        "active": true,
-                        "confidence": 90,
-                        "labels": [
-                            "Human",
-                            "Face",
-                            "Person"
-                        ]
-                    }
-                }
-            ],
-            "platform": "CameraUI"
+          "name": "Sricam",
+          "manufacturer": "Sricam",
+          "model": "IP Camera",
+          "serialNumber": "873190",
+          "firmwareRevision": "1.0",
+          "motion": true,
+          "doorbell": false,
+          "switches": false,
+          "motionTimeout": 1,
+          "motionDoorbell": false,
+          "unbridge": true,
+          "videoConfig": {
+            "source": "-rtsp_transport udp -i rtsp://192.168.111.1/onvif1",
+            "stillImageSource": "-i rtsp://192.168.111.11/onvif1",
+            "maxStreams": 4,
+            "maxWidth": 1280,
+            "maxHeight": 720,
+            "maxFPS": 30,
+            "audio": true,
+            "socketPort": 8100
+          },
+          "mqtt": {
+            "motionTopic": "sricam/motion",
+            "motionMessage": "ON",
+            "motionResetTopic": "sricam/motion",
+            "motionResetMessage": "OFF"
+          },
+          "rekognition": {
+            "active": true,
+            "confidence": 90,
+            "labels": [
+              "Human",
+              "Face",
+              "Person"
+            ]
+          }
+        },
+        {
+          "name": "Yi Dome",
+          "manufacturer": "Yi",
+          "model": "IP Camera",
+          "serialNumber": "873190",
+          "firmwareRevision": "1.0",
+          "motion": true,
+          "doorbell": false,
+          "switches": false,
+          "motionTimeout": 1,
+          "unbridge": true,
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -i rtsp://192.168.111.22/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.111178.22/ch0_0.h264",
+            "maxStreams": 4,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 25,
+            "maxBitrate": 1000,
+            "audio": false,
+            "socketPort": 8300
+          },
+          "mqtt": {
+            "motionTopic": "yicam_dome_keller/motion",
+            "motionMessage": "ON",
+            "motionResetTopic": "yicam_dome_keller/motion",
+            "motionResetMessage": "OFF"
+          },
+          "rekognition": {
+            "active": false
+          }
         }
-    ]
+      ],
+      "platform": "CameraUI"
+    }
+  ]
 }
