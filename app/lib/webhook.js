@@ -147,7 +147,7 @@ module.exports = {
           
           msg = {
             status: 200,        
-            error: true,
+            error: false,
             message: 'Exclude list cleared!'
           };
         
@@ -160,6 +160,23 @@ module.exports = {
           };
         
         }
+        
+        break;
+     
+      }
+      
+      case 'getSettings': {
+      
+        Logger.ui.info('getSettings event triggered.');
+        
+        let settings = database.db.get('settings').value();
+        
+        msg = {
+          status: 200,        
+          error: false,
+          message: 'Success',
+          payload: settings
+        };
         
         break;
      

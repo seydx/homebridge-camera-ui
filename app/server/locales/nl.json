@@ -191,7 +191,9 @@
           "exclude_endpoint": "Exclusief",
           "exclude_add": "Toevoegen",
           "exclude_del": "Verwijder",
-          "exclude_clear": "Clear"
+          "exclude_clear": "Clear",
+          "settings_endpoint": "Instellingen",
+          "settings_get": "GET"
         }
       }
     },

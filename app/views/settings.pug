@@ -816,7 +816,17 @@ block content
                                   .col-8.text-right.p-1 /interface?delExclude=CAMERA&username=admin&password=admin
                                 li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
                                   .col-4.text-left.p-1=t('views.settings.views.webhook.exclude_clear')
-                                  .col-8.text-right.p-1 /interface?clearxclude=true&username=admin&password=admin   
+                                  .col-8.text-right.p-1 /interface?clearxclude=true&username=admin&password=admin 
+                      li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.mt-2
+                        .col-12.no-border.settings-box-inner-title.text-white
+                          span=' ' + t('views.settings.views.webhook.settings_endpoint')
+                        .col
+                          #settings_endpoints
+                            .card.no-shadow
+                              ul
+                                li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.bbottom-1
+                                  .col-4.text-left.p-1=t('views.settings.views.webhook.settings_get')
+                                  .col-8.text-right.p-1 /interface?getSettings&username=admin&password=admin
           .container.d-flex.justify-content-end.mb-5
             button.apply.form-apply.btn.logout.ml-0(type="button")=t('views.settings.apply')                       
 block footscripts

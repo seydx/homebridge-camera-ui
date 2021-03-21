@@ -191,7 +191,9 @@
           "exclude_endpoint": "Exclude",
           "exclude_add": "Add",
           "exclude_del": "Remove",
-          "exclude_clear": "Clear"
+          "exclude_clear": "Clear",
+          "settings_endpoint": "Settings",
+          "settings_get": "GET"
         }
       }
     },

@@ -191,7 +191,9 @@
           "exclude_endpoint": "Ausschließen",
           "exclude_add": "Hinzufügen",
           "exclude_del": "Löschen",
-          "exclude_clear": "Leeren"
+          "exclude_clear": "Leeren",
+          "settings_endpoint": "Einstellungen",
+          "settings_get": "GET"
         }
       }
     },

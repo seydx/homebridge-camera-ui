@@ -78,6 +78,7 @@ module.exports = {
           caches: ['cookie']
         },
         whitelist: lang, 
+        
         fallbackLng: 'en',
         preload: ['en', 'de', 'nl']
       });
