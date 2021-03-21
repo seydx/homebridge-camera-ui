@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "3.3.0-beta.11",
+  "version": "3.3.0-beta.12",
   "description": "Camera User Interface for Homebridge",
   "main": "index.js",
   "devDependencies": {},
@@ -38,7 +38,9 @@
     "motion",
     "detection",
     "ui",
-    "doorbell"
+    "doorbell",
+    "rekognition",
+    "aws"
   ],
   "engines": {
     "node": ">=12.18.3",
