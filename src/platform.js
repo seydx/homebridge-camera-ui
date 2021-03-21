@@ -38,9 +38,11 @@ function CameraUI (log, config, api) {
   Logger.init(log, config.debug);
 
   this.api = api;
-  this.accessories = [];
-  this.cameraConfigs = new Map();
   this.config = config;
+  this.accessories = [];
+  
+  this.cameraConfigs = new Map();
+  this.mqttConfigs = new Map();
   
   this.config.port = config.port || 8181;
   this.config.auth = config.auth || 'form';
@@ -48,7 +50,7 @@ function CameraUI (log, config, api) {
   this.config.theme = config.theme || 'auto',
   
   this.config.cameras = config.cameras || [];
-  this.config.options = this.config.options || {};
+  this.config.options = config.options || {};
   
   //precheck
   if(this.config.auth == 'form' && this.config.auth == 'auth'){
@@ -58,7 +60,6 @@ function CameraUI (log, config, api) {
     
   if(config.mqtt && config.mqtt.active && config.mqtt.host && config.mqtt.port){
     this.config.mqtt = config.mqtt;
-    this.config.mqtt.on_message = config.mqtt.on_message || 'ON';
   } else {
     Logger.debug('MQTT for motion handling not active.');
     this.config.mqtt = false;
@@ -114,10 +115,14 @@ function CameraUI (log, config, api) {
       if (!error) {
         const uuid = UUIDGen.generate(cameraConfig.name);
         if (this.cameraConfigs.has(uuid)) {
+          
           // Camera names must be unique
           Logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', cameraConfig.name);
+        
         } else {
+          
           this.cameraConfigs.set(uuid, cameraConfig);
+        
         }
       }
       
@@ -125,6 +130,9 @@ function CameraUI (log, config, api) {
     
     //init stream sessions
     this.streamSessions = new StreamSessions(this.cameraConfigs);
+    
+    //init handler
+    this.handler = new Handler(this.accessories, this.config, this.api, this.cameraConfigs);
     
   }
   
@@ -136,27 +144,37 @@ CameraUI.prototype = {
 
   didFinishLaunching: async function(){
     
+    //configure ssl
     if(this.config.ssl && this.config.ssl.active && this.config.ssl.key && this.config.ssl.cert){
+    
       try {
+      
         this.config.ssl.cert = await fs.readFile(this.config.ssl.cert, 'utf8');
         this.config.ssl.key = await fs.readFile(this.config.ssl.key, 'utf8');
+      
       } catch(err){
+      
         Logger.warn('WARNING: Could not read SSL Cert/Key');
         Logger.debug(err);
         this.config.ssl = false;
+      
       }
+    
     } else {
+    
       this.config.ssl = false;
+    
     }
 
+    //configure cameras found in config
     for (const [uuid, cameraConfig] of this.cameraConfigs) {
     
       if (cameraConfig.unbridge) {
       
         const accessory = new Accessory(cameraConfig.name, uuid);
-        accessory.context.videoConfig = cameraConfig.videoConfig;
         
         Logger.info('Configuring unbridged accessory...', accessory.displayName);
+        
         this.setupAccessory(accessory, cameraConfig);
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
         
@@ -169,9 +187,9 @@ CameraUI.prototype = {
         if (!cachedAccessory) {
         
           const accessory = new Accessory(cameraConfig.name, uuid);
-          accessory.context.videoConfig = cameraConfig.videoConfig;
       
           Logger.info('Configuring bridged accessory...', accessory.displayName);
+          
           this.setupAccessory(accessory, cameraConfig);
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
           
@@ -183,13 +201,14 @@ CameraUI.prototype = {
       
     }
 
+    //remove non existing cameras (for bridged cameras)
     this.accessories.forEach(accessory => {
     
       const cameraConfig = this.cameraConfigs.get(accessory.UUID);
       
       try {
           
-        if(!cameraConfig){
+        if(!cameraConfig && !cameraConfig.unbridge){
           this.removeAccessory(accessory);
         } else if(cameraConfig.unbridge){
           this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
@@ -207,6 +226,7 @@ CameraUI.prototype = {
     this.ui = new UserInterface(this.api, this.config, this.accessories, this.streamSessions);
     await this.ui.init();
     
+    //reset master credentials
     if(this.config.reset && this.config.auth === 'form'){
     
       let db = this.ui.database.db;
@@ -244,30 +264,14 @@ CameraUI.prototype = {
       
     }
 
-    this.handler = new Handler(this.accessories, this.config, this.api, this.cameraConfigs);
-
+    //start mqtt
     if (this.config.mqtt)
-      this.mqtt = new Mqtt(this.config, this.handler);
+      this.mqtt = new Mqtt(this.config, this.handler, this.mqttConfigs);
       
+    //start http  
     if (this.config.http)
       this.http = new Http(this.config, this.handler);
   
-  },
-
-  setHandler: function(type, accessory, state, minimumTimeout){
-    
-    if(type === 'doorbell'){
-      
-      if(this.handler)
-        this.handler.doorbellHandler(accessory, state, minimumTimeout);
-      
-    } else if(type === 'motion'){
-      
-      if(this.handler)
-        this.handler.motionHandler(accessory, state, minimumTimeout);
-      
-    }
-    
   },
   
   setupAccessory: function(accessory, cameraConfig){
@@ -285,8 +289,61 @@ CameraUI.prototype = {
       AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, cameraConfig.firmwareRevision || packageFile.version);
     }
     
-    new motionSensor(accessory, cameraConfig, this);
-    new doorbellSensor(accessory, cameraConfig, this);
+    if(cameraConfig.mqtt && this.config.mqtt){
+    
+      //setup mqtt topics
+      if(cameraConfig.mqtt.motionTopic){
+        const mqttOptions = {
+          motionTopic: cameraConfig.mqtt.motionTopic,
+          motionMessage: cameraConfig.mqtt.motionMessage || 'ON',
+          motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
+          camera: cameraConfig.name,
+          motion: true
+        };
+        this.mqttConfigs.set(mqttOptions.motionTopic, mqttOptions);
+      }  
+        
+      if(cameraConfig.mqtt.motionResetTopic && cameraConfig.mqtt.motionResetTopic !== cameraConfig.mqtt.motionTopic){  
+        const mqttOptions = {
+          motionResetTopic: cameraConfig.mqtt.motionResetTopic,
+          motionResetMessage: cameraConfig.mqtt.motionResetMessage || 'OFF',
+          camera: cameraConfig.name,
+          motion: true,
+          reset: true
+        };
+        this.mqttConfigs.set(mqttOptions.motionResetTopic, mqttOptions);
+      }
+      
+      if(cameraConfig.mqtt.doorbellTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionTopic && cameraConfig.mqtt.doorbellTopic !== cameraConfig.mqtt.motionResetTopic){
+        const mqttOptions = {
+          doorbellTopic: cameraConfig.mqtt.doorbellTopic,
+          doorbellMessage: cameraConfig.mqtt.doorbellMessage || 'ON',
+          camera: cameraConfig.name,
+          doorbell: true
+        };
+        this.mqttConfigs.set(mqttOptions.doorbellTopic, mqttOptions);
+      }
+  
+    }
+    
+    if(cameraConfig.rekognition){
+      cameraConfig.rekognition = {
+        active: cameraConfig.rekognition.active || false,
+        confidence: cameraConfig.rekognition.confidence > 0
+          ? cameraConfig.rekognition.confidence
+          : 90,
+        labels: cameraConfig.rekognition.labels && cameraConfig.rekognition.labels.length
+          ? cameraConfig.rekognition.labels.map(label => label && label.toLowerCase()).filter(label => label)
+          : ['human', 'person', 'face']
+      };
+    }
+    
+    accessory.context.videoConfig = cameraConfig.videoConfig;
+    accessory.context.mqtt = cameraConfig.mqtt;
+    accessory.context.rekognition = cameraConfig.rekognition;
+    
+    new motionSensor(this.api, accessory, cameraConfig, this.handler);
+    new doorbellSensor(this.api, accessory, cameraConfig, this.handler);
 
     const Camera = new camera(this.config, cameraConfig, this.api, this.api.hap,
       this.config.options.videoProcessor, accessory, this.streamSessions);

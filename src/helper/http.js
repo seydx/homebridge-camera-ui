@@ -30,8 +30,27 @@ class Http {
         
         if (parseurl.pathname && parseurl.query) {
           
-          const name = decodeURIComponent(parseurl.query).split('=')[0];
-          results = handler.automationHandler(parseurl.pathname, name);
+          let name = decodeURIComponent(parseurl.query);
+          
+          // => /motion
+          // => /motion/reset
+          // => /doorbell
+          
+          let target = parseurl.pathname.includes('/reset')
+            ? 'reset'          
+            : parseurl.pathname.split('/')[1];
+            
+          let active = target === 'dorbell'
+            ? true
+            : target === 'reset'
+              ? false
+              : true;
+                
+          target = target === 'reset'
+            ? 'motion'
+            : target;
+          
+          results = handler.automationHandler(target, name, active);
           
           Logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')');
           

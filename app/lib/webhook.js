@@ -14,14 +14,19 @@ module.exports = {
       
   },
   
-  automationHandler: async function(cmd, state){
+  automationHandler: async function(target, cmd){
+  
+    let msg;
     
-    switch (cmd) {
-      case 'atHome':
+    switch (target) {
+    
+      case 'atHome': {
       
-        Logger.ui.info('At Home event triggered.');
+        Logger.ui.info('atHome event triggered.');
         
-        if(state === 'trigger'){
+        let state;
+        
+        if(cmd === 'trigger'){
           
           state = true;
           
@@ -32,27 +37,164 @@ module.exports = {
           
         } else {
         
-          state = state === 'true';
+          state = cmd === 'true'
+            ? true
+            : cmd === 'false'
+              ? false
+              : undefined;
         
         }
         
-        database.db.get('settings').get('general').set('atHome', state).write();
+        if(state !== undefined){
         
-        return {
+          database.db.get('settings').get('general').set('atHome', state).write();
+        
+          msg = {
+            status: 200,        
+            error: false,
+            message: cmd ? 'AtHome switched on.' : 'AtHome switched off.'
+          };
+        
+        } else {
+        
+          msg = {
+            status: 500,        
+            error: true,
+            message: ('Can not handle command: ' + cmd + ' (' + target + ')')
+          };
+        
+        }
+        
+        break;
+      
+      }  
+      
+      case 'addExclude': {
+      
+        Logger.ui.info('addExclude event triggered.');
+        
+        let camera = database.db.get('settings').get('cameras').get(cmd).value();
+        
+        if(camera){
+        
+          let list = database.db.get('settings').get('general').get('exclude').value();
+          
+          if(!list.includes(cmd))
+            database.db.get('settings').get('general').get('exclude').push(cmd).write();  
+        
+          msg = {
+            status: 200,        
+            error: false,
+            message: (cmd + ' added to exclude.')
+          };
+        
+        } else {
+        
+          msg = {
+            status: 500,        
+            error: true,
+            message: ('Cannot add camera to exclude list, camera not found: ' + cmd)
+          };
+        
+        }
+        
+        break;
+      
+      }
+        
+      case 'delExclude': {
+      
+        Logger.ui.info('delExclude event triggered.');
+        
+        let camera = database.db.get('settings').get('cameras').get(cmd).value();
+        
+        if(camera){
+        
+          let list = database.db.get('settings').get('general').get('exclude').value();
+          
+          if(list.includes(cmd)){
+            list = list.filter(cam => cam && cam !== cmd);
+            database.db.get('settings').get('general').set('exclude', list).write();
+          }
+        
+          msg = {
+            status: 200,        
+            error: false,
+            message: (cmd + ' removed from exclude.')
+          };
+        
+        } else {
+        
+          msg = {
+            status: 500,        
+            error: true,
+            message: ('Cannot remove camera from exclude list, camera not found: ' + cmd)
+          };
+        
+        }
+        
+        break;
+       
+      }
+        
+      case 'clearExclude': {
+      
+        Logger.ui.info('clearExclude event triggered.');
+        
+        if(cmd === 'true'){
+        
+          database.db.get('settings').get('general').set('exclude', []).write();
+          
+          msg = {
+            status: 200,        
+            error: false,
+            message: 'Exclude list cleared!'
+          };
+        
+        } else{
+        
+          msg = {
+            status: 500,        
+            error: true,
+            message: ('Can not handle command: ' + cmd + ' (' + target + ')')
+          };
+        
+        }
+        
+        break;
+     
+      }
+      
+      case 'getSettings': {
+      
+        Logger.ui.info('getSettings event triggered.');
+        
+        let settings = database.db.get('settings').value();
+        
+        msg = {
           status: 200,        
           error: false,
-          message: state ? 'AtHome switched on.' : 'AtHome switched off.'
+          message: 'Success',
+          payload: settings
         };
         
         break;
+     
+      }
+     
       default:
-        Logger.ui.warn('Can not handle event (' + cmd + ')');
-        return {
+      
+        Logger.ui.warn('Can not handle event (' + target + ')');
+        
+        msg = {
           status: 500,        
           error: true,
-          message: 'Command (' + cmd + ') not found!'
+          message: 'Target (' + target + ') not found!'
         };
+    
     }
+    
+    return msg;
   
   }
 

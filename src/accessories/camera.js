@@ -205,38 +205,45 @@ class Camera {
   }
   
   async handleSnapshotRequest(request, callback){
+    
     const resolution = this.determineResolution(request, true);
 
-    let allowStream = this.streamSessions.requestSession(this.cameraName);
+    /*let allowStream = this.streamSessions.requestSession(this.cameraName, true);
 
-    if(allowStream){
+    if(allowStream){*/
 
-      try {
-        const cachedSnapshot = !!this.snapshotPromise;
+    try {
+        
+      const cachedSnapshot = !!this.snapshotPromise;
   
-        Logger.debug('Snapshot requested: ' + request.width + ' x ' + request.height,
-          this.cameraName);
+      Logger.debug('Snapshot requested: ' + request.width + ' x ' + request.height,
+        this.cameraName);
   
-        const snapshot = await (this.snapshotPromise || this.fetchSnapshot(resolution.snapFilter));
+      const snapshot = await (this.snapshotPromise || this.fetchSnapshot(resolution.snapFilter));
   
-        Logger.debug('Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' +
+      Logger.debug('Sending snapshot: ' + (resolution.width > 0 ? resolution.width : 'native') + ' x ' +
           (resolution.height > 0 ? resolution.height : 'native') +
           (cachedSnapshot ? ' (cached)' : ''), this.cameraName);
   
-        const resized = await this.resizeSnapshot(snapshot, resolution.resizeFilter);
-        callback(undefined, resized);
-      } catch (err) {
-        Logger.error(err, this.cameraName);
-        callback(err);
-      } finally {
-        this.streamSessions.closeSession(this.cameraName);
+      const resized = await this.resizeSnapshot(snapshot, resolution.resizeFilter);
+      callback(undefined, resized);
+      
+    } catch (err) {
+        
+      Logger.error(err, this.cameraName);
+      callback(err);
+      
+    }/* finally {
+        
+        this.streamSessions.closeSession(this.cameraName, true);
+      
       }
     
     } else {
     
-      callback('Stream not allowed!');
+      callback(new Error('Stream not allowed!'));
     
-    }
+    }*/
     
   }
   
@@ -441,14 +448,16 @@ class Camera {
   
   handleStreamRequest(request, callback){
   
-    let allowStream = this.streamSessions.requestSession(this.cameraName);
-  
     switch (request.type) {
-      case 'start':
-        if(!allowStream)
-          return callback('Stream not allowed!');
-        this.startStream(request, callback);
+      case 'start': {
+        let allowStream = this.streamSessions.requestSession(this.cameraName, true);
+        if(!allowStream){
+          callback(new Error('Stream not allowed!'));
+        } else {
+          this.startStream(request, callback);
+        }
         break;
+      }
       case 'reconfigure':
         Logger.debug('Received request to reconfigure: ' + request.video.width + 'x' + request.video.height + ', ' +
           request.video.fps + ' fps, ' + request.video.max_bit_rate + ' kbps (Ignored)', this.cameraName);
@@ -506,7 +515,7 @@ class Camera {
       }
       
       this.ongoingSessions.delete(sessionId);
-      this.streamSessions.closeSession(this.cameraName);
+      this.streamSessions.closeSession(this.cameraName, true);
       Logger.info('Stopped video stream.', this.cameraName);
   
     }

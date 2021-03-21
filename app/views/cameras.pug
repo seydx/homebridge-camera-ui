@@ -3,7 +3,7 @@ extends layout
 block head
 
 block content
-  body.overflow-hidden
+  body(style="display: none")
     audio#soundFx
       source(src="/sounds/notification.wav")
     a#nb-dialog-container.mt-save-s(href="#", data-rel="lightcase")
@@ -92,29 +92,32 @@ block content
                   a.nav-link.camview-nav-item.smoothLink(href="/camviews")=t('navigation.camviews')
             #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
       .d-block.h-100vh.fix-body-top-inner
-        section.breadcrumbs.w-100.h-100.d-flex.justify-content-center
-          .container
-            .row.d-flex.justify-content-between.align-items-center
-              .col.text-left
-                h4#breadTitle.undertitle=t('breadcrumb.all') + ' ' + t('views.cameras.title')
-              .col.text-right
-                .dropdown
-                  button#dropdownMenuButton.dropdown-toggle.btnFilter(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")=t('breadcrumb.filter')
-                  #filterControls.dropdown-menu.filterMenu(aria-labelledby="dropdownMenuButton")
-                    label.b-contain
-                      input.filterBtn(type="checkbox", value="all", checked)
-                      label=t('breadcrumb.all')
-                      .b-input
-                    each room in settings.general.rooms
-                      - shortName = room.replace(/\s/g,"");
-                      label.b-contain
-                        input.filterBtn(type="checkbox", value=shortName)
-                        label= room
-                        .b-input                                                                
+        section.breadcrumbs-filter.w-100.h-100.d-flex.justify-content-center
+          .filter-area.container.m-0.p-0.position-relative.plr-15(style=cameras && Object.keys(cameras).length ? "display: block;" : "display: none;")
+            .btn-group.filter-text Filter
+            .btn-group.mr-2
+              button.btn.btn-secondary.m-0.filter-dropdown-title.filter-all=t('breadcrumb.all')
+            .btn-group.mr-2
+              button.btn.btn-secondary.dropdown-toggle.m-0.filter-dropdown-title(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')=t('breadcrumb.cameras')
+              .dropdown-menu.p-2(x-placement='bottom-start' style='position: absolute; transform: translate3d(98px, 38px, 0px); top: 0px; left: 0px; will-change: transform;')
+                each cam in cameras
+                  a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group=cam.originName)= cam.originName
+            .btn-group.mr-2
+              button.btn.btn-secondary.dropdown-toggle.m-0.filter-dropdown-title(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')=t('breadcrumb.rooms')
+              .dropdown-menu.p-2(x-placement='bottom-start' style='position: absolute; transform: translate3d(98px, 38px, 0px); top: 0px; left: 0px; will-change: transform;')
+                each room in settings.general.rooms
+                  a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group=room)= room
+            .btn-group.mr-2
+              button.btn.btn-secondary.dropdown-toggle.m-0.filter-dropdown-title(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')=t('breadcrumb.status')
+              .dropdown-menu.p-2(x-placement='bottom-start' style='position: absolute; transform: translate3d(98px, 38px, 0px); top: 0px; left: 0px; will-change: transform;')
+                a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Online')=t('breadcrumb.online')
+                a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Offline')=t('breadcrumb.offline')
+            .filter-icon.text-center
+              i#dataFilter.fas.fa-filter.mt-2                                                           
         #cameras.container.position-relative.mt-breadcrumb
           i#left-arrow.hnavi.hleft.fa.fa-arrow-left.d-flex.justify-content-center(style="display: none!important;")
           i#right-arrow.hnavi.hright.fa.fa-arrow-right.d-flex.justify-content-center(style="display: none!important;")
-          .row.justify-content-center.horizontal-direction 
+          #shuffledCards.row.justify-content-center.horizontal-direction 
             if cameras
               each camEntry in Object.keys(settings.cameras)
                 - room = settings.cameras[camEntry].room.replace(/\s/g,"");
@@ -123,7 +126,7 @@ block content
                 - imgSource = settings.cameras[camEntry].stillImageSource
                 - info = settings.cameras[camEntry].info
                 - cam = camEntry.replace(/\s/g,"") 
-                .video-cards.col-lg-6.col-md-6.col-12(data-filterable='yes', class=room)
+                .video-cards.col-lg-6.col-md-6.col-12(data-filterable='yes', class=room, data-groups=[room, camEntry, ping ? 'Online' : 'Offline'], data-title=camEntry)
                   .card.bg-transparent.no-shadow
                     a.position-relative.h-255px(href="/camera/" + camEntry, target="_self", aria-label=camEntry)
                       if ping && (cameras[camEntry].source || cameras[camEntry].sillImageSource) 
@@ -150,12 +153,14 @@ block content
                             a(tabindex='0' role='button' data-placement='bottom' data-toggle='popover' data-trigger='focus' title=t('views.cameras.notification_title') data-content=t('views.cameras.notification_nodata'), aria-label=t('views.cameras.notification_title'))
                               i.fa.fa-bell.text-secondary
                       p.card-text-cameras.text-elipsis= info
+              .col-sm-1.sizer-item
             else
               img.col.mw-470(src="/images/web/no_cameras.png", alt="No Cameras")
 block footscripts
   script(type='text/javascript').
     function getCameras(){
       return !{JSON.stringify(cameras)};
-    }
-  script(type='text/javascript' src='/javascripts/utils/filter.js' defer)
+    }    
+  script(type='text/javascript' src='/plugins/shuffle/shuffle.min.js' defer)
+  script(type='text/javascript' src='/javascripts/utils/filterShuffle.js' defer)
   script(type='text/javascript' src='/javascripts/views/cameras.js' defer)

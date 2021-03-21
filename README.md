@@ -5,14 +5,22 @@
 
 # camera.ui
 
+[![npm](https://img.shields.io/npm/v/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
+[![npm](https://img.shields.io/npm/dt/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
+[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-camera-ui.svg?style=flat-square)](https://github.com/SeydX/homebridge-camera-ui)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+[![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/kqNCe2D)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
+
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/camviews_full_mobile_loss.gif" align="right" alt="camera.ui">
 
-CameraUI is a homebridge user interface to control your cameras. It supports almost everything you need for a camera user interface.
+**camera.ui** is a homebridge user interface to control your cameras. It supports almost everything you need for a camera user interface.
 
 - Livestreams on Web
 - Full functional Web App with push notifications
 - Multi-language support
 - **CamViews**: A resizable, drag & drop camera overview
+- **Image Rekognition** with AWS
 - Telegram and Webhook Support
 - Record Snapshot/Video on movement detection
 - Beautiful User Interface with Themes and Darkmode
@@ -20,19 +28,6 @@ CameraUI is a homebridge user interface to control your cameras. It supports alm
 - and much mure...
 
 **Supported Languages:** DE | EN | NL
-
-## Status
-
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm](https://img.shields.io/npm/v/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
-[![npm](https://img.shields.io/npm/dt/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
-[![GitHub last commit](https://img.shields.io/github/last-commit/SeydX/homebridge-camera-ui.svg?style=flat-square)](https://github.com/SeydX/homebridge-camera-ui)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
-
-
-**Creating and maintaining Homebridge plugins consume a lot of time and effort, if you would like to share your appreciation, feel free to "Star" or donate.**
-
-[Click here](https://github.com/SeydX) to review more of my plugins.
 
 
 ## Installation Instructions
@@ -64,9 +59,7 @@ The default username is ``admin`` and the default password is ``admin``.
             "mqtt": {
                 "active": false,
                 "host": "192.168.178.123",
-                "port": 1883,
-                "topic": "homebridge/motion",
-                "on_message": "ON"
+                "port": 1883
             },
             "http": {
                 "active": false,
@@ -79,8 +72,7 @@ The default username is ``admin`` and the default password is ``admin``.
                 "cert": "/path/to/cert/server.crt"
             },
             "options": {
-                "videoProcessor": "ffmpeg",
-                "interfaceName": "eth0"
+                "videoProcessor": "ffmpeg"
             },
             "cameras": [ ... ],
             "platform": "CameraUI"
@@ -97,8 +89,16 @@ See [Example Config](https://github.com/SeydX/homebridge-camera-ui/edit/master/m
 To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/2b59ce5ae51204c1920c3105c44a92c16ea8bf01/misc/example-config.json#L59) for more details.
 
 
-# Usage
+# Image Rekognition
 
+camera.ui uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
+
+This makes it possible to analyze every movement before this is stored or sent as a notification.
+
+To use image rekognition, you need to set up a AWS account with an IAM user. More Infos: [AWS Image Rekognition](https://aws.amazon.com/rekognition/?nc1=h_ls&blog-cards.sort-by=item.additionalFields.createdDate&blog-cards.sort-order=desc)
+
+
+# Usage
 
  ### Login
 On first login attempt, the interface will prompt you to change the credentials to continue. The Login screen is adjusted for all available screens.
@@ -134,7 +134,6 @@ The Interface also provides you with a notifications section to not miss any not
 You can change your credentials, user image, themes and much more under settings!
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/settings_white.png" align="center" alt="camera.ui">
-
 
 # Supported clients
 

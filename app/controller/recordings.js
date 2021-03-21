@@ -1,11 +1,13 @@
 'use strict';
 
+const Logger = require('../../lib/logger.js');
+
 const express = require('express');
 const router = express.Router();
 
 const path = require('path');
 
-module.exports = (app, db_settings, db_recordings) => {
+module.exports = (app, db_settings, db_cameras, db_recordings) => {
   
   router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
     
@@ -34,20 +36,24 @@ module.exports = (app, db_settings, db_recordings) => {
 
     try {
     
-      if(req.body.all){
-        
-        await db_recordings.removeAll(req.body.room);
-        
+      let items;
+      
+      if(req.body.all && req.body.items && req.body.items.length){
+        items = req.body.items;
+      } else if(req.body.id){
+        items = [req.body.id];
       } else {
-   
-        await db_recordings.remove(req.body.id);
-        
+        return res.sendStatus(500);
       }
+      
+      for(const item of items)
+        await db_recordings.remove(item);
     
       res.sendStatus(200);
     
     } catch(err){
-    
+     
+      Logger.ui.error(err);
       res.status(500).send(err);
     
     }

@@ -20,7 +20,7 @@ module.exports = {
     Logger.ui.debug('Pinging ' + protocol + host + (port ? ':' + port : ''));
     
     let res = await pingIt.promise.probe(host, {
-      timeout: 10,
+      timeout: 1,
       extra: ['-i', '2'],
     });
     

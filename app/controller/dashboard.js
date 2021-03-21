@@ -1,5 +1,7 @@
 'use strict';
 
+const Logger = require('../../lib/logger.js');
+
 const express = require('express');
 const router = express.Router();
 
@@ -7,7 +9,7 @@ const record = require('../lib/record');
 
 module.exports = (app, db_settings, db_cameras) => {
   
-  router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-
+  router.get('/', async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     for(const cam of Object.keys(res.locals.dashboard.cameras))
       if(res.locals.dashboard.cameras[cam].active)
@@ -32,12 +34,14 @@ module.exports = (app, db_settings, db_cameras) => {
         
       } catch(err) {
         
+        Logger.ui.error(err);
         res.status(500).send(err);
         
       }
     
     } else {
     
+      Logger.ui.error('Camera not found!');
       res.status(500).send('Camera not found!');
     
     }

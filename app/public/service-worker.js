@@ -4,6 +4,7 @@ const urlsToCache = [
   '/apple-touch-icon.png',
   '/apple-touch-icon-precomposed.png',
   '/images/user/anonym.png',
+  '/images/web/calendar.png',
   '/images/web/logo_transparent-256.png',
   '/images/web/logo_transparent-512.png',
   '/images/web/logo_transparent_font.png',
@@ -125,6 +126,10 @@ const urlsToCache = [
   '/plugins/gridstack/gridstack.all.js',
   '/plugins/gridstack/gridstack.min.css',
   '/plugins/gridstack/jquery.ui.touch-punch.min.js',
+  '/plugins/shuffle/shuffle.min.js',
+  '/plugins/daterangepicker/moment.min.js',
+  '/plugins/daterangepicker/daterangepicker.css',
+  '/plugins/daterangepicker/daterangepicker.min.js',
   //'/sounds/notification.wav',
   '/www/config.xml',
   '/www/manifest.json',
@@ -155,7 +160,8 @@ self.addEventListener('fetch', (event) => {
      event.request.url.endsWith('/cameras') ||
      event.request.url.includes('/camera/') ||
      event.request.url.includes('/files/') ||
-     event.request.url.endsWith('/files') ||
+     event.request.url.endsWith('/files') ||     
+     event.request.url.includes('/interface') ||
      event.request.url.endsWith('/recordings') ||
      event.request.url.includes('/recordings/') ||
      event.request.url.endsWith('/notifications') ||

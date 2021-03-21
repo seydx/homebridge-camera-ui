@@ -1,5 +1,7 @@
 'use strict';
 
+const Logger = require('../../lib/logger.js');
+
 const express = require('express');
 const router = express.Router();
 
@@ -17,20 +19,25 @@ module.exports = (app, db_notifications) => {
 
     try {
     
-      if(req.body.all){
-
-        db_notifications.removeAll(req.body.room);
-    
+      let items;
+      
+      if(req.body.all && req.body.items && req.body.items.length){
+        items = req.body.items;
+      } else if(req.body.id){
+        items = [req.body.id];
       } else {
-
-        db_notifications.remove(req.body.id);
-    
+        return res.sendStatus(500);
       }
-    
+      
+      items.forEach(item => {
+        db_notifications.remove(item);
+      });
+      
       res.sendStatus(200);
     
     } catch(err){
     
+      Logger.ui.error(err);
       res.status(500).send(err);
     
     }

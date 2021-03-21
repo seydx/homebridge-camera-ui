@@ -78,6 +78,7 @@ module.exports = {
           caches: ['cookie']
         },
         whitelist: lang, 
+        
         fallbackLng: 'en',
         preload: ['en', 'de', 'nl']
       });
@@ -183,7 +184,7 @@ module.exports = {
       app.set('trust proxy', 1);
      
     sessionMiddleware = session({
-      genid: (req) => {
+      genid: (req) => { // eslint-disable-line no-unused-vars
         return uuidv4();
       },
       secret: database.session.get('key').value(),
@@ -398,7 +399,7 @@ module.exports = {
     app.use('/camviews', camviews(app, db_cameras));
     app.use('/notifications', notifications(app, db_notifications));
     app.use('/settings', settings(app, upload, db_settings, db_users));
-    app.use('/recordings', recordings(app, db_settings, db_recordings));
+    app.use('/recordings', recordings(app, db_settings, db_cameras, db_recordings));
     app.use('/interface', interFace(app, db_settings, db_users));
     app.use('/files', files(app, db_settings, configPath));
     app.use('/subscribe', subscribe(app, db_settings));
@@ -408,7 +409,7 @@ module.exports = {
     }); 
     
     // error handler
-    app.use(function(err, req, res, next) {
+    app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
     
       Logger.ui.error(err.message); 
       

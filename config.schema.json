@@ -2,7 +2,6 @@
   "pluginAlias": "CameraUI",
   "pluginType": "platform",
   "singular": true,
-  "headerDisplay": "<div class='card'><div class='card-body'><h5 class='card-title'>User Interface Server</h5><p class='card-text'>You can visit the User Interface over the link below <i>(replace port with the port from your config!)</i></p><a class='btn btn-primary text-lowercase mw-100'>http://${{HOSTNAME}}:port</a></div></div><br>",
   "footerDisplay": "For documentation please see [GitHub repository](https://github.com/SeydX/homebridge-camera-ui)",
   "schema": {
     "name": {
@@ -76,10 +75,15 @@
       "type": "object",
       "properties": {
         "active": {
-          "title": "MQTT Status",
+          "title": "Active",
           "description": "Activates MQTT Broker for MQTT-based automation. If not set, MQTT support is not started.",
           "type": "boolean",
           "default": false
+        },
+        "tls": {
+          "title": "MQTT TLS",
+          "type": "boolean",
+          "description": "Use TLS to connect to the MQTT broker."
         },
         "host": {
           "title": "MQTT Server",
@@ -102,18 +106,6 @@
           "title": "MQTT Password",
           "type": "string",
           "description": "The password used to connect to your MQTT broker. If not set, no authentication is used."
-        },
-        "topic": {
-          "title": "MQTT Topic",
-          "type": "string",
-          "placeholder": "homebridge/motion",
-          "description": "The base MQTT topic to subscribe to."
-        },
-        "on_message": {
-          "title": "ON message",
-          "description": "MQTT On message to trigger ON state",
-          "type": "string",
-          "placeholder": "ON"
         }
       }
     },
@@ -122,7 +114,7 @@
       "type": "object",
       "properties": {
         "active": {
-          "title": "HTTP Status",
+          "title": "Active",
           "description": "Activates HTTP Server for HTTP-based automation. If not set, HTTP support is not started.",
           "type": "boolean",
           "default": false
@@ -146,7 +138,7 @@
       "type": "object",
       "properties": {
         "active": {
-          "title": "SSL Status",
+          "title": "Active",
           "description": "Activates SSL (HTTPS) for the User Interface",
           "type": "boolean",
           "default": false
@@ -172,6 +164,27 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
+        }
+      }
+    },
+    "aws": {
+      "titel": "Image Detection",
+      "type": "object",
+      "properties": {
+        "accessKeyId": {
+          "title": "Access Key ID",
+          "type": "string",
+          "description": "AWS Access Key ID"
+        },
+        "secretAccessKey": {
+          "title": "Secret Access Key",
+          "type": "string",
+          "description": "AWS Secret Access Key"
+        },
+        "region": {
+          "title": "Region",
+          "type": "string",
+          "description": "AWS Region"
         }
       }
     },
@@ -374,18 +387,103 @@
                 "description": "Livestream Websocket Port for the UI"
               }
             }
+          },
+          "mqtt": {
+            "title": "MQTT Configuration",
+            "type": "object",
+            "properties": {                                            
+              "motionTopic": {
+                "title": "Motion Topic Prefix",
+                "type": "string",
+                "description": "The MQTT topic to watch for motion alerts. The topic (prefix/suffix) should be unique, it will be used to assign the motion detected message to the desired camera."
+              },
+              "motionMessage": {
+                "title": "Motion Message",
+                "type": "string",
+                "placeholder": "ON",
+                "description": "The message to watch for to trigger motion alerts."
+              },                                    
+              "motionResetTopic": {
+                "title": "Motion Reset Topic",
+                "type": "string",
+                "description": "The MQTT topic to watch for motion resets. The topic (prefix/suffix) should be unique, it will be used to assign the reset motion message to the desired camera."
+              },
+              "motionResetMessage": {
+                "title": "Motion Reset Message",
+                "type": "string",
+                "placeholder": "OFF",
+                "description": "The message to watch for to trigger motion resets."
+              },                                                                             
+              "doorbellTopic": {
+                "title": "Doorbell Topic",
+                "type": "string",
+                "description": "The MQTT topic to watch for doorbell alerts. The topic (prefix/suffix) should be unique, it will be used to assign the doorbell message to the desired camera."
+              },
+              "doorbellMessage": {
+                "title": "Doorbell Message",
+                "type": "string",
+                "placeholder": "ON",
+                "description": "The message to watch for to trigger doorbell alerts. Will use the name of the camera if blank."
+              }                                                                                
+            }
+          },
+          "rekognition": {
+            "title": "Image Rekognition",
+            "type": "object",
+            "properties": {
+              "active": {
+                "title": "Active",
+                "type": "boolean",
+                "description": "Enables image detection."
+              },
+              "confidence": {
+                "title": "Confidence",
+                "type": "integer",
+                "description": "Minimum confidence that Amazon Rekognition image must have in the accuracy of the detected label."
+              },
+              "labels": {
+                "title": "Labels",
+                "description": "For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object. Here you can give own labels to filter for the image detection.",
+                "type": "array",
+                "items": {
+                  "title": "Label",
+                  "type": "string",
+                  "description": "Image label."
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "layout": [
-    "port",
-    "auth",
-    "language",
-    "theme",
-    "debug",
-    "reset",
+    {
+      "type": "section",
+      "title": "User Interface",
+      "expandable": true,
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        "port",
+        "auth",
+        "language",
+        "theme",
+        "debug",
+        "reset",
+        {
+          "key": "ssl",
+          "title": "SSL Certificate",
+          "type": "array",
+          "orderable": false,
+          "items": [
+            "ssl.active",
+            "ssl.key",
+            "ssl.cert"
+          ]
+        }
+      ]
+    },
     {
       "type": "section",
       "title": "Cameras",
@@ -440,6 +538,13 @@
               "expandable": true,
               "expanded": false,
               "items": [
+                "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.packetSize",
+                "cameras[].videoConfig.mapvideo",
+                "cameras[].videoConfig.mapaudio",
+                "cameras[].videoConfig.videoFilter",
+                "cameras[].videoConfig.encoderOptions",
+                "cameras[].videoConfig.debug",
                 {
                   "key": "cameras[]",
                   "type": "section",
@@ -450,20 +555,13 @@
                     "cameras[].videoConfig.returnAudioTarget",
                     "cameras[].videoConfig.debugReturn"
                   ]
-                },
-                "cameras[].videoConfig.vcodec",
-                "cameras[].videoConfig.packetSize",
-                "cameras[].videoConfig.mapvideo",
-                "cameras[].videoConfig.mapaudio",
-                "cameras[].videoConfig.videoFilter",
-                "cameras[].videoConfig.encoderOptions",
-                "cameras[].videoConfig.debug"
+                }
               ]
             },
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Automation",
+              "title": "Sensors",
               "expandable": true,
               "expanded": false,
               "items": [
@@ -473,21 +571,47 @@
                 "cameras[].motionTimeout",
                 "cameras[].motionDoorbell"
               ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "MQTT Options",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].mqtt.motionTopic",
+                "cameras[].mqtt.motionMessage",
+                "cameras[].mqtt.motionResetTopic",
+                "cameras[].mqtt.motionResetMessage",
+                "cameras[].mqtt.doorbellTopic",
+                "cameras[].mqtt.doorbellMessage"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "AWS Rekognition Options",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].rekognition.active",
+                "cameras[].rekognition.confidence",
+                {
+                  "key": "cameras[].rekognition.labels",
+                  "type": "section",
+                  "title": "Labels",
+                  "expandable": true,
+                  "expanded": false,
+                  "orderable": false,
+                  "buttonText": "Add Label",
+                  "items": [
+                    "cameras[].rekognition.labels[]"
+                  ]
+                }
+              ]
             }
           ]
         }
-      ]
-    },
-    {
-      "key": "ssl",
-      "type": "object",
-      "orderable": false,
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        "ssl.active",
-        "ssl.key",
-        "ssl.cert"
       ]
     },
     {
@@ -501,41 +625,46 @@
       ]
     },
     {
-      "type": "section",
-      "title": "Automation",
+      "key": "mqtt",
+      "name": "MQTT",
+      "type": "object",
+      "orderable": false,
       "expandable": true,
       "expanded": false,
-      "orderable": false,
       "items": [
-        {
-          "key": "mqtt",
-          "type": "object",
-          "orderable": false,
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "mqtt.active",
-            "mqtt.host",
-            "mqtt.port",
-            "mqtt.username",
-            "mqtt.password",
-            "mqtt.topic",
-            "mqtt.on_message"
-          ]
-        },
-        {
-          "key": "http",
-          "type": "object",
-          "orderable": false,
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "http.active",
-            "http.port",
-            "http.localhttp"
-          ]
-        }
+        "mqtt.active",
+        "mqtt.tls",
+        "mqtt.host",
+        "mqtt.port",
+        "mqtt.username",
+        "mqtt.password"
+      ]
+    },
+    {
+      "key": "http",
+      "name": "HTTP Server",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "http.active",
+        "http.port",
+        "http.localhttp"
+      ]
+    },
+    {
+      "key": "aws",
+      "name": "AWS Credentials",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "aws.accessKeyId",
+        "aws.secretAccessKey",
+        "aws.region"
       ]
     }
   ]
-  }
+}
