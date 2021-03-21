@@ -3,7 +3,7 @@ extends layout
 block head
 
 block content
-  body.overflow-hidden
+  body(style="display: none")
     audio#soundFx
       source(src="/sounds/notification.wav")
     a#nb-dialog-container.mt-save-s(href="#", data-rel="lightcase")
@@ -93,7 +93,7 @@ block content
             #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
       .d-block.h-100vh.fix-body-top-inner
         section.breadcrumbs-filter.w-100.h-100.d-flex.justify-content-center
-          .container.m-0.p-0.position-relative.plr-15
+          .filter-area.container.m-0.p-0.position-relative.plr-15(style=cameras && Object.keys(cameras).length ? "display: block;" : "display: none;")
             .btn-group.filter-text Filter
             .btn-group.mr-2
               button.btn.btn-secondary.m-0.filter-dropdown-title.filter-all=t('breadcrumb.all')
@@ -112,8 +112,8 @@ block content
               .dropdown-menu.p-2(x-placement='bottom-start' style='position: absolute; transform: translate3d(98px, 38px, 0px); top: 0px; left: 0px; will-change: transform;')
                 a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Online')=t('breadcrumb.online')
                 a.dropdown-item.p-2.filter-dropdown-text.mb-1(data-group='Offline')=t('breadcrumb.offline')
-            .filter-icon.d-flex.justify-content-center
-              i#dataFilter.fas.fa-filter                                                           
+            .filter-icon.text-center
+              i#dataFilter.fas.fa-filter.mt-2                                                           
         #cameras.container.position-relative.mt-breadcrumb
           i#left-arrow.hnavi.hleft.fa.fa-arrow-left.d-flex.justify-content-center(style="display: none!important;")
           i#right-arrow.hnavi.hright.fa.fa-arrow-right.d-flex.justify-content-center(style="display: none!important;")

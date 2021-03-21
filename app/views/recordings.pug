@@ -4,7 +4,7 @@ block head
   link(rel='stylesheet' href='/plugins/daterangepicker/daterangepicker.css' type='text/css')
 
 block content
-  body.overflow-hidden
+  body(style="display: none")
     audio#soundFx
       source(src="/sounds/notification.wav")
     a#nb-dialog-container.mt-save-s(href="#", data-rel="lightcase")
@@ -90,7 +90,7 @@ block content
             #blackoverlay.mobile-nav-overly.hidebg(style="display: none")
       .d-block.h-100vh.fix-body-top-inner
         section.breadcrumbs-filter.w-100.h-100.d-flex.justify-content-center
-          .container.m-0.p-0.position-relative.plr-15
+          .filter-area.container.m-0.p-0.position-relative.plr-15(style=recordings.length ? "display: block;" : "display: none;")
             .btn-group.filter-text Filter
             .btn-group.mr-2
               button.btn.btn-secondary.m-0.filter-dropdown-title.filter-all=t('breadcrumb.all')
@@ -112,12 +112,10 @@ block content
             form.form-inline.float-right
               #reportrange
                 input.report-field.text-center(type="text" name="daterange" value=t('breadcrumb.selectDate') readonly)
-            .filter-icon.d-flex.justify-content-center
-              i#dataFilter.fas.fa-filter     
-            if recordings.length && role === 'Master'
-              btn#removeAllRecordings.breadcrumb-removeAll.text-center=t('views.recordings.btn_removeall') 
-            else 
-              btn#removeAllRecordings.breadcrumb-removeAll.text-center(style='display: none')=t('views.recordings.btn_removeall')         
+            .filter-icon.text-center
+              i#dataFilter.fas.fa-filter.mt-2    
+            if role === 'Master'
+              btn#removeAllRecordings.breadcrumb-removeAll.text-center=t('views.recordings.btn_removeall')      
         #recordings.container.position-relative.mt-breadcrumb-filter
           i#left-arrow.hnavi.hleft.fa.fa-arrow-left.d-flex.justify-content-center(style="display: none!important;")
           i#right-arrow.hnavi.hright.fa.fa-arrow-right.d-flex.justify-content-center(style="display: none!important;")

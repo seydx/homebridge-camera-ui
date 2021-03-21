@@ -4,7 +4,7 @@ block head
   link(rel='stylesheet' href='/stylesheets/modules/bootstrap-select.min.css' type='text/css')
 
 block content
-  body.overflow-hidden
+  body(style="display: none")
     audio#soundFx
       source(src="/sounds/notification.wav")
     #inputPopup.modal.fade(tabindex="-1" role="dialog" aria-labelledby="inputPopupLabel" aria-hidden="true")
@@ -238,9 +238,6 @@ block content
                                         .form-group.mb-0.mt-2
                                           label=t('views.settings.views.profile.user_new_role')
                                             input.form-control.form-control(value=user.role name="users[" + id + "][role]" readonly="")
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
             #general.page.col-12.p-0
                 .innerContainer
                   if role === 'Master'
@@ -319,9 +316,6 @@ block content
                             else
                               .col= room
                                 input.form-control(type="hidden", name="general[rooms][]", value=room)
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
             if role === 'Master'
               #dashboard.page.col-12.p-0
                 .innerContainer
@@ -389,9 +383,6 @@ block content
                               else 
                                 input(type="checkbox", name='dashboard[cameras][' + cam + '][livestream]')
                               i
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
               #cameras.page.col-12.p-0
                 .innerContainer
                   .container.mbc-40
@@ -455,9 +446,6 @@ block content
                                   else 
                                     input(type="checkbox", name='cameras[' + camEntry + '][audio]')
                                   i.mr-0
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
               #recordings.page.col-12.p-0
                 .innerContainer
                   .container.mbc-40
@@ -562,9 +550,6 @@ block content
                                   option(value="Never" selected)=t('views.settings.select_never')
                                 else
                                   option(value="Never")=t('views.settings.select_never')
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
               #notifications.page.col-12.p-0
                 .innerContainer
                   .container.mbc-40
@@ -719,9 +704,6 @@ block content
                             .form-group.m-0.w-100.mb-2
                               label
                                 input.form-control.form-control(type="text", placeholder="https://webhook.site/88e98f7e" name="webhook[cameras][" + cam + "][endpoint]", value=settings.webhook.cameras[cam].endpoint, data-name=t('views.settings.views.webhook.title_endpoint'))
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
               #camview.page.col-12.p-0
                 .innerContainer
                   .container.mbc-40
@@ -792,9 +774,6 @@ block content
                               else 
                                 input(type="checkbox", name='camviews[cameras][' + camEntry + '][livestream]')
                               i
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')
               #webhook.page.col-12.p-0
                 .innerContainer
                   .container.mbc-40
@@ -807,7 +786,7 @@ block content
                     h3.settings-box-title=t('views.settings.views.webhook.title_endpoints')
                     ul.settings-box.w-100
                       li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
-                        .col-12.no-border.settings-box-inner-title
+                        .col-12.no-border.settings-box-inner-title.text-white
                           span=' ' + t('views.settings.views.webhook.athome_endpoint')
                         .col
                           #athome_endpoints
@@ -823,7 +802,7 @@ block content
                                   .col-4.text-left.p-1=t('views.settings.views.webhook.athome_trigger')
                                   .col-8.text-right.p-1 /interface?atHome=trigger&username=admin&password=admin
                       li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1.mt-2
-                        .col-12.no-border.settings-box-inner-title
+                        .col-12.no-border.settings-box-inner-title.text-white
                           span=' ' + t('views.settings.views.webhook.exclude_endpoint')
                         .col
                           #exclude_endpoints
@@ -837,10 +816,9 @@ block content
                                   .col-8.text-right.p-1 /interface?delExclude=CAMERA&username=admin&password=admin
                                 li.row.m-0.p-0.justify-content-center.break-text.pt-1.pb-1
                                   .col-4.text-left.p-1=t('views.settings.views.webhook.exclude_clear')
-                                  .col-8.text-right.p-1 /interface?clearxclude=true&username=admin&password=admin
-                  .container.d-flex.justify-content-end.mt-4.mb-5
-                    a.reset.btn.camview.mt-3(href="/settings", target="_self")=t('views.settings.cancel')
-                    button.apply.btn.logout.mt-3.ml-3(type="button")=t('views.settings.apply')               
+                                  .col-8.text-right.p-1 /interface?clearxclude=true&username=admin&password=admin   
+          .container.d-flex.justify-content-end.mb-5
+            button.apply.form-apply.btn.logout.ml-0(type="button")=t('views.settings.apply')                       
 block footscripts
   script(type='text/javascript' src='/javascripts/modules/jquery.serializeJSON.js' defer)
   script(type='text/javascript' src='/javascripts/modules/bootstrap-select.min.js' defer)

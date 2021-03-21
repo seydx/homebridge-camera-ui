@@ -4,7 +4,7 @@ html
     meta(charset="utf-8")
     title camera.ui
     link(rel='stylesheet', href='/stylesheets/modules/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css?v=0.0.15')
+    link(rel='stylesheet', href='/stylesheets/style.css?v=0.0.20')
     link(rel='manifest', href='/www/manifest.json')
     meta(name='Description', content='camera.ui is a homebridge user interface for cameras.')
     meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover')
@@ -84,12 +84,32 @@ html
       if(theme){
         let darkmode = theme.split('-')[0];
         let themeColor = theme.split('-')[1];
-        themeColor = themeColor === 'pink' ? false : themeColor;
+        themeColor = themeColor === 'pink' 
+          ? false 
+          : themeColor;
         document.documentElement.setAttribute('data-theme', darkmode);
         if(themeColor){
           document.documentElement.setAttribute('data-theme-color', themeColor);
         }
+      } else {
+        const currentTheme = localStorage.getItem('theme')
+          ? localStorage.getItem('theme')
+          : null;
+        if (currentTheme) {
+          document.documentElement.setAttribute('data-theme', currentTheme);
+        }
+        const currentColorTheme = localStorage.getItem('theme-color')
+          ? localStorage.getItem('theme-color')
+          : null;
+        if (currentColorTheme) {
+          document.documentElement.setAttribute(
+            'data-theme-color',
+            currentColorTheme
+          );
+        }
       }
+#preloader(style="display: none;")
+  .preloader-loader
 block content
 if title && title !== 'CamViews' && title !== 'Login'
   footer#footer2.fixFoot(style="display: none")
@@ -110,7 +130,6 @@ if title && title !== 'CamViews' && title !== 'Login'
   a.back-to-top.mr-save.mb-save.text-center(href='#', aria-label="Back to top", style="display: none;")
     i.fa.fa-arrow-up
 if title
-  #preloader
 - title = title && title !== '' ? title : false;
 - role = role && role !== '' ? role : false;
 - keys = keys && keys !== '' ? keys : false;

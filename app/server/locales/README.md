@@ -61,6 +61,8 @@ Here you can find all available languages for the interface. These are structure
       "reset_btn_reset": "Reset",
       "reset_btn_close": "Close",
       "select_never": "Never",
+      "saved": "Saved!",
+      "error": "Error!",
       "subnavigation": {
         "profile": "Profile",
         "general": "General",

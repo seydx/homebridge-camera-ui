@@ -56,6 +56,8 @@
       "reset_btn_reset": "Herstel",
       "reset_btn_close": "Sluit",
       "select_never": "Nooit",
+      "saved": "Gered!",
+      "error": "Fout!",
       "subnavigation": {
         "profile": "Profiel",
         "general": "Algemeen",

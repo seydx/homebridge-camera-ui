@@ -3,7 +3,7 @@ extends layout
 block head
 
 block content
-  body.overflow-hidden
+  body(style="display: none")
     audio#soundFx
       source(src="/sounds/notification.wav")
     a#nb-dialog-container.mt-save-s(href="#back", data-rel="lightcase")
