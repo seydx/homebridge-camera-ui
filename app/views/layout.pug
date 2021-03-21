@@ -166,10 +166,11 @@ if title && title !== 'Login'
     }
 script(type='text/javascript').
   (async function ($) {
+  
     i18next
     .init({
       debug: false,
-      lng: !{JSON.stringify(language)},
+      lng: navigator.language || !{JSON.stringify(language)} || navigator.userLanguage,
       resources: !{JSON.stringify(i18n.services.resourceStore.data)},
       fallbackLng: !{JSON.stringify(i18n.options.fallbackLng)},
       preload: !{JSON.stringify(i18n.options.preload)}
