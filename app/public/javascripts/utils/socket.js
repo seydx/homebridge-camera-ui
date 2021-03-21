@@ -240,9 +240,13 @@
       $('#shuffledCards').prepend('<a class="filter-cards col-12 notification-deck ' + notification.room.replace(/\s/g,'') + '" href="' + url_path + '" data-filterable="yes" data-target="' + notification.id + '" data-rel="lightcase" data-groups="[&quot;' + notification.fileType  + '&quot;,&quot;' + notification.room  + '&quot;,&quot;' + notification.originName  + '&quot;]" data-date-created="' + notification.time + '" data-title="' + notification.originName + '"><i class="removeNotification fa fa-times-circle text-color-pink notification-remove" style="display: none; opacity: 0;"></i><div class="notification-deck-remove">X</div><div class="row justify-content-center"><div class="col-9"><h3 class="m-0 notification-title">' + notification.originName + ' (' + notification.room + ')' + '</h3><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.movement') + ': </b><span>' + notification.time + '</span></p><p class="m-0 notification-text"> <b class="text-color-pink">' + window.i18next.t('views.notifications.labels') + ': </b><span>' + notification.labels + '</span></p></div><div class="col-3 text-right"><img class="notification-img" onerror="this.onerror=null;this.src=\'/images/web/noimg.png\';" src="' + img_url_path + '" width="45" height="45" alt="' + window.i18next.t('views.notifications.img_notification') + '"></div></div></a>');
         
       shuffle.add($('[data-target="' + notification.id + '"]'));
-      $('#removeAllNotifications').show();
+      
+      $('.filter-icon').fadeIn();
         
       if(role && role === 'Master'){
+      
+        $('#removeAllNotifications').fadeIn();
+      
         $('.notification-deck').unbind();
         $('.notification-deck').hover(
           function () {
@@ -274,9 +278,11 @@
              
           let badgeSize = $(this).text();
           badgeSize = parseInt(badgeSize);
-          badgeSize--;
-           
-          $(this).text(badgeSize);
+          
+          if(badgeSize > 0){
+            badgeSize--;
+            $(this).text(badgeSize);
+          }
             
         }
              
@@ -296,7 +302,7 @@
             $(this).remove(); 
                 
             if (!notifications.length) {
-              $('#removeAllNotifications').hide();
+              $('#removeAllNotifications, .filter-icon').fadeOut();
               $('.nots-container').append(
                 '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" />'
               );

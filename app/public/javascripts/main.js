@@ -1,6 +1,8 @@
 (async function ($) {
   'use strict';
   
+  $('body').fadeIn(500);
+  
   const timeout = (ms) => new Promise((res) => setTimeout(res, ms)); 
 
   let theme = getTheme();
@@ -24,21 +26,19 @@
   $('.go-back-page').on('click', function(e){ 
     e.preventDefault(); 
     
-    if($('#preloader').length)
-      $('#preloader').velocity({ opacity: 1, display: 'block' }, 250 );
+    //if($('#preloader').length)
+      //$('#preloader').velocity({ opacity: 1, display: 'block' }, 250 );
     
-    window.history.length > 2 ? setTimeout(function(){ window.history.go(-1); }, 500) : window.location.replace('/dashboard');
+    window.history.length > 2 
+      ? setTimeout(function(){ window.history.go(-1); }, 500) 
+      : window.location.replace('/dashboard');
   
   });
   
   // Preloader
-  if ($('#preloader').length) {
-    $('#preloader')
-      .velocity({ opacity: 0, display: 'none' }, { delay: 100 })
-      .then(() => {
-        $('body').removeClass('overflow-hidden');
-      });
-  }
+  /*if ($('#preloader').length) {
+    $('#preloader').fadeOut()
+  }*/
   
   //Back to top
   if($('.back-to-top').length){
@@ -166,11 +166,10 @@
   $('.smoothLink').click(function(e){  
     e.preventDefault();
     let targetUrl = $(this).attr('href');
-    $('#main, #footer, #footer2, .back-to-top')
-      .velocity({ opacity: 0, display: 'none' },0).then(async () => {
-        $('#main, #footer, #footer2, .back-to-top').remove();
-        $('#preloader').velocity({ opacity: 1, display: 'block' }, { duration: 250 });
-        await timeout(250);
+    $('#preloader')
+      .removeClass('preloader-bg-blur')
+      .velocity({ opacity: 1, display: 'block' }, { duration: 250 })
+      .then(() => {
         window.location.replace(targetUrl);
       });
   });

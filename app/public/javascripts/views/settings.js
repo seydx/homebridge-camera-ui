@@ -334,8 +334,11 @@
     const file = $('#imageUpload')[0].files[0];
   
     formData.append('photo', file);
+    
+            
   
     $('#preloader')
+      .addClass('preloader-bg-blur')       
       .velocity({opacity: 1, display: 'block'}, 250)
       .then(()=> {
         
@@ -347,44 +350,37 @@
           type: 'POST',
           processData: false,
           contentType: false,
-          data: formData,
-          complete: function (data, textStatus) {
-            if (data.status == 400) {
-              $.snack('error', 'Failed!', 3000);
-              $('.bubble3').text(data.responseJSON.message);
-              $('.bubble3').velocity({ opacity: 1, display: 'block' });
-            }
-      
-            if (data.status === 202) {
-              $.snack('success', 'Credentials changed!', 3000);
-              window.location.replace('/logout');
-              $(window).scrollTop(0);
-              return;
-            }
-      
-            if (data.status === 200) {
-              $.snack('success', 'Settings saved!', 3000);
-              window.location.reload(true);
-              $(window).scrollTop(0);
-              return;
-            }
-      
-            $.snack('success', 'Settings saved!', 3000);
-            $(window).scrollTop(0);
-      
-            $('.page').velocity(
-              {
-                left: 0,
-              },
-              100
-            );
-            $('.scrollitem').removeClass('subActive');
-            let item = $('.scrollitem').get(0);
-            $(item).addClass('subActive');
-            $('#preloader').velocity({ opacity: 0, display: 'none' }, { delay: 500 });
-          },
-        });
+          data: formData
+        })
+        .always((data, textStatus, jqXHR) => {  
         
+          $('html, body').velocity(
+            {
+              scrollTop: 0,
+            },            
+            1500,
+            'easeInOutExpo'
+          );                
+          
+          $('#preloader')
+          .velocity({ opacity: 0, display: 'none' }, { delay: 500 }) 
+          .then(() => {
+
+            $.toastDefaults.dismissible = false;
+            $.toastDefaults.stackable = false;
+            $.toastDefaults.pauseDelayOnHover = false;
+          
+            if (jqXHR.status === 200) {
+              $.snack('success', window.i18next.t('views.settings.saved'), 3000);
+            } else {
+              const errorMessage = jqXHR.status + ': ' + jqXHR.statusText;
+              $.snack('error', errorMessage, 3000);
+            }                                    
+                                        
+          });          
+                                        
+        });  
+                        
       });
   
   });
@@ -560,7 +556,7 @@
     );
     
     $('.page').velocity({
-      height: $($(this).attr('href')).children('.innerContainer').height()
+      height: $($(this).attr('href')).children('.innerContainer').height() + 20
     });
   
     let index = $(this).index();
@@ -683,7 +679,7 @@
         linkActive.addClass('subActive');
         
         $('.page').velocity({
-          height: $('#' + id).children('.innerContainer').height()
+          height: $('#' + id).children('.innerContainer').height() + 20
         });
   
         let eleWidth = linkActive.outerWidth() + 25;  
@@ -745,7 +741,7 @@
         linkActive.addClass('subActive');
         
         $('.page').velocity({
-          height: $('#' + id).children('.innerContainer').height()
+          height: $('#' + id).children('.innerContainer').height() + 20
         });
           
         let eleWidth = linkActive.outerWidth();  

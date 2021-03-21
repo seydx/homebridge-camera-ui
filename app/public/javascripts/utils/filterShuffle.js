@@ -5,13 +5,21 @@ let pageTitle = getTitle();
 $('#dataFilter').on('click', function (e) {
 
   if($('.breadcrumbs-filter').css('margin-top') === '0px'){
-    $('.breadcrumbs-filter').velocity({
-      marginTop: -65
-    });
+    $('.breadcrumbs-filter').velocity(
+      {
+        marginTop: -65,
+      },
+      500,
+      'easeInOutCirc'
+    );
   } else {
-    $('.breadcrumbs-filter').velocity({
-      marginTop: 0
-    });
+    $('.breadcrumbs-filter').velocity(
+      {
+        marginTop: 0,
+      },
+      500,
+      'easeInOutCirc'
+    );
   }
 
 });
@@ -19,9 +27,13 @@ $('#dataFilter').on('click', function (e) {
 $(window).on('click', e => {
 
   if($('.breadcrumbs-filter').css('margin-top') === '0px' && !$(e.target).closest('.breadcrumbs-filter').length && !$(e.target).closest('.daterangepicker').length)
-    $('.breadcrumbs-filter').velocity({
-      marginTop: -65
-    });
+    $('.breadcrumbs-filter').velocity(
+      {
+        marginTop: -65,
+      },
+      500,
+      'easeInOutCirc'
+    );
 
 });
 

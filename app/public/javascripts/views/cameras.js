@@ -5,6 +5,9 @@
   
   let cameras = getCameras();
   
+  if(Object.keys(cameras).length)
+    $('.filter-area').show();
+  
   if (cameras) {
     for (const cam of Object.keys(cameras)) {
       let camm = cameras[cam];

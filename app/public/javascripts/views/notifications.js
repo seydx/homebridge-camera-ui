@@ -41,7 +41,7 @@
           
           setTimeout(()=>{
             if(!$('.shuffle-item').length){
-              $('#removeAllNotifications').fadeOut();   
+              $('#removeAllNotifications, .filter-icon').fadeOut();   
               $('.nots-container').append(
                 '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" style="display: none;" />'
               );
@@ -92,7 +92,7 @@
             
             setTimeout(()=>{
               if(!$('.shuffle-item').length){
-                $('#removeAllNotifications').fadeOut();   
+                $('#removeAllNotifications, .filter-icon').fadeOut();      
                 $('.nots-container').append(
                   '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_notifications.png" alt="' + window.i18next.t('views.notifications.no_notifications') + '" style="display: none;" />'
                 );

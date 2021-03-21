@@ -47,7 +47,7 @@
 
             setTimeout(()=>{
               if(!$('.shuffle-item').length){
-                $('#removeAllRecordings').fadeOut();   
+                $('#removeAllRecordings, .filter-icon').fadeOut();      
                 $('#recordings').append(
                   '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" style="display: none;"/>'
                 ); 
@@ -90,7 +90,7 @@
 
           setTimeout(()=>{
             if(!$('.shuffle-item').length){
-              $('#removeAllRecordings').fadeOut();   
+              $('#removeAllRecordings, .filter-icon').fadeOut();   
               $('#recordings').append(
                 '<img class="container d-flex justify-content-center mw-470" src="/images/web/no_recordings.png" alt="' + window.i18next.t('views.recordings.no_recordings') + '" style="display: none;"/>'
               ); 
