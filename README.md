@@ -40,7 +40,7 @@ sudo npm install -g --unsafe-perm homebridge-camera-ui@latest
 
 Once you have installed and configured the plugin you can access the interface via http://localhost:8181.
 
-The default username is ``admin`` and the default password is ``admin``.
+The default username is ``master`` and the default password is ``master``.
 
 
 ## Example Config
