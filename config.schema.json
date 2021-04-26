@@ -14,17 +14,6 @@
       "type": "integer",
       "description": "User Interface port"
     },
-    "auth": {
-      "title": "Auth Mode",
-      "description": "Authentication form for the User Interface",
-      "type": "string",
-      "default": "form",
-      "oneOf": [
-        { "title": "Form", "enum": ["form"] },
-        { "title": "None", "enum": ["none"] }
-      ],
-      "required": true
-    },
     "theme": {
       "title": "Theme",
       "description": "UI Theme",
@@ -63,12 +52,6 @@
       "type": "boolean",
       "default": false,
       "description": "User Interface Debug"
-    },
-    "reset": {
-      "title": "Reset Master Credentials",
-      "description": "If checked, the master credentials will be resettet on next start.",
-      "type": "boolean",
-      "default": false
     },
     "mqtt": {
       "titel": "MQTT Server",
@@ -164,27 +147,6 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
-        }
-      }
-    },
-    "aws": {
-      "titel": "Image Detection",
-      "type": "object",
-      "properties": {
-        "accessKeyId": {
-          "title": "Access Key ID",
-          "type": "string",
-          "description": "AWS Access Key ID"
-        },
-        "secretAccessKey": {
-          "title": "Secret Access Key",
-          "type": "string",
-          "description": "AWS Secret Access Key"
-        },
-        "region": {
-          "title": "Region",
-          "type": "string",
-          "description": "AWS Region"
         }
       }
     },
@@ -384,7 +346,8 @@
               "socketPort": {
                 "title": "Websocket Port",
                 "type": "integer",
-                "description": "Livestream Websocket Port for the UI"
+                "description": "Livestream Websocket Port for the UI",
+                "required": true
               }
             }
           },
@@ -426,32 +389,6 @@
                 "description": "The message to watch for to trigger doorbell alerts. Will use the name of the camera if blank."
               }                                                                                
             }
-          },
-          "rekognition": {
-            "title": "Image Rekognition",
-            "type": "object",
-            "properties": {
-              "active": {
-                "title": "Active",
-                "type": "boolean",
-                "description": "Enables image detection."
-              },
-              "confidence": {
-                "title": "Confidence",
-                "type": "integer",
-                "description": "Minimum confidence that Amazon Rekognition image must have in the accuracy of the detected label."
-              },
-              "labels": {
-                "title": "Labels",
-                "description": "For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object. Here you can give own labels to filter for the image detection.",
-                "type": "array",
-                "items": {
-                  "title": "Label",
-                  "type": "string",
-                  "description": "Image label."
-                }
-              }
-            }
           }
         }
       }
@@ -466,11 +403,9 @@
       "orderable": false,
       "items": [
         "port",
-        "auth",
         "language",
         "theme",
         "debug",
-        "reset",
         {
           "key": "ssl",
           "title": "SSL Certificate",
@@ -500,9 +435,9 @@
             "cameras[].name",
             "cameras[].videoConfig.source",
             "cameras[].videoConfig.stillImageSource",
+            "cameras[].videoConfig.socketPort",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
-            "cameras[].videoConfig.socketPort",
             {
               "key": "cameras[]",
               "type": "section",
@@ -586,29 +521,6 @@
                 "cameras[].mqtt.doorbellTopic",
                 "cameras[].mqtt.doorbellMessage"
               ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "AWS Rekognition Options",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].rekognition.active",
-                "cameras[].rekognition.confidence",
-                {
-                  "key": "cameras[].rekognition.labels",
-                  "type": "section",
-                  "title": "Labels",
-                  "expandable": true,
-                  "expanded": false,
-                  "orderable": false,
-                  "buttonText": "Add Label",
-                  "items": [
-                    "cameras[].rekognition.labels[]"
-                  ]
-                }
-              ]
             }
           ]
         }
@@ -651,19 +563,6 @@
         "http.active",
         "http.port",
         "http.localhttp"
-      ]
-    },
-    {
-      "key": "aws",
-      "name": "AWS Credentials",
-      "type": "object",
-      "orderable": false,
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        "aws.accessKeyId",
-        "aws.secretAccessKey",
-        "aws.region"
       ]
     }
   ]

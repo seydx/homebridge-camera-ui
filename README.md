@@ -53,9 +53,7 @@ The default username is ``admin`` and the default password is ``admin``.
         {
             "name": "CameraUI",
             "port": 8181,
-            "auth": "form",
             "debug": true,
-            "reset": false,
             "mqtt": {
                 "active": false,
                 "host": "192.168.178.123",
@@ -145,7 +143,7 @@ This plugin has been verified to work with the following apps/systems:
 - macOS Catalina 10.15
 - Apple Home
 - All 3rd party apps like Elgato Eve etc
-- Homebridge v1.1.6
+- Homebridge >= v1.1.6
 
 ### Browser
 

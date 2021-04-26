@@ -13,11 +13,9 @@
     {
       "name": "CameraUI",
       "port": 3333,
-      "auth": "form",
       "theme": "auto",
       "language": "auto",
       "debug": true,
-      "reset": false,
       "mqtt": {
         "active": true,
         "host": "192.168.178.111",
@@ -35,11 +33,6 @@
       },
       "options": {
         "videoProcessor": "ffmpeg"
-      },
-      "aws": {
-        "accessKeyId": "aswdfasdfsaswae",
-        "secretAccessKey": "DsZtNawer24352435asdfsdfsdop+CB4C5",
-        "region": "eu-central-1"
       },
       "cameras": [
         {
@@ -69,15 +62,6 @@
             "motionMessage": "ON",
             "motionResetTopic": "sricam/motion",
             "motionResetMessage": "OFF"
-          },
-          "rekognition": {
-            "active": true,
-            "confidence": 90,
-            "labels": [
-              "Human",
-              "Face",
-              "Person"
-            ]
           }
         },
         {
@@ -107,9 +91,6 @@
             "motionMessage": "ON",
             "motionResetTopic": "yicam_dome_keller/motion",
             "motionResetMessage": "OFF"
-          },
-          "rekognition": {
-            "active": false
           }
         }
       ],

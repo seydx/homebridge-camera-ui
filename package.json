@@ -1,9 +1,72 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "3.3.0",
-  "description": "Camera User Interface for Homebridge",
+  "version": "4.0.0",
+  "description": "User Interface for RTSP capable cameras.",
+  "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
+  "scripts": {
+    "build": "npm run build --prefix ui",
+    "lint": "concurrently \"npm run lint:plugin\" \"npm run lint:server\" \"npm run lint:ui\"",
+    "lint:plugin": "eslint --fix ./plugin",
+    "lint:server": "eslint --fix . --ignore-pattern 'plugin'",
+    "lint:ui": "npm run lint --prefix ui",
+    "test": "jest --runInBand --forceExit --detectOpenHandles --config ./test/jest.config.js",
+    "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
+    "watch:server": "nodemon --trace-warnings server/index.js",
+    "watch:ui": "npm run serve --prefix ui"
+  },
   "main": "index.js",
-  "devDependencies": {},
+  "dependencies": {
+    "@seydx/node-rtsp-stream": "^1.3.2",
+    "compare-versions": "^3.6.0",
+    "connect-history-api-fallback": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "ffmpeg-for-homebridge": "^0.0.9",
+    "fs-extra": "9.1.0",
+    "get-port": "^5.1.1",
+    "got": "^11.8.2",
+    "helmet": "^4.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "lowdb": "^1.0.0",
+    "moment": "^2.29.1",
+    "morgan": "^1.10.0",
+    "mqtt": "^4.2.6",
+    "multer": "^1.4.2",
+    "nanoid": "^3.1.22",
+    "node-rekognition": "^0.4.0",
+    "os": "^0.1.1",
+    "piexifjs": "^1.0.6",
+    "ping": "^0.4.1",
+    "socket.io": "^4.0.1",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
+    "tar": "^6.1.0",
+    "telegraf": "^4.3.0",
+    "web-push": "^3.4.4"
+  },
+  "devDependencies": {
+    "@babel/core": "7.13.16",
+    "@babel/eslint-parser": "7.13.14",
+    "@babel/eslint-plugin": "7.13.16",
+    "concurrently": "^6.0.2",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-unicorn": "^31.0.0",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "supertest": "^6.1.3"
+  },
+  "bugs": {
+    "url": "https://github.com/SeydX/homebridge-camera-ui/issues"
+  },
+  "engines": {
+    "node": ">=12.18.3",
+    "homebridge": "^1.1.6"
+  },
   "funding": [
     {
       "type": "paypal",
@@ -18,71 +81,21 @@
       "url": "https://github.com/SeydX"
     }
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SeydX/homebridge-camera-ui.git"
-  },
-  "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/SeydX/homebridge-camera-ui/issues"
-  },
   "homepage": "https://github.com/SeydX/homebridge-camera-ui#readme",
   "keywords": [
     "camera",
     "homebridge-plugin",
-    "mqtt",
-    "ftp",
-    "homebridge",
-    "http",
     "motion",
     "detection",
     "ui",
-    "doorbell",
     "rekognition",
-    "aws"
+    "aws",
+    "interface",
+    "webapp"
   ],
-  "engines": {
-    "node": ">=12.18.3",
-    "homebridge": "^1.1.6"
-  },
-  "dependencies": {
-    "@seydx/node-rtsp-stream": "1.2.3",
-    "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
-    "compression": "^1.7.4",
-    "connect-flash": "^0.1.1",
-    "cookie-parser": "^1.4.5",
-    "express": "^4.17.1",
-    "express-device": "^0.4.2",
-    "express-session": "^1.17.1",
-    "express-socket.io-session": "^1.3.5",
-    "express-unless": "^0.5.0",
-    "ffmpeg-for-homebridge": "^0.0.9",
-    "fs-extra": "^9.1.0",
-    "get-port": "^5.1.1",
-    "got": "11.8.2",
-    "helmet": "^4.4.1",
-    "http-errors": "^1.8.0",
-    "i18next": "^19.9.2",
-    "i18next-http-middleware": "^3.1.0",
-    "i18next-node-fs-backend": "^2.1.3",
-    "lowdb": "^1.0.0",
-    "moment": "^2.29.1",
-    "morgan": "^1.10.0",
-    "mqtt": "^4.2.6",
-    "multer": "^1.4.2",
-    "node-rekognition": "0.4.0",
-    "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
-    "path": "^0.12.7",
-    "ping": "^0.4.0",
-    "pug": "^3.0.2",
-    "serve-favicon": "^2.5.0",
-    "session-file-store": "^1.5.0",
-    "socket.io": "^4.0.0",
-    "telegraf": "^4.3.0",
-    "uuid": "^8.3.2",
-    "web-push": "^3.4.4"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeydX/homebridge-camera-ui.git"
   }
 }

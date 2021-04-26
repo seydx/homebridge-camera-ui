@@ -1,0 +1,196 @@
+'use-strict';
+
+const ffmpegPath = require('ffmpeg-for-homebridge');
+const fs = require('fs-extra');
+
+const config = require('./config.service');
+const logger = require('../logger/logger.service');
+
+class ConfigSetup {
+  constructor() {
+    this.ui = this._ui();
+    this.options = this._options();
+    this.ssl = this._ssl();
+    this.mqtt = this._mqtt();
+    this.mqttConfigs = this._mqttConfigs();
+    this.http = this._http();
+    this.aws = this._aws();
+    this.cameras = this._cameras();
+
+    return {
+      ...this.ui,
+      ui: config.ui,
+      options: this.options,
+      ssl: this.ssl,
+      aws: this.aws,
+      http: this.http,
+      mqtt: this.mqtt,
+      mqttConfigs: this.mqttConfigs,
+      cameras: this.cameras,
+    };
+  }
+
+  _ui() {
+    const ui = {
+      debug: config.plugin.debug,
+      port: config.plugin.port || 8181,
+      language: config.plugin.language || 'auto',
+      theme: config.plugin.theme || 'auto',
+    };
+
+    return ui;
+  }
+
+  _options() {
+    const options = {
+      videoProcessor:
+        config.plugin.options && config.plugin.options.videoProcessor
+          ? config.plugin.options.videoProcessor
+          : ffmpegPath || 'ffmpeg',
+    };
+
+    return options;
+  }
+
+  _ssl() {
+    if (config.plugin.ssl && config.plugin.ssl.active && config.plugin.ssl.key && config.plugin.ssl.cert) {
+      try {
+        const ssl = {
+          key: fs.readFileSync(config.plugin.ssl.key, 'utf8'),
+          cert: fs.readFileSync(config.plugin.ssl.cert, 'utf8'),
+        };
+
+        return ssl;
+      } catch (error) {
+        logger.warn('WARNING: Could not read SSL Cert/Key');
+        logger.debug(error);
+      }
+    }
+
+    return false;
+  }
+
+  _mqtt() {
+    if (config.plugin.mqtt && config.plugin.mqtt.active && config.plugin.mqtt.host) {
+      const mqtt = {
+        tls: config.plugin.mqtt.tls || false,
+        host: config.plugin.mqtt.host,
+        port: config.plugin.mqtt.port || 1883,
+        username: config.plugin.mqtt.username || '',
+        password: config.plugin.mqtt.password || '',
+      };
+
+      return mqtt;
+    }
+
+    return false;
+  }
+
+  _mqttConfigs() {
+    const mqttConfigs = new Map();
+    const cameras = this._cameras();
+
+    for (const camera of cameras) {
+      if (camera.mqtt && this.mqtt) {
+        //setup mqtt topics
+        if (camera.mqtt.motionTopic) {
+          const mqttOptions = {
+            motionTopic: camera.mqtt.motionTopic,
+            motionMessage: camera.mqtt.motionMessage || 'ON',
+            motionResetMessage: camera.mqtt.motionResetMessage || 'OFF',
+            camera: camera.name,
+            motion: true,
+          };
+
+          mqttConfigs.set(mqttOptions.motionTopic, mqttOptions);
+        }
+
+        if (camera.mqtt.motionResetTopic && camera.mqtt.motionResetTopic !== camera.mqtt.motionTopic) {
+          const mqttOptions = {
+            motionResetTopic: camera.mqtt.motionResetTopic,
+            motionResetMessage: camera.mqtt.motionResetMessage || 'OFF',
+            camera: camera.name,
+            motion: true,
+            reset: true,
+          };
+
+          mqttConfigs.set(mqttOptions.motionResetTopic, mqttOptions);
+        }
+
+        if (
+          camera.mqtt.doorbellTopic &&
+          camera.mqtt.doorbellTopic !== camera.mqtt.motionTopic &&
+          camera.mqtt.doorbellTopic !== camera.mqtt.motionResetTopic
+        ) {
+          const mqttOptions = {
+            doorbellTopic: camera.mqtt.doorbellTopic,
+            doorbellMessage: camera.mqtt.doorbellMessage || 'ON',
+            camera: camera.name,
+            doorbell: true,
+          };
+
+          mqttConfigs.set(mqttOptions.doorbellTopic, mqttOptions);
+        }
+      }
+    }
+
+    return mqttConfigs;
+  }
+
+  _http() {
+    if (config.plugin.http && config.plugin.http.active) {
+      const http = {
+        port: config.plugin.http.port || 2525,
+        localhttp: config.plugin.http.localhttp,
+      };
+
+      return http;
+    }
+
+    return false;
+  }
+
+  _aws() {
+    if (
+      config.plugin.aws &&
+      config.plugin.aws.accessKeyId &&
+      config.plugin.aws.secretAccessKey &&
+      config.plugin.aws.region
+    ) {
+      const aws = {
+        accessKeyId: config.plugin.aws.accessKeyId,
+        secretAccessKey: config.plugin.aws.secretAccessKey,
+        region: config.plugin.aws.region,
+        contingent: config.plugin.aws.contingent || 0,
+      };
+
+      return aws;
+    }
+
+    return false;
+  }
+
+  _cameras() {
+    const cameras = config.plugin.cameras || [];
+
+    return cameras
+      .filter(
+        (camera) => camera.name && camera.videoConfig && camera.videoConfig.source && camera.videoConfig.socketPort
+      )
+      .map((camera) => {
+        if (camera.rekognition) {
+          camera.rekognition = {
+            active: camera.rekognition.active || false,
+            confidence: camera.rekognition.confidence > 0 ? camera.rekognition.confidence : 90,
+            labels:
+              camera.rekognition.labels && camera.rekognition.labels.length > 0
+                ? camera.rekognition.labels.map((label) => label && label.toLowerCase()).filter((label) => label)
+                : ['human', 'person', 'face'],
+          };
+        }
+        return camera;
+      });
+  }
+}
+
+module.exports = ConfigSetup;
