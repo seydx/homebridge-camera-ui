@@ -17,7 +17,7 @@
 **camera.ui** is a homebridge user interface to control your cameras. It supports almost everything you need for a camera user interface.
 
 - Livestreams on Web
-- Full functional Web App with push notifications
+- Full functional Web App with push notifications and more
 - Multi-language support
 - **CamViews**: A resizable, drag & drop camera overview
 - **Image Rekognition** with AWS
@@ -34,7 +34,7 @@
 
 
 ```
-sudo npm install -g --unsafe-perm homebridge-camera-ui@latest
+sudo npm install -g --unsafe-perm homebridge-camera-ui@beta
 ```
 
 
@@ -80,11 +80,11 @@ The default username is ``master`` and the default password is ``master``.
 
 ```
 
-See [Example Config](https://github.com/SeydX/homebridge-camera-ui/edit/master/misc/example-config.json) for more details.
+See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/beta/misc/example-config.json) for more details.
 
 # Livestream
 
-To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/2b59ce5ae51204c1920c3105c44a92c16ea8bf01/misc/example-config.json#L59) for more details.
+To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/beta/misc/example-config.json) for more details.
 
 
 # Image Rekognition
