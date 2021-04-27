@@ -1,0 +1,128 @@
+const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  outputDir: path.resolve(__dirname, '../interface'),
+  productionSourceMap: false,
+  pwa: {
+    name: 'camera.ui',
+    themeColor: '#f4f4f4',
+    msTileColor: '#f4f4f4',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black-translucent',
+    assetsVersion: Date.now(),
+    manifestPath: 'manifest.json',
+    manifestOptions: {
+      lang: 'en',
+      dir: 'ltr',
+      name: 'camera.ui',
+      short_name: 'camera.ui',
+      description: 'camera.ui is a homebridge user interface for cameras.',
+      theme_color: '#f4f4f4',
+      background_color: '#f4f4f4',
+      display: 'standalone',
+      orientation: 'any',
+      scope: '/',
+      start_url: '/',
+      icons: [
+        {
+          src: '/img/icons/icon-72x72.png',
+          sizes: '72x72',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-96x96.png',
+          sizes: '96x96',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-128x128.png',
+          sizes: '128x128',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-144x144.png',
+          sizes: '144x144',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-152x152.png',
+          sizes: '152x152',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'any maskable',
+        },
+        {
+          src: '/img/icons/icon-384x384.png',
+          sizes: '384x384',
+          type: 'image/png',
+        },
+        {
+          src: '/img/icons/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+      ],
+      splash_pages: null,
+    },
+    iconPaths: {
+      favicon32: 'img/icons/favicon-32x32.png',
+      favicon16: 'img/icons/favicon-16x16.png',
+      appleTouchIcon: 'img/icons/apple-touch-icon-152x152.png',
+      maskIcon: 'img/icons/safari-pinned-tab.svg',
+      msTileImage: 'img/icons/msapplication-icon-144x144.png',
+    },
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: 'src/service-worker.js',
+    },
+  },
+  chainWebpack: (config) => {
+    config.performance.maxEntrypointSize(400000).maxAssetSize(400000);
+    config.plugin('html').tap((arguments_) => {
+      const payload = arguments_;
+      payload[0].title = 'camera.ui';
+      return payload;
+    });
+    /*config.plugins.delete('prefetch');
+    config.plugin('preload').tap((options) => {
+      options[0].include = 'allChunks';
+      return options;
+    });*/
+  },
+  configureWebpack: {
+    performance: {
+      hints: process.env.NODE_ENV === 'production' ? false : 'warning',
+    },
+    optimization: {
+      runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: Infinity,
+        minSize: 0,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              const name = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              return `mod.${name.replace('@', '-')}`;
+            },
+          },
+        },
+      },
+    },
+    resolve: {
+      alias: {
+        jquery: path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.js'),
+        'jquery-ui': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery-ui.js'),
+        'jquery.ui': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery-ui.js'),
+        'jquery.ui.touch-punch': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.ui.touch-punch.js'),
+      },
+    },
+    plugins: [new BundleAnalyzerPlugin()],
+  },
+};
