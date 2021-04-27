@@ -4,6 +4,11 @@ test
 misc
 ui
 images
+.DS_Store
+.prettierrc.json
+nodemon.json
+.eslintrc.js
+jsconfig.json
 
 # Logs
 logs
@@ -62,13 +67,3 @@ yarn.lock
 
 # dotenv environment variables file
 .env
-.DS_Store
-.prettierrc.json
-nodemon.json
-.eslintrc.js
-jsconfig.json
-CHANGELOG.md
-CONTRIBUTING.md
-LICENSE
-README.md
-ui/node_modules
