@@ -171,10 +171,6 @@ Please check our [FAQ](https://github.com/SeydX/homebridge-camera-ui/wiki/FAQ) b
 
 # Contributing
 
-This plugin uses a modified version of the **homebridge-camera-ffmpeg** plugin from [@sunoo](https://github.com/Sunoo/homebridge-camera-ffmpeg)
-
-Credits goes also to [@phoboslab](https://github.com/phoboslab/jsmpeg) for the wonderful decoder!
-
 You can contribute to this homebridge plugin in following ways:
 
 - Report issues and help verify fixes as they are checked in.
