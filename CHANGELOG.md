@@ -1,6 +1,11 @@
 # Changelog
 
-# v4.0.0 - 2021-04-27
+# NEXT
+
+## Bugfixes
+- Fixed an issue where ffmpeg could not store Videos as .mp4 in recordings folder
+
+# v4.0.1 - 2021-04-27
 
 ## Breaking Changes
 - **Database**: Database was completely rewritten to work better with the Rest API. All who used v3.X before have to delete their database (config.ui.db.json) to use v4.X

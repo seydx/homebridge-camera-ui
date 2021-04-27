@@ -67,15 +67,8 @@ class Ffmpeg {
             ' -hide_banner -loglevel error' +
             ' -frames:v 1' +
             ' -filter:v' +
-            // eslint-disable-next-line quotes
-            " scale='min(" +
-            width +
-            // eslint-disable-next-line quotes
-            ",iw)':'min(" +
-            height +
-            // eslint-disable-next-line quotes
-            ",ih)':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2" +
-            (videoFilter ? ' -filter:v ' + videoFilter : ' ') +
+            ` scale='min(${width},iw)':'min(${height},ih)':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2` +
+            (videoFilter ? `,${videoFilter} ` : ' ') +
             destination;
 
           const ffmpeg = spawn('ffmpeg', ffmpegArguments.split(/\s+/), { env: process.env });
@@ -103,6 +96,7 @@ class Ffmpeg {
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   storeVideo(cameraName, videoConfig, name, recPath, recTimer, label) {
     return new Promise((resolve, reject) => {
       ping.status(videoConfig, 2).then((status) => {
@@ -119,19 +113,13 @@ class Ffmpeg {
           let videoName = recPath + '/' + name + '.mp4';
 
           ffmpegArguments +=
-            ' -t ' +
-            recTimer +
+            ' -hide_banner -loglevel error' +
+            ` -t ${recTimer}` +
             (videoFilter ? ' -filter:v ' + videoFilter : '') +
-            ' -metadata comment="' +
-            label +
-            '"' +
             ' -strict experimental' +
             ' -threads 0' +
             ' -c:v copy' +
-            ' -s ' +
-            width +
-            'x' +
-            height +
+            ` -s ${width}x${height}` +
             ' -movflags +faststart' +
             ' -crf 23 ' +
             videoName;
@@ -141,12 +129,12 @@ class Ffmpeg {
           logger.debug(`Video command: ${videoProcessor} ${ffmpegArguments}`, cameraName, true);
 
           ffmpeg.on('error', (error) => {
-            return reject(error);
+            reject(error);
           });
 
           ffmpeg.on('close', () => {
             logger.debug(`Video stored to: ${videoName}`);
-            return resolve();
+            resolve();
           });
         } else {
           reject(new Error('Camera offline'));
