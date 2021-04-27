@@ -1,0 +1,56 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "0E:15:CC:8A:E9:1E",
+        "port": 51609,
+        "pin": "983-44-986"
+    },
+    "plugins": [
+        "homebridge-camera-ui"
+    ],
+    "accessories": [],
+    "platforms": [
+        {
+            "platform": "CameraUI",
+            "name": "CameraUI",
+            "port": 3600,
+            "theme": "auto",
+            "language": "auto",
+            "debug": true,
+            "mqtt": {
+                "active": true,
+                "host": "192.168.178.99",
+                "port": 1883
+            },
+            "http": {
+                "active": true,
+                "port": 2323,
+                "localhttp": false
+            },
+            "ssl": {
+                "active": false,
+                "key": "/home/pi/Desktop/ssl/key.pem",
+                "cert": "/home/pi/Desktop/ssl/cert.pem"
+            },
+            "options": {
+                "videoProcessor": "ffmpeg"
+            },
+            "cameras": [
+                {
+                    "name": "Test Success",
+                    "videoConfig": {
+                        "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
+                        "socketPort": 8787
+                    }
+                },
+                {
+                    "name": "Test Fail",
+                    "videoConfig": {
+                        "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
+                        "socketPort": 8100
+                    }
+                }
+            ]
+        }
+    ]
+}

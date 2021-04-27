@@ -1,6 +1,34 @@
 # Changelog
 
-## v3.3.0 - 2021-03-21
+# v4.0.0 - 2021-04-27
+
+## Breaking Changes
+- **Database**: Database was completely rewritten to work better with the Rest API. All who used v3.X before have to delete their database (config.ui.db.json) to use v4.X
+- **Recordings**: Due to the changes in the backend, the recordings must also be deleted so that camera.ui v4 can re-analyze them to make them visible in the interface.
+
+## Notable Changes
+- Added REST API (Documentation available at ``/swagger``)
+- Preparations made so that the interface can also run without Homebridge
+- "Backup & Restore" function is now included. You can easily download/restore the database AND the images
+- HTTP/MQTT server for motion detection was separated and works independently from the plugin
+
+## Other Changes
+- The code has been refactored
+- Other bug fixes
+- Dependencies were updated
+- Interface:
+  - Interface has been rewritten with ``VUE`` for an even better user experience.
+  - Dashboard now has a "drag & drop" function.
+  - Cameras, Recordings, Notifications: The filter function has been rewritten and is now directly controlled via the API.
+  - Some settings that were accessible via config.json are now available via UI and not via config.json.
+  - User "access authorization" has been completely rewritten. The "master" can create users and give/remove access permission for anything.
+  - Contingent option has been added for image recognition in order to better control the number of image analyses.
+- Server
+  - Server was completely rewritten and new REST API endpoints were added.
+  - Security has been increased.
+  - New tests were added.
+
+# v3.3.0 - 2021-03-21
 - **NEW:** Image Rekognition
   - Added Image Rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each cam. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
 - **NEW:** Telegram Notification
@@ -22,33 +50,33 @@
 - Added more debug
 - Bump deps
 
-## v3.2.3 - 2021-03-15
+# v3.2.3 - 2021-03-15
 - Added "-stimeout" 10s to stream if not defined to avoid hanging ffmpeg processes
 - Fixed UI Debug
 
-## v3.2.2 - 2021-03-15
+# v3.2.2 - 2021-03-15
 - Fixed a bug where unbridged cameras was not available for the UI
 - UI camera ping improvements
 
-## v3.2.1 - 2021-03-14
+# v3.2.1 - 2021-03-14
 - Bugfixes & Improvements with HB 1.3
 - Bump dependencies
 
-## v3.2.0 - 2020-02-24
+# v3.2.0 - 2020-02-24
 - Added new language: Dutch
 - Updated dependencies
 
-## v3.1.5 - 2020-12-01
+# v3.1.5 - 2020-12-01
 - Added ping support for local cameras
 
-## v3.1.4 - 2020-11-09
+# v3.1.4 - 2020-11-09
 - Rearranged webhook handler
 
-## v3.1.3 - 2020-10-28
+# v3.1.3 - 2020-10-28
 - Fixed a bug where clearTimer (recordings) crashed homebridge
 - Better Debug
 
-## v3.1.2 - 2020-10-24
+# v3.1.2 - 2020-10-24
 - New function to handle ffmpeg processes
 - It is now possible to change theme directly from config-ui
 - Bugfixes
@@ -56,33 +84,33 @@
 - Refactored Logger
 - Bump dependencies
 
-## v3.1.1 - 2020-10-21
+# v3.1.1 - 2020-10-21
 - Interface Stream: Revert back to -threads 1
 - Fix not appearing motion switches
 - Fix not appearing doorbell switches
 - Bugfix: Remove Motion Characteristic from doorbell
 - Bugfix: Doorbell Timeout
 
-## v3.1.0 - 2020-10-21
+# v3.1.0 - 2020-10-21
 - Added a new logging function
 - Refactored recording/notification handler
 - Bugfix: Avoid multiple recording processes at same time on same camera
 
-## v3.0.9 - 2020-10-20
+# v3.0.9 - 2020-10-20
 - Rearranged /change view
 - Fixed a bug where the /change path could not be found
 - Fixed a bug where the port was false if host doesnt include '@' char
 - Added ffmpeg-for-homebridge as dependency 
 
-## v3.0.8 - 2020-10-19
+# v3.0.8 - 2020-10-19
 - Added min fps of 20, otherwise the decoder will show a black livestream
 - more debug if stream failed
 - Fix admin username validation
 - Fixed a bug where breadcrumb title not updated properly
 - Added translation to selectpicker
 - Added new params to avoid ffmpeg hang on a process
-
-## v3.0.7 - 2020-10-19
+  
+# v3.0.7 - 2020-10-19
 - Added new translation
 - Added validation to "change admin username"
 - Added validation to "adding new user (username)"
@@ -94,10 +122,10 @@
 - Fixed a bug that caused the video processor entered in config.json not to be passed to videoStream
 - Fixed a bug that caused that if only one camera is entered in config.json, the camera page was not visible
 
-## v3.0.6 - 2020-10-18
+# v3.0.6 - 2020-10-18
 - Fixed a bug that caused Homebridge to crash when no "options" is given in config.json
 
-## v3.0.5 - 2020-10-18
+# v3.0.5 - 2020-10-18
 - Added new function that allows to see missed notifications after login
 - Fixed Translation & added new translation
 - Fixed an error with ServiceWorker for Firefox
@@ -105,12 +133,12 @@
 - Fixed a bug with Webhook that caused the "Trigger" and "False" commands to be triggered incorrectly
 - UI Improvements
 
-## v3.0.4 - 2020-10-17
+# v3.0.4 - 2020-10-17
 - Added more translation
 - Fixed a bug that caused the preloader not to be hidden on an "Error" page
 - Fixed a bug where camera pages containing a spaces were not displayed
 
-## v3.0.3 - 2020-10-17
+# v3.0.3 - 2020-10-17
 - "Reset" will now automatically set itself to "false" in config.json after resetting master credentials
 - After opening the app or visiting the main page ("/") the last opened page is now opened if the user is logged in (fixed)
 - 404 will now work properly
@@ -118,15 +146,15 @@
 - Bugfixes
 - UI improvements
 
-## v3.0.2 - 2020-10-16
+# v3.0.2 - 2020-10-16
 - Fix unauthorized error
 - Fix UI if auth = none
 - UI Improvements if camera socketPort/source is not setted up
 
-## v3.0.1 - 2020-10-15
+# v3.0.1 - 2020-10-15
 - fix npm postinstall
-
-## v3.0.0 - 2020-10-15
+  
+# v3.0.0 - 2020-10-15
 - Completely redesigned and refactored UI
 - Multi-language support
 - Full functional webapp

@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/app/public/images/web/logo_transparent-256.png">
+    <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/logo.png">
 </p>
 
 
@@ -12,12 +12,12 @@
 [![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/kqNCe2D)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/camviews_full_mobile_loss.gif" align="right" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews_full_mobile_loss.gif" align="right" alt="camera.ui">
 
 **camera.ui** is a homebridge user interface to control your cameras. It supports almost everything you need for a camera user interface.
 
 - Livestreams on Web
-- Full functional Web App with push notifications
+- Full functional Web App with push notifications and more
 - Multi-language support
 - **CamViews**: A resizable, drag & drop camera overview
 - **Image Rekognition** with AWS
@@ -40,7 +40,7 @@ sudo npm install -g --unsafe-perm homebridge-camera-ui@latest
 
 Once you have installed and configured the plugin you can access the interface via http://localhost:8181.
 
-The default username is ``admin`` and the default password is ``admin``.
+The default username is ``master`` and the default password is ``master``.
 
 
 ## Example Config
@@ -53,9 +53,7 @@ The default username is ``admin`` and the default password is ``admin``.
         {
             "name": "CameraUI",
             "port": 8181,
-            "auth": "form",
             "debug": true,
-            "reset": false,
             "mqtt": {
                 "active": false,
                 "host": "192.168.178.123",
@@ -82,11 +80,11 @@ The default username is ``admin`` and the default password is ``admin``.
 
 ```
 
-See [Example Config](https://github.com/SeydX/homebridge-camera-ui/edit/master/misc/example-config.json) for more details.
+See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
 
 # Livestream
 
-To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/2b59ce5ae51204c1920c3105c44a92c16ea8bf01/misc/example-config.json#L59) for more details.
+To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
 
 
 # Image Rekognition
@@ -103,37 +101,37 @@ To use image rekognition, you need to set up a AWS account with an IAM user. Mor
  ### Login
 On first login attempt, the interface will prompt you to change the credentials to continue. The Login screen is adjusted for all available screens.
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/login_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/login_white.png" align="center" alt="camera.ui">
 
  ### Dashboard
 
 Shows you your favourite cameras streams or snapshots (adjustable under settings)
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/dashboard_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/dashboard_white.png" align="center" alt="camera.ui">
 
  ### CamViews
 
 The main function of this interface. Provide you a unique overview of you favourite cameras (adjustable under settings) with resize, drag & drop support!
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/camviews.gif" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews.gif" align="center" alt="camera.ui">
 
  ### Recordings
 
 Shows you all recorded files under a hood
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/recordings_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/recordings_white.png" align="center" alt="camera.ui">
 
  ### Notifications
 
 The Interface also provides you with a notifications section to not miss any notifications.
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/nots_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/nots_white.png" align="center" alt="camera.ui">
 
  ### Settings
 
 You can change your credentials, user image, themes and much more under settings!
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/beta/images/browser/settings_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/settings_white.png" align="center" alt="camera.ui">
 
 # Supported clients
 
@@ -145,7 +143,7 @@ This plugin has been verified to work with the following apps/systems:
 - macOS Catalina 10.15
 - Apple Home
 - All 3rd party apps like Elgato Eve etc
-- Homebridge v1.1.6
+- Homebridge >= v1.1.6
 
 ### Browser
 
