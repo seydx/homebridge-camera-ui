@@ -1,4 +1,7 @@
 {
+    "files.exclude": {
+        "**/.git": false
+    },
     "git.ignoreLimitWarning": true,
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
