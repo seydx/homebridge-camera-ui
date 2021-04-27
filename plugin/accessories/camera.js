@@ -431,7 +431,7 @@ class Camera {
       activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
 
       activeSession.socket.on('error', (error) => {
-        logger.error(`Socket error: ${error.name}`, this.accessory.displayName);
+        logger.error(`Socket error: ${error.message}`, this.accessory.displayName);
         this.stopStream(request.sessionID);
       });
 
