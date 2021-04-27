@@ -2,6 +2,10 @@
 
 # NEXT
 
+## Other Changes
+- **Interface:**
+  - Changed video card height for screens >= 1200px
+
 ## Bugfixes
 - Fixed an issue where ffmpeg could not store Videos as .mp4 in recordings folder
 
