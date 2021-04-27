@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.0.2",
+  "version": "4.0.3-test.0",
   "description": "User Interface for RTSP capable cameras.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -12,7 +12,8 @@
     "test": "jest --runInBand --forceExit --detectOpenHandles --config ./test/jest.config.js",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon --trace-warnings server/index.js",
-    "watch:ui": "npm run serve --prefix ui"
+    "watch:ui": "npm run serve --prefix ui",
+    "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
   },
   "main": "index.js",
   "dependencies": {
