@@ -1,1 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["mod.has-cors"],{c9eb:function(e,t){try{e.exports="undefined"!==typeof XMLHttpRequest&&"withCredentials"in new XMLHttpRequest}catch(n){e.exports=!1}}}]);
