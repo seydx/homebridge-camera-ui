@@ -143,7 +143,7 @@ exports.createRecording = async (data) => {
   return recording;
 };
 
-exports.removeById = async (id, fromClearTimer) => {
+exports.removeById = async (id) => {
   let recPath = Recordings.get('path').value();
 
   let recording = Recordings.get('recordings')
@@ -159,10 +159,8 @@ exports.removeById = async (id, fromClearTimer) => {
     }
   }
 
-  if (!fromClearTimer) {
-    const ClearTimer = require('../../services/cleartimer.service');
-    ClearTimer.removeRecordingTimer(id);
-  }
+  const ClearTimer = require('../../services/cleartimer.service');
+  ClearTimer.removeRecordingTimer(id);
 
   return Recordings.get('recordings')
     .remove((rec) => rec.id === id)

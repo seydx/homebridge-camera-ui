@@ -127,13 +127,11 @@ exports.createNotification = async (data) => {
   return notification;
 };
 
-exports.removeById = async (id, fromClearTimer) => {
+exports.removeById = async (id) => {
   const Notifications = await database();
 
-  if (!fromClearTimer) {
-    const ClearTimer = require('../../services/cleartimer.service');
-    ClearTimer.removeNotificationTimer(id);
-  }
+  const ClearTimer = require('../../services/cleartimer.service');
+  ClearTimer.removeNotificationTimer(id);
 
   return await Notifications.remove((not) => not.id === id).write();
 };

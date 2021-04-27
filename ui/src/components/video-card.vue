@@ -563,7 +563,7 @@ a >>> .img-overlay {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   a >>> .img-overlay {
-    height: 13vw;
+    height: 11vw;
   }
 }
 </style>

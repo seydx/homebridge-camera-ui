@@ -1,5 +1,15 @@
 # Changelog
 
+# v4.0.2 - 2021-04-27
+
+## Other Changes
+- **Interface:**
+  - Changed video card height for screens >= 1200px
+
+## Bugfixes
+- Fixed an issue where ffmpeg could not store Videos as .mp4 in recordings folder
+- Fixed an issue where the cleartimer not worked properly for notifications
+
 # v4.0.1 - 2021-04-27
 
 ## Breaking Changes

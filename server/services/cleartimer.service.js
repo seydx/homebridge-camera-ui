@@ -20,49 +20,51 @@ class Cleartimer {
       const recordings = await RecordingsModel.list({});
 
       const recSettings = await SettingsModel.getByTarget('recordings');
-      const recTimer = recSettings.removeAfter;
+      const recRemoveAfter = recSettings.removeAfter;
 
-      const notSettings = await SettingsModel.getByTarget('recordings');
-      const notTimer = notSettings.removeAfter;
+      const notSettings = await SettingsModel.getByTarget('notifications');
+      const notRemoveAfter = notSettings.removeAfter;
 
       for (const notification of notifications) {
-        let timestampFile = moment(moment.unix(notification.timestamp));
         let timestampNow = moment();
+        let timestampFile = moment(moment.unix(notification.timestamp));
+        let timestampDif = timestampNow.diff(timestampFile, 'minutes');
 
-        let dif = timestampNow.diff(timestampFile, 'minutes');
-        let newTimer = notTimer * 60;
+        let removeAfterTimer = notRemoveAfter * 60;
 
-        if (newTimer > dif) {
-          newTimer = newTimer - dif;
+        if (removeAfterTimer > timestampDif) {
+          removeAfterTimer -= timestampDif;
         }
 
-        if (dif > notTimer * 60) {
+        if (timestampDif > notRemoveAfter * 60) {
           notificationsTimer.set(notification.id, false);
           await this.clearNotification(notification.id);
         } else {
           const timer = setTimeout(async () => {
             await this.clearNotification(notification.id);
-          }, newTimer * 1000 * 60);
+          }, removeAfterTimer * 1000 * 60);
           notificationsTimer.set(notification.id, timer);
         }
       }
 
       for (const recording of recordings) {
-        let timestampFile = moment(moment.unix(recording.timestamp));
         let timestampNow = moment();
-        let dif = timestampNow.diff(timestampFile, 'hours');
+        let timestampFile = moment(moment.unix(recording.timestamp));
+        let timestampDif = timestampNow.diff(timestampFile, 'hours');
 
-        let newTimer = recTimer * 24;
+        let removeAfterTimer = recRemoveAfter * 24;
 
-        if (newTimer > dif) newTimer = newTimer - dif;
+        if (removeAfterTimer > timestampDif) {
+          removeAfterTimer -= timestampDif;
+        }
 
-        if (dif > recTimer * 24) {
+        if (timestampDif > recRemoveAfter * 24) {
           recordingsTimer.set(recording.id, false);
           await this.clearRecording(recording.id);
         } else {
           const timer = setTimeout(async () => {
             await this.clearRecording(recording.id);
-          }, newTimer * 1000 * 60 * 60);
+          }, removeAfterTimer * 1000 * 60 * 60);
           recordingsTimer.set(recording.id, timer);
         }
       }
@@ -131,7 +133,7 @@ class Cleartimer {
     try {
       if (notificationsTimer.has(id)) {
         logger.debug(`Clear timer for notification (${id}) reached`, false, true);
-        await NotificationsModel.removeById(id, true);
+        await NotificationsModel.removeById(id);
       }
     } catch (error) {
       logger.error(`An error occured during removing notification (${id}) due to cleartimer`, false, true);
@@ -143,7 +145,7 @@ class Cleartimer {
     try {
       if (recordingsTimer.has(id)) {
         logger.debug(`Clear timer for recording (${id}) reached`, false, true);
-        await RecordingsModel.removeById(id, true);
+        await RecordingsModel.removeById(id);
       }
     } catch (error) {
       logger.error(`An error occured during removing recording (${id}) due to cleartimer`, false, true);
