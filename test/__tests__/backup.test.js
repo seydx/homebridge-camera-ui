@@ -41,6 +41,7 @@ beforeAll(async () => {
 });
 
 describe('GET /api/backup/download', () => {
+  // eslint-disable-next-line jest/no-done-callback
   it('should response if successfull', async (done) => {
     const backupFileName = 'cameraui-backup.tar.gz';
     const backupDirectory = path.resolve(__dirname, '..', 'storage');

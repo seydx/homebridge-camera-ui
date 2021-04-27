@@ -1,5 +1,5 @@
 const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   outputDir: path.resolve(__dirname, '../interface'),
@@ -123,6 +123,6 @@ module.exports = {
         'jquery.ui.touch-punch': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.ui.touch-punch.js'),
       },
     },
-    plugins: [new BundleAnalyzerPlugin()],
+    //plugins: [new BundleAnalyzerPlugin()],
   },
 };
