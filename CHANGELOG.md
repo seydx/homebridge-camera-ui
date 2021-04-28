@@ -10,6 +10,7 @@
 ## Bugfixes
 - Fixed an issue with initializing homebridge plugin platform
 - Fixed an issue with invalidating token after logout
+- Fixed an issue with changing session timer
 
 # v4.0.2 - 2021-04-27
 
