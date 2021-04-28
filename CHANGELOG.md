@@ -3,7 +3,9 @@
 # NEXT
 
 ## Other changes
-- Ping: Return camera offline if camera source is malformed
+- Interface:
+  - **Auth**: Added a new ability to access API with credentials in the query (eg _"?username=master&password=master"_)
+  - **Ping**: Return offline if camera source is malformed
 
 ## Bugfixes
 - Fixed an issue with initializing homebridge plugin platform
