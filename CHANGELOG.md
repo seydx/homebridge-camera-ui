@@ -2,7 +2,11 @@
 
 # NEXT
 
+## Other changes
+- Ping: Return camera offline if camera source is malformed
+
 ## Bugfixes
+- Fixed an issue with initializing homebridge plugin platform
 - Fixed an issue with invalidating token after logout
 
 # v4.0.2 - 2021-04-27
