@@ -39,7 +39,6 @@ function CameraUI(log, config, api) {
     const uuid = UUIDGen.generate(camera.name);
 
     if (this.cameras.has(uuid)) {
-      // Camera names must be unique
       logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', camera.name);
     } else {
       this.cameras.set(uuid, camera);
@@ -47,10 +46,7 @@ function CameraUI(log, config, api) {
   }
 
   this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
-
-  this.api.on('shutdown', () => {
-    Server.stopServer();
-  });
+  this.api.on('shutdown', () => Server.stopServer());
 }
 
 CameraUI.prototype = {
