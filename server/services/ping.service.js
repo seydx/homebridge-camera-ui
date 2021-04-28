@@ -26,10 +26,14 @@ class Ping {
   }
 
   async status(videoConfig, timeout) {
-    if (videoConfig.source.split('-i ')[1].startsWith('/')) return true;
+    logger.debug(`Incoming ping request: ${videoConfig.source}`, false, true);
+
+    //for local cameras eg "-i /dev/video0",
+    if (videoConfig.source.split('-i ')[1].startsWith('/')) {
+      return true;
+    }
 
     const addresse = this.getHost(videoConfig);
-
     const protocol = addresse.protocol;
     const host = addresse.host;
     const port = addresse.port;

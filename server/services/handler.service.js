@@ -33,7 +33,7 @@ class MotionHandler {
         logger.warn(error.message);
       }
 
-      if (Camera) {
+      if (Camera && Camera.videoConfig) {
         const SettingsDB = await SettingsModel.show();
 
         const atHome = SettingsDB.general.atHome;
