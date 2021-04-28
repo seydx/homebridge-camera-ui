@@ -66,4 +66,6 @@ yarn.lock
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+.envtest/storage/db/config.ui.db.json
+test/storage/.camera.ui.secrets
+test/storage/recordings/*

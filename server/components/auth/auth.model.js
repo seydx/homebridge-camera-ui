@@ -8,7 +8,7 @@ exports.list = () => {
   return Tokens.get('tokens').value();
 };
 
-exports.insert = (userName, token) => {
+exports.insert = (token) => {
   /* Use this if only one device is allowed to be logged in
   Tokens
   .get('tokens')
@@ -18,19 +18,11 @@ exports.insert = (userName, token) => {
   })
   .write();*/
 
-  return Tokens.get('tokens').push({ username: userName, token: token, valid: true }).write();
-};
-
-exports.findByName = (userName) => {
-  return Tokens.get('tokens').find({ username: userName }).value();
+  return Tokens.get('tokens').push({ token: token, valid: true }).write();
 };
 
 exports.findByToken = (token) => {
   return Tokens.get('tokens').find({ token: token }).value();
-};
-
-exports.invalidateByName = (userName) => {
-  return Tokens.get('tokens').find({ username: userName }).assign({ valid: false }).write();
 };
 
 exports.invalidateByToken = (token) => {

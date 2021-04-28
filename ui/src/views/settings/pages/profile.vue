@@ -375,7 +375,6 @@ export default {
       const newpwVerifyValue = document.querySelector('.admin-newpw-verify').value;
 
       const sessionInput = !Number.isNaN(Number.parseInt(document.querySelector('.admin-sessiontimer').value));
-
       const sessionTimer = sessionInput ? sessionInput * 3600 : 2628000;
 
       if (!usernameValue || usernameValue === '') {

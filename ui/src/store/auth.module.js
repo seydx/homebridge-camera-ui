@@ -42,9 +42,14 @@ export const auth = {
         return Promise.reject(error);
       }
     },
-    logout({ commit }) {
-      logout();
+    async logout({ commit }) {
+      try {
+        await logout();
+      } catch (err) {
+        console.log(err);
+      }
       commit('logout');
+      return Promise.resolve();
     },
     updateUserImg({ commit }, imgPath) {
       commit('updateImg', imgPath);

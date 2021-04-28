@@ -1,5 +1,10 @@
 # Changelog
 
+# NEXT
+
+## Bugfixes
+- Fixed an issue with invalidating token after logout
+
 # v4.0.2 - 2021-04-27
 
 ## Other Changes

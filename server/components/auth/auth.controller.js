@@ -31,11 +31,11 @@ exports.login = async (req, res) => {
 
     let token = jwt.sign(req.body, jwtSecret, { expiresIn: sessionTimer });
 
-    AuthModel.insert(req.body.username, token);
+    AuthModel.insert(token);
 
     if (sessionTimer / 3600 <= 25) {
       setTimeout(() => {
-        AuthModel.invalidateByName(req.body.username);
+        AuthModel.invalidateByToken(token);
       }, (sessionTimer - 5) * 1000);
     }
 
@@ -55,7 +55,8 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    let authorization = req.headers['authorization'] ? req.headers['authorization'].split(' ') : false;
+    let authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    let authorization = authHeader ? req.headers['authorization'].split(' ') : false;
 
     let token = authorization && authorization[0] === 'Bearer' ? authorization[1] : false;
 

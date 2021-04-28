@@ -23,7 +23,7 @@ exports.validJWTNeeded = (req, res, next) => {
         //check if user/token exists in database and is still valid
         const user = AuthModel.findByToken(authorization[1]);
 
-        if (user && !user.valid) {
+        if (!user || (user && !user.valid)) {
           return res.status(401).send({
             statusCode: 401,
             message: 'Token expired',

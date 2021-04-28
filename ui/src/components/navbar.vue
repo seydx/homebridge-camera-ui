@@ -63,8 +63,8 @@ export default {
     document.removeEventListener('scroll', this.navbarScrollHandler);
   },
   methods: {
-    handleLogout() {
-      this.$store.dispatch('auth/logout');
+    async handleLogout() {
+      await this.$store.dispatch('auth/logout');
       this.$router.push('/');
     },
     navbarScrollHandler() {
