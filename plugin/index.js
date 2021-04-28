@@ -7,41 +7,57 @@ const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
 
+const Server = require('../server/index');
+
 const Config = require('../services/config/config.start');
-const { initHandler } = require('./services/handler.service');
+const pluginHandler = require('./services/handler.service');
 
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
 
-class Plugin {
-  constructor(api) {
-    this.Accessory = api.platformAccessory;
-    this.UUIDGen = api.hap.uuid;
+var Accessory, UUIDGen;
 
-    this.config = new Config();
-    this.api = api;
+module.exports = function (homebridge) {
+  Accessory = homebridge.platformAccessory;
+  UUIDGen = homebridge.hap.uuid;
 
-    this.cameras = new Map();
-    this.accessories = [];
+  return CameraUI;
+};
 
-    for (const camera of this.config.cameras) {
-      const uuid = this.UUIDGen.generate(camera.name);
+function CameraUI(log, config, api) {
+  if (!api || !config) return;
 
-      if (this.cameras.has(uuid)) {
-        // Camera names must be unique
-        logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', camera.name);
-      } else {
-        this.cameras.set(uuid, camera);
-      }
+  logger.init(log, config.debug);
+
+  this.config = new Config();
+  this.api = api;
+
+  this.cameras = new Map();
+  this.accessories = [];
+
+  for (const camera of this.config.cameras) {
+    const uuid = UUIDGen.generate(camera.name);
+
+    if (this.cameras.has(uuid)) {
+      // Camera names must be unique
+      logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', camera.name);
+    } else {
+      this.cameras.set(uuid, camera);
     }
-
-    this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
   }
 
-  didFinishLaunching() {
+  this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
+
+  this.api.on('shutdown', () => {
+    Server.stopServer();
+  });
+}
+
+CameraUI.prototype = {
+  didFinishLaunching: () => {
     for (const [uuid, camera] of this.cameras) {
       if (camera.unbridge) {
-        const accessory = new this.Accessory(camera.name, uuid);
+        const accessory = new Accessory(camera.name, uuid);
 
         logger.info('Configuring unbridged accessory...', accessory.displayName);
 
@@ -53,7 +69,7 @@ class Plugin {
         const cachedAccessory = this.accessories.find((currentAccumulator) => currentAccumulator.UUID === uuid);
 
         if (!cachedAccessory) {
-          const accessory = new this.Accessory(camera.name, uuid);
+          const accessory = new Accessory(camera.name, uuid);
 
           logger.info('Configuring bridged accessory...', accessory.displayName);
 
@@ -78,10 +94,12 @@ class Plugin {
       }
     }
 
-    initHandler(this.accessories, this.api.hap);
-  }
+    pluginHandler.initHandler(this.accessories, this.api.hap);
 
-  setupAccessory(accessory, camera) {
+    Server.startServer();
+  },
+
+  setupAccessory: (accessory, camera) => {
     logger.info('Setting up accessory...', accessory.displayName);
 
     accessory.on('identify', () => {
@@ -114,9 +132,9 @@ class Plugin {
     const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
 
     accessory.configureController(cameraAccessory.controller);
-  }
+  },
 
-  configureAccessory(accessory) {
+  configureAccessory: (accessory) => {
     logger.info('Configuring cached bridged accessory...', accessory.displayName);
 
     const camera = this.cameras.get(accessory.UUID);
@@ -127,9 +145,9 @@ class Plugin {
     }
 
     this.accessories.push(accessory);
-  }
+  },
 
-  removeAccessory(accessory) {
+  removeAccessory: (accessory) => {
     logger.info('Removing bridged accessory...', accessory.displayName);
 
     this.accessories = this.accessories.filter(
@@ -137,7 +155,5 @@ class Plugin {
     );
 
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-  }
-}
-
-module.exports = Plugin;
+  },
+};
