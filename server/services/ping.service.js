@@ -28,7 +28,11 @@ class Ping {
   async status(videoConfig, timeout) {
     logger.debug(`Incoming ping request: ${videoConfig.source}`, false, true);
 
-    //for local cameras eg "-i /dev/video0",
+    if (!videoConfig.source.split('-i ')[1]) {
+      return false;
+    }
+
+    //for local cameras eg "-i /dev/video0"
     if (videoConfig.source.split('-i ')[1].startsWith('/')) {
       return true;
     }
