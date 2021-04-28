@@ -54,7 +54,7 @@ function CameraUI(log, config, api) {
 }
 
 CameraUI.prototype = {
-  didFinishLaunching: () => {
+  didFinishLaunching: function () {
     for (const [uuid, camera] of this.cameras) {
       if (camera.unbridge) {
         const accessory = new Accessory(camera.name, uuid);
@@ -99,7 +99,7 @@ CameraUI.prototype = {
     Server.startServer();
   },
 
-  setupAccessory: (accessory, camera) => {
+  setupAccessory: function (accessory, camera) {
     logger.info('Setting up accessory...', accessory.displayName);
 
     accessory.on('identify', () => {
@@ -134,7 +134,7 @@ CameraUI.prototype = {
     accessory.configureController(cameraAccessory.controller);
   },
 
-  configureAccessory: (accessory) => {
+  configureAccessory: function (accessory) {
     logger.info('Configuring cached bridged accessory...', accessory.displayName);
 
     const camera = this.cameras.get(accessory.UUID);
@@ -147,7 +147,7 @@ CameraUI.prototype = {
     this.accessories.push(accessory);
   },
 
-  removeAccessory: (accessory) => {
+  removeAccessory: function (accessory) {
     logger.info('Removing bridged accessory...', accessory.displayName);
 
     this.accessories = this.accessories.filter(
