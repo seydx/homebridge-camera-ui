@@ -138,8 +138,8 @@ export default {
     items() {
       return document.querySelectorAll('.grid-stack-item');
     },
-    logOut() {
-      this.$store.dispatch('auth/logout');
+    async logOut() {
+      await this.$store.dispatch('auth/logout');
       this.$router.push('/');
     },
     resizeHandler() {

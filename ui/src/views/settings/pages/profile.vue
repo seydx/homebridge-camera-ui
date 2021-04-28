@@ -375,7 +375,7 @@ export default {
       const newpwVerifyValue = document.querySelector('.admin-newpw-verify').value;
 
       const sessionInput = !Number.isNaN(Number.parseInt(document.querySelector('.admin-sessiontimer').value));
-      const sessionTimer = sessionInput ? sessionInput * 3600 : 2628000;
+      const sessionTimer = sessionInput ? document.querySelector('.admin-sessiontimer').value * 3600 : 2628000;
 
       if (!usernameValue || usernameValue === '') {
         return this.$toast.error(this.$t('no_username_defined'));
@@ -402,7 +402,8 @@ export default {
       try {
         await changeUser(this.currentUser.username, adminData);
         this.$toast.success(this.$t('successfully_changed'));
-        this.$store.dispatch('auth/logout');
+
+        await this.$store.dispatch('auth/logout');
         this.$router.push('/');
       } catch (error) {
         this.$toast.error(error.message);
@@ -480,7 +481,7 @@ export default {
           this.$refs['file-input-backup'].reset();
           this.$toast.success(this.$t('backup_restored'));
 
-          this.$store.dispatch('auth/logout');
+          await this.$store.dispatch('auth/logout');
           this.$router.push('/');
         } else {
           this.$toast.error(this.$t('no_file_selected'));
@@ -513,7 +514,8 @@ export default {
           await resetSettings();
           this.$toast.success(this.$t('database_resetted'));
           this.$refs['reset-modal'].hide();
-          this.$store.dispatch('auth/logout');
+
+          await this.$store.dispatch('auth/logout');
           this.$router.push('/');
         } catch (error) {
           this.$toast.error(error.message);

@@ -211,7 +211,7 @@ router.beforeEach(async (to, from, next) => {
         next();
       }
     } catch {
-      store.dispatch('auth/logout');
+      await store.dispatch('auth/logout');
       next('/');
     }
   } else {
