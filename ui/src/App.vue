@@ -2,7 +2,7 @@
   #app.h-100vh
     button.add-button(v-if="$route.meta.name !== 'login'", style="display: none;") Add to home screen
     audio#soundFx(v-if="$route.meta.name !== 'login' && checkLevel('notifications:access')")
-      source(src="@/assets/sounds/notification.wav")
+      source(src="@/assets/sounds/notification.mp3" type="audio/mpeg")
     transition(name='fade' mode='out-in')
       router-view
     CoolLightBox(

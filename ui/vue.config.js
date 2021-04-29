@@ -92,7 +92,7 @@ module.exports = {
     },
   },
   chainWebpack: (config) => {
-    config.performance.maxEntrypointSize(400000).maxAssetSize(400000);
+    config.performance.maxEntrypointSize(500000).maxAssetSize(500000);
     config.plugin('html').tap((arguments_) => {
       const payload = arguments_;
       payload[0].title = 'camera.ui';
@@ -108,7 +108,7 @@ module.exports = {
     performance: {
       hints: process.env.NODE_ENV === 'production' ? false : 'warning',
     },
-    optimization: {
+    /*optimization: {
       runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',
@@ -118,13 +118,19 @@ module.exports = {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
-              const name = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `mod.${name.replace('@', '-')}`;
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              return `npm.${packageName.replace('@', '')}`;
             },
+          },
+          styles: {
+            test: /\.css$/,
+            name: 'styles',
+            chunks: 'all',
+            enforce: true,
           },
         },
       },
-    },
+    },*/
     resolve: {
       alias: {
         jquery: path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.js'),
@@ -134,5 +140,6 @@ module.exports = {
       },
     },
     plugins: process.env.NODE_ENV === 'production' ? [] : [new BundleAnalyzerPlugin()],
+    //plugins: [new BundleAnalyzerPlugin()],
   },
 };

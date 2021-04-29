@@ -3,10 +3,11 @@
 # NEXT
 
 ## Other changes
-- Config:
-  - Added `-stimeout` to camera videoSource/stillImageSource if not defined
 - Interface:
-  - **Service Worker**: Improvements to auto update service worker
+  - Changed notification ringtone to `.mp3`
+  - Improvements to auto update service worker
+- Added `-stimeout` to camera videoSource/stillImageSource if not defined
+- Changed webpack settings to reduce chunk size
 - Bumped dependencies
 
 # Bugfixes
@@ -22,7 +23,7 @@
 
 ## Other changes
 - Interface:
-  - **Service Worker**: Auto update service worker if update available
+  - Auto update service worker if update available
 
 ## Bugfixes
 - Fixed an issue with initializing homebridge plugin platform
