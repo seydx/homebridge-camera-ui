@@ -5,9 +5,11 @@
 ## Other changes
 - Interface:
   - **Service Worker**: Improvements to auto update sw
+- Bump dependencies
 
 # Bugfixes
 - Fixed version issue on login screen
+- Fixed profile picture **object-fit**
 
 # v4.0.3 - 2021-04-29
 
