@@ -2,16 +2,19 @@
 
 # NEXT
 
-## Other changes
+## Notable Changes
 - Interface:
   - **Auth**: Added a new ability to access API with credentials in the query (eg _"?username=master&password=master"_)
-  - **Ping**: Return offline if camera source is malformed
+
+## Other changes
+- Interface:
   - **Service Worker**: Auto update service worker if update available
 
 ## Bugfixes
 - Fixed an issue with initializing homebridge plugin platform
 - Fixed an issue with invalidating token after logout
-- Fixed an issue with changing session timer
+- Fixed an issue with changing session timer in the settings
+- Fixed an issue with pinging camera if camera source is not given/malformed
 
 # v4.0.2 - 2021-04-27
 

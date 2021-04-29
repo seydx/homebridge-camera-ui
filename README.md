@@ -189,7 +189,7 @@ If you have any issues with the plugin then you can run this plugin in debug mod
 https://github.com/SeydX/homebridge-camera-ui/wiki/Debug
 
 
-# Licens
+# License
 
 ### MIT License
 

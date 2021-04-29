@@ -21,7 +21,7 @@
           .w-100
           span.lh-1.text-muted.fs-6 {{ $t("backup_and_restore") }}
           hr.mb-4
-          b-form-file.mt-3(
+          b-form-file(
             id="backup-file", 
             :placeholder="$t('backup')",
             :browse-text="$t('browse')",
