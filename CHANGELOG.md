@@ -7,11 +7,12 @@
   - Added `-stimeout` to camera videoSource/stillImageSource if not defined
 - Interface:
   - **Service Worker**: Improvements to auto update service worker
-- Bump dependencies
+- Bumped dependencies
 
 # Bugfixes
-- Fixed version issue on login screen
-- Fixed profile picture `object-fit`
+- Fixed an issue where ffmpeg took always camera `source` for snapshots instead of `stillImageSource`
+- Fixed an issue where the wrong package version was shown on login screen
+- Fixed an issue where the profile image was not displayed correctly
 
 # v4.0.3 - 2021-04-29
 
