@@ -1,5 +1,11 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - **Service Worker**: Improvements to auto update sw
+
 # v4.0.3 - 2021-04-29
 
 ## Notable Changes
