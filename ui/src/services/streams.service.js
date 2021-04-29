@@ -38,6 +38,8 @@ const startStream = (camera, cameraStatus) => {
     let wsProtocol = ssl ? 'wss://' : 'ws://';
     let url = `${wsProtocol + document.location.hostname}:${camera.videoConfig.socketPort}`;
 
+    console.log(`${camera.name}: Starting stream ${url}`);
+
     const player = new JSMpeg.VideoElement(
       `[data-stream-wrapper="${camera.name}"]`,
       url,
@@ -86,10 +88,14 @@ const startStream = (camera, cameraStatus) => {
 };
 
 const stopStream = (camera) => {
-  const player = players.find((player) => player && player.name === camera.name);
-  if (player) {
-    player.destroy();
-    players = players.filter((player) => player.name !== camera.name);
+  if (camera) {
+    const player = players.find((player) => player && player.name === camera.name);
+    if (player) {
+      console.log(player);
+      console.log(`${player.name}: Stopping live stream..`);
+      player.destroy();
+      players = players.filter((player) => player.name !== camera.name);
+    }
   }
 };
 

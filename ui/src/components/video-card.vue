@@ -201,14 +201,8 @@ export default {
   },
   beforeDestroy() {
     this.stopped = true;
-
-    if (this.checkLevel('settings:cameras:access')) {
-      if (this.camera.live || this.onlyStream) {
-        this.stopLivestream();
-      } else {
-        this.stopSnapshot();
-      }
-    }
+    this.stopLivestream();
+    this.stopSnapshot();
   },
   methods: {
     handleFullscreen(camera) {

@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.0.4-test.9",
+  "version": "4.0.4-test.10",
   "description": "User Interface for RTSP capable cameras.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -46,7 +46,7 @@
     "web-push": "^3.4.4"
   },
   "devDependencies": {
-    "@babel/core": "7.13.16",
+    "@babel/core": "7.14.0",
     "@babel/eslint-parser": "7.13.14",
     "@babel/eslint-plugin": "7.13.16",
     "concurrently": "^6.0.2",
