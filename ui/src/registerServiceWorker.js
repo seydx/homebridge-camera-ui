@@ -103,6 +103,8 @@ if (process.env.NODE_ENV === 'production') {
     updated(reg) {
       console.log('New content is available; please refresh.');
       reg.update();
+
+      document.dispatchEvent(new CustomEvent('swUpdated', { detail: reg }));
     },
     offline() {
       console.log('No internet connection found. App is running in offline mode.');

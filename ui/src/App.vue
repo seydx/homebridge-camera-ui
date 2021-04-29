@@ -20,6 +20,7 @@ import CoolLightBox from 'vue-cool-lightbox';
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css';
 
 import Banner from '@/components/notification-banner.vue';
+import updateSw from '@/mixins/updatesw.mixin';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -27,6 +28,7 @@ export default {
   components: {
     CoolLightBox,
   },
+  mixins: [updateSw],
   data() {
     return {
       id: '',

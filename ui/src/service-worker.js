@@ -7,14 +7,13 @@ self.addEventListener('message', (event) => {
   }
 });
 
-//Web Push Notifications//
 let click_open_url;
 self.addEventListener('push', function (event) {
   if (!(self.Notification && self.Notification.permission === 'granted')) return;
 
   const data = event.data.json();
   const title = `${data.camera} (${data.room})`;
-  // push notification can send event.data.json() as well
+
   click_open_url = self.location.origin + (data.recordStoring ? '/files/' + data.fileName : '/notifications');
 
   const options = {
