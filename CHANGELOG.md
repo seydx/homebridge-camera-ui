@@ -6,6 +6,9 @@
 - Interface:
   - **Service Worker**: Improvements to auto update sw
 
+# Bugfixes
+- Fixed version issue on login screen
+
 # v4.0.3 - 2021-04-29
 
 ## Notable Changes

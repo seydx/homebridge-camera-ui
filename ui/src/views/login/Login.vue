@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import packageFile from '../../../package.json';
+import packageFile from '../../../../package.json';
 
 import loginForm from '@/components/login-form';
 import theme from '@/mixins/theme.mixin';
