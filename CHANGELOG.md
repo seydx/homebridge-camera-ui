@@ -1,6 +1,6 @@
 # Changelog
 
-# NEXT
+# v4.0.4 - 2021-04-30
 
 ## Other changes
 - Interface:
