@@ -1,5 +1,3 @@
-interface
-
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
 # Created by https://www.toptal.com/developers/gitignore/api/images,node,test,vscode,vue,vuejs
@@ -149,8 +147,5 @@ yarn-error.log
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
-test/storage/db/config.ui.db.json
-test/storage/.camera.ui.secrets
-test/storage/recordings/*
-test/storage/cameraui_server.key
-test/storage/cameraui_server.crt
+interface
+test/storage/

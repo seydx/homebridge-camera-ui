@@ -1,5 +1,5 @@
 <template lang="pug">
-b-link.notification(@click="$emit('click')")
+b-link.notification(@click="$emit('showNotification')")
   span.before
   span.after
   header

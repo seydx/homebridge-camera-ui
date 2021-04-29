@@ -30,12 +30,27 @@ const ToastBannerDefaults = {
   closeOnClick: false,
 };
 
+const ToastInfoDefaults = {
+  position: 'bottom-center',
+  timeout: false,
+  closeOnClick: false,
+  pauseOnFocusLoss: false,
+  pauseOnHover: false,
+  draggable: false,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: true,
+  closeButton: false,
+  icon: false,
+  rtl: false,
+};
+
 export default {
   transition: 'Vue-Toastification__bounce',
   maxToasts: 1,
   newestOnTop: true,
   toastDefaults: {
-    [TYPE.DEFAULT]: ToastDefaults,
+    [TYPE.DEFAULT]: ToastInfoDefaults,
     [TYPE.ERROR]: ToastDefaults,
     [TYPE.INFO]: ToastBannerDefaults,
     [TYPE.SUCCESS]: ToastDefaults,

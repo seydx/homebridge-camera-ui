@@ -133,6 +133,6 @@ module.exports = {
         'jquery.ui.touch-punch': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.ui.touch-punch.js'),
       },
     },
-    plugins: process.env.NODE_ENV === 'production' ? false : [new BundleAnalyzerPlugin()],
+    plugins: process.env.NODE_ENV === 'production' ? [] : [new BundleAnalyzerPlugin()],
   },
 };

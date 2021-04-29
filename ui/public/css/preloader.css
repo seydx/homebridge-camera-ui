@@ -4,13 +4,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 333;
   overflow: hidden;
   background: var(--primary-bg-color);
 }
 
 #preloader:before {
-  content: "";
+  content: '';
   display: block;
   position: fixed;
   top: calc(50% - 24px);
@@ -20,7 +20,7 @@
   border-top-color: var(--primary-bg-color);
   border-bottom-color: var(--primary-bg-color);
   border-radius: 50%;
-	box-sizing: unset;
+  box-sizing: unset;
   width: 48px;
   height: 48px;
   -webkit-animation: animate-preloader 1s linear infinite;
@@ -50,17 +50,25 @@
 }
 
 .preloader-hide {
-	opacity:0;
-	-moz-animation: fadeout 0.3s linear;
-	-webkit-animation: fadeout 0.3s linear;
-	animation: fadeout 0.3s linear;
+  opacity: 0;
+  -moz-animation: fadeout 0.3s linear;
+  -webkit-animation: fadeout 0.3s linear;
+  animation: fadeout 0.3s linear;
 }
 
 @-webkit-keyframes fadeout {
-	0% {opacity:1;}
-	100% {opacity:0;}
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 @keyframes fadeout {
-	0% {opacity:1;}
-	100% {opacity:0;}
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

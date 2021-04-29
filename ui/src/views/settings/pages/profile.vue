@@ -554,7 +554,7 @@ export default {
   height: 8rem;
   border-radius: 4rem;
   overflow: hidden;
-  object-fit: scale-down;
+  object-fit: cover;
 }
 
 div >>> .custom-file-label {
