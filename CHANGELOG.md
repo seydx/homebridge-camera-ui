@@ -3,19 +3,21 @@
 # NEXT
 
 ## Other changes
+- Config:
+  - Added `-stimeout` to camera videoSource/stillImageSource if not defined
 - Interface:
-  - **Service Worker**: Improvements to auto update sw
+  - **Service Worker**: Improvements to auto update service worker
 - Bump dependencies
 
 # Bugfixes
 - Fixed version issue on login screen
-- Fixed profile picture **object-fit**
+- Fixed profile picture `object-fit`
 
 # v4.0.3 - 2021-04-29
 
 ## Notable Changes
 - Interface:
-  - **Auth**: Added a new ability to access API with credentials in the query (eg _"?username=master&password=master"_)
+  - **Auth**: Added a new ability to access API with credentials in the query (eg _`?username=master&password=master`_)
 
 ## Other changes
 - Interface:

@@ -178,6 +178,22 @@ class ConfigSetup {
         (camera) => camera.name && camera.videoConfig && camera.videoConfig.source && camera.videoConfig.socketPort
       )
       .map((camera) => {
+        const sourceArguments = camera.videoConfig.source.split(/\s+/);
+        if (!sourceArguments.includes('-i')) {
+          logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
+          camera.videoConfig.source = false;
+        } else if (!sourceArguments.includes('-stimeout')) {
+          camera.videoConfig.source.replace('-i', '-stimeout 10000000 -i');
+        }
+
+        const stillArguments = camera.videoConfig.stillImageSource.split(/\s+/);
+        if (!stillArguments.includes('-i')) {
+          logger.warn('The stillImageSource for this camera is missing "-i", it is likely misconfigured.', camera.name);
+          camera.videoConfig.stillImageSource = false;
+        } else if (!stillArguments.includes('-stimeout')) {
+          camera.videoConfig.stillImageSource.replace('-i', '-stimeout 10000000 -i');
+        }
+
         if (camera.rekognition) {
           camera.rekognition = {
             active: camera.rekognition.active || false,
@@ -189,7 +205,8 @@ class ConfigSetup {
           };
         }
         return camera;
-      });
+      })
+      .filter((camera) => camera.videoConfig.source);
   }
 }
 

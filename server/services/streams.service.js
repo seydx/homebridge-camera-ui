@@ -20,24 +20,21 @@ class Streams {
     for (const camera of config.cameras) {
       const setting = cameraSettings.find((cam) => cam && cam.name === camera.name);
 
-      let url = camera.videoConfig.source;
-
-      url = url.split(' ').includes('-stimeout')
-        ? url.split(' ')
-        : url.replace('-i', '-stimeout 10000000 -i').split(' ');
-
       let audio = setting.audio;
+      let cameraHeight = camera.videoConfig.maxHeight || 720;
+      let cameraWidth = camera.videoConfig.maxWidth || 1280;
+      let socketPort = camera.videoConfig.socketPort;
+      let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
+      let url = camera.videoConfig.source;
+      let videoProcessor = config.options.videoProcessor;
       let videoSize = setting.resolution;
-      let rate = camera.videoConfig.maxFPS || 20;
-
-      rate = rate ? (rate < 20 ? 20 : rate) : 20;
 
       const options = {
         name: camera.name,
         streamUrl: url,
-        wsPort: camera.videoConfig.socketPort,
-        width: camera.videoConfig.maxWidth || 1280,
-        height: camera.videoConfig.maxHeight || 720,
+        wsPort: socketPort,
+        width: cameraWidth,
+        height: cameraHeight,
         reloadTimer: 10,
         ffmpegOptions: {
           '-s': videoSize,
@@ -49,7 +46,7 @@ class Streams {
           '-loglevel': 'quiet',
         },
         ssl: config.ssl,
-        ffmpegPath: config.options.videoProcessor,
+        ffmpegPath: videoProcessor,
       };
 
       if (audio) {
@@ -62,10 +59,10 @@ class Streams {
         };
       }
 
-      if (!options.wsPort) {
+      if (!socketPort) {
         logger.warn('Can not start stream server - Socket Port not defined in videoConfig!', camera.name, '[Streams]');
         continue;
-      } else if (!options.streamUrl) {
+      } else if (!url) {
         logger.warn('Can not start stream server - Source not defined in videoConfig!', camera.name, '[Streams]');
         continue;
       } else {

@@ -41,23 +41,8 @@
     <link rel="apple-touch-startup-image" href="<%= BASE_URL %>img/splash/launch-screen-1136x640.png" media="(device-width: 568px) and (device-height: 320px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
-    <script type="text/javascript">
-      const currentTheme = localStorage.getItem('theme')
-          ? localStorage.getItem('theme')
-          : null;
-      if (currentTheme) {
-        document.documentElement.setAttribute('data-theme', currentTheme);
-      }
-      const currentColorTheme = localStorage.getItem('theme-color')
-        ? localStorage.getItem('theme-color')
-        : null;
-      if (currentColorTheme) {
-        document.documentElement.setAttribute(
-          'data-theme-color',
-          currentColorTheme
-        );
-      }
-    </script>
+    <script type="application/javascript">!function(){var e=new XMLHttpRequest;e.onload=function(){var n=e.responseText,t=n.indexOf('"/precache-manifest.')+20,o=n.indexOf('.js"',t);if(o-t==32){var r=localStorage,i=r.getItem("pmv"),s=n.substring(t,o);if(s!==i)return r.setItem("pmv",s),window.location.reload(!0)}},e.open("GET","/service-worker.js?c=" + new Date().getTime()),e.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate'),e.send()}();</script>
+    <script type="application/javascript">const currentTheme=localStorage.getItem("theme")?localStorage.getItem("theme"):null;currentTheme&&document.documentElement.setAttribute("data-theme",currentTheme);const currentColorTheme=localStorage.getItem("theme-color")?localStorage.getItem("theme-color"):null;currentColorTheme&&document.documentElement.setAttribute("data-theme-color",currentColorTheme);</script>
   </head>
   <body>
     <noscript>
