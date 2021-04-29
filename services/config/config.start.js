@@ -183,7 +183,7 @@ class ConfigSetup {
           logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
           camera.videoConfig.source = false;
         } else if (!sourceArguments.includes('-stimeout')) {
-          camera.videoConfig.source.replace('-i', '-stimeout 10000000 -i');
+          camera.videoConfig.source = camera.videoConfig.source.replace('-i', '-stimeout 10000000 -i');
         }
 
         const stillArguments = camera.videoConfig.stillImageSource.split(/\s+/);
@@ -191,7 +191,10 @@ class ConfigSetup {
           logger.warn('The stillImageSource for this camera is missing "-i", it is likely misconfigured.', camera.name);
           camera.videoConfig.stillImageSource = false;
         } else if (!stillArguments.includes('-stimeout')) {
-          camera.videoConfig.stillImageSource.replace('-i', '-stimeout 10000000 -i');
+          camera.videoConfig.stillImageSource = camera.videoConfig.stillImageSource.replace(
+            '-i',
+            '-stimeout 10000000 -i'
+          );
         }
 
         if (camera.rekognition) {

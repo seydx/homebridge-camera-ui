@@ -25,14 +25,14 @@ class Streams {
       let cameraWidth = camera.videoConfig.maxWidth || 1280;
       let socketPort = camera.videoConfig.socketPort;
       let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
-      let url = camera.videoConfig.source;
+      let source = camera.videoConfig.source;
       let videoProcessor = config.options.videoProcessor;
       let videoSize = setting.resolution;
 
       const options = {
         name: camera.name,
-        streamUrl: url,
-        wsPort: socketPort,
+        source: source,
+        socketPort: socketPort,
         width: cameraWidth,
         height: cameraHeight,
         reloadTimer: 10,
@@ -62,7 +62,7 @@ class Streams {
       if (!socketPort) {
         logger.warn('Can not start stream server - Socket Port not defined in videoConfig!', camera.name, '[Streams]');
         continue;
-      } else if (!url) {
+      } else if (!source) {
         logger.warn('Can not start stream server - Source not defined in videoConfig!', camera.name, '[Streams]');
         continue;
       } else {
