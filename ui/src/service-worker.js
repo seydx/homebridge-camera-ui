@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 workbox.core.setCacheNameDetails({ prefix: 'camera.ui' });
+workbox.core.skipWaiting();
+workbox.core.clientsClaim();
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
