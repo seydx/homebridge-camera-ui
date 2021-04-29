@@ -1,7 +1,17 @@
+const fs = require('fs');
 const path = require('path');
-//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+process.env.VUE_APP_SERVER_PORT = require('../test/homebridge/config.json').platforms[0].port || 8181;
 
 module.exports = {
+  devServer: {
+    https: {
+      key: fs.readFileSync('/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.key'),
+      cert: fs.readFileSync('/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.crt'),
+    },
+    port: 8081,
+  },
   outputDir: path.resolve(__dirname, '../interface'),
   productionSourceMap: false,
   pwa: {
@@ -123,6 +133,6 @@ module.exports = {
         'jquery.ui.touch-punch': path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.ui.touch-punch.js'),
       },
     },
-    //plugins: [new BundleAnalyzerPlugin()],
+    plugins: process.env.NODE_ENV === 'production' ? false : [new BundleAnalyzerPlugin()],
   },
 };

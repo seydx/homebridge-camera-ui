@@ -3,8 +3,8 @@ import axios from 'axios';
 const api = axios.create({
   baseURL:
     process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-      ? 'http://' + location.hostname + ':3600/api' //if backend runs on other port
-      : location.origin + '/api',
+      ? `${location.protocol}//${location.hostname}:${process.env.VUE_APP_SERVER_PORT}/api`
+      : `${location.origin}/api`,
 });
 
 api.interceptors.request.use(

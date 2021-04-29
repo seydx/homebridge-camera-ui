@@ -152,3 +152,5 @@ yarn-error.log
 test/storage/db/config.ui.db.json
 test/storage/.camera.ui.secrets
 test/storage/recordings/*
+test/storage/cameraui_server.key
+test/storage/cameraui_server.crt
