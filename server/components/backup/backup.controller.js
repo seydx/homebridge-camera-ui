@@ -6,7 +6,8 @@ const BackupModel = require('./backup.model');
 
 exports.download = async (req, res) => {
   try {
-    const backup = await BackupModel.createBackup();
+    const localStorage = JSON.parse(req.query.localStorage);
+    const backup = await BackupModel.createBackup(localStorage);
 
     res.set('Content-Type', 'application/octet-stream');
     res.set('Content-Disposition', `attachment; filename=${backup.backupFileName}`);
@@ -29,9 +30,8 @@ exports.download = async (req, res) => {
 
 exports.restore = async (req, res) => {
   try {
-    await BackupModel.restoreBackup(req.file);
-
-    res.status(201).send({});
+    const localStorage = await BackupModel.restoreBackup(req.file);
+    res.status(201).send(localStorage);
   } catch (error) {
     res.status(500).send({
       statusCode: 500,

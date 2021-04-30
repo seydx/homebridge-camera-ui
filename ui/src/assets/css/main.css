@@ -145,6 +145,10 @@ body {
   border-bottom: 3px solid #8c1e20 !important;
 }
 
+.border-bottom-shadow-primary {
+  border-bottom: 3px solid var(--third-color) !important;
+}
+
 .border-bottom-shadow-success {
   border-bottom: 3px solid #137d1d !important;
 }

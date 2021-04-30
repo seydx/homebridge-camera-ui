@@ -4,8 +4,11 @@ const resource = '/backup';
 const download_resource = 'download';
 const restore_resource = 'restore';
 
-const downloadBackup = async () =>
+const downloadBackup = async (userStorage) =>
   await api.get(`${resource}/${download_resource}`, {
+    params: {
+      localStorage: userStorage,
+    },
     responseType: 'arraybuffer',
   });
 

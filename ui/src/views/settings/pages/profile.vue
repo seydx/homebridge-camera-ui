@@ -15,7 +15,7 @@
           h5.font-weight-bold.lh-1 {{ currentUser.username }}
           .w-100
           span.text-muted.fs-7.lh-1.m-0 {{ currentUser.permissionLevel.includes("admin") ? $t("master") : $t("user") }}
-        .btn.btn-primary.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(v-if="checkLevel('admin')", v-b-modal.modal-reset) {{ $t("reset") }}
+        .btn.btn-danger.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(v-if="checkLevel('admin')", v-b-modal.modal-reset) {{ $t("reset") }}
         .settings-box.container.mt-5(v-if="checkLevel('admin')")
           h3.lh-1.font-weight-bold {{ $t("backup") }}
           .w-100
@@ -37,7 +37,7 @@
             span.text-white.mr-2(v-show='uploadBackupSpinner')
               b-spinner(small type='grow')
             | {{ $t("backup_restore") }}
-          .btn.btn-primary.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(
+          .btn.btn-danger.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(
             @click="downloadBackup"
           ) 
             span.text-white.mr-2(v-show='downloadBackupSpinner')
@@ -455,7 +455,13 @@ export default {
     async downloadBackup() {
       try {
         this.downloadBackupSpinner = true;
-        const response = await downloadBackup();
+        const userStorage = {
+          camviewLayout: localStorage.getItem('camview-layout'),
+          dashboardLayout: localStorage.getItem('dashboard-layout'),
+          theme: localStorage.getItem('theme'),
+          themeColor: localStorage.getItem('theme-color'),
+        };
+        const response = await downloadBackup(JSON.stringify(userStorage));
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -477,12 +483,15 @@ export default {
           const formData = new FormData();
           formData.append('file', file);
 
-          await restoreBackup(formData);
+          const userStorage = await restoreBackup(formData);
+          this.restoreLocalStorage(userStorage.data);
+
           this.$refs['file-input-backup'].reset();
           this.$toast.success(this.$t('backup_restored'));
 
           await this.$store.dispatch('auth/logout');
           this.$router.push('/');
+          window.location.reload(true);
         } else {
           this.$toast.error(this.$t('no_file_selected'));
         }
@@ -490,6 +499,29 @@ export default {
         this.$toast.error(err.message);
       }
       this.uploadBackupSpinner = false;
+    },
+    restoreLocalStorage(storage) {
+      if (storage.camviewLayout) {
+        localStorage.setItem('camview-layout', JSON.stringify(storage.camviewLayout));
+      }
+      if (storage.dashboardLayout) {
+        localStorage.setItem('dashboard-layout', JSON.stringify(storage.dashboardLayout));
+      }
+      if (storage.theme) {
+        localStorage.setItem('theme', storage.theme);
+      }
+      if (storage.themeColor) {
+        localStorage.setItem('theme-color', storage.themeColor);
+
+        const images = document.querySelectorAll('.theme-img');
+
+        for (const img of images) {
+          let imgSource = img.src;
+          imgSource = imgSource.split('/');
+          imgSource = imgSource[imgSource.length - 1].split('.png')[0].split('.')[0].split('@')[0];
+          img.src = require(`@/assets/img/${imgSource}@${storage.themeColor}.png`);
+        }
+      }
     },
     handleErrorImg(event) {
       event.target.src = require('@/assets/img/no_user.png');

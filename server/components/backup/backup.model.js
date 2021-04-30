@@ -12,13 +12,11 @@ const packageFile = require('../../../package.json');
 
 const database = () => lowdb.database().then((database_) => database_.get('settings'));
 
-exports.createBackup = async () => {
+exports.createBackup = async (localStorage) => {
   const Settings = await database();
 
   const databasePath = path.join(config.ui.dbPath, 'db');
-
   const recPath = await Settings.get('recordings').get('path').value();
-
   const backupDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'cameraui-backup-'));
   const backupFileName = 'cameraui-backup.tar.gz';
   const backupPath = path.resolve(backupDirectory, backupFileName);
@@ -37,6 +35,12 @@ exports.createBackup = async () => {
     cameraUi: packageFile.version,
     database: databasePath,
     recordings: recPath,
+    localStorage: {
+      camviewLayout: JSON.parse(localStorage.camviewLayout),
+      dashboardLayout: JSON.parse(localStorage.dashboardLayout),
+      theme: localStorage.theme,
+      themeColor: localStorage.themeColor,
+    },
   });
 
   // create a tar with the copied files
@@ -74,13 +78,15 @@ exports.restoreBackup = async (file) => {
   const backupFileName = file.filename; // eslint-disable-line no-unused-vars
   const backupPath = file.path;
 
+  logger.warn('Starting backup restore...');
+
   // extract the tar
   await tar.x({
     cwd: backupDirectory,
     file: backupPath,
   });
 
-  logger.warn('Starting backup restore...');
+  const infoFile = await fs.readJSON(`${backupDirectory}/info.json`);
 
   // move the content to desired directories
   await fs.move(backupDirectory + '/db', databasePath, { overwrite: true });
@@ -96,7 +102,7 @@ exports.restoreBackup = async (file) => {
 
   logger.info('Backup was successfully restored');
 
-  return;
+  return infoFile.localStorage;
 };
 
 exports.removeBackup = async (backup) => {

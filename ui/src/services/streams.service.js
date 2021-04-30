@@ -91,7 +91,6 @@ const stopStream = (camera) => {
   if (camera) {
     const player = players.find((player) => player && player.name === camera.name);
     if (player) {
-      console.log(player);
       console.log(`${player.name}: Stopping live stream..`);
       player.destroy();
       players = players.filter((player) => player.name !== camera.name);
