@@ -1,5 +1,14 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - Added `localStorage` to **Backup & Restore** to restore also the localStorage (_dashboard layout, camview layout, darkmode, theme color_)
+
+# Bugfixes
+- Fixed an issue where buttons on the profile page displayed wrong color
+
 # v4.0.4 - 2021-04-30
 
 ## Other changes
