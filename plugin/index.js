@@ -6,10 +6,10 @@ const logger = require('../services/logger/logger.service');
 const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
-const SwitchAccessory = require('./accessories/switch');
+
+const InterfaceAccessory = require('./accessories/interface');
 
 const Server = require('../server/index');
-
 const Config = require('../services/config/config.start');
 const pluginHandler = require('./services/handler.service');
 
@@ -48,7 +48,7 @@ function CameraUI(log, config, api) {
     }
   }
 
-  if (this.config.atHome) {
+  if (this.config.atHomeSwitch) {
     const device = {
       name: 'At Home Switch',
       subtype: 'athome-switch',
@@ -73,7 +73,7 @@ CameraUI.prototype = {
   didFinishLaunching: function () {
     for (const [uuid, device] of this.devices) {
       if (device.unbridge) {
-        logger.info('Configuring unbridged accessory...', accessory.displayName);
+        logger.info('Configuring unbridged accessory...', device.name);
 
         const accessory = new Accessory(device.name, uuid);
         this.setupAccessory(accessory, device);
@@ -84,7 +84,7 @@ CameraUI.prototype = {
         const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
         if (!cachedAccessory) {
-          logger.info('Configuring bridged accessory...', accessory.displayName);
+          logger.info('Configuring bridged accessory...', device.name);
 
           const accessory = new Accessory(device.name, uuid);
           this.setupAccessory(accessory, device);
@@ -109,7 +109,7 @@ CameraUI.prototype = {
     }
 
     pluginHandler.initHandler(
-      this.accessories.filter((accessory) => accessory.subtype === 'camera'),
+      this.accessories.filter((accessory) => accessory.context.config.subtype === 'camera'),
       this.api.hap
     );
 
@@ -147,10 +147,18 @@ CameraUI.prototype = {
       new MotionSensor(this.api, accessory);
       new DoorbellSensor(this.api, accessory);
 
+      if (device.excludeSwitch) {
+        const removeSwitch = false;
+        new InterfaceAccessory(this.api, accessory, 'exclude-switch', 'Exclude Switch', removeSwitch);
+      } else {
+        const removeSwitch = true;
+        new InterfaceAccessory(this.api, accessory, 'exclude-switch', 'Exclude Switch', removeSwitch);
+      }
+
       const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
       accessory.configureController(cameraAccessory.controller);
     } else if (device.subtype.includes('switch')) {
-      new SwitchAccessory(this.api, accessory);
+      new InterfaceAccessory(this.api, accessory, device.subtype);
     }
   },
 

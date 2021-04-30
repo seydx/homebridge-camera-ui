@@ -3,7 +3,8 @@
 # NEXT
 
 ## Notable Changes
-- Added `atHome` option to config to allow turning on/off **at home** from HomeKit
+- Added `atHomeSwitch` option to config to allow turning on/off **at home** for the interface settings within HomeKit
+- Added `excludeSwitch` option to camera config to allow exclude/include camera for the interface settings within HomeKit
 
 ## Other changes
 - Interface:

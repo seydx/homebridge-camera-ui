@@ -14,10 +14,10 @@
       "type": "integer",
       "description": "User Interface port"
     },
-    "atHome": {
+    "atHomeSwitch": {
       "title": "At Home Switch",
       "type": "boolean",
-      "description": "Expose the 'At Home' switch to HomeKit"
+      "description": "Exposes a 'at home' switch to HomeKit to enable/disable at home for the interface settings within HomeKit."
     },
     "theme": {
       "title": "Theme",
@@ -189,6 +189,11 @@
             "name": "Firmware Revision",
             "type": "string",
             "description": "Set the firmware revision for display in the Home app."
+          },
+          "excludeSwitch": {
+            "title": "Exclude Switch",
+            "type": "boolean",
+            "description": "Exposes a 'exclude' switch to HomeKit to exclude/include the camera from the interface settings within HomeKit."
           },
           "motion": {
             "title": "Enable Motion Sensor",
@@ -405,7 +410,7 @@
         "port",
         "language",
         "theme",
-        "atHome",
+        "atHomeSwitch",
         "debug",
         {
           "key": "ssl",
@@ -490,7 +495,7 @@
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Sensors",
+              "title": "Sensors and Switches",
               "expandable": true,
               "expanded": false,
               "items": [
@@ -498,7 +503,8 @@
                 "cameras[].doorbell",
                 "cameras[].switches",
                 "cameras[].motionTimeout",
-                "cameras[].motionDoorbell"
+                "cameras[].motionDoorbell",
+                "cameras[].excludeSwitch"
               ]
             },
             {
