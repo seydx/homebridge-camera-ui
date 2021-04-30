@@ -173,11 +173,6 @@ class ConfigSetup {
               camera.name
             );
             camera.videoConfig.stillImageSource = false;
-          } else if (!stillArguments.includes('-stimeout')) {
-            camera.videoConfig.stillImageSource = camera.videoConfig.stillImageSource.replace(
-              '-i',
-              '-stimeout 10000000 -i'
-            );
           }
         }
 

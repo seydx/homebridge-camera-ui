@@ -1,5 +1,10 @@
 # Changelog
 
+# NEXT
+
+## Bugfixes
+- Fixed an issue where injected `-stimeout` to `stillImageSource` breaks snapshot request from HomeKit 
+
 # v4.0.5 - 2021-04-30
 
 ## Notable Changes
