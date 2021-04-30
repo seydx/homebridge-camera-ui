@@ -7,7 +7,6 @@ class motionService {
   constructor(api, accessory, handler) {
     this.api = api;
     this.accessory = accessory;
-
     this.handler = handler;
 
     this.getService();
@@ -23,7 +22,7 @@ class motionService {
 
     if (this.accessory.context.config.motion) {
       if (!service) {
-        logger.info('Adding motion sensor', this.accessory.displayName);
+        logger.info('Adding motion sensor service', this.accessory.displayName);
         service = this.accessory.addService(
           this.api.hap.Service.MotionSensor,
           this.accessory.displayName + ' Motion',
@@ -37,14 +36,14 @@ class motionService {
       });
     } else {
       if (service) {
-        logger.info('Removing motion sensor', this.accessory.displayName);
+        logger.info('Removing motion sensor service', this.accessory.displayName);
         this.accessory.removeService(service);
       }
     }
 
     if (this.accessory.context.config.switches) {
       if (!switchService) {
-        logger.info('Adding motion switch', this.accessory.displayName);
+        logger.info('Adding switch service (motion)', this.accessory.displayName);
         switchService = this.accessory.addService(
           this.api.hap.Service.Switch,
           this.accessory.displayName + ' Motion Trigger',
@@ -58,7 +57,7 @@ class motionService {
       });
     } else {
       if (switchService) {
-        logger.info('Removing motion switch', this.accessory.displayName);
+        logger.info('Removing switch service (motion)', this.accessory.displayName);
         this.accessory.removeService(switchService);
       }
     }

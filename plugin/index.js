@@ -7,7 +7,7 @@ const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
 
-const InterfaceAccessory = require('./accessories/interface');
+const InterfaceSwitch = require('homebridge-camera-ui/plugin/accessories/interface-switch');
 
 const Server = require('../server/index');
 const Config = require('../services/config/config.start');
@@ -21,7 +21,6 @@ var Accessory, UUIDGen;
 module.exports = function (homebridge) {
   Accessory = homebridge.platformAccessory;
   UUIDGen = homebridge.hap.uuid;
-
   return CameraUI;
 };
 
@@ -146,19 +145,19 @@ CameraUI.prototype = {
     if (device.subtype.includes('camera')) {
       new MotionSensor(this.api, accessory);
       new DoorbellSensor(this.api, accessory);
+      const interfaceSwitches = new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');
 
       if (device.excludeSwitch) {
-        const removeSwitch = false;
-        new InterfaceAccessory(this.api, accessory, 'exclude-switch', 'Exclude Switch', removeSwitch);
+        interfaceSwitches.getService();
       } else {
-        const removeSwitch = true;
-        new InterfaceAccessory(this.api, accessory, 'exclude-switch', 'Exclude Switch', removeSwitch);
+        interfaceSwitches.removeService();
       }
 
       const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
       accessory.configureController(cameraAccessory.controller);
     } else if (device.subtype.includes('switch')) {
-      new InterfaceAccessory(this.api, accessory, device.subtype);
+      const interfaceSwitches = new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory');
+      interfaceSwitches.getService();
     }
   },
 

@@ -34,7 +34,7 @@ class ConfigSetup {
       port: config.plugin.port || 8181,
       language: config.plugin.language || 'auto',
       theme: config.plugin.theme || 'auto',
-      atHome: config.plugin.atHome || false,
+      atHomeSwitch: config.plugin.atHomeSwitch || false,
     };
 
     return ui;

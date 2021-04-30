@@ -1,21 +1,20 @@
 'use strict';
 
-const logger = require('../../services/logger/logger.service');
-const SettingsModel = require('../../server/components/settings/settings.model');
+const logger = require('homebridge-camera-ui/services/logger/logger.service');
+const SettingsModel = require('homebridge-camera-ui/server/components/settings/settings.model');
+
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
 class SwitchAccessory {
-  constructor(api, accessory, subtype, name, removeSwitch) {
+  constructor(api, accessory, subtype, type) {
     this.api = api;
     this.accessory = accessory;
 
-    this.name = name ? `${accessory.displayName} ${name}` : accessory.displayName;
+    this.type = type;
     this.subtype = subtype;
 
-    if (removeSwitch) {
-      this.getService();
-    } else {
-      this.removeService();
-    }
+    this.subname = `${capitalize(subtype.split('-')[0])} ${capitalize(subtype.split('-')[1])}`;
+    this.name = type === 'accessory' ? accessory.displayName : `${accessory.displayName} ${this.subname}`;
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -26,7 +25,7 @@ class SwitchAccessory {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
 
     if (!service) {
-      logger.info('Adding Switch service', this.name);
+      logger.info(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
       service = this.accessory.addService(this.api.hap.Service.Switch, this.name, this.subtype);
     }
 
@@ -63,7 +62,7 @@ class SwitchAccessory {
   removeService() {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
     if (service) {
-      logger.info('Removing switch service', this.name);
+      logger.info(`Removing switch service (${this.subtype})`, this.accessory.displayName);
       this.accessory.removeService(service);
     }
   }
@@ -115,7 +114,7 @@ class SwitchAccessory {
       if (state && !exclude.includes(this.accessory.displayName)) {
         exclude.push(this.accessory.displayName);
       } else if (!state && exclude.includes(this.accessory.displayName)) {
-        exclude = exclude.filter((cam) => cam && cam.name !== this.accessory.displayName);
+        exclude = exclude.filter((cameraName) => cameraName && cameraName !== this.accessory.displayName);
       }
 
       await SettingsModel.patchByTarget('general', {
