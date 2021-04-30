@@ -27,7 +27,7 @@
 - Config UI X Support
 - and much mure...
 
-**Supported Languages:** DE | EN | NL
+**Supported Languages:** :de: | :gb: | :netherlands:
 
 
 ## Installation Instructions
@@ -179,7 +179,7 @@ You can contribute to this homebridge plugin in following ways:
 - Contribute changes to extend the capabilities
 - Pull requests are accepted.
 
-See [CONTRIBUTING](https://github.com/SeydX/homebridge-camera-ui/CONTRIBUTING.md)
+See [CONTRIBUTING](https://github.com/SeydX/homebridge-camera-ui/blob/master/CONTRIBUTING.md)
 
 
 # Troubleshooting

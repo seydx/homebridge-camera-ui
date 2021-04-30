@@ -1,10 +1,10 @@
 # Changelog
 
-# NEXT
+# v4.0.5 - 2021-04-30
 
 ## Notable Changes
-- Added `atHomeSwitch` option to config to allow turning on/off **at home** for the interface settings within HomeKit
-- Added `excludeSwitch` option to camera config to allow exclude/include camera for the interface settings within HomeKit
+- Added `atHomeSwitch` option to config to allow turning on/off **at home** for the interface settings within HomeKit (see [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more info)
+- Added `excludeSwitch` option to camera config to allow exclude/include camera for the interface settings within HomeKit (see [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more info)
 
 ## Other changes
 - Interface:

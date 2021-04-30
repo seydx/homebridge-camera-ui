@@ -5,9 +5,7 @@
     "port": 51609,
     "pin": "983-44-986"
   },
-  "plugins": [
-    "homebridge-camera-ui"
-  ],
+  "plugins": ["homebridge-camera-ui"],
   "accessories": [],
   "platforms": [
     {
@@ -15,6 +13,7 @@
       "port": 3333,
       "theme": "auto",
       "language": "auto",
+      "atHomeSwitch": true,
       "debug": true,
       "mqtt": {
         "active": true,
@@ -46,6 +45,7 @@
           "switches": false,
           "motionTimeout": 1,
           "motionDoorbell": false,
+          "excludeSwitch": true,
           "unbridge": true,
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.111.1/onvif1",
@@ -75,6 +75,7 @@
           "switches": false,
           "motionTimeout": 1,
           "unbridge": true,
+          "excludeSwitch": false,
           "videoConfig": {
             "source": "-rtsp_transport tcp -i rtsp://192.168.111.22/ch0_0.h264",
             "stillImageSource": "-i rtsp://192.168.111178.22/ch0_0.h264",
