@@ -12,6 +12,7 @@
 ## Bugfixes
 - Fixed an issue where buttons on the profile page displayed wrong color
 - Fixed an issue where ffmpeg could not save the snapshot (back to camera source)
+- Some minor bug fixes in the plugin
 
 # v4.0.4 - 2021-04-30
 
