@@ -53,7 +53,7 @@ class Ffmpeg {
       ping.status(videoConfig, 2).then((status) => {
         if (status) {
           const videoProcessor = videoConfig.videoProcessor || 'ffmpeg';
-          const source = videoConfig.stillImageSource || videoConfig.source;
+          const source = videoConfig.source;
           const width = videoConfig.maxWidth || 1280;
           const height = videoConfig.maxHeight || 720;
           const videoFilter = videoConfig.videoFilter;

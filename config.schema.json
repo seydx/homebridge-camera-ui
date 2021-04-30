@@ -14,6 +14,11 @@
       "type": "integer",
       "description": "User Interface port"
     },
+    "atHome": {
+      "title": "At Home Switch",
+      "type": "boolean",
+      "description": "Expose the 'At Home' switch to HomeKit"
+    },
     "theme": {
       "title": "Theme",
       "description": "UI Theme",
@@ -290,12 +295,7 @@
                 "type": "string",
                 "placeholder": "libx264",
                 "typeahead": {
-                  "source": [
-                    "libx264",
-                    "h264_omx",
-                    "h264_videotoolbox",
-                    "copy"
-                  ]
+                  "source": ["libx264", "h264_omx", "h264_videotoolbox", "copy"]
                 },
                 "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available."
               },
@@ -354,7 +354,7 @@
           "mqtt": {
             "title": "MQTT Configuration",
             "type": "object",
-            "properties": {                                            
+            "properties": {
               "motionTopic": {
                 "title": "Motion Topic Prefix",
                 "type": "string",
@@ -365,7 +365,7 @@
                 "type": "string",
                 "placeholder": "ON",
                 "description": "The message to watch for to trigger motion alerts."
-              },                                    
+              },
               "motionResetTopic": {
                 "title": "Motion Reset Topic",
                 "type": "string",
@@ -376,7 +376,7 @@
                 "type": "string",
                 "placeholder": "OFF",
                 "description": "The message to watch for to trigger motion resets."
-              },                                                                             
+              },
               "doorbellTopic": {
                 "title": "Doorbell Topic",
                 "type": "string",
@@ -387,7 +387,7 @@
                 "type": "string",
                 "placeholder": "ON",
                 "description": "The message to watch for to trigger doorbell alerts. Will use the name of the camera if blank."
-              }                                                                                
+              }
             }
           }
         }
@@ -405,17 +405,14 @@
         "port",
         "language",
         "theme",
+        "atHome",
         "debug",
         {
           "key": "ssl",
           "title": "SSL Certificate",
           "type": "array",
           "orderable": false,
-          "items": [
-            "ssl.active",
-            "ssl.key",
-            "ssl.cert"
-          ]
+          "items": ["ssl.active", "ssl.key", "ssl.cert"]
         }
       ]
     },
@@ -486,10 +483,7 @@
                   "title": "EXPERIMENTAL - WIP",
                   "expandable": true,
                   "expanded": false,
-                  "items": [
-                    "cameras[].videoConfig.returnAudioTarget",
-                    "cameras[].videoConfig.debugReturn"
-                  ]
+                  "items": ["cameras[].videoConfig.returnAudioTarget", "cameras[].videoConfig.debugReturn"]
                 }
               ]
             },
@@ -532,9 +526,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": [
-        "options.videoProcessor"
-      ]
+      "items": ["options.videoProcessor"]
     },
     {
       "key": "mqtt",
@@ -543,14 +535,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": [
-        "mqtt.active",
-        "mqtt.tls",
-        "mqtt.host",
-        "mqtt.port",
-        "mqtt.username",
-        "mqtt.password"
-      ]
+      "items": ["mqtt.active", "mqtt.tls", "mqtt.host", "mqtt.port", "mqtt.username", "mqtt.password"]
     },
     {
       "key": "http",
@@ -559,11 +544,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": [
-        "http.active",
-        "http.port",
-        "http.localhttp"
-      ]
+      "items": ["http.active", "http.port", "http.localhttp"]
     }
   ]
 }

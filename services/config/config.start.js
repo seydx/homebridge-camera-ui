@@ -14,7 +14,6 @@ class ConfigSetup {
     this.mqtt = this._mqtt();
     this.mqttConfigs = this._mqttConfigs();
     this.http = this._http();
-    this.aws = this._aws();
     this.cameras = this._cameras();
 
     return {
@@ -22,7 +21,6 @@ class ConfigSetup {
       ui: config.ui,
       options: this.options,
       ssl: this.ssl,
-      aws: this.aws,
       http: this.http,
       mqtt: this.mqtt,
       mqttConfigs: this.mqttConfigs,
@@ -36,6 +34,7 @@ class ConfigSetup {
       port: config.plugin.port || 8181,
       language: config.plugin.language || 'auto',
       theme: config.plugin.theme || 'auto',
+      atHome: config.plugin.atHome || false,
     };
 
     return ui;
@@ -145,26 +144,6 @@ class ConfigSetup {
       };
 
       return http;
-    }
-
-    return false;
-  }
-
-  _aws() {
-    if (
-      config.plugin.aws &&
-      config.plugin.aws.accessKeyId &&
-      config.plugin.aws.secretAccessKey &&
-      config.plugin.aws.region
-    ) {
-      const aws = {
-        accessKeyId: config.plugin.aws.accessKeyId,
-        secretAccessKey: config.plugin.aws.secretAccessKey,
-        region: config.plugin.aws.region,
-        contingent: config.plugin.aws.contingent || 0,
-      };
-
-      return aws;
     }
 
     return false;

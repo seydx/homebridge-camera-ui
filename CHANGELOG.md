@@ -2,12 +2,16 @@
 
 # NEXT
 
+## Notable Changes
+- Added `atHome` option to config to allow turning on/off **at home** from HomeKit
+
 ## Other changes
 - Interface:
   - Added `localStorage` to **Backup & Restore** to restore also the localStorage (_dashboard layout, camview layout, darkmode, theme color_)
 
-# Bugfixes
+## Bugfixes
 - Fixed an issue where buttons on the profile page displayed wrong color
+- Fixed an issue where ffmpeg could not save the snapshot (back to camera source)
 
 # v4.0.4 - 2021-04-30
 
@@ -19,7 +23,7 @@
 - Changed webpack settings to reduce chunk size
 - Bumped dependencies
 
-# Bugfixes
+## Bugfixes
 - Fixed an issue where ffmpeg took always camera `source` for snapshots instead of `stillImageSource`
 - Fixed an issue where the wrong package version was shown on login screen
 - Fixed an issue where the profile image was not displayed correctly

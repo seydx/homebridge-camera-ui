@@ -6,6 +6,7 @@ const logger = require('../services/logger/logger.service');
 const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
+const SwitchAccessory = require('./accessories/switch');
 
 const Server = require('../server/index');
 
@@ -29,19 +30,38 @@ function CameraUI(log, config, api) {
 
   logger.init(log, config.debug);
 
-  this.config = new Config();
   this.api = api;
-
-  this.cameras = new Map();
   this.accessories = [];
 
-  for (const camera of this.config.cameras) {
-    const uuid = UUIDGen.generate(camera.name);
+  this.config = new Config();
+  this.devices = new Map();
 
-    if (this.cameras.has(uuid)) {
-      logger.warn('Multiple cameras are configured with this name. Duplicate cameras will be skipped.', camera.name);
+  for (const device of this.config.cameras) {
+    device.subtype = 'camera';
+
+    const uuid = UUIDGen.generate(device.name);
+
+    if (this.devices.has(uuid)) {
+      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
     } else {
-      this.cameras.set(uuid, camera);
+      this.devices.set(uuid, device);
+    }
+  }
+
+  if (this.config.atHome) {
+    const device = {
+      name: 'At Home Switch',
+      subtype: 'athome-switch',
+      manufacturer: 'camera.ui',
+      model: 'Switch',
+    };
+
+    const uuid = UUIDGen.generate(device.name);
+
+    if (this.devices.has(uuid)) {
+      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
+    } else {
+      this.devices.set(uuid, device);
     }
   }
 
@@ -51,25 +71,23 @@ function CameraUI(log, config, api) {
 
 CameraUI.prototype = {
   didFinishLaunching: function () {
-    for (const [uuid, camera] of this.cameras) {
-      if (camera.unbridge) {
-        const accessory = new Accessory(camera.name, uuid);
-
+    for (const [uuid, device] of this.devices) {
+      if (device.unbridge) {
         logger.info('Configuring unbridged accessory...', accessory.displayName);
 
-        this.setupAccessory(accessory, camera);
+        const accessory = new Accessory(device.name, uuid);
+        this.setupAccessory(accessory, device);
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 
         this.accessories.push(accessory);
       } else {
-        const cachedAccessory = this.accessories.find((currentAccumulator) => currentAccumulator.UUID === uuid);
+        const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
         if (!cachedAccessory) {
-          const accessory = new Accessory(camera.name, uuid);
-
           logger.info('Configuring bridged accessory...', accessory.displayName);
 
-          this.setupAccessory(accessory, camera);
+          const accessory = new Accessory(device.name, uuid);
+          this.setupAccessory(accessory, device);
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 
           this.accessories.push(accessory);
@@ -78,24 +96,27 @@ CameraUI.prototype = {
     }
 
     for (const accessory of this.accessories) {
-      const camera = this.cameras.get(accessory.UUID);
+      const device = this.devices.get(accessory.UUID);
 
       try {
-        if (!camera && !accessory.context.config.unbridge) {
+        if (!device && !accessory.context.config.unbridge) {
           this.removeAccessory(accessory);
         }
       } catch (error) {
-        logger.debug('It looks like the camera has already been removed. Skip removing.', accessory.displayName);
+        logger.debug('It looks like the device has already been removed. Skip removing.', accessory.displayName);
         logger.error(error);
       }
     }
 
-    pluginHandler.initHandler(this.accessories, this.api.hap);
+    pluginHandler.initHandler(
+      this.accessories.filter((accessory) => accessory.subtype === 'camera'),
+      this.api.hap
+    );
 
     Server.startServer();
   },
 
-  setupAccessory: function (accessory, camera) {
+  setupAccessory: function (accessory, device) {
     logger.info('Setting up accessory...', accessory.displayName);
 
     accessory.on('identify', () => {
@@ -107,37 +128,39 @@ CameraUI.prototype = {
     if (AccessoryInformation) {
       AccessoryInformation.setCharacteristic(
         this.api.hap.Characteristic.Manufacturer,
-        camera.manufacturer || 'Homebridge'
+        device.manufacturer || 'Homebridge'
       );
-      AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.Model, camera.model || 'CameraUI');
+      AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'camera.ui');
       AccessoryInformation.setCharacteristic(
         this.api.hap.Characteristic.SerialNumber,
-        camera.serialNumber || 'SerialNumber'
+        device.serialNumber || 'SerialNumber'
       );
       AccessoryInformation.setCharacteristic(
         this.api.hap.Characteristic.FirmwareRevision,
-        camera.firmwareRevision || packageFile.version
+        device.firmwareRevision || packageFile.version
       );
     }
 
-    accessory.context.config = camera;
+    accessory.context.config = device;
 
-    new MotionSensor(this.api, accessory);
-    new DoorbellSensor(this.api, accessory);
+    if (device.subtype.includes('camera')) {
+      new MotionSensor(this.api, accessory);
+      new DoorbellSensor(this.api, accessory);
 
-    const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
-
-    accessory.configureController(cameraAccessory.controller);
+      const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
+      accessory.configureController(cameraAccessory.controller);
+    } else if (device.subtype.includes('switch')) {
+      new SwitchAccessory(this.api, accessory);
+    }
   },
 
   configureAccessory: function (accessory) {
     logger.info('Configuring cached bridged accessory...', accessory.displayName);
 
-    const camera = this.cameras.get(accessory.UUID);
+    const device = this.devices.get(accessory.UUID);
 
-    if (camera) {
-      accessory.context.videoConfig = camera.videoConfig;
-      this.setupAccessory(accessory, camera);
+    if (device) {
+      this.setupAccessory(accessory, device);
     }
 
     this.accessories.push(accessory);
