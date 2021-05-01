@@ -1,5 +1,15 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - Added new possibility to toggle camera favourites from dashboard
+  - Minor improvements
+
+## Bugfixes
+- Minor UI bugfixes
+
 # v4.0.6 - 2021-05-01
 
 ## Other changes
