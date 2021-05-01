@@ -16,66 +16,72 @@
                   v-model="aws.active"
                   color="var(--primary-color) !important",
                   :height="30",
-                  :sync="true"
+                  :sync="true",
+                  :aria-expanded="aws.active ? 'true' : 'false'"
+                  aria-controls="aws"
                 )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_access_key_id") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('aws_access_key_id')",
-                  v-model="aws.accessKeyId"
-                )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_secret_access_key") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('aws_secret_access_key')",
-                  v-model="aws.secretAccessKey"
-                )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_region") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('aws_region')",
-                  v-model="aws.region"
-                )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_total") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='number',
-                  :min="0",
-                  :max="10000",
-                  :placeholder="$t('aws_contingent_total')",
-                  v-model="aws.contingent_total"
-                )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_left") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='number',
-                  :disabled="true"
-                  v-model="aws.contingent_left"
-                  style="background: var(--third-bg-color) !important"
-                )
-            hr(v-if="aws.active")
-            .row(v-if="aws.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_last_rekognition") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :disabled="true"
-                  v-model="aws.last_rekognition"
-                  style="background: var(--third-bg-color) !important"
-                )
+            b-collapse(
+              v-model="aws.active",
+              id="aws"
+            )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_access_key_id") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('aws_access_key_id')",
+                    v-model="aws.accessKeyId"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_secret_access_key") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('aws_secret_access_key')",
+                    v-model="aws.secretAccessKey"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_region") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('aws_region')",
+                    v-model="aws.region"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_total") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='number',
+                    :min="0",
+                    :max="10000",
+                    :placeholder="$t('aws_contingent_total')",
+                    v-model="aws.contingent_total"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_left") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='number',
+                    :disabled="true"
+                    v-model="aws.contingent_left"
+                    style="background: var(--third-bg-color) !important"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_last_rekognition") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :disabled="true"
+                    v-model="aws.last_rekognition"
+                    style="background: var(--third-bg-color) !important"
+                  )
       .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
         h5 {{ $t("cameras") }}
         div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")

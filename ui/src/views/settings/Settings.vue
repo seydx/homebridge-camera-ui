@@ -75,6 +75,10 @@ export default {
   async mounted() {
     this.subnaviClick(this.activeRoute, true);
 
+    this.$root.$on('bv::collapse::state', () => {
+      console.log(this);
+    });
+
     DetectSwipe.detect('main', this.changePage);
     document.addEventListener('scroll', this.minifyScrollHandler);
     window.addEventListener('resize', this.subnaviClick);
@@ -333,8 +337,8 @@ export default {
 .settings-box-header {
   background: var(--primary-color);
   color: #ffffff;
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 10px !important;
+  border-top-left-radius: 5px !important;
+  border-top-right-radius: 5px !important;
   padding: 0.75rem 1.5rem !important;
 }
 </style>

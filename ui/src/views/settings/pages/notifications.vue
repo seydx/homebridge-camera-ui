@@ -27,46 +27,52 @@
                   v-model="notifications.telegram.active"
                   color="var(--primary-color) !important",
                   :height="30",
-                  :sync="true"
+                  :sync="true",
+                  :aria-expanded="notifications.telegram.active ? 'true' : 'false'"
+                  aria-controls="telegram"
                 )
-            hr(v-if="notifications.telegram.active")
-            .row(v-if="notifications.telegram.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("token") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('token')",
-                  v-model="notifications.telegram.token"
-                )
-            hr(v-if="notifications.telegram.active")
-            .row(v-if="notifications.telegram.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("chat_id") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('chat_id')",
-                  v-model="notifications.telegram.chatID"
-                )
-            hr(v-if="notifications.telegram.active")
-            .row(v-if="notifications.telegram.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("motion_message") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('motion_message')",
-                  v-model="notifications.telegram.message"
-                )
-            hr(v-if="notifications.telegram.active")
-            div(v-if="notifications.telegram.active")
-              div(v-for="camera in cameras", :key="camera.name")
-                .row
-                  .col-12.d-flex.flex-wrap.align-content-center {{ camera.name }}
-                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                    b-form-select(
-                      v-model="camera.telegramType"
-                      :options="['Text', 'Snapshot', 'Video']"
-                    )
-                hr
+            b-collapse(
+              v-model="notifications.telegram.active",
+              id="telegram"
+            )
+              hr(v-if="notifications.telegram.active")
+              .row(v-if="notifications.telegram.active")
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("token") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('token')",
+                    v-model="notifications.telegram.token"
+                  )
+              hr(v-if="notifications.telegram.active")
+              .row(v-if="notifications.telegram.active")
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("chat_id") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('chat_id')",
+                    v-model="notifications.telegram.chatID"
+                  )
+              hr(v-if="notifications.telegram.active")
+              .row(v-if="notifications.telegram.active")
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("motion_message") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('motion_message')",
+                    v-model="notifications.telegram.message"
+                  )
+              hr(v-if="notifications.telegram.active")
+              div(v-if="notifications.telegram.active")
+                div(v-for="camera in cameras", :key="camera.name")
+                  .row
+                    .col-12.d-flex.flex-wrap.align-content-center {{ camera.name }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-select(
+                        v-model="camera.telegramType"
+                        :options="['Text', 'Snapshot', 'Video']"
+                      )
+                  hr
       .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000")
         h5 {{ $t("webhook") }}
         div.mt-4
@@ -78,20 +84,26 @@
                   v-model="notifications.webhook.active"
                   color="var(--primary-color) !important",
                   :height="30",
-                  :sync="true"
+                  :sync="true",
+                  :aria-expanded="notifications.webhook.active ? 'true' : 'false'"
+                  aria-controls="webhook"
                 )
-            hr(v-if="notifications.webhook.active")
-            div(v-if="notifications.webhook.active")
-              div(v-for="camera in cameras", :key="camera.name")
-                .row
-                  .col-12.d-flex.flex-wrap.align-content-center {{ camera.name }}
-                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                    b-form-input(
-                      type='text',
-                      placeholder="https://webhook.site/88e98f7e",
-                      v-model="camera.webhookUrl"
-                    )
-                hr
+            b-collapse(
+              v-model="notifications.webhook.active",
+              id="webhook"
+            )
+              hr
+              div
+                div(v-for="camera in cameras", :key="camera.name")
+                  .row
+                    .col-12.d-flex.flex-wrap.align-content-center {{ camera.name }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        placeholder="https://webhook.site/88e98f7e",
+                        v-model="camera.webhookUrl"
+                      )
+                  hr
 </template>
 
 <script>

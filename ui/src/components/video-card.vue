@@ -1,48 +1,49 @@
 <template lang="pug">
 div(:class="cardClass")
-  b-icon.fullsizeOverlay(
-    :icon="fullscreen ? 'arrows-angle-contract' : 'arrows-angle-expand'",
-    :class="fullscreen ? 'fullsizeOverlay-on' : headerPosition === 'top' && !fullsize ? 'fix-top-50' : ''"
-    v-if="showFullsizeIndicator",
-    @click="handleFullscreen(camera)"
-  )
-  b-link.notOverlay.text-center(
-    v-if="notificationOverlay && camera.lastNotification", 
-    :data-stream-notification="camera.name"
-    :class="fullscreen ? 'notOverlay-on' : ''"
-    @click="index = 0"
-  ) {{ $t("last_notification") + ": " + camera.lastNotification.time }}
-  router-link.nameOverlay.mt-save(
-    v-if="nameOverlay", :to='\'/cameras/\' + camera.name'
-    :class="fullscreen ? 'nameOverlay-on' : ''"
-  )  {{ camera.name }}
-  .updateOverlay(
-    v-if="camera.live === false", 
-    :data-stream-timer="camera.name"
-    :class="fullscreen ? 'updateOverlay-on' : ''"
-  )
-  .lds-ring(v-if="showSpinner", 
-    :data-stream-spinner="camera.name"
-    ref="lds_spinner"
-  )
-    div
-    div
-    div
-    div
-  svg.b-icon.bi.bi-camera-video-off-fill.text-white.position-absolute-center.offlineOverlay(
-    :data-stream-offline="camera.name"
-    ref="offline_icon"
-    viewBox='0 0 16 16' 
-    width='50px' 
-    height='50px' 
-    focusable='false' 
-    role='img' 
-    aria-label='camera video off fill' 
-    xmlns='http://www.w3.org/2000/svg' 
-    fill='currentColor'
-  )
-    g
-      path(fill-rule='evenodd' d='M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l6.69 9.365zm-10.114-9A2.001 2.001 0 0 0 0 5v6a2 2 0 0 0 2 2h5.728L.847 3.366zm9.746 11.925l-10-14 .814-.58 10 14-.814.58z')
+  div.dif-wrapper
+    b-icon.fullsizeOverlay(
+      :icon="fullscreen ? 'arrows-angle-contract' : 'arrows-angle-expand'",
+      :class="fullscreen ? 'fullsizeOverlay-on' : ''"
+      v-if="showFullsizeIndicator",
+      @click="handleFullscreen(camera)"
+    )
+    b-link.notOverlay.text-center(
+      v-if="notificationOverlay && camera.lastNotification", 
+      :data-stream-notification="camera.name"
+      :class="fullscreen ? 'notOverlay-on' : ''"
+      @click="index = 0"
+    ) {{ $t("last_notification") + ": " + camera.lastNotification.time }}
+    router-link.nameOverlay.mt-save(
+      v-if="nameOverlay", :to='\'/cameras/\' + camera.name'
+      :class="fullscreen ? 'nameOverlay-on' : ''"
+    )  {{ camera.name }}
+    .updateOverlay(
+      v-if="camera.live === false", 
+      :data-stream-timer="camera.name"
+      :class="fullscreen ? 'updateOverlay-on' : ''"
+    )
+    .lds-ring(v-if="showSpinner", 
+      :data-stream-spinner="camera.name"
+      ref="lds_spinner"
+    )
+      div
+      div
+      div
+      div
+    svg.b-icon.bi.bi-camera-video-off-fill.text-white.position-absolute-center.offlineOverlay(
+      :data-stream-offline="camera.name"
+      ref="offline_icon"
+      viewBox='0 0 16 16' 
+      width='50px' 
+      height='50px' 
+      focusable='false' 
+      role='img' 
+      aria-label='camera video off fill' 
+      xmlns='http://www.w3.org/2000/svg' 
+      fill='currentColor'
+    )
+      g
+        path(fill-rule='evenodd' d='M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l6.69 9.365zm-10.114-9A2.001 2.001 0 0 0 0 5v6a2 2 0 0 0 2 2h5.728L.847 3.366zm9.746 11.925l-10-14 .814-.58 10 14-.814.58z')
   b-card-body(v-if="headerPosition === 'top' && !fullsize")
     b-card-title.float-left {{ camera.name }}
     b-icon.float-right.card-icon-status.ml-2(v-if="statusIndicator", icon="circle-fill", aria-hidden="true", :data-stream-status="camera.name", variant="danger")
@@ -308,6 +309,14 @@ export default {
 </script>
 
 <style scoped>
+.dif-wrapper {
+  position: absolute;
+  top: 3rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .card {
   font-family: Open Sans, sans-serif;
   position: relative;
@@ -413,8 +422,8 @@ div >>> .card-img-top {
 .updateOverlay {
   z-index: 20;
   position: absolute;
-  right: 20px;
-  bottom: 20px;
+  right: 10px;
+  bottom: 10px;
   display: block;
   background: rgb(0 0 0 / 30%);
   padding: 5px;

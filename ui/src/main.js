@@ -10,14 +10,13 @@ import '@/assets/css/main.css';
 
 import permission from '@/mixins/permission.mixin';
 
+import AOS from '@/plugins/aos.plugin';
 import { i18n } from '@/i18n';
-
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 
 import {
   ButtonPlugin,
   CardPlugin,
+  CollapsePlugin,
   FormFilePlugin,
   FormInputPlugin,
   FormPlugin,
@@ -42,8 +41,10 @@ import socket from '@/common/socket-instance';
 
 Vue.mixin(permission);
 
+Vue.use(AOS);
 Vue.use(ButtonPlugin);
 Vue.use(CardPlugin);
+Vue.use(CollapsePlugin);
 Vue.use(FormFilePlugin);
 Vue.use(FormInputPlugin);
 Vue.use(FormPlugin);
@@ -63,11 +64,6 @@ const app = new Vue({
   router,
   store,
   i18n: i18n,
-  created() {
-    AOS.init({
-      offset: 0,
-    });
-  },
   render: (h) => h(App),
 }).$mount('#app');
 

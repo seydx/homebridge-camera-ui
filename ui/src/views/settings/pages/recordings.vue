@@ -16,41 +16,47 @@
                   v-model="recordings.active"
                   color="var(--primary-color) !important",
                   :height="30",
-                  :sync="true"
+                  :sync="true",
+                  :aria-expanded="recordings.active ? 'true' : 'false'"
+                  aria-controls="recordings"
                 )
-            hr(v-if="recordings.active")
-            .row(v-if="recordings.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-select(
-                  v-model="recordings.type"
-                  :options="['Snapshot', 'Video']"
-                )
-            hr(v-if="recordings.active")
-            .row(v-if="recordings.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-select(
-                  v-model="recordings.timer"
-                  :options="[10, 20, 30, 40, 50, 60]"
-                )
-            hr(v-if="recordings.active")
-            .row(v-if="recordings.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('save_as')",
-                  v-model="recordings.path"
-                )
-            hr(v-if="recordings.active")
-            .row(v-if="recordings.active")
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_d") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-select(
-                  v-model="recordings.removeAfter"
-                  :options="[1, 3, 5, 7, 10]"
-                )
+            b-collapse(
+              v-model="recordings.active",
+              id="recordings"
+            )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-select(
+                    v-model="recordings.type"
+                    :options="['Snapshot', 'Video']"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-select(
+                    v-model="recordings.timer"
+                    :options="[10, 20, 30, 40, 50, 60]"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('save_as')",
+                    v-model="recordings.path"
+                  )
+              hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_d") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-select(
+                    v-model="recordings.removeAfter"
+                    :options="[1, 3, 5, 7, 10]"
+                  )
 </template>
 
 <script>

@@ -18,7 +18,7 @@
                 )
       .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:camview:edit', 'settings:cameras:edit'])")
         h5 {{ $t("favourites") }}
-        div.mb-4.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
+        div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
           .settings-box-header {{ camera.name }}
           .settings-box.container.no-radius-top
             .row
