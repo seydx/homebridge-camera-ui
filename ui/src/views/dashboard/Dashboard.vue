@@ -2,7 +2,7 @@
 div
   BackToTop
   Navbar(:name="$t('dashboard')")
-  main.inner-container.w-100.h-100vh.pt-save.footer-offset
+  main.inner-container.w-100.h-100vh-calc.pt-save.footer-offset
     .container.pt-3.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
       b-spinner.text-color-primary
     .container.pt-3(v-else)
@@ -19,6 +19,7 @@ div
               :showSpinner="true",
               :statusIndicator="true"
             )
+  AddCamera
   Footer
 </template>
 
@@ -28,6 +29,7 @@ import draggable from 'vuedraggable';
 import { getCameras } from '@/api/cameras.api';
 import { getNotifications } from '@/api/notifications.api';
 import { getSetting } from '@/api/settings.api';
+import AddCamera from '@/components/add-camera.vue';
 import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
@@ -36,6 +38,7 @@ import VideoCard from '@/components/video-card.vue';
 export default {
   name: 'Dashboard',
   components: {
+    AddCamera,
     BackToTop,
     draggable,
     Footer,

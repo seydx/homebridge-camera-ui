@@ -2,7 +2,7 @@
 div
   BackToTop
   Navbar(:name="$route.params.name")
-  main.inner-container.w-100.h-100vh.pt-save.footer-offset
+  main.inner-container.w-100.h-100vh-calc.pt-save.footer-offset
     .container.pt-3.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
       b-spinner.text-color-primary
     .container.pt-3(v-else-if="!loading && Object.keys(camera).length")

@@ -1,5 +1,5 @@
 <template lang="pug">
-  #app.h-100vh
+  #app
     button.add-button(v-if="$route.meta.name !== 'login'", style="display: none;") Add to home screen
     audio#soundFx(v-if="$route.meta.name !== 'login' && checkLevel('notifications:access')")
       source(src="@/assets/sounds/notification.mp3" type="audio/mpeg")

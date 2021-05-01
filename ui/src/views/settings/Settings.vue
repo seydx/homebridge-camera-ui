@@ -12,7 +12,7 @@ div
         router-link.btn.btn-settings.mr-1(v-if="checkLevel(['settings:recordings:access', 'settings:recordings:edit'])", to="/settings/recordings", @click.native="subnaviClick('recordings')", :class="'sub-recordings' + ($route.meta.name === 'recordings' ? ' btn-settings-active' : '')") {{ $t("recordings") }}
         router-link.btn.btn-settings.mr-1(v-if="checkLevel(['settings:notifications:access', 'settings:notifications:edit'])", to="/settings/notifications", @click.native="subnaviClick('notifications')", :class="'sub-notifications' + ($route.meta.name === 'notifications' ? ' btn-settings-active' : '')") {{ $t("notifications") }}
         router-link.btn.btn-settings.mr-1(v-if="checkLevel(['settings:camview:access', 'settings:camview:edit'])", to="/settings/camview", @click.native="subnaviClick('camview')", :class="'sub-camview' + ($route.meta.name === 'camview' ? ' btn-settings-active' : '')") {{ $t("camview") }}
-  main.inner-container.w-100.h-100vh.pt-save.footer-offset
+  main.inner-container.w-100.h-100vh-calc-settings.pt-save.footer-offset
     .container.pt-2
       transition(:name="transitionName", mode="out-in", @beforeLeave="beforeLeave", @enter="enter", @afterEnter="afterEnter")
         router-view(:key="$route.meta.name")
@@ -74,10 +74,6 @@ export default {
   },
   async mounted() {
     this.subnaviClick(this.activeRoute, true);
-
-    this.$root.$on('bv::collapse::state', () => {
-      console.log(this);
-    });
 
     DetectSwipe.detect('main', this.changePage);
     document.addEventListener('scroll', this.minifyScrollHandler);

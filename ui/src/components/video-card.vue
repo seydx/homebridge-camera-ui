@@ -1,6 +1,11 @@
 <template lang="pug">
-div(:class="cardClass")
-  div.dif-wrapper
+div(
+  :class="cardClass",
+  :style="fullscreen ? 'transform: unset !important' : ''"
+)
+  div.dif-wrapper(
+    :style="fullsize ? 'top: 0' : ''"
+  )
     b-icon.fullsizeOverlay(
       :icon="fullscreen ? 'arrows-angle-contract' : 'arrows-angle-expand'",
       :class="fullscreen ? 'fullsizeOverlay-on' : ''"

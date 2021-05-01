@@ -1,9 +1,15 @@
 :root {
+  /* pink */
   --primary-color: #d12049;
   --secondary-color: #7d132c;
   --third-color: #3f0a16;
   --fourth-color: #eda6b6;
   --fifth-color: #ff6868;
+  --primary-trans-color-1: rgba(209, 32, 73, 0.75);
+  --primary-trans-color-2: rgba(209, 32, 73, 0.5);
+  --primary-trans-color-3: rgba(209, 32, 73, 0.25);
+  --primary-trans-color-4: rgba(209, 32, 73, 0.1);
+  /* LIGHT */
   --primary-font-color: #000000;
   --secondary-font-color: #c8c8c8;
   --third-font-color: #f4f4f4;
@@ -37,6 +43,10 @@
   --third-color: #03284d;
   --fourth-color: #9dceff;
   --fifth-color: #0bdafb;
+  --primary-trans-color-1: rgba(10, 132, 255, 0.75);
+  --primary-trans-color-2: rgba(10, 132, 255, 0.5);
+  --primary-trans-color-3: rgba(10, 132, 255, 0.25);
+  --primary-trans-color-4: rgba(10, 132, 255, 0.1);
 }
 
 [data-theme-color='yellow'] {
@@ -45,6 +55,10 @@
   --third-color: #4b4117;
   --fourth-color: #fdefb7;
   --fifth-color: #f3ff38;
+  --primary-trans-color-1: rgba(249, 215, 75, 0.75);
+  --primary-trans-color-2: rgba(249, 215, 75, 0.5);
+  --primary-trans-color-3: rgba(249, 215, 75, 0.25);
+  --primary-trans-color-4: rgba(249, 215, 75, 0.1);
 }
 
 [data-theme-color='green'] {
@@ -53,6 +67,10 @@
   --third-color: #1f3e1f;
   --fourth-color: #c2ebc2;
   --fifth-color: #b7ff67;
+  --primary-trans-color-1: rgba(102, 206, 102, 0.75);
+  --primary-trans-color-2: rgba(102, 206, 102, 0.5);
+  --primary-trans-color-3: rgba(102, 206, 102, 0.25);
+  --primary-trans-color-4: rgba(102, 206, 102, 0.1);
 }
 
 [data-theme-color='gray'] {
@@ -61,4 +79,8 @@
   --third-color: #1d1e1e;
   --fourth-color: #c0c1c1;
   --fifth-color: #969696;
+  --primary-trans-color-1: rgba(98, 99, 101, 0.75);
+  --primary-trans-color-2: rgba(98, 99, 101, 0.5);
+  --primary-trans-color-3: rgba(98, 99, 101, 0.25);
+  --primary-trans-color-4: rgba(98, 99, 101, 0.1);
 }

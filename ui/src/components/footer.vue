@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  .footer.w-100.flex-wrap.align-content-center.pb-save(style="display:none; opacity: 0;")
+  .footer.w-100.flex-wrap.align-content-center(style="display:none; opacity: 0;")
     .footer-inner.container.d-flex.flex-wrap.align-content-center
       .col.p-0.m-0 © SeydX
       a(href="https://www.github.com/SeydX/homebridge-camera-ui", target="_blank" rel="noopener noreferrer")

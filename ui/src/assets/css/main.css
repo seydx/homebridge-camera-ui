@@ -3,7 +3,6 @@
 html,
 body {
   width: 100%;
-  height: 100%;
   background: var(--primary-bg-color) !important;
   font-family: 'trebuchet ms', sans-serif !important;
   color: var(--primary-font-color) !important;
@@ -557,6 +556,18 @@ iframe {
   min-height: 100vh;
 }
 
+.h-100vh-calc {
+  min-height: calc(100vh - 171px);
+}
+
+.h-100vh-calc-filter {
+  min-height: calc(100vh - 201px);
+}
+
+.h-100vh-calc-settings {
+  min-height: calc(100vh - 221px);
+}
+
 /*--------------------------------------------------------------
 # Custom Width
 --------------------------------------------------------------*/
@@ -862,4 +873,35 @@ iframe {
   border-radius: 10px;
   color: #ffffff;
   z-index: 1;
+}
+
+.pulse {
+  box-shadow: 0 0 0 var(--primary-trans-color-2);
+  animation: pulse 2s infinite;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 var(--primary-trans-color-2);
+  }
+  70% {
+    -webkit-box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 var(--primary-trans-color-2);
+    box-shadow: 0 0 0 0 var(--primary-trans-color-2);
+  }
+  70% {
+    -moz-box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
 }
