@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import App from '@/App.vue';
-
 import router from '@/router';
 import store from '@/store';
 import '@/registerServiceWorker';
+
+import '@/assets/css/theme.css';
+import '@/assets/css/preloader.css';
 import '@/assets/css/main.css';
 
 import permission from '@/mixins/permission.mixin';

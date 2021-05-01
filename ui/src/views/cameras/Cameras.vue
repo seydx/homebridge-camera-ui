@@ -13,7 +13,7 @@ div
     .container.pt-3.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
       b-spinner.text-color-primary
     .container.pt-3(v-else)
-      transition-group(name="camera-fade", tag="div", class="row")
+      .row
         .col-lg-4.col-md-6.col-12.my-1(v-for="(camera, i) in cameras", :key="camera.name" :data-camera-aos="camera.name" data-aos="fade-up" data-aos-duration="1000" data-aos-mirror="true")
           VideoCard(
             :camera="camera",
@@ -124,17 +124,5 @@ export default {
 <style scoped>
 .inner-container {
   margin-top: 140px;
-}
-
-.camera-fade-enter-active {
-  transition: all 0.4s ease;
-}
-.camera-fade-leave-active {
-  transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.camera-fade-enter,
-.camera-fade-leave-to {
-  transform: translateY(-30px);
-  opacity: 0;
 }
 </style>

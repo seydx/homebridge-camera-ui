@@ -1,9 +1,16 @@
 # Changelog
 
-# NEXT
+# v4.0.6 - 2021-05-01
+
+## Other changes
+- Server:
+  - Added new endpoint to API (`/version` )
 
 ## Bugfixes
-- Fixed an issue where injected `-stimeout` to `stillImageSource` breaks snapshot request from HomeKit 
+- Fixed an issue where injected `-stimeout` to `stillImageSource` breaks snapshot request from HomeKit
+- Fixed an issue where `video card` on "cameras" page had different animation on first load
+- Fixed an issue where `video card` does not show an fallback image when buffer is empty
+- Minor bugfixes
 
 # v4.0.5 - 2021-04-30
 

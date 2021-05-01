@@ -5,7 +5,6 @@ let players = [];
 
 const loadStream = (camera) => {
   let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
-
   let offlineIcon = document.querySelector(`[data-stream-offline="${camera.name}"]`);
 
   if (offlineIcon) {
@@ -23,9 +22,7 @@ const startStream = (camera, cameraStatus) => {
   camera.status = cameraStatus.data.status === 'ONLINE';
 
   let statusIndicator = document.querySelector(`[data-stream-status="${camera.name}"]`);
-
   let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
-
   let offlineIcon = document.querySelector(`[data-stream-offline="${camera.name}"]`);
 
   if (camera.status) {

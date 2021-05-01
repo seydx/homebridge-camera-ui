@@ -1,4 +1,7 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 'use-strict';
+
+const packageJson = require('../package.json');
 
 const cors = require('cors');
 const fs = require('fs-extra');
@@ -31,8 +34,6 @@ const UsersRouter = require('./components/users/users.routes');
 
 const config = require('../services/config/config.service');
 
-const DEBUG = config.plugin.debug;
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,7 +54,7 @@ app.use(
     },
   })
 );
-app.use(morgan('dev', { skip: () => !DEBUG }));
+app.use(morgan('dev', { skip: () => !config.plugin.debug }));
 
 const backupUpload = multer({
   storage: multer.diskStorage({
@@ -78,6 +79,12 @@ SettingsRouter.routesConfig(app);
 SubscribeRouter.routesConfig(app);
 UsersRouter.routesConfig(app);
 
+app.get('/version', (req, res) => {
+  res.status(200).send({
+    version: packageJson.version,
+  });
+});
+
 app.use(
   '/swagger',
   swaggerUi.serve,
@@ -93,7 +100,7 @@ app.use(
     },
   })
 );
-app.use(history({ index: 'index.html', verbose: DEBUG }));
+app.use(history({ index: 'index.html', verbose: config.plugin.debug }));
 app.use(express.static(path.join(__dirname, '../interface')));
 
 module.exports = app;

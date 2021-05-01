@@ -2,7 +2,6 @@ import app from '@/main';
 
 const loadSnapshot = (camera) => {
   let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
-
   let offlineIcon = document.querySelector(`[data-stream-offline="${camera.name}"]`);
 
   if (offlineIcon) {
@@ -20,9 +19,7 @@ const fetchSnapshot = (camera, cameraStatus, snapshot) => {
   camera.status = cameraStatus.data.status === 'ONLINE';
 
   let statusIndicator = document.querySelector(`[data-stream-status="${camera.name}"]`);
-
   let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
-
   let offlineIcon = document.querySelector(`[data-stream-offline="${camera.name}"]`);
 
   if (camera.status) {
@@ -31,9 +28,15 @@ const fetchSnapshot = (camera, cameraStatus, snapshot) => {
       statusIndicator.classList.add('text-success');
     }
 
-    const imgBuffer = 'data:image/png;base64,' + snapshot.data;
-
     const img = document.createElement('img');
+    let imgBuffer = 'data:image/png;base64,';
+
+    if (!snapshot.data || (snapshot.data && snapshot.data === '')) {
+      img.classList.add('object-fit-none');
+      imgBuffer = require('../assets/img/no_img_white.png');
+    } else {
+      imgBuffer += snapshot.data;
+    }
 
     img.setAttribute('src', imgBuffer);
     img.setAttribute('alt', 'Snapshot');
