@@ -19,7 +19,11 @@ div
               :showSpinner="true",
               :statusIndicator="true"
             )
-  AddCamera
+  AddCamera(
+    v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:dashboard:access'])"
+    :cameras="allCameras"
+    @favCamera="handleFavouriteCamera"
+  )
   Footer
 </template>
 
@@ -28,7 +32,7 @@ import draggable from 'vuedraggable';
 
 import { getCameras } from '@/api/cameras.api';
 import { getNotifications } from '@/api/notifications.api';
-import { getSetting } from '@/api/settings.api';
+import { getSetting, changeSetting } from '@/api/settings.api';
 import AddCamera from '@/components/add-camera.vue';
 import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
@@ -47,6 +51,7 @@ export default {
   },
   data() {
     return {
+      allCameras: [],
       cameras: [],
       snapshotTimeout: null,
       loading: true,
@@ -67,16 +72,16 @@ export default {
         const dashboardSettings = await getSetting('dashboard');
 
         for (const camera of cameras.data.result) {
-          if (camera.settings.dashboard.favourite) {
-            camera.live = camera.settings.dashboard.live || false;
-            camera.refreshTimer = dashboardSettings.data.refreshTimer || 60;
+          camera.favourite = camera.settings.dashboard.favourite;
+          camera.live = camera.settings.dashboard.live || false;
+          camera.refreshTimer = dashboardSettings.data.refreshTimer || 60;
 
-            const lastNotification = await getNotifications(`?cameras=${camera.name}&pageSize=5`);
-            camera.lastNotification = lastNotification.data.result.length > 0 ? lastNotification.data.result[0] : false;
-
-            this.cameras.push(camera);
-          }
+          const lastNotification = await getNotifications(`?cameras=${camera.name}&pageSize=5`);
+          camera.lastNotification = lastNotification.data.result.length > 0 ? lastNotification.data.result[0] : false;
         }
+
+        this.allCameras = cameras.data.result;
+        this.cameras = cameras.data.result.filter((camera) => camera.favourite);
 
         await this.updateLayout();
         this.loading = false;
@@ -88,6 +93,29 @@ export default {
     }
   },
   methods: {
+    async handleFavouriteCamera(cam) {
+      try {
+        const camera = this.allCameras.find((camera) => camera && camera.name === cam.name);
+
+        const cameraSettings = await getSetting('cameras');
+        for (const cameraSetting of cameraSettings.data) {
+          if (cameraSetting.name === camera.name) {
+            cameraSetting.dashboard.favourite = cam.state;
+          }
+        }
+
+        await changeSetting('cameras', cameraSettings.data);
+
+        if (cam.state) {
+          this.cameras.push(camera);
+        } else {
+          this.cameras = this.cameras.filter((camera) => camera && camera.name !== cam.name);
+        }
+      } catch (err) {
+        console.log(err);
+        this.$toast.error(err.message);
+      }
+    },
     storeLayout() {
       const cameras = this.cameras
         .map((camera, index) => {

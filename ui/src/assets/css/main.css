@@ -488,6 +488,18 @@ iframe {
   margin-top: env(safe-area-inset-top) !important;
 }
 
+.mb-save-s {
+  margin-bottom: calc(env(safe-area-inset-top, -5px) + 5px) !important;
+}
+
+.mb-save-m {
+  margin-bottom: calc(env(safe-area-inset-top, -17px) + 17px) !important;
+}
+
+.mb-save-l {
+  margin-bottom: calc(env(safe-area-inset-top, -34px) + 34px) !important;
+}
+
 .mb-save {
   margin-bottom: env(safe-area-inset-bottom) !important;
 }
@@ -904,4 +916,36 @@ iframe {
     -moz-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
+}
+
+.modal-bottom {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.modal-bottom > .modal-content {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.modal-bottom > .modal-content > .modal-body {
+  height: 300px !important;
+  max-height: 35vh !important;
+  min-height: 170px !important;
+  overflow-y: scroll !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE 10+ */
+  overflow-x: hidden !important;
+}
+
+.modal-bottom > .modal-content > .modal-body::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
 }
