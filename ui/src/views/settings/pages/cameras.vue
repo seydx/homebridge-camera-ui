@@ -199,7 +199,7 @@ export default {
 
           this.camerasTimer = setTimeout(async () => {
             try {
-              await changeSetting('cameras', newValue);
+              await changeSetting('cameras', newValue, '?stopStream');
             } catch (error) {
               this.$toast.error(error.message);
             }
