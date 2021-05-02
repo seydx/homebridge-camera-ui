@@ -4,14 +4,15 @@
 
 ## Other changes
 - Server:
-  - Added additional query parameter to settings > cameras to stop camera streams
+  - Added additional query parameter to cameras settings, which allows to stop streams after changing camera stream settings
 - Interface:
   - Added new possibility to toggle cameras (favourites) from dashboard
   - Changed video card height for screens >= 1200px (again)
   - Minor improvements
 
 ## Bugfixes
-- Fixed an issue where an error was shown if no profile picture was setted up
+- Fixed an issue where triggering the doorbell crashed homebridge
+- Fixed an issue where an error (404) was shown if no profile picture was setted up
 - Minor UI bugfixes
 
 # v4.0.6 - 2021-05-01

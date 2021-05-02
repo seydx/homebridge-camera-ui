@@ -160,7 +160,7 @@ class PluginHandler {
 
         doorbell.updateCharacteristic(
           HOMEBRIDGE.hap.Characteristic.ProgrammableSwitchEvent,
-          this.api.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
+          HOMEBRIDGE.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
         );
 
         if (doorbellTrigger) {
