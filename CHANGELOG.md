@@ -9,6 +9,7 @@
   - Minor improvements
 
 ## Bugfixes
+- Fixed an issue where an error was shown if no profile picture was setted up
 - Minor UI bugfixes
 
 # v4.0.6 - 2021-05-01

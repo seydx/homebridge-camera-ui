@@ -9,7 +9,7 @@
         .settings-box.d-flex.flex-wrap.justify-content-center.align-content-center.container
           .image-upload
             label(for='file-input')
-              b-card-img-lazy.profile-avatar(@error.native="handleErrorImg" :src="'/files/' + currentUser.photo" alt="Avatar" width="8rem" height="8rem")
+              b-card-img-lazy.profile-avatar(@error.native="handleErrorImg" :src="currentUser.photo !== 'no_img.png' ? '/files/' + currentUser.photo : '@/assets/img/no_user.png'" alt="Avatar" width="8rem" height="8rem")
             input#file-input(type="file", name="photo", placeholder="Photo", required="", accept="image/png,image/jpeg", @change="changeProfileImg")
           .w-100.my-2
           h5.font-weight-bold.lh-1 {{ currentUser.username }}
