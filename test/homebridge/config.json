@@ -38,11 +38,32 @@
           "name": "Test Success",
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
-            "socketPort": 8787
+            "socketPort": 8855
           }
         },
         {
           "name": "Test Fail",
+          "videoConfig": {
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
+            "socketPort": 8100
+          }
+        },
+        {
+          "name": "Test Fail 2",
+          "videoConfig": {
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
+            "socketPort": 8100
+          }
+        },
+        {
+          "name": "Test Fail 3",
+          "videoConfig": {
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
+            "socketPort": 8100
+          }
+        },
+        {
+          "name": "Test Fail 4",
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
             "socketPort": 8100

@@ -1,5 +1,12 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - Changed icon from "change favourite camera" button (dashboard/camview)
+  - Added animation to "change favourite camera" button
+
 # v4.0.7 - 2021-05-03
 
 ## Other changes

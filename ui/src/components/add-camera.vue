@@ -2,7 +2,7 @@
 transition(name="fade" @enter="enter")
   div(v-if="showButton")
     .wrapper.add-new-camera.d-flex.flex-wrap.justify-content-center.align-content-center.add-new-camera-hover.pulse
-      b-icon.add-icon.show-icon(icon="plus", aria-hidden="true", @click="show = !show")
+      b-icon.add-icon.show-icon(icon="gear-wide-connected", animation="spin", aria-hidden="true", @click="show = !show")
     b-modal(v-model="show" modal-class="overflow-hidden" dialog-class="modal-bottom" hide-footer hide-header)
       div(v-for="(camera, i) in cameras" :key="camera.name")
         .row
@@ -20,14 +20,14 @@ transition(name="fade" @enter="enter")
 </template>
 
 <script>
-import { BIcon, BIconPlus } from 'bootstrap-vue';
+import { BIcon, BIconGearWideConnected } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   name: 'AddCamera',
   components: {
     BIcon,
-    BIconPlus,
+    BIconGearWideConnected,
     ToggleButton,
   },
   props: {
@@ -137,7 +137,7 @@ export default {
 .add-icon {
   opacity: 0;
   transition: 0.3s all;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   color: #fff;
 }
 
@@ -161,5 +161,12 @@ export default {
 
 .safe-height {
   height: env(safe-area-inset-bottom) !important;
+}
+
+.b-icon.b-icon-animation-spin,
+.b-icon.b-iconstack .b-icon-animation-spin > g {
+  transform-origin: center;
+  -webkit-animation: 4s infinite linear normal b-icon-animation-spin;
+  animation: 4s infinite linear normal b-icon-animation-spin;
 }
 </style>
