@@ -3,8 +3,9 @@ div(
   :class="cardClass",
   :style="fullscreen ? 'transform: unset !important' : ''"
 )
-  div.dif-wrapper(
-    :style="fullsize ? 'top: 0' : ''"
+  div(
+    :class="headerPosition === 'top' ? 'dif-wrapper-top' : 'dif-wrapper-bottom'"
+    :style="fullsize ? 'top: 0!important; bottom: 0!important' : ''"
   )
     b-icon.fullsizeOverlay(
       :icon="fullscreen ? 'arrows-angle-contract' : 'arrows-angle-expand'",
@@ -314,12 +315,20 @@ export default {
 </script>
 
 <style scoped>
-.dif-wrapper {
+.dif-wrapper-top {
   position: absolute;
   top: 3rem;
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.dif-wrapper-bottom {
+  position: absolute;
+  bottom: 3rem;
+  left: 0;
+  right: 0;
+  top: 0;
 }
 
 .card {
@@ -571,7 +580,8 @@ a >>> .img-overlay {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   a >>> .img-overlay {
-    height: 11vw;
+    height: 13vw;
+    max-height: 160px;
   }
 }
 </style>

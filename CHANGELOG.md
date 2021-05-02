@@ -4,7 +4,8 @@
 
 ## Other changes
 - Interface:
-  - Added new possibility to toggle camera favourites from dashboard
+  - Added new possibility to toggle cameras (favourites) from dashboard
+  - Changed video card height for screens >= 1200px (again)
   - Minor improvements
 
 ## Bugfixes

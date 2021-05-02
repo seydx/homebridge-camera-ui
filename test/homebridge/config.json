@@ -47,13 +47,6 @@
             "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
             "socketPort": 8100
           }
-        },
-        {
-          "name": "Test Fail Second",
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
-            "socketPort": 8100
-          }
         }
       ]
     }

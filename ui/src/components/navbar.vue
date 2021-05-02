@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   .d-flex.flex-wrap.align-content-center.navbar2
-    .navbar2-inner.container.d-flex.flex-wrap.align-content-center.mt-save
+    .navbar2-inner.container.d-flex.flex-wrap.align-content-center.mt-save.toggleArea
       b-navbar.w-100.p-0.m-0(variant='faded' type='light')
         b-navbar-brand(href='/dashboard')
           img.navbar-brand-img.d-inline-block.align-middle.theme-img(src='@/assets/img/logo_transparent-256@pink.png', alt='camera.ui')

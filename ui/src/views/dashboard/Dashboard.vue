@@ -2,13 +2,13 @@
 div
   BackToTop
   Navbar(:name="$t('dashboard')")
-  main.inner-container.w-100.h-100vh-calc.pt-save.footer-offset
+  main.inner-container.w-100.h-100vh-calc.pt-save.footer-offset.toggleArea
     .container.pt-3.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
       b-spinner.text-color-primary
-    .container.pt-3(v-else)
+    .container.pt-3.toggleArea(v-else)
       draggable(v-model='cameras', ghost-class="ghost-box", @change="storeLayout", animation=200, delay="200" delay-on-touch-only="true")
         transition-group(type="transition", class="row")
-          .col-lg-4.col-md-6.col-12.my-1(v-for="(camera, i) in cameras", :key="camera.name")
+          .col-lg-4.col-md-6.col-12.my-1.toggleArea(v-for="(camera, i) in cameras", :key="camera.name")
             VideoCard(
               :camera="camera",
               cardClass="card"

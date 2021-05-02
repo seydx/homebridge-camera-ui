@@ -1,5 +1,5 @@
 <template lang="pug">
-#toggler.toggler.d-flex.w-100.justify-content-end.position-relative
+#toggler.toggler.d-flex.w-100.justify-content-end.position-relative.toggleArea
   b-link#togglerBtn.navbar2-toggler(aria-label="Mobile Navigation")
     b-icon.navbar-2toggler-icon(icon="list", aria-hidden="true")
   .navbar2-collapsed
