@@ -3,7 +3,7 @@ div(
   :class="cardClass",
   :style="fullscreen ? 'transform: unset !important' : ''"
 )
-  div(
+  div.toggleArea(
     :class="headerPosition === 'top' ? 'dif-wrapper-top' : 'dif-wrapper-bottom'"
     :style="fullsize ? 'top: 0!important; bottom: 0!important' : ''"
   )
@@ -73,7 +73,7 @@ div(
     :data-stream-wrapper="camera.name",
     :class="!fullsize ? headerPosition === 'top' ? 'card-img-bottom' : 'card-img-top' : ''",
   )
-    canvas.canvas.card-img.img-overlay(
+    canvas.canvas.card-img.img-overlay.toggleArea(
       :data-stream-box="camera.name",
       :class="!fullsize ? headerPosition === 'top' ? 'card-img-bottom' : 'card-img-top' : ''",
     )

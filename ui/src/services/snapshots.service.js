@@ -38,6 +38,7 @@ const fetchSnapshot = (camera, cameraStatus, snapshot) => {
       imgBuffer += snapshot.data;
     }
 
+    img.classList.add('toggleArea');
     img.setAttribute('src', imgBuffer);
     img.setAttribute('alt', 'Snapshot');
     img.dataset.streamBox = camera.name;
@@ -72,6 +73,7 @@ const fetchSnapshot = (camera, cameraStatus, snapshot) => {
     }
 
     const canvas = document.createElement('canvas');
+    canvas.classList.add('toggleArea');
     canvas.dataset.streamBox = camera.name;
 
     const target = document.querySelector(`[data-stream-box="${camera.name}"]`);

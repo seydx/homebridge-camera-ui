@@ -4,9 +4,10 @@
 
 ## Other changes
 - Server:
-  - Added additional query parameter to cameras settings, which allows to stop streams after changing camera stream settings
+  - Added additional query parameter (`?stopStream`) to cameras settings, which allows to stop streams after changing camera stream settings
 - Interface:
   - Added new possibility to toggle cameras (favourites) from dashboard
+  - Added new possibility to toggle cameras (favourites) from camview
   - Changed video card height for screens >= 1200px (again)
   - Minor improvements
 

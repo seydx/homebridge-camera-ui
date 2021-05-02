@@ -1,20 +1,28 @@
 <template lang="pug">
+div
   main.w-100.h-100vh.overflow-hidden
     b-button.mt-save-m.ml-3.back-button(pill, @click="goBack") {{ $t("back") }}
     b-button.btn-primary.mt-save-m.mr-3.logout-button(pill, @click="logOut") {{ $t("signout") }}
-    .grid-stack.h-100vh.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
-      b-spinner.text-color-primary
-    .grid-stack.h-100vh(v-else)
-      .grid-stack-item(v-for="(camera, index) in cameras" :gs-id="index")
-        VideoCard(
-          :camera="camera",
-          cardClass="grid-stack-item-content",
-          :fullsize="true",
-          :nameOverlay="true",
-          :notificationOverlay="true",
-          :showFullsizeIndicator="true",
-          :showSpinner="true",
-        )
+    #gridCont(v-if="loading")
+      .grid-stack.h-100vh.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize
+        b-spinner.text-color-primary
+    #gridCont.h-100vh.toggleArea(v-else)
+      .grid-stack.toggleArea
+        .grid-stack-item.toggleArea(v-for="(camera, index) in cameras" :gs-id="index")
+          VideoCard(
+            :camera="camera",
+            cardClass="grid-stack-item-content",
+            :fullsize="true",
+            :nameOverlay="true",
+            :notificationOverlay="true",
+            :showFullsizeIndicator="true",
+            :showSpinner="true",
+          )
+  AddCamera(
+    v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:camview:access'])"
+    :cameras="allCameras"
+    @favCamera="handleFavouriteCamera"
+  )
 </template>
 
 <script>
@@ -24,7 +32,8 @@ import 'gridstack/dist/jq/gridstack-dd-jqueryui';
 
 import { getCameras } from '@/api/cameras.api';
 import { getNotifications } from '@/api/notifications.api';
-import { getSetting } from '@/api/settings.api';
+import { getSetting, changeSetting } from '@/api/settings.api';
+import AddCamera from '@/components/add-camera.vue';
 import VideoCard from '@/components/video-card.vue';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -32,6 +41,7 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export default {
   name: 'CamView',
   components: {
+    AddCamera,
     VideoCard,
   },
   beforeRouteEnter(to, from, next) {
@@ -41,6 +51,7 @@ export default {
   },
   data() {
     return {
+      allCameras: [],
       cameras: [],
       grid: null,
       loading: true,
@@ -76,20 +87,20 @@ export default {
         const camviewSettings = await getSetting('camview');
 
         for (const camera of cameras.data.result) {
-          if (camera.settings.camview.favourite) {
-            camera.live = camera.settings.camview.live || false;
-            camera.refreshTimer = camviewSettings.data.refreshTimer || 60;
+          camera.favourite = camera.settings.camview.favourite;
+          camera.live = camera.settings.camview.live || false;
+          camera.refreshTimer = camviewSettings.data.refreshTimer || 60;
 
-            const lastNotification = await getNotifications(`?cameras=${camera.name}&pageSize=1`);
-            camera.lastNotification = lastNotification.data.result.length > 0 ? lastNotification.data.result[0] : false;
-
-            this.cameras.push(camera);
-          }
+          const lastNotification = await getNotifications(`?cameras=${camera.name}&pageSize=5`);
+          camera.lastNotification = lastNotification.data.result.length > 0 ? lastNotification.data.result[0] : false;
         }
 
+        this.allCameras = cameras.data.result;
+        this.cameras = cameras.data.result.filter((camera) => camera.favourite);
+
         this.loading = false;
-        await timeout(100); //need to wait a lil bit for grid to create all components
-        await this.updateLayout();
+        await timeout(100);
+        this.updateLayout();
 
         document.addEventListener('click', this.clickHandler);
         window.addEventListener('resize', this.resizeHandler);
@@ -110,6 +121,41 @@ export default {
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {
+    async handleFavouriteCamera(cam) {
+      try {
+        const camera = this.allCameras.find((camera) => camera && camera.name === cam.name);
+
+        const cameraSettings = await getSetting('cameras');
+        for (const cameraSetting of cameraSettings.data) {
+          if (cameraSetting.name === camera.name) {
+            cameraSetting.camview.favourite = cam.state;
+          }
+        }
+
+        await changeSetting('cameras', cameraSettings.data);
+
+        if (cam.state) {
+          this.cameras.push(camera);
+        } else {
+          this.cameras = this.cameras.filter((camera) => camera && camera.name !== cam.name);
+        }
+
+        await timeout(100); //need to wait a lil bit for grid to create all components
+        const nodes = this.getLayout();
+        this.grid.removeAll();
+        nodes.forEach((node) => {
+          this.grid.addWidget(node.el, {
+            x: node.x,
+            y: node.y,
+            w: node.w,
+            h: node.h,
+          });
+        });
+      } catch (err) {
+        console.log(err);
+        this.$toast.error(err.message);
+      }
+    },
     goBack() {
       if (this.prevRoute && !this.prevRoute.name && !this.prevRoute.meta.name) {
         return this.$router.push('/dashboard');
@@ -153,10 +199,10 @@ export default {
       //console.log(`Storing layout: ${JSON.stringify(this.serializedData)}`);
       this.$store.dispatch('camview/updateElements', this.serializedData);
     },
-    updateLayout() {
+    updateLayout(manual) {
       this.grid = GridStack.init({
         alwaysShowResizeHandle: this.isMobile(),
-        disableOneColumnMode: this.items().length > 1,
+        disableOneColumnMode: true,
         animate: true,
         margin: 2,
         row: 12,
@@ -164,7 +210,7 @@ export default {
         column: 12,
         resizable: {
           autoHide: !this.isMobile(),
-          handles: 'e, se, s, sw, w',
+          handles: 'all',
         },
         cellHeight: this.windowHeight() / 12,
       });
@@ -173,7 +219,7 @@ export default {
         this.saveToStorage();
       });
 
-      if (this.camviewLayout.length > 0 && this.camviewLayout.length === this.items().length) {
+      if (this.camviewLayout.length > 0 && this.camviewLayout.length === this.items().length && !manual) {
         const layout = [...this.camviewLayout];
         //console.log(`Loading layout: ${JSON.stringify(layout)}`);
         //this.grid.load(layout, true);
@@ -187,66 +233,71 @@ export default {
           }
         }
       } else {
-        let index_ = 0;
-
-        let x = 0;
-        let y = 0;
-        let w = this.items().length < 7 ? 6 : 4;
-        let h =
-          12 /
-          Math.round(
-            (this.items().length % 2 === 0 ? this.items().length : this.items().length + 1) /
-              (this.items().length < 7 ? 2 : 3)
-          );
-
-        for (const [index, element] of this.items().entries()) {
-          const beforeElement = this.items()[index ? index - 1 : index];
-          let lastX = Number.parseInt(beforeElement.getAttribute('gs-x'));
-
-          x = this.items().length < 7 ? (index && !lastX ? 6 : 0) : index && !lastX ? 4 : lastX == 4 ? 8 : 0;
-
-          if (this.items().length < 7 && index % 2 == 0) {
-            y = index_ * h;
-            index_++;
-          }
-
-          if (this.items().length >= 7 && index % 3 == 0) {
-            y = index_ * h;
-            index_++;
-          }
-
-          if (this.items().length === 1) {
-            x = 0;
-            y = 0;
-            w = 12;
-            h = 12;
-          }
-
-          if (this.items().length === 2) {
-            x = 0;
-            y = index * 6;
-            w = 12;
-            h = 6;
-          }
-
-          this.grid.update(element, {
-            x: x,
-            y: y,
-            w: w,
-            h: h,
+        const nodes = this.getLayout();
+        nodes.forEach((node) => {
+          this.grid.update(node.el, {
+            x: node.x,
+            y: node.y,
+            w: node.w,
+            h: node.h,
           });
-
-          /*console.log(
-            `New layout: ${JSON.stringify({
-              id: index,
-              x: x,
-              y: y,
-              w: w,
-              h: h,
-            })}`
-          );*/
-        }
+        });
       }
+    },
+    getLayout() {
+      let nodes = [];
+
+      let index_ = 0;
+      let x = 0;
+      let y = 0;
+      let w = this.items().length < 7 ? 6 : 4;
+      let h =
+        12 /
+        Math.round(
+          (this.items().length % 2 === 0 ? this.items().length : this.items().length + 1) /
+            (this.items().length < 7 ? 2 : 3)
+        );
+
+      for (const [index, element] of this.items().entries()) {
+        const beforeElement = this.items()[index ? index - 1 : index];
+        let lastX = Number.parseInt(beforeElement.getAttribute('gs-x'));
+
+        x = this.items().length < 7 ? (index && !lastX ? 6 : 0) : index && !lastX ? 4 : lastX == 4 ? 8 : 0;
+
+        if (this.items().length < 7 && index % 2 == 0) {
+          y = index_ * h;
+          index_++;
+        }
+
+        if (this.items().length >= 7 && index % 3 == 0) {
+          y = index_ * h;
+          index_++;
+        }
+
+        if (this.items().length === 1) {
+          x = 0;
+          y = 0;
+          w = 12;
+          h = 12;
+        }
+
+        if (this.items().length === 2) {
+          x = 0;
+          y = index * 6;
+          w = 12;
+          h = 6;
+        }
+
+        nodes.push({
+          el: element,
+          x: x,
+          y: y,
+          w: w,
+          h: h,
+        });
+      }
+
+      return nodes;
     },
     windowHeight() {
       let windowHeight =
