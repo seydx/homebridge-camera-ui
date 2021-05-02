@@ -1,6 +1,6 @@
 # Changelog
 
-# NEXT
+# v4.0.7 - 2021-05-03
 
 ## Other changes
 - Server:
