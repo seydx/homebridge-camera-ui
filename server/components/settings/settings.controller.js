@@ -58,7 +58,9 @@ exports.patchTarget = async (req, res) => {
     await SettingsModel.patchByTarget(req.params.target, req.body);
 
     if (req.params.target === 'cameras') {
-      Streams.stopStreams();
+      if (req.query.stopStream) {
+        Streams.stopStreams();
+      }
 
       const cameraSettings = req.body;
       for (const camera of cameraSettings) {

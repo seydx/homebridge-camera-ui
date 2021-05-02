@@ -3,7 +3,8 @@ import api from './index';
 const resource = '/settings';
 const reset_resource = 'reset';
 
-const changeSetting = async (target, targetData) => await api.patch(`${resource}/${target}`, targetData);
+const changeSetting = async (target, targetData, parameters) =>
+  await api.patch(`${resource}/${target}${parameters ? parameters : ''}`, targetData);
 
 const getSettings = async () => await api.get(resource);
 

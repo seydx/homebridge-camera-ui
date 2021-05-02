@@ -135,7 +135,7 @@ export default {
       async handler(newValue) {
         if (!this.loading) {
           try {
-            await changeSetting('cameras', newValue);
+            await changeSetting('cameras', newValue, '?stopStream');
           } catch (error) {
             this.$toast.error(error.message);
           }

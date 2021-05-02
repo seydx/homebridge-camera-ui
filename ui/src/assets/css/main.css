@@ -919,13 +919,22 @@ iframe {
 }
 
 .modal-bottom {
-  position: absolute !important;
+  position: fixed !important;
   bottom: 0 !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  left: 0 !important;
+  right: 0 !important;
   width: 100% !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
   padding: 0 !important;
+}
+
+.modal.fade .modal-dialog.modal-bottom {
+  transition: transform 0.3s ease-out;
+  transform: translate(0, 150px);
+}
+
+.modal.show .modal-dialog.modal-bottom {
+  transform: none;
 }
 
 .modal-bottom > .modal-content {
@@ -934,7 +943,6 @@ iframe {
 }
 
 .modal-bottom > .modal-content > .modal-body {
-  height: 300px !important;
   max-height: 35vh !important;
   min-height: 170px !important;
   overflow-y: scroll !important;
