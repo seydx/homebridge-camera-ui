@@ -3,6 +3,8 @@
 # NEXT
 
 ## Other changes
+- Server:
+  - Added additional query parameter to settings > cameras to stop camera streams
 - Interface:
   - Added new possibility to toggle cameras (favourites) from dashboard
   - Changed video card height for screens >= 1200px (again)
