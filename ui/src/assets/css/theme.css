@@ -1,72 +1,72 @@
 :root {
   /* pink */
-  --primary-color: #d12049;
-  --secondary-color: #7d132c;
-  --third-color: #3f0a16;
-  --fourth-color: #eda6b6;
-  --fifth-color: #ff6868;
+  --primary-color: rgb(209, 32, 73);
+  --secondary-color: rgb(125, 19, 44);
+  --third-color: rgb(63, 10, 22);
+  --fourth-color: rgb(237, 166, 182);
+  --fifth-color: rgb(255, 104, 104);
   --primary-trans-color-1: rgba(209, 32, 73, 0.75);
   --primary-trans-color-2: rgba(209, 32, 73, 0.5);
   --primary-trans-color-3: rgba(209, 32, 73, 0.25);
   --primary-trans-color-4: rgba(209, 32, 73, 0.1);
   /* LIGHT */
-  --primary-font-color: #000000;
-  --secondary-font-color: #c8c8c8;
-  --third-font-color: #f4f4f4;
-  --fourth-font-color: #fff;
-  --primary-bg-color: #f4f4f4;
-  --secondary-bg-color: #ffffff;
-  --third-bg-color: #dbdbdb;
-  --fourth-bg-color: #a2a2a2;
+  --primary-font-color: rgb(0, 0, 0);
+  --secondary-font-color: rgb(200, 200, 200);
+  --third-font-color: rgb(244, 244, 244);
+  --fourth-font-color: rgb(255, 255, 255);
+  --primary-bg-color: rgb(244, 244, 244);
+  --secondary-bg-color: rgb(255, 255, 255);
+  --third-bg-color: rgb(219, 219, 219);
+  --fourth-bg-color: rgb(162, 162, 162);
   --trans-bg-color: rgba(255, 255, 255, 0.8);
   --trans-font-color: rgba(0, 0, 0, 0.5);
   --trans-border-color: rgba(0, 0, 0, 0.15);
 }
 
 [data-theme='dark'] {
-  --primary-font-color: #ffffff;
-  --secondary-font-color: #6c6c6c;
-  --third-font-color: #878787;
-  --fourth-font-color: #bdbdbd;
-  --primary-bg-color: #000000;
-  --secondary-bg-color: #2a2a2a;
-  --third-bg-color: #404040;
-  --fourth-bg-color: #676767;
+  --primary-font-color: rgb(255, 255, 255);
+  --secondary-font-color: rgb(108, 108, 108);
+  --third-font-color: rgb(135, 135, 135);
+  --fourth-font-color: rgb(189, 189, 189);
+  --primary-bg-color: rgb(0, 0, 0);
+  --secondary-bg-color: rgb(42, 42, 42);
+  --third-bg-color: rgb(64, 64, 64);
+  --fourth-bg-color: rgb(103, 103, 103);
   --trans-bg-color: rgba(29, 29, 29, 0.8);
   --trans-font-color: rgba(255, 255, 255, 0.5);
   --trans-border-color: rgba(128, 128, 128, 0.05);
 }
 
 [data-theme-color='blue'] {
-  --primary-color: #0a84ff;
-  --secondary-color: #064f99;
-  --third-color: #03284d;
-  --fourth-color: #9dceff;
-  --fifth-color: #0bdafb;
+  --primary-color: rgb(10, 132, 255);
+  --secondary-color: rgb(6, 79, 153);
+  --third-color: rgb(3, 40, 77);
+  --fourth-color: rgb(157, 206, 255);
+  --fifth-color: rgb(11, 218, 251);
   --primary-trans-color-1: rgba(10, 132, 255, 0.75);
   --primary-trans-color-2: rgba(10, 132, 255, 0.5);
   --primary-trans-color-3: rgba(10, 132, 255, 0.25);
   --primary-trans-color-4: rgba(10, 132, 255, 0.1);
 }
 
-[data-theme-color='yellow'] {
-  --primary-color: #f9d74b;
-  --secondary-color: #95812d;
-  --third-color: #4b4117;
-  --fourth-color: #fdefb7;
-  --fifth-color: #f3ff38;
-  --primary-trans-color-1: rgba(249, 215, 75, 0.75);
-  --primary-trans-color-2: rgba(249, 215, 75, 0.5);
-  --primary-trans-color-3: rgba(249, 215, 75, 0.25);
-  --primary-trans-color-4: rgba(249, 215, 75, 0.1);
+[data-theme-color='orange'] {
+  --primary-color: rgb(255, 149, 0);
+  --secondary-color: rgb(189, 110, 0);
+  --third-color: rgb(126, 73, 0);
+  --fourth-color: rgb(255, 226, 185);
+  --fifth-color: rgb(255, 208, 0);
+  --primary-trans-color-1: rgba(255, 149, 0, 0.75);
+  --primary-trans-color-2: rgba(255, 149, 0, 0.5);
+  --primary-trans-color-3: rgba(255, 149, 0, 0.25);
+  --primary-trans-color-4: rgba(255, 149, 0, 0.1);
 }
 
 [data-theme-color='green'] {
-  --primary-color: #66ce66;
-  --secondary-color: #3d7c3d;
-  --third-color: #1f3e1f;
-  --fourth-color: #c2ebc2;
-  --fifth-color: #b7ff67;
+  --primary-color: rgb(102, 206, 102);
+  --secondary-color: rgb(61, 124, 61);
+  --third-color: rgb(31, 62, 31);
+  --fourth-color: rgb(194, 235, 194);
+  --fifth-color: rgb(183, 255, 103);
   --primary-trans-color-1: rgba(102, 206, 102, 0.75);
   --primary-trans-color-2: rgba(102, 206, 102, 0.5);
   --primary-trans-color-3: rgba(102, 206, 102, 0.25);
@@ -74,11 +74,11 @@
 }
 
 [data-theme-color='gray'] {
-  --primary-color: #626365;
-  --secondary-color: #3b3b3d;
-  --third-color: #1d1e1e;
-  --fourth-color: #c0c1c1;
-  --fifth-color: #969696;
+  --primary-color: rgb(98, 99, 101);
+  --secondary-color: rgb(59, 59, 61);
+  --third-color: rgb(29, 30, 30);
+  --fourth-color: rgb(192, 193, 193);
+  --fifth-color: rgb(150, 150, 150);
   --primary-trans-color-1: rgba(98, 99, 101, 0.75);
   --primary-trans-color-2: rgba(98, 99, 101, 0.5);
   --primary-trans-color-3: rgba(98, 99, 101, 0.25);

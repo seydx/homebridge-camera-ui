@@ -45,12 +45,12 @@ export const config = {
       const validThemes = [
         'light-pink',
         'light-blue',
-        'light-yellow',
+        'light-orange',
         'light-green',
         'light-gray',
         'dark-pink',
         'dark-blue',
-        'dark-yellow',
+        'dark-orange',
         'dark-green',
         'dark-gray',
       ];

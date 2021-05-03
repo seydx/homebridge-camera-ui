@@ -56,8 +56,8 @@
                 label.m-0(for="switch-pink")
                 input#switch-blue.theme-switches.switch-blue(@input="switchTheme('blue')", type="radio", name="theme-group")
                 label.m-0(for="switch-blue")
-                input#switch-yellow.theme-switches.switch-yellow(@input="switchTheme('yellow')", type="radio", name="theme-group")
-                label.m-0(for="switch-yellow")
+                input#switch-orange.theme-switches.switch-orange(@input="switchTheme('orange')", type="radio", name="theme-group")
+                label.m-0(for="switch-orange")
                 input#switch-green.theme-switches.switch-green(@input="switchTheme('green')", type="radio", name="theme-group")
                 label.m-0(for="switch-green")
                 input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
@@ -171,7 +171,7 @@ export default {
 
       const togglePinkSwitch = document.querySelector('.switch-pink');
       const toggleBlueSwitch = document.querySelector('.switch-blue');
-      const toggleYellowSwitch = document.querySelector('.switch-yellow');
+      const toggleOrangeSwitch = document.querySelector('.switch-orange');
       const toggleGreenSwitch = document.querySelector('.switch-green');
       const toggleGraySwitch = document.querySelector('.switch-gray');
 
@@ -189,8 +189,8 @@ export default {
         togglePinkSwitch.checked = true;
       } else if (currentColorTheme === 'blue' && toggleBlueSwitch) {
         toggleBlueSwitch.checked = true;
-      } else if (currentColorTheme === 'yellow' && toggleYellowSwitch) {
-        toggleYellowSwitch.checked = true;
+      } else if (currentColorTheme === 'orange' && toggleOrangeSwitch) {
+        toggleOrangeSwitch.checked = true;
       } else if (currentColorTheme === 'green' && toggleGreenSwitch) {
         toggleGreenSwitch.checked = true;
       } else if (currentColorTheme === 'gray' && toggleGraySwitch) {
@@ -283,7 +283,7 @@ export default {
 
 [type='radio'].theme-switches:checked.switch-pink + label:before,
 [type='radio'].theme-switches:not(:checked).switch-pink + label:before {
-  background: #d12049;
+  background: rgb(209, 32, 73);
 }
 
 [type='radio'].theme-switches:checked.switch-blue + label:before,
@@ -291,14 +291,14 @@ export default {
   background: rgb(10, 132, 255);
 }
 
-[type='radio'].theme-switches:checked.switch-yellow + label:before,
-[type='radio'].theme-switches:not(:checked).switch-yellow + label:before {
-  background: #f9d74b;
+[type='radio'].theme-switches:checked.switch-orange + label:before,
+[type='radio'].theme-switches:not(:checked).switch-orange + label:before {
+  background: rgb(255, 149, 0);
 }
 
 [type='radio'].theme-switches:checked.switch-green + label:before,
 [type='radio'].theme-switches:not(:checked).switch-green + label:before {
-  background: #67ce67;
+  background: rgb(103, 206, 103);
 }
 
 [type='radio'].theme-switches:checked.switch-gray + label:before,
@@ -308,7 +308,7 @@ export default {
 
 [type='radio'].theme-switches:checked.switch-pink + label:before,
 [type='radio'].theme-switches:not(:checked).switch-pink + label:before {
-  border: 2px solid #d12049;
+  border: 2px solid rgb(209, 32, 73);
 }
 
 [type='radio'].theme-switches:checked.switch-blue + label:before,
@@ -316,14 +316,14 @@ export default {
   border: 2px solid rgb(10, 132, 255);
 }
 
-[type='radio'].theme-switches:checked.switch-yellow + label:before,
-[type='radio'].theme-switches:not(:checked).switch-yellow + label:before {
-  border: 2px solid #f9d74b;
+[type='radio'].theme-switches:checked.switch-orange + label:before,
+[type='radio'].theme-switches:not(:checked).switch-orange + label:before {
+  border: 2px solid rgb(255, 149, 0);
 }
 
 [type='radio'].theme-switches:checked.switch-green + label:before,
 [type='radio'].theme-switches:not(:checked).switch-green + label:before {
-  border: 2px solid #67ce67;
+  border: 2px solid rgb(103, 206, 103);
 }
 
 [type='radio'].theme-switches:checked.switch-gray + label:before,
@@ -347,27 +347,27 @@ export default {
 
 [type='radio'].theme-switches:checked.switch-pink + label:after,
 [type='radio']:not(:checked) + label:after {
-  border: 5px solid #6f0d0d;
+  border: 5px solid rgb(125, 19, 44);
 }
 
 [type='radio'].theme-switches:checked.switch-blue + label:after,
 [type='radio'].theme-switches:not(:checked) + label:after {
-  border: 5px solid #165390;
+  border: 5px solid rgb(6, 79, 153);
 }
 
-[type='radio'].theme-switches:checked.switch-yellow + label:after,
+[type='radio'].theme-switches:checked.switch-orange + label:after,
 [type='radio'].theme-switches:not(:checked) + label:after {
-  border: 5px solid #b0941d;
+  border: 5px solid rgb(189, 110, 0);
 }
 
 [type='radio'].theme-switches:checked.switch-green + label:after,
 [type='radio']:not(:checked) + label:after {
-  border: 5px solid #259225;
+  border: 5px solid rgb(61, 124, 61);
 }
 
 [type='radio'].theme-switches:checked.switch-gray + label:after,
 [type='radio'].theme-switches:not(:checked) + label:after {
-  border: 5px solid #2f2f2f;
+  border: 5px solid rgb(59, 59, 61);
 }
 
 [type='radio'].theme-switches:not(:checked) + label:after {
