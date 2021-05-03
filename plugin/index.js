@@ -9,7 +9,7 @@ const MotionSensor = require('./accessories/motion');
 
 const InterfaceSwitch = require('homebridge-camera-ui/plugin/accessories/interface-switch');
 
-const Server = require('../server/index');
+const Server = require('../server/index').server;
 const Config = require('../services/config/config.start');
 const pluginHandler = require('./services/handler.service');
 

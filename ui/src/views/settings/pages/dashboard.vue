@@ -71,7 +71,7 @@ export default {
 
           this.dashboardTimer = setTimeout(async () => {
             try {
-              await changeSetting('cameras', newValue, '?stopStream');
+              await changeSetting('cameras', newValue, '?stopStream=true');
             } catch (error) {
               this.$toast.error(error.message);
             }

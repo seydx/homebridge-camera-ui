@@ -54,8 +54,7 @@
             "maxWidth": 1280,
             "maxHeight": 720,
             "maxFPS": 30,
-            "audio": true,
-            "socketPort": 8100
+            "audio": true
           },
           "mqtt": {
             "motionTopic": "sricam/motion",
@@ -84,8 +83,7 @@
             "maxHeight": 1080,
             "maxFPS": 25,
             "maxBitrate": 1000,
-            "audio": false,
-            "socketPort": 8300
+            "audio": false
           },
           "mqtt": {
             "motionTopic": "yicam_dome_keller/motion",

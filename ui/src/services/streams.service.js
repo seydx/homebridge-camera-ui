@@ -1,4 +1,5 @@
-import JSMpeg from '@cycjimmy/jsmpeg-player';
+import JSMpeg from 'jsmpeg-fast-player';
+import JSMpegWritableSource from '@/common/jsmpeg-source.js';
 import app from '@/main';
 
 let players = [];
@@ -31,34 +32,21 @@ const startStream = (camera, cameraStatus) => {
       statusIndicator.classList.add('text-success');
     }
 
-    let ssl = document.location.protocol === 'https:';
-    let wsProtocol = ssl ? 'wss://' : 'ws://';
-    let url = `${wsProtocol + document.location.hostname}:${camera.videoConfig.socketPort}`;
-
-    console.log(`${camera.name}: Starting stream ${url}`);
-
-    const player = new JSMpeg.VideoElement(
-      `[data-stream-wrapper="${camera.name}"]`,
-      url,
-      {
-        canvas: document.querySelector(`[data-stream-box="${camera.name}"]`),
-        hooks: {
-          load: () => {
-            let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
-            if (spinner) {
-              spinner.classList.remove('d-block');
-              spinner.classList.add('d-none');
-            }
-          },
-        },
+    const player = new JSMpeg.Player(null, {
+      source: JSMpegWritableSource,
+      canvas: document.querySelector(`[data-stream-box="${camera.name}"]`),
+      audio: true,
+      disableWebAssembly: true,
+      pauseWhenHidden: false,
+      videoBufferSize: 1024 * 1024,
+      onSourceEstablished: () => {
+        let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
+        if (spinner) {
+          spinner.classList.remove('d-block');
+          spinner.classList.add('d-none');
+        }
       },
-      {
-        audio: true,
-        disableWebAssembly: true,
-        pauseWhenHidden: false,
-        videoBufferSize: 1024 * 1024,
-      }
-    );
+    });
 
     player.volume = 1;
     player.name = camera.name;
@@ -95,4 +83,11 @@ const stopStream = (camera) => {
   }
 };
 
-export { loadStream, startStream, stopStream };
+const writeStream = (cameraName, buffer) => {
+  const player = players.find((player) => player && player.name === cameraName);
+  if (player) {
+    player.source.write(buffer);
+  }
+};
+
+export { loadStream, startStream, stopStream, writeStream };

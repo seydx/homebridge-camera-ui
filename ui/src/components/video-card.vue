@@ -103,7 +103,7 @@ import { BIcon, BIconArrowsAngleExpand, BIconArrowsAngleContract, BIconBellFill,
 
 import { getCameraSnapshot, getCameraStatus } from '@/api/cameras.api';
 import { fetchSnapshot, loadSnapshot } from '@/services/snapshots.service';
-import { loadStream, startStream, stopStream } from '@/services/streams.service';
+import { loadStream, startStream, stopStream, writeStream } from '@/services/streams.service';
 
 export default {
   name: 'VideoCard',
@@ -180,6 +180,14 @@ export default {
       ldsVisible: null,
       offVisible: null,
     };
+  },
+  sockets: {
+    close_stream(cameraName) {
+      stopStream(cameraName);
+    },
+    start_stream(data) {
+      writeStream(data.feed, data.buffer);
+    },
   },
   mounted() {
     this.stopped = false;
@@ -305,10 +313,18 @@ export default {
 
       if (!this.stopped) {
         startStream(this.camera, status);
+
+        this.$socket.client.emit('join_stream', {
+          feed: this.camera.name,
+        });
       }
     },
     stopLivestream() {
       stopStream(this.camera);
+
+      this.$socket.client.emit('leave_stream', {
+        feed: this.camera.name,
+      });
     },
   },
 };

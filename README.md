@@ -82,11 +82,6 @@ The default username is ``master`` and the default password is ``master``.
 
 See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
 
-# Livestream
-
-To enable livestream for the User Interface, you need give each camera an own socketPort! See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
-
-
 # Image Rekognition
 
 camera.ui uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.

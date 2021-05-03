@@ -347,12 +347,6 @@
                 "title": "Two-way FFmpeg Debug Logging",
                 "type": "boolean",
                 "description": "Includes debugging output from the FFmpeg process used for two-way audio in the Homebridge log."
-              },
-              "socketPort": {
-                "title": "Websocket Port",
-                "type": "integer",
-                "description": "Livestream Websocket Port for the UI",
-                "required": true
               }
             }
           },
@@ -437,7 +431,6 @@
             "cameras[].name",
             "cameras[].videoConfig.source",
             "cameras[].videoConfig.stillImageSource",
-            "cameras[].videoConfig.socketPort",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
             {

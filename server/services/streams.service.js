@@ -1,18 +1,23 @@
 'use-strict';
 
-const Stream = require('@seydx/node-rtsp-stream');
+const Config = require('../../services/config/config.start');
 
+const child_process = require('child_process');
 const logger = require('../../services/logger/logger.service');
 const lowdb = require('./lowdb.service');
+const readline = require('readline');
 const sessions = require('../../services/sessions/sessions.service');
 
 const database = () => lowdb.database().then((database_) => database_.get('settings'));
 
-const startedStreams = {};
+const config = new Config();
+const streams = {};
 
 class Streams {
-  async initStreams(config) {
+  async initStreams(SocketIO) {
     logger.debug('Initializing camera stream server', false, '[Streams]');
+
+    this.io = SocketIO.io;
 
     const Settings = await database();
     const cameraSettings = await Settings.get('cameras').value();
@@ -23,7 +28,6 @@ class Streams {
       let audio = setting.audio;
       let cameraHeight = camera.videoConfig.maxHeight || 720;
       let cameraWidth = camera.videoConfig.maxWidth || 1280;
-      let socketPort = camera.videoConfig.socketPort;
       let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
       let source = camera.videoConfig.source;
       let videoProcessor = config.options.videoProcessor;
@@ -32,7 +36,6 @@ class Streams {
       const options = {
         name: camera.name,
         source: source,
-        socketPort: socketPort,
         width: cameraWidth,
         height: cameraHeight,
         reloadTimer: 10,
@@ -45,7 +48,6 @@ class Streams {
           '-threads': '1',
           '-loglevel': 'quiet',
         },
-        ssl: config.ssl,
         ffmpegPath: videoProcessor,
       };
 
@@ -59,53 +61,118 @@ class Streams {
         };
       }
 
-      if (!socketPort) {
-        logger.warn('Can not start stream server - Socket Port not defined in videoConfig!', camera.name, '[Streams]');
-        continue;
-      } else if (!source) {
-        logger.warn('Can not start stream server - Source not defined in videoConfig!', camera.name, '[Streams]');
-        continue;
-      } else {
-        try {
-          startedStreams[camera.name] = new Stream(options, logger, sessions);
-          startedStreams[camera.name].pipeStreamToServer();
-        } catch (error) {
-          logger.error(error.message);
-        }
-      }
+      streams[camera.name] = options;
     }
   }
 
-  getStream(camera) {
-    return startedStreams[camera];
+  getStream(cameraName) {
+    return streams[cameraName];
   }
 
   getStreams() {
-    return startedStreams;
+    return streams;
   }
 
-  stopStream(camera) {
-    return startedStreams[camera].stopStream();
+  startStream(cameraName) {
+    if (streams[cameraName]) {
+      if (!streams[cameraName].stream) {
+        const allowStream = sessions.requestSession(cameraName);
+
+        if (allowStream) {
+          const additionalFlags = [];
+
+          if (streams[cameraName].ffmpegOptions) {
+            for (const key of Object.keys(streams[cameraName].ffmpegOptions)) {
+              additionalFlags.push(key, streams[cameraName].ffmpegOptions[key]);
+            }
+          }
+
+          const spawnOptions = [
+            ...streams[cameraName].source.split(' '),
+            '-f',
+            'mpegts',
+            '-codec:v',
+            'mpeg1video',
+            ...additionalFlags,
+            '-',
+          ];
+
+          logger.debug(
+            `Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`,
+            cameraName,
+            '[Streams]'
+          );
+
+          streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
+            detached: false,
+          });
+
+          streams[cameraName].stream.stdout.on('data', (data) => {
+            if (this.io) {
+              this.io.to(`stream/${cameraName}`).emit('start_stream', { feed: cameraName, buffer: data });
+            }
+          });
+
+          const stderr = readline.createInterface({
+            input: streams[cameraName].stream.stderr,
+            terminal: false,
+          });
+
+          stderr.on('line', (line) => {
+            if (/\[(panic|fatal|error)]/.test(line)) {
+              logger.error(line, cameraName, '[Streams]');
+            } else {
+              logger.debug(line, cameraName, '[Streams]');
+            }
+          });
+
+          streams[cameraName].stream.on('exit', (code, signal) => {
+            if (code === 1) {
+              logger.error(`RTSP stream exited with error! (${signal})`, cameraName, '[Streams]');
+            } else {
+              logger.debug('Stream Exit (expected)', cameraName, '[Streams]');
+            }
+
+            streams[cameraName].stream = false;
+            sessions.closeSession(cameraName);
+          });
+        } else {
+          logger.error(
+            `Not allowed to start stream for ${cameraName}. Session limit exceeded!`,
+            cameraName,
+            '[Streams]'
+          );
+        }
+      }
+    } else {
+      logger.error(`Can not find ${cameraName} to start stream!`, cameraName, '[Streams]');
+    }
+  }
+
+  stopStream(cameraName) {
+    if (streams[cameraName]) {
+      if (streams[cameraName].stream) {
+        logger.debug('Stopping stream..', cameraName, '[Streams]');
+        streams[cameraName].stream.kill();
+        streams[cameraName].stream = null;
+      }
+    } else {
+      logger.error(`Can not find ${cameraName} to stop stream!`, cameraName, '[Streams]');
+    }
   }
 
   stopStreams() {
-    for (const camera of Object.keys(startedStreams)) startedStreams[camera].stopStream();
+    for (const cameraName of Object.keys(streams)) {
+      this.stopStream(cameraName);
+    }
   }
 
-  closeStream(camera) {
-    return startedStreams[camera].destroy();
+  setStreamOptions(cameraName, options) {
+    for (const [key, value] of Object.entries(options)) streams[cameraName].ffmpegOptions[key] = value;
   }
 
-  closeStreams() {
-    for (const camera of Object.keys(startedStreams)) startedStreams[camera].destroy();
-  }
-
-  setStreamOptions(camera, options) {
-    for (const [key, value] of Object.entries(options)) startedStreams[camera].options.ffmpegOptions[key] = value;
-  }
-
-  delStreamOptions(camera, options) {
-    for (const property of options) delete startedStreams[camera].options.ffmpegOptions[property];
+  delStreamOptions(cameraName, options) {
+    for (const property of options) delete streams[cameraName].ffmpegOptions[property];
   }
 }
 

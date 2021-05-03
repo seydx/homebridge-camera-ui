@@ -35,38 +35,15 @@
       },
       "cameras": [
         {
-          "name": "Test Success",
+          "name": "Sricam",
           "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
-            "socketPort": 8855
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1"
           }
         },
         {
-          "name": "Test Fail",
+          "name": "Yi Dome",
           "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
-            "socketPort": 8100
-          }
-        },
-        {
-          "name": "Test Fail 2",
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
-            "socketPort": 8100
-          }
-        },
-        {
-          "name": "Test Fail 3",
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
-            "socketPort": 8100
-          }
-        },
-        {
-          "name": "Test Fail 4",
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.111/onvif1",
-            "socketPort": 8100
+            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_0.h264"
           }
         }
       ]

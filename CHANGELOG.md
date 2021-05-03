@@ -2,11 +2,18 @@
 
 # NEXT
 
+## Notable changes
+- **Livestreams**: Livestreams has been completely redesigned and fully integrated into the interface. There are NO more "**socketPorts**" necessary in config.json. Instead of opening a separate websocket server, the streams are bound to the interface's own socket.io server where the streams all run over the same port but have their own "room" (e.g. `.../socket.io/stream/My Camera`). This change allows more control of the streams and are significantly more resource efficient.
+
 ## Other changes
 - Interface:
   - Changed icon from "change favourite camera" button (dashboard/camview)
   - Added animation to "change favourite camera" button
   - Changed theme color from `yellow` to `orange`
+
+## Bugfixes
+- Fixed an issue where streams doesnt stop after changing stream settings
+- Minor bugfixes
 
 # v4.0.7 - 2021-05-03
 

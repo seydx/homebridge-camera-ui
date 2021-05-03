@@ -15,9 +15,6 @@ exports.hasValidFields = async (req, res, next) => {
       if (!req.body.videoConfig.source) {
         errors.push('Missing videoConfig.source field');
       }
-      if (!req.body.videoConfig.socketPort) {
-        errors.push('Missing videoConfig.socketPort field');
-      }
     }
 
     return errors.length > 0

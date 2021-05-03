@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 'use-strict';
 
 const packageFile = require('../package.json');
@@ -6,6 +7,7 @@ const logger = require('../services/logger/logger.service');
 const app = require('./app');
 const http = require('http');
 const https = require('https');
+const SocketIO = require('./socket');
 
 const httpService = require('../services/http/http.service');
 const mqttService = require('../services/mqtt/mqtt.service');
@@ -14,7 +16,6 @@ const Config = require('../services/config/config.start');
 const Sessions = require('../services/sessions/sessions.service');
 const Streams = require('./services/streams.service');
 const ClearTimer = require('./services/cleartimer.service');
-
 const lowdb = require('./services/lowdb.service');
 
 const config = new Config();
@@ -29,17 +30,7 @@ const server = config.ssl
     )
   : http.createServer(app);
 
-const io = require('socket.io')(server, {
-  cors: {
-    origin: '*',
-  },
-});
-
-io.on('connection', async (socket) => {
-  const NotificationsModel = require('./components/notifications/notifications.model');
-  const notifications = (await NotificationsModel.list({})) || [];
-  socket.emit('notification_size', notifications.length);
-});
+const io = new SocketIO(server);
 
 server.on('listening', async () => {
   let addr = server.address();
@@ -52,14 +43,9 @@ server.on('listening', async () => {
     true
   );
 
-  //prepare timer
   ClearTimer.start();
-
-  //prepare stream sessions
   Sessions.init(config.cameras);
-
-  //prepare streams
-  Streams.initStreams(config);
+  Streams.initStreams(io);
 
   if (config.mqtt) {
     mqttService.start(config);
@@ -92,26 +78,14 @@ server.on('error', (error) => {
 
   logger.error(error_, false, true);
 
-  stopServer();
+  server.stopServer();
 });
 
 server.on('close', () => {
   logger.debug('Stopping user interface server...', false, true);
 });
 
-const stopServer = async () => {
-  ClearTimer.stop();
-
-  Streams.closeStreams();
-
-  if (config.http) {
-    httpService.stop();
-  }
-
-  server.close();
-};
-
-const startServer = async () => {
+server.startServer = async () => {
   try {
     //prepare db
     await lowdb.ensureDatabase();
@@ -125,22 +99,32 @@ const startServer = async () => {
     logger.error('An error occured during starting server!', false, true);
     logger.error(error);
 
-    stopServer();
+    server.stopServer();
   }
 
   return server;
 };
 
-process.on('SIGHUP', () => {
-  stopServer();
-});
+server.stopServer = async () => {
+  ClearTimer.stop();
+  Streams.stopStreams();
+
+  if (config.http) {
+    httpService.stop();
+  }
+
+  server.close();
+};
 
 if (process.env.NODE_ENV === 'test') {
-  startServer();
+  server.startServer();
 }
+
+process.on('SIGHUP', () => {
+  server.stopServer();
+});
 
 module.exports = {
   io,
-  startServer,
-  stopServer,
+  server,
 };

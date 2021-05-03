@@ -8,8 +8,9 @@ div
         b-spinner.text-color-primary
     #gridCont.h-100vh.toggleArea(v-else)
       .grid-stack.toggleArea
-        .grid-stack-item.toggleArea(v-for="(camera, index) in cameras" :gs-id="index")
+        .grid-stack-item.toggleArea(v-for="(camera, index) in cameras" :gs-id="index" :key="camera.name")
           VideoCard(
+            :key="camera.name",
             :camera="camera",
             cardClass="grid-stack-item-content",
             :fullsize="true",
@@ -141,6 +142,7 @@ export default {
         }
 
         await timeout(100); //need to wait a lil bit for grid to create all components
+
         const nodes = this.getLayout();
         this.grid.removeAll();
         nodes.forEach((node) => {

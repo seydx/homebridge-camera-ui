@@ -37,7 +37,6 @@ describe('POST /api/cameras', () => {
       //"name": "Test Camera",
       videoConfig: {
         source: '-rtsp_transport udp -i rtsp://192.168.111.1/onvif1',
-        socketPort: 8100,
       },
     };
 
@@ -53,7 +52,6 @@ describe('POST /api/cameras', () => {
       name: 'Test Camera 2',
       videoConfig: {
         source: '-rtsp_transport udp -i rtsp://192.168.111.1/onvif1',
-        socketPort: 8100,
       },
     };
 
@@ -69,7 +67,6 @@ describe('POST /api/cameras', () => {
       name: 'Test Camera 2',
       videoConfig: {
         source: '-rtsp_transport udp -i rtsp://192.168.111.1/onvif1',
-        socketPort: 8100,
       },
     };
 

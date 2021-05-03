@@ -100,7 +100,8 @@ app.use(
     },
   })
 );
-app.use(history({ index: 'index.html', verbose: config.plugin.debug }));
+
+app.use(history({ index: 'index.html', verbose: config.debug }));
 app.use(express.static(path.join(__dirname, '../interface')));
 
 module.exports = app;

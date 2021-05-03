@@ -153,9 +153,7 @@ class ConfigSetup {
     const cameras = config.plugin.cameras || [];
 
     return cameras
-      .filter(
-        (camera) => camera.name && camera.videoConfig && camera.videoConfig.source && camera.videoConfig.socketPort
-      )
+      .filter((camera) => camera.name && camera.videoConfig && camera.videoConfig.source)
       .map((camera) => {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
         if (!sourceArguments.includes('-i')) {

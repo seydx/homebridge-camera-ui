@@ -71,7 +71,7 @@ export default {
 
           this.camviewTimer = setTimeout(async () => {
             try {
-              await changeSetting('cameras', newValue, '?stopStream');
+              await changeSetting('cameras', newValue, '?stopStream=true');
             } catch (error) {
               this.$toast.error(error.message);
             }
@@ -84,7 +84,7 @@ export default {
       async handler(newValue) {
         if (!this.loading) {
           try {
-            await changeSetting('camview', newValue, '?stopStream');
+            await changeSetting('camview', newValue, '?stopStream=true');
           } catch (error) {
             this.$toast.error(error.message);
           }

@@ -82,8 +82,6 @@ exports.routesConfig = (app) => {
    *                properties:
    *                  source:
    *                    type: string
-   *                  socketPort:
-   *                    type: number
    *     responses:
    *       201:
    *         description: Successfull
