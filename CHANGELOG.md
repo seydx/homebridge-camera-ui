@@ -6,6 +6,7 @@
 - Interface:
   - Changed icon from "change favourite camera" button (dashboard/camview)
   - Added animation to "change favourite camera" button
+  - Changed theme color from `yellow` to `orange`
 
 # v4.0.7 - 2021-05-03
 
