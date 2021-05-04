@@ -10,7 +10,7 @@ div(
     b-icon.refreshOverlay(
       icon="arrow-clockwise",
       :class="fullscreen ? 'refreshOverlay-on' : ''"
-      v-if="showRefreshIndicator",
+      v-if="showRefreshIndicator && (camera.live || onlyStream)",
       @click="$emit('refreshStream', { camera: camera.name })"
     )
     b-icon.fullsizeOverlay(
