@@ -1,10 +1,10 @@
 import { login, logout } from '@/api/auth.api';
 import socket from '@/common/socket-instance';
-import UserService from '@/services/user.service';
+import SerializeService from '@/common/serialize-token';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const userImg = localStorage.getItem('userImg');
-const serializedUser = UserService.serialize(user);
+const serializedUser = SerializeService.serialize(user);
 
 const initialState = user
   ? {
@@ -59,7 +59,7 @@ export const auth = {
     loginSuccess(state, user) {
       localStorage.setItem('user', JSON.stringify(user));
       state.status.loggedIn = true;
-      state.user = UserService.serialize(user);
+      state.user = SerializeService.serialize(user);
     },
     loginFailure(state) {
       localStorage.removeItem('user');

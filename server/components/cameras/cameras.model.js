@@ -108,6 +108,5 @@ exports.removeAll = async () => {
 
   config.saveHbConfig(pluginConfig);
 
-  return await Cameras.remove((cam) => true) // eslint-disable-line no-unused-vars
-    .write();
+  return await Cameras.remove(() => true).write();
 };

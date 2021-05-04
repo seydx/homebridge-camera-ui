@@ -16,6 +16,7 @@
 ## Bugfixes
 - Fixed an issue where streams doesnt stop after changing stream settings
 - Fixed an issue where the placeholder/fallback images not changed the color according to the current theme
+- Fixed an issue where the snapshot timer displayed an incorrect value and therefore refreshed the image earlier than SHOULD have happened
 - Minor bugfixes
 
 # v4.0.7 - 2021-05-03

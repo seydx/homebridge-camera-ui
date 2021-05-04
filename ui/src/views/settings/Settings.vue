@@ -20,7 +20,7 @@ div
 </template>
 
 <script>
-import DetectSwipe from '@/services/detectswipe.service';
+import DetectSwipe from '@/common/detectswipe';
 import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';

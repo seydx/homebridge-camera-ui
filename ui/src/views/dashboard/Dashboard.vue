@@ -10,6 +10,8 @@ div
         transition-group(type="transition", class="row")
           .col-lg-4.col-md-6.col-12.my-1.toggleArea(v-for="(camera, i) in cameras", :key="camera.name")
             VideoCard(
+              :ref="camera.name"
+              :key="camera.name",
               :camera="camera",
               cardClass="card"
               headerPosition="top",
@@ -40,8 +42,6 @@ import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
 import VideoCard from '@/components/video-card.vue';
-
-import { pauseStream, writeStream } from '@/services/streams.service';
 
 export default {
   name: 'Dashboard',
@@ -98,7 +98,7 @@ export default {
   },
   sockets: {
     start_stream(data) {
-      writeStream(data.feed, data.buffer);
+      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
     },
   },
   methods: {
@@ -126,7 +126,7 @@ export default {
       }
     },
     refreshStreamSocket(event) {
-      pauseStream(event.camera);
+      this.$refs[event.camera][0].pauseStream(true);
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     storeLayout() {

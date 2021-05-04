@@ -10,6 +10,7 @@ div
       .grid-stack.toggleArea
         .grid-stack-item.toggleArea(v-for="(camera, index) in cameras" :gs-id="index" :key="camera.name")
           VideoCard(
+            :ref="camera.name"
             :key="camera.name",
             :camera="camera",
             cardClass="grid-stack-item-content",
@@ -38,8 +39,6 @@ import { getNotifications } from '@/api/notifications.api';
 import { getSetting, changeSetting } from '@/api/settings.api';
 import AddCamera from '@/components/add-camera.vue';
 import VideoCard from '@/components/video-card.vue';
-
-import { pauseStream, writeStream } from '@/services/streams.service';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -127,7 +126,7 @@ export default {
   },
   sockets: {
     start_stream(data) {
-      writeStream(data.feed, data.buffer);
+      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
     },
   },
   methods: {
@@ -200,7 +199,7 @@ export default {
       this.$router.push('/');
     },
     refreshStreamSocket(event) {
-      pauseStream(event.camera);
+      this.$refs[event.camera][0].pauseStream(true);
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     resizeHandler() {

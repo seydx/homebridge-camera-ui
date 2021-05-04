@@ -115,9 +115,10 @@ import {
   BIconCircleFill,
 } from 'bootstrap-vue';
 
+import JSMpeg from 'jsmpeg-fast-player';
+import JSMpegWritableSource from '@/common/jsmpeg-source.js';
+
 import { getCameraSnapshot, getCameraStatus } from '@/api/cameras.api';
-import { fetchSnapshot, loadSnapshot } from '@/services/snapshots.service';
-import { loadStream, startStream, stopStream } from '@/services/streams.service';
 
 export default {
   name: 'VideoCard',
@@ -193,6 +194,7 @@ export default {
       images: [],
       index: null,
       fullscreen: false,
+      player: null,
       stopped: false,
       timer: null,
       timerCounter: 0,
@@ -286,20 +288,52 @@ export default {
         this.timer = setInterval(() => {
           this.timerCounter++;
           timerIndicator.textContent = this.timerCounter + 's';
-        }, 1500);
+        }, 1000);
       }
     },
     async startSnapshot() {
-      loadSnapshot(this.camera);
-
-      const status = await getCameraStatus(this.camera.name);
-      const snapshot = await getCameraSnapshot(this.camera.name, '?buffer=true');
+      this.showLoading();
 
       if (!this.stopped) {
-        fetchSnapshot(this.camera, status, snapshot);
+        const status = await getCameraStatus(this.camera.name);
+
+        if (status.data.status === 'ONLINE') {
+          const snapshot = await getCameraSnapshot(this.camera.name, '?buffer=true');
+
+          this.showOnline();
+
+          const img = document.createElement('img');
+          let imgBuffer = 'data:image/png;base64,';
+
+          if (!snapshot.data || (snapshot.data && snapshot.data === '')) {
+            img.classList.add('object-fit-none');
+            imgBuffer = require('../assets/img/no_img_white.png');
+          } else {
+            imgBuffer += snapshot.data;
+          }
+
+          img.classList.add('toggleArea');
+          img.setAttribute('src', imgBuffer);
+          img.setAttribute('alt', 'Snapshot');
+          img.dataset.streamBox = this.camera.name;
+
+          const target = document.querySelector(`[data-stream-box="${this.camera.name}"]`);
+
+          if (target) {
+            for (const value of target.classList) img.classList.add(value);
+            target.replaceWith(img);
+          }
+        } else {
+          this.showOffline();
+        }
 
         if (!this.onlySnapshot) {
           this.setSnapshotTimer();
+
+          if (this.snapshotTimeout) {
+            clearTimeout(this.snapshotTimeout);
+            this.snapshotTimeout = null;
+          }
 
           this.snapshotTimeout = setTimeout(async () => {
             this.startSnapshot();
@@ -318,12 +352,28 @@ export default {
       }
     },
     async startLivestream() {
-      loadStream(this.camera);
-
-      const status = await getCameraStatus(this.camera.name);
+      this.showLoading();
 
       if (!this.stopped) {
-        startStream(this.camera, status);
+        const status = await getCameraStatus(this.camera.name);
+
+        if (status.data.status === 'ONLINE') {
+          this.player = new JSMpeg.Player(null, {
+            source: JSMpegWritableSource,
+            canvas: document.querySelector(`[data-stream-box="${this.camera.name}"]`),
+            audio: true,
+            disableWebAssembly: true,
+            pauseWhenHidden: false,
+            videoBufferSize: 1024 * 1024,
+            onSourcePaused: () => this.showLoading(),
+            onSourceEstablished: () => this.showOnline(),
+          });
+
+          this.player.volume = 1;
+          this.player.name = this.camera.name;
+        } else {
+          this.showOffline();
+        }
 
         this.$socket.client.emit('join_stream', {
           feed: this.camera.name,
@@ -331,11 +381,95 @@ export default {
       }
     },
     stopLivestream() {
-      stopStream(this.camera);
+      if (this.player) {
+        this.player.destroy();
+      }
 
       this.$socket.client.emit('leave_stream', {
         feed: this.camera.name,
       });
+    },
+    showLoading() {
+      let spinner = document.querySelector(`[data-stream-spinner="${this.camera.name}"]`);
+      let offlineIcon = document.querySelector(`[data-stream-offline="${this.camera.name}"]`);
+
+      if (offlineIcon) {
+        offlineIcon.classList.remove('d-block');
+        offlineIcon.classList.add('d-none');
+      }
+
+      if (spinner) {
+        spinner.classList.remove('d-none');
+        spinner.classList.add('d-block');
+      }
+    },
+    showOnline() {
+      let spinner = document.querySelector(`[data-stream-spinner="${this.camera.name}"]`);
+      let statusIndicator = document.querySelector(`[data-stream-status="${this.camera.name}"]`);
+      let offlineIcon = document.querySelector(`[data-stream-offline="${this.camera.name}"]`);
+
+      if (offlineIcon) {
+        offlineIcon.classList.remove('d-block');
+        offlineIcon.classList.add('d-none');
+      }
+
+      if (spinner) {
+        spinner.classList.remove('d-block');
+        spinner.classList.add('d-none');
+      }
+
+      if (statusIndicator) {
+        statusIndicator.classList.remove('text-danger');
+        statusIndicator.classList.add('text-success');
+      }
+    },
+    showOffline() {
+      this.$toast.error(`${this.camera.name}: ${this.$t('offline')}`);
+
+      let spinner = document.querySelector(`[data-stream-spinner="${this.camera.name}"]`);
+      let statusIndicator = document.querySelector(`[data-stream-status="${this.camera.name}"]`);
+      let offlineIcon = document.querySelector(`[data-stream-offline="${this.camera.name}"]`);
+
+      if (statusIndicator) {
+        statusIndicator.classList.remove('text-success');
+        statusIndicator.classList.add('text-danger');
+      }
+
+      if (spinner) {
+        spinner.classList.remove('d-block');
+        spinner.classList.add('d-none');
+      }
+
+      if (offlineIcon) {
+        offlineIcon.classList.remove('d-none');
+        offlineIcon.classList.add('d-block');
+      }
+
+      if (!this.camera.live && !this.onlyStream) {
+        const canvas = document.createElement('canvas');
+        canvas.classList.add('toggleArea');
+        canvas.dataset.streamBox = this.camera.name;
+
+        const target = document.querySelector(`[data-stream-box="${this.camera.name}"]`);
+
+        if (target) {
+          for (const value of target.classList) {
+            canvas.classList.add(value);
+          }
+
+          target.replaceWith(canvas);
+        }
+      }
+    },
+    pauseStream() {
+      if (this.player) {
+        this.player.source.pause(true);
+      }
+    },
+    writeStream(cameraName, buffer) {
+      if (this.player) {
+        this.player.source.write({ feed: cameraName, buffer: buffer });
+      }
     },
   },
 };

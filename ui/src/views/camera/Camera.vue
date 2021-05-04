@@ -8,6 +8,8 @@ div
     .container.pt-3(v-else-if="!loading && Object.keys(camera).length")
       .card.overflow-hidden.bg-dark
         VideoCard(
+          :ref="camera.name"
+          :key="camera.name",
           :camera="camera",
           cardClass="w-100 h-100",
           :fullsize="true",
@@ -56,8 +58,6 @@ import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
 import VideoCard from '@/components/video-card.vue';
-
-import { pauseStream, writeStream } from '@/services/streams.service';
 
 export default {
   name: 'Camera',
@@ -110,12 +110,12 @@ export default {
   },
   sockets: {
     start_stream(data) {
-      writeStream(data.feed, data.buffer);
+      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
     },
   },
   methods: {
     refreshStreamSocket(event) {
-      pauseStream(event.camera);
+      this.$refs[event.camera][0].pauseStream(true);
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
   },

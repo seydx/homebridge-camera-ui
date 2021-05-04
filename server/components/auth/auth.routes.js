@@ -1,7 +1,7 @@
 'use-strict';
 const AuthController = require('./auth.controller');
 
-const AuthValidationMiddleware = require('../../middlewares/auth.validation.middleware'); // eslint-disable-line no-unused-vars
+const AuthValidationMiddleware = require('../../middlewares/auth.validation.middleware');
 const UserValidationMiddleware = require('../../middlewares/user.validation.middleware');
 
 /**
