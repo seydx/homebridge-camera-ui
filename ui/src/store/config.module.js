@@ -43,16 +43,22 @@ export const config = {
     },
     setTheme(state, theme) {
       const validThemes = [
-        'light-pink',
         'light-blue',
-        'light-orange',
+        'light-blgray',
+        'light-brown',
         'light-green',
         'light-gray',
-        'dark-pink',
+        'light-orange',
+        'light-pink',
+        'light-purple',
         'dark-blue',
-        'dark-orange',
+        'dark-blgray',
+        'dark-brown',
         'dark-green',
         'dark-gray',
+        'dark-orange',
+        'dark-pink',
+        'dark-purple',
       ];
 
       if (validThemes.includes(theme)) {

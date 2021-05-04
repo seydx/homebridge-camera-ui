@@ -103,6 +103,8 @@
     "remove_after_d": "Löschen nach (t)",
     "remove_after_h": "Löschen nach (std)",
     "remove_all": "Alles löschen",
+    "remove_all_confirm": "Alles löschen bestätigen",
+    "remove_all_confirm_text": "Nach dem Klicken auf 'Alles löschen' werden alle @ unwiederruflich gelöscht. Sind Sie sicher?",
     "reset": "Zurücksetzen",
     "reset_confirm": "Zurücksetzen bestätigen",
     "reset_confirm_text": "Nach dem Klicken auf 'Zurücksetzen' werden alle gespeicherten Daten unwiederruflich gelöscht. Sind Sie sicher?",

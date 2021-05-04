@@ -4,6 +4,7 @@ div
   Navbar(:name="$t('notifications')")
   BreadcrumbFilter(
     :active="true",
+    dataType="notifications",
     :showAllRemove="notifications.length !== 0 && checkLevel('notifications:edit')", 
     :showFilterCameras="true",
     :showFilterDate="true",

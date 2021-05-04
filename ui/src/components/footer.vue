@@ -87,7 +87,9 @@ export default {
 }
 
 .footer-inner {
-  height: 70px;
+  height: 55px;
+  border-bottom: 5px solid var(--primary-color);
+  font-size: 12px;
 }
 
 .snapline {

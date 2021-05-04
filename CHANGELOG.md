@@ -2,6 +2,12 @@
 
 # NEXT
 
+## Other changes
+- Interface:
+  - Added three new theme colors: `blue-gray`, `brown` and `purple`
+  - Added a `confirm` modal to `remove all` button (notifications/recordings)
+  - Moved `back` and `signout` button to bottom actionsheet (camview)
+
 ## Bugfixes
 - Minor UI bugfixes
 

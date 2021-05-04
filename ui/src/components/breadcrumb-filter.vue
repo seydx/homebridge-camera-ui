@@ -93,8 +93,19 @@
             span.date-range.mr-3 {{ (filter.dateRange.start || '/' ) + ' - ' + (filter.dateRange.end || '/') }}
             b-icon.calendar-icon(icon="calendar-range-fill", @click="togglePopover()")
   .container.position-relative
-    b-link.removeAll-wrap(@click="$emit('remove-all')", v-if="showAllRemove")
+
+    b-link.removeAll-wrap(v-b-modal.modal-removeAll, v-if="showAllRemove")
       .removeAll-text {{ $t("remove_all") }}
+    b-modal#modal-removeAll(
+      centered
+      ref="removeall-modal"
+      :title="$t('remove_all_confirm')",
+      :cancel-title="$t('cancel')",
+      :ok-title="$t('remove_all')",
+      ok-variant="danger",
+      @ok="$emit('remove-all')"
+    )
+      p.my-4 {{ $t('remove_all_confirm_text').replace('@', $t(dataType)) }}
     .filter-icon-wrap(v-if="active")
       b-icon.filter-icon(icon="filter", aria-hidden="true", @click="openFilter()")
 </template>
@@ -120,6 +131,10 @@ export default {
   },
   props: {
     active: Boolean,
+    dataType: {
+      type: String,
+      default: 'Default',
+    },
     showAllRemove: Boolean,
     showFilterCameras: Boolean,
     showFilterDate: Boolean,

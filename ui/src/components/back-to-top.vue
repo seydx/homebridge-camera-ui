@@ -49,7 +49,7 @@ export default {
   display: block;
   opacity: 0;
   right: 25px;
-  bottom: 55px;
+  bottom: 40px;
   z-index: 98;
   width: 30px;
   height: 30px;

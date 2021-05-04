@@ -578,15 +578,15 @@ iframe {
 }
 
 .h-100vh-calc {
-  min-height: calc(100vh - 171px);
+  min-height: calc(100vh - 146px);
 }
 
 .h-100vh-calc-filter {
-  min-height: calc(100vh - 201px);
+  min-height: calc(100vh - 176px);
 }
 
 .h-100vh-calc-settings {
-  min-height: calc(100vh - 221px);
+  min-height: calc(100vh - 196px);
 }
 
 /*--------------------------------------------------------------

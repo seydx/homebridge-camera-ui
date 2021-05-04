@@ -102,6 +102,8 @@
     "remove_after_d": "Remove after (d)",
     "remove_after_h": "Remove after (h)",
     "remove_all": "Remove all",
+    "remove_all_confirm": "Confirm remove all",
+    "remove_all_confirm_text": "After clicking 'Remove all' all stored @ will be irrevocably deleted. Are you sure?",
     "reset": "Reset",
     "reset_confirm": "Confirm reset",
     "reset_confirm_text": "After clicking 'Reset' all stored data will be irrevocably deleted. Are you sure?",

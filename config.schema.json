@@ -26,16 +26,22 @@
       "default": "auto",
       "oneOf": [
         { "title": "Auto", "enum": ["auto"] },
-        { "title": "Light Pink", "enum": ["light-pink"] },
         { "title": "Light Blue", "enum": ["light-blue"] },
-        { "title": "Light Orange", "enum": ["light-orange"] },
-        { "title": "Light Green", "enum": ["light-green"] },
+        { "title": "Light Blue Gray", "enum": ["light-blgray"] },
+        { "title": "Light Brown", "enum": ["light-brown"] },
         { "title": "Light Gray", "enum": ["light-gray"] },
-        { "title": "Dark Pink", "enum": ["dark-pink"] },
+        { "title": "Light Green", "enum": ["light-green"] },
+        { "title": "Light Orange", "enum": ["light-orange"] },
+        { "title": "Light Pink", "enum": ["light-pink"] },
+        { "title": "Light Purple", "enum": ["light-purple"] },
         { "title": "Dark Blue", "enum": ["dark-blue"] },
-        { "title": "Dark Orange", "enum": ["dark-orange"] },
+        { "title": "Dark Blue Gray", "enum": ["dark-blgray"] },
+        { "title": "Dark Brown", "enum": ["dark-brown"] },
+        { "title": "Dark Gray", "enum": ["dark-gray"] },
         { "title": "Dark Green", "enum": ["dark-green"] },
-        { "title": "Dark Gray", "enum": ["dark-gray"] }
+        { "title": "Dark Orange", "enum": ["dark-orange"] },
+        { "title": "Dark Pink", "enum": ["dark-pink"] },
+        { "title": "Dark Purple", "enum": ["dark-purple"] }
       ],
       "required": true
     },

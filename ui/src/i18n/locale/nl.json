@@ -102,6 +102,8 @@
     "remove_after": "Schrappen na (d)",
     "remove_after_h": "Schrappen na (h)",
     "remove_all": "Alles wissen",
+    "remove_all_confirm": "Confirm remove all",
+    "remove_all_confirm_text": "After clicking 'Remove all' all stored @ will be irrevocably deleted. Are you sure?",
     "reset": "Reset",
     "reset_confirm": "Bevestig reset",
     "reset_confirm_text": "Na het klikken op 'Reset' zullen alle opgeslagen gegevens onherroepelijk worden gewist. Ben je zeker?",

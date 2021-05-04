@@ -134,7 +134,7 @@ export default {
 
 .wrapper {
   position: fixed;
-  bottom: 62px;
+  bottom: 72px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
@@ -154,7 +154,7 @@ export default {
 
 .add-new-item-hover {
   opacity: 1;
-  bottom: 48px;
+  bottom: 68px;
   width: 50px;
   height: 50px;
   border-radius: 26px;

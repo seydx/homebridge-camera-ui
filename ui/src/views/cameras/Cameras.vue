@@ -4,6 +4,7 @@ div
   Navbar(:name="$t('cameras')")
   BreadcrumbFilter(
     :active="true",
+    dataType="cameras",
     :showFilterCameras="true",
     :showFilterRooms="true",
     :showFilterStatus="true",

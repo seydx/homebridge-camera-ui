@@ -4,6 +4,7 @@ div
   Navbar(:name="$t('recordings')")
   BreadcrumbFilter(
     :active="true",
+    dataType="recordings",
     :showAllRemove="recordings.length !== 0 && checkLevel('recordings:edit')", 
     :showFilterCameras="true",
     :showFilterDate="true",
