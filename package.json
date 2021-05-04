@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.1.0-test.7",
+  "version": "4.1.0",
   "description": "User Interface for RTSP capable cameras.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -22,7 +22,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "ffmpeg-for-homebridge": "^0.0.9",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.0",
     "get-port": "^5.1.1",
     "got": "^11.8.2",
     "helmet": "^4.6.0",

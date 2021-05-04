@@ -82,9 +82,8 @@ class MotionHandler {
         };
 
         if (!atHome || (atHome && exclude.includes(cameraName))) {
-          logger.debug(`New ${trigger} alert`, cameraName, true);
-
           if (!movementHandler[cameraName]) {
+            logger.debug(`New ${trigger} alert`, cameraName, true);
             movementHandler[cameraName] = true;
 
             const motionInfo = await this.getMotionInfo(cameraName, trigger, recordingSettings);

@@ -45,7 +45,7 @@ server.on('listening', async () => {
 
   ClearTimer.start();
   Sessions.init(config.cameras);
-  Streams.initStreams(io);
+  Streams.init(io);
 
   if (config.mqtt) {
     mqttService.start(config);

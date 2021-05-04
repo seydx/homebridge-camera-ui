@@ -1,13 +1,14 @@
 # Changelog
 
-# NEXT
+# v4.1.0 - 2021-05-04
 
 ## Notable changes
-- **Livestreams**: Livestreams has been completely redesigned and fully integrated into the interface. There are NO more "**socketPorts**" necessary in config.json. Instead of opening a separate websocket server, the streams are bound to the interface's own socket.io server where the streams all run over the same port but have their own "room" (e.g. `.../socket.io/stream/My Camera`). This change allows more control of the streams and are significantly more resource efficient.
+- **Livestreams**: Livestreams has been completely redesigned and fully integrated into the interface. There are NO more "**socketPorts**" necessary in config.json. Instead of opening a separate websocket server, the streams are bound to the interface's own server/socket.io where the streams all run over the same port but have their own "room" (e.g. `.../socket.io/stream/My Camera`). This change allows more control of the streams and are significantly more resource efficient.
+  - **Developers' note**: Removing the socket ports and integrating the camera streams into the interface own server/socket.io has the reason that in the future camera.ui should also run with other homebridge plugins like "homebridge-camera-ffmpeg".
 
 ## Other changes
 - Interface:
-  - It is now possible to reload the stream in the Dashboard/Camview if the stream could not be started due to an ffmpeg error etc. 
+  - It is now possible to reload the stream on Dashboard/Camview if the stream could not be started due to an ffmpeg error etc. 
   - Changed icon from "change favourite camera" button (dashboard/camview)
   - Added animation to "change favourite camera" button
   - Changed theme color from `yellow` to `orange`
@@ -17,6 +18,7 @@
 - Fixed an issue where streams doesnt stop after changing stream settings
 - Fixed an issue where the placeholder/fallback images not changed the color according to the current theme
 - Fixed an issue where the snapshot timer displayed an incorrect value and therefore refreshed the image earlier than SHOULD have happened
+- Fixed an issue where the console displayed a message that a new movement was detected even though the camera was still processing the "old" movement.
 - Minor bugfixes
 
 # v4.0.7 - 2021-05-03

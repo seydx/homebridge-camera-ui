@@ -14,10 +14,10 @@ const config = new Config();
 const streams = {};
 
 class Streams {
-  async initStreams(SocketIO) {
+  async init(socket) {
     logger.debug('Initializing camera stream server', false, '[Streams]');
 
-    this.io = SocketIO.io;
+    this.io = socket.io;
 
     const Settings = await database();
     const cameraSettings = await Settings.get('cameras').value();
