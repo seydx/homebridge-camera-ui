@@ -54,6 +54,8 @@
               .col-8.d-flex.flex-wrap.align-content-center.justify-content-end
                 input#switch-pink.theme-switches.switch-pink(@input="switchTheme('pink')", type="radio", name="theme-group")
                 label.m-0(for="switch-pink")
+                input#switch-purple.theme-switches.switch-purple(@input="switchTheme('purple')", type="radio", name="theme-group")
+                label.m-0(for="switch-purple")
                 input#switch-blue.theme-switches.switch-blue(@input="switchTheme('blue')", type="radio", name="theme-group")
                 label.m-0(for="switch-blue")
                 input#switch-orange.theme-switches.switch-orange(@input="switchTheme('orange')", type="radio", name="theme-group")
@@ -170,6 +172,7 @@ export default {
       await timeout(300);
 
       const togglePinkSwitch = document.querySelector('.switch-pink');
+      const togglePurpleSwitch = document.querySelector('.switch-purple');
       const toggleBlueSwitch = document.querySelector('.switch-blue');
       const toggleOrangeSwitch = document.querySelector('.switch-orange');
       const toggleGreenSwitch = document.querySelector('.switch-green');
@@ -187,6 +190,8 @@ export default {
 
       if (currentColorTheme === 'pink' && togglePinkSwitch) {
         togglePinkSwitch.checked = true;
+      } else if (currentColorTheme === 'purple' && togglePurpleSwitch) {
+        togglePurpleSwitch.checked = true;
       } else if (currentColorTheme === 'blue' && toggleBlueSwitch) {
         toggleBlueSwitch.checked = true;
       } else if (currentColorTheme === 'orange' && toggleOrangeSwitch) {
@@ -286,6 +291,11 @@ export default {
   background: rgb(209, 32, 73);
 }
 
+[type='radio'].theme-switches:checked.switch-purple + label:before,
+[type='radio'].theme-switches:not(:checked).switch-purple + label:before {
+  background: rgb(88, 22, 125);
+}
+
 [type='radio'].theme-switches:checked.switch-blue + label:before,
 [type='radio'].theme-switches:not(:checked).switch-blue + label:before {
   background: rgb(10, 132, 255);
@@ -309,6 +319,11 @@ export default {
 [type='radio'].theme-switches:checked.switch-pink + label:before,
 [type='radio'].theme-switches:not(:checked).switch-pink + label:before {
   border: 2px solid rgb(209, 32, 73);
+}
+
+[type='radio'].theme-switches:checked.switch-purple + label:before,
+[type='radio'].theme-switches:not(:checked).switch-purple + label:before {
+  border: 2px solid rgb(88, 22, 125);
 }
 
 [type='radio'].theme-switches:checked.switch-blue + label:before,
@@ -348,6 +363,11 @@ export default {
 [type='radio'].theme-switches:checked.switch-pink + label:after,
 [type='radio']:not(:checked) + label:after {
   border: 5px solid rgb(125, 19, 44);
+}
+
+[type='radio'].theme-switches:checked.switch-purple + label:after,
+[type='radio']:not(:checked) + label:after {
+  border: 5px solid rgb(53, 2, 82);
 }
 
 [type='radio'].theme-switches:checked.switch-blue + label:after,

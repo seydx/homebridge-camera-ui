@@ -51,6 +51,7 @@
           :title="$t('reset_confirm')",
           :cancel-title="$t('cancel')",
           :ok-title="$t('reset')",
+          ok-variant="danger",
           @ok="reset"
         )
           b-overlay(
