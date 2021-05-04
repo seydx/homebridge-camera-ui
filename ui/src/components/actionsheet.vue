@@ -1,21 +1,27 @@
 <template lang="pug">
 transition(name="fade" @enter="enter")
   div(v-if="showButton")
-    .wrapper.add-new-camera.d-flex.flex-wrap.justify-content-center.align-content-center.add-new-camera-hover.pulse
+    .wrapper.add-new-item.d-flex.flex-wrap.justify-content-center.align-content-center.add-new-item-hover.pulse
       b-icon.add-icon.show-icon(icon="gear-wide-connected", animation="spin", aria-hidden="true", @click="show = !show")
     b-modal(v-model="show" modal-class="overflow-hidden" dialog-class="modal-bottom" hide-footer hide-header)
-      div(v-for="(camera, i) in cameras" :key="camera.name")
+      .row.pb-4(v-if="showLeftNavi || showRightNavi")
+        .col.d-flex.flex-wrap.justify-content-start.align-content-center
+          b-button.back-button(pill, @click="$emit('leftNaviClick')") {{ leftNaviName }}
+        .col.d-flex.flex-wrap.justify-content-end.align-content-center
+          b-button.btn-primary.logout-button(pill, @click="$emit('rightNaviClick')") {{ rightNaviName }}
+      hr.mt-0.pt-0(v-if="showLeftNavi || showRightNavi")
+      div(v-for="(item, i) in items" :key="item.name")
         .row
-          .col.d-flex.flex-wrap.align-content-center {{ camera.name }}
+          .col.d-flex.flex-wrap.align-content-center {{ item.name }}
           .col.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
             toggle-button(
-              v-model="camera.favourite"
+              v-model="item[state]"
               color="var(--primary-color) !important",
               :height="30",
               :sync="true"
-              @change="$emit('favCamera', { name: camera.name, state: camera.favourite })"
+              @change="$emit('changeState', { name: item.name, state: item[state] })"
             )
-        hr(v-if="i !== (cameras.length - 1)")
+        hr(v-if="i !== (items.length - 1)")
         div.safe-height(v-else)
 </template>
 
@@ -31,9 +37,29 @@ export default {
     ToggleButton,
   },
   props: {
-    cameras: {
+    items: {
       type: Array,
       required: true,
+    },
+    leftNaviName: {
+      type: String,
+      default: 'Back',
+    },
+    rightNaviName: {
+      type: String,
+      default: 'Signout',
+    },
+    showLeftNavi: {
+      type: Boolean,
+      default: false,
+    },
+    showRightNavi: {
+      type: Boolean,
+      default: false,
+    },
+    state: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -114,7 +140,7 @@ export default {
   z-index: 1;
 }
 
-.add-new-camera {
+.add-new-item {
   z-index: 2;
   width: 16px;
   height: 16px;
@@ -126,7 +152,7 @@ export default {
   color: #fff;
 }
 
-.add-new-camera-hover {
+.add-new-item-hover {
   opacity: 1;
   bottom: 48px;
   width: 50px;
@@ -145,7 +171,7 @@ export default {
   opacity: 1;
 }
 
-.camera-list {
+.item-list {
   position: fixed;
   bottom: 62px;
   left: 50%;

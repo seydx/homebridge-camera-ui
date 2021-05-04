@@ -23,10 +23,11 @@ div
               :statusIndicator="true"
               @refreshStream="refreshStreamSocket"
             )
-  AddCamera(
+  ActionSheet(
     v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:dashboard:access'])"
-    :cameras="allCameras"
-    @favCamera="handleFavouriteCamera"
+    :items="allCameras"
+    state="favourite"
+    @changeState="handleFavouriteCamera"
   )
   Footer
 </template>
@@ -37,7 +38,7 @@ import draggable from 'vuedraggable';
 import { getCameras } from '@/api/cameras.api';
 import { getNotifications } from '@/api/notifications.api';
 import { getSetting, changeSetting } from '@/api/settings.api';
-import AddCamera from '@/components/add-camera.vue';
+import ActionSheet from '@/components/actionsheet.vue';
 import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
@@ -46,7 +47,7 @@ import VideoCard from '@/components/video-card.vue';
 export default {
   name: 'Dashboard',
   components: {
-    AddCamera,
+    ActionSheet,
     BackToTop,
     draggable,
     Footer,
@@ -98,7 +99,9 @@ export default {
   },
   sockets: {
     start_stream(data) {
-      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
+      if (this.$refs[data.feed] && this.$refs[data.feed][0]) {
+        this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
+      }
     },
   },
   methods: {
@@ -126,7 +129,10 @@ export default {
       }
     },
     refreshStreamSocket(event) {
-      this.$refs[event.camera][0].pauseStream(true);
+      if (this.$refs[event.camera] && this.$refs[event.camera][0]) {
+        this.$refs[event.camera][0].pauseStream(true);
+      }
+
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     storeLayout() {

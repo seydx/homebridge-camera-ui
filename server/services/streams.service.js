@@ -15,7 +15,7 @@ const streams = {};
 
 class Streams {
   async init(socket) {
-    logger.debug('Initializing cameras', false, '[Streams]');
+    logger.debug('Initializing camera streams', false, '[Streams]');
 
     this.io = socket.io;
 

@@ -1,8 +1,6 @@
 <template lang="pug">
 div
   main.w-100.h-100vh.overflow-hidden
-    b-button.mt-save-m.ml-3.back-button(pill, @click="goBack") {{ $t("back") }}
-    b-button.btn-primary.mt-save-m.mr-3.logout-button(pill, @click="logOut") {{ $t("signout") }}
     #gridCont(v-if="loading")
       .grid-stack.h-100vh.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize
         b-spinner.text-color-primary
@@ -22,10 +20,17 @@ div
             :showSpinner="true",
             @refreshStream="refreshStreamSocket"
           )
-  AddCamera(
+  ActionSheet(
     v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:camview:access'])"
-    :cameras="allCameras"
-    @favCamera="handleFavouriteCamera"
+    :items="allCameras"
+    state="favourite"
+    :showLeftNavi="true"
+    :leftNaviName="$t('back')"
+    @leftNaviClick="goBack"
+    :showRightNavi="true"
+    :rightNaviName="$t('signout')"
+    @rightNaviClick="logOut"
+    @changeState="handleFavouriteCamera"
   )
 </template>
 
@@ -37,7 +42,7 @@ import 'gridstack/dist/jq/gridstack-dd-jqueryui';
 import { getCameras } from '@/api/cameras.api';
 import { getNotifications } from '@/api/notifications.api';
 import { getSetting, changeSetting } from '@/api/settings.api';
-import AddCamera from '@/components/add-camera.vue';
+import ActionSheet from '@/components/actionsheet.vue';
 import VideoCard from '@/components/video-card.vue';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -45,7 +50,7 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export default {
   name: 'CamView',
   components: {
-    AddCamera,
+    ActionSheet,
     VideoCard,
   },
   beforeRouteEnter(to, from, next) {
@@ -106,7 +111,6 @@ export default {
         await timeout(100);
         this.updateLayout();
 
-        document.addEventListener('click', this.clickHandler);
         window.addEventListener('resize', this.resizeHandler);
       } else {
         this.$toast.error(this.$t('no_access'));
@@ -121,12 +125,13 @@ export default {
     body.classList.remove('body-bg-dark');
     html.classList.remove('body-bg-dark');
 
-    document.removeEventListener('click', this.clickHandler);
     window.removeEventListener('resize', this.resizeHandler);
   },
   sockets: {
     start_stream(data) {
-      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
+      if (this.$refs[data.feed] && this.$refs[data.feed][0]) {
+        this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
+      }
     },
   },
   methods: {
@@ -173,18 +178,6 @@ export default {
         this.$router.go(-1);
       }
     },
-    clickHandler() {
-      const backButton = document.querySelector('.back-button');
-      const logoutButton = document.querySelector('.logout-button');
-
-      if (backButton.classList.contains('btn-slide-animation')) {
-        backButton.classList.remove('btn-slide-animation');
-        logoutButton.classList.remove('btn-slide-animation');
-      } else {
-        backButton.classList.add('btn-slide-animation');
-        logoutButton.classList.add('btn-slide-animation');
-      }
-    },
     isMobile() {
       let isMobile =
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/.test(navigator.userAgent) ||
@@ -199,7 +192,10 @@ export default {
       this.$router.push('/');
     },
     refreshStreamSocket(event) {
-      this.$refs[event.camera][0].pauseStream(true);
+      if (this.$refs[event.camera] && this.$refs[event.camera][0]) {
+        this.$refs[event.camera][0].pauseStream(true);
+      }
+
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     resizeHandler() {
