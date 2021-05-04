@@ -49,7 +49,7 @@ div
           template(v-if="checkLevel('notifications:edit')" v-slot:right)
             .swipeout-action(title="remove")
               .swipe-remove.d-flex.flex-wrap.justify-content-center.align-content-center(:data-remove-id="notification.id")
-                b-icon.text-color-primary.cursor-pointer(icon="trash-fill", aria-hidden="true", @click="remove(notification, i, $event)")
+                b-icon.text-color-danger.cursor-pointer(icon="trash-fill", aria-hidden="true", @click="remove(notification, i, $event)")
       CoolLightBox(
         :items="images" 
         :index="index"
@@ -193,7 +193,8 @@ export default {
       this.loading = false;
     },
     handleErrorImg(event) {
-      event.target.src = require('@/assets/img/logo_transparent-256@pink.png');
+      const themeColor = localStorage.getItem('theme-color') || 'pink';
+      event.target.src = require(`@/assets/img/logo_transparent-256@${themeColor}.png`);
     },
     async infiniteHandler($state) {
       try {

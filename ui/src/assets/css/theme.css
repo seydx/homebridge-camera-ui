@@ -5,6 +5,7 @@
   --third-color: rgb(63, 10, 22);
   --fourth-color: rgb(237, 166, 182);
   --fifth-color: rgb(255, 104, 104);
+  --six-color: rgb(34, 3, 10);
   --primary-trans-color-1: rgba(209, 32, 73, 0.75);
   --primary-trans-color-2: rgba(209, 32, 73, 0.5);
   --primary-trans-color-3: rgba(209, 32, 73, 0.25);
@@ -43,6 +44,7 @@
   --third-color: rgb(3, 40, 77);
   --fourth-color: rgb(157, 206, 255);
   --fifth-color: rgb(11, 218, 251);
+  --six-color: rgb(0, 20, 41);
   --primary-trans-color-1: rgba(10, 132, 255, 0.75);
   --primary-trans-color-2: rgba(10, 132, 255, 0.5);
   --primary-trans-color-3: rgba(10, 132, 255, 0.25);
@@ -55,6 +57,7 @@
   --third-color: rgb(126, 73, 0);
   --fourth-color: rgb(255, 226, 185);
   --fifth-color: rgb(255, 208, 0);
+  --six-color: rgb(58, 34, 0);
   --primary-trans-color-1: rgba(255, 149, 0, 0.75);
   --primary-trans-color-2: rgba(255, 149, 0, 0.5);
   --primary-trans-color-3: rgba(255, 149, 0, 0.25);
@@ -67,6 +70,7 @@
   --third-color: rgb(31, 62, 31);
   --fourth-color: rgb(194, 235, 194);
   --fifth-color: rgb(183, 255, 103);
+  --six-color: rgb(14, 27, 14);
   --primary-trans-color-1: rgba(102, 206, 102, 0.75);
   --primary-trans-color-2: rgba(102, 206, 102, 0.5);
   --primary-trans-color-3: rgba(102, 206, 102, 0.25);
@@ -79,6 +83,7 @@
   --third-color: rgb(29, 30, 30);
   --fourth-color: rgb(192, 193, 193);
   --fifth-color: rgb(150, 150, 150);
+  --six-color: rgb(10, 10, 10);
   --primary-trans-color-1: rgba(98, 99, 101, 0.75);
   --primary-trans-color-2: rgba(98, 99, 101, 0.5);
   --primary-trans-color-3: rgba(98, 99, 101, 0.25);

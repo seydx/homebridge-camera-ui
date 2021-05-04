@@ -119,7 +119,7 @@ exports.createNotification = async (data) => {
   await Notifications.push(notification).write();
 
   const socket = require('../../index').io;
-  socket.emit('notification', notification);
+  socket.io.emit('notification', notification);
 
   const ClearTimer = require('../../services/cleartimer.service');
   ClearTimer.setNotification(id);

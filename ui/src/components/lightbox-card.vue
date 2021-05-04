@@ -9,7 +9,7 @@ b-card(no-body)
       | {{ $t("recording_text").replace("@", recording.recordType === "Snapshot" ? $t("snapshot") : $t("video")).replace("%", recording.time).replace("#", recording.trigger === "motion" ? $t("motion") : $t("doorbell")) }}
     small.text-muted {{ `${$t("label")}: ${recording.label}` }}
     div.mt-3
-      b-link.card-btn.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit')", @click="$emit('remove-image', recording)")
+      b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit')", @click="$emit('remove-image', recording)")
         b-icon(icon="trash-fill", aria-hidden="true")
       b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="'/files/' + recording.fileName")
         b-icon(icon="cloud-download-fill", aria-hidden="true")
@@ -33,9 +33,11 @@ export default {
   },
   methods: {
     handleErrorImg(event) {
+      const darkMode = localStorage.getItem('theme') || '';
+
       event.target.classList.remove('object-fit-cover');
       event.target.classList.add('object-fit-none');
-      event.target.src = require('@/assets/img/no_img.png');
+      event.target.src = require(`@/assets/img/no_img${darkMode ? '_white' : ''}.png`);
     },
   },
 };

@@ -1,15 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const config = require('../test/homebridge/config.json').platforms[0];
 
-process.env.VUE_APP_SERVER_PORT = require('../test/homebridge/config.json').platforms[0].port || 8181;
+process.env.VUE_APP_SERVER_PORT = config.port || 8181;
 
 module.exports = {
   devServer: {
-    https: {
-      key: fs.readFileSync('/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.key'),
-      cert: fs.readFileSync('/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.crt'),
-    },
+    https:
+      config.ssl.active && config.ssl.key && config.ssl.cert
+        ? {
+            key: fs.readFileSync(config.ssl.key),
+            cert: fs.readFileSync(config.ssl.cert),
+          }
+        : false,
     port: 8081,
   },
   outputDir: path.resolve(__dirname, '../interface'),

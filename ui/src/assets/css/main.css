@@ -73,6 +73,15 @@ body {
   background-color: var(--primary-color) !important;
 }
 
+.text-color-danger {
+  color: rgb(255, 59, 48) !important;
+  transition: 0.3s all;
+}
+
+.text-color-danger:hover {
+  color: rgb(173, 12, 3) !important;
+}
+
 .text-color-primary {
   color: var(--primary-color) !important;
   transition: 0.3s all;
@@ -734,24 +743,40 @@ iframe {
 
 .btn {
   font-size: 14px !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .btn-primary {
   background-color: var(--primary-color) !important;
-  border: none !important;
   font-size: 14px !important;
 }
 
 .btn-primary:hover {
   background-color: var(--secondary-color) !important;
+  color: var(--primary-font-color) !important;
 }
 
 .btn-primary:focus,
 .btn-primary:active,
 .btn-primary:active:focus {
-  box-shadow: 0 0 0 0.2rem var(--third-color) !important;
   background-color: var(--secondary-color) !important;
-  border: none !important;
+}
+
+.btn-danger {
+  background-color: rgb(255, 59, 48) !important;
+  font-size: 14px !important;
+}
+
+.btn-danger:hover {
+  background-color: rgb(173, 12, 3) !important;
+  color: var(--primary-font-color) !important;
+}
+
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger:active:focus {
+  background-color: rgb(173, 12, 3) !important;
 }
 
 .btn-dark {
@@ -759,19 +784,6 @@ iframe {
   color: #fff;
   border: none;
   font-size: 14px;
-}
-
-.btn-primary:hover {
-  background-color: #b3b3b3;
-  color: #ffffff !important;
-}
-
-.btn-primary:focus,
-.btn-primary:active,
-.btn-primary:active:focus {
-  box-shadow: 0 0 0 0.2rem #e4e4e4;
-  background-color: #b3b3b3;
-  border: none !important;
 }
 
 /*--------------------------------------------------------------

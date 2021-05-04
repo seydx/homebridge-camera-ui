@@ -26,7 +26,7 @@
         "localhttp": false
       },
       "ssl": {
-        "active": true,
+        "active": false,
         "key": "/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.key",
         "cert": "/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.crt"
       },

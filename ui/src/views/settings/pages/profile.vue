@@ -15,7 +15,7 @@
           h5.font-weight-bold.lh-1 {{ currentUser.username }}
           .w-100
           span.text-muted.fs-7.lh-1.m-0 {{ currentUser.permissionLevel.includes("admin") ? $t("master") : $t("user") }}
-        .btn.btn-danger.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(v-if="checkLevel('admin')", v-b-modal.modal-reset) {{ $t("reset") }}
+        .btn.btn-danger.mt-2.w-100.p-2.mt-3(v-if="checkLevel('admin')", v-b-modal.modal-reset) {{ $t("reset") }}
         .settings-box.container.mt-5(v-if="checkLevel('admin')")
           h3.lh-1.font-weight-bold {{ $t("backup") }}
           .w-100
@@ -31,13 +31,13 @@
             ref="file-input-backup"
           )
           .w-100.my-2
-          .btn.btn-success.border-bottom-shadow-success.mt-2.w-100.p-2.mt-3(
+          .btn.btn-success.mt-2.w-100.p-2.mt-3(
             @click="restoreBackup"
           ) 
             span.text-white.mr-2(v-show='uploadBackupSpinner')
               b-spinner(small type='grow')
             | {{ $t("backup_restore") }}
-          .btn.btn-danger.border-bottom-shadow-danger.mt-2.w-100.p-2.mt-3(
+          .btn.btn-danger.mt-2.w-100.p-2.mt-3(
             @click="downloadBackup"
           ) 
             span.text-white.mr-2(v-show='downloadBackupSpinner')
@@ -89,7 +89,7 @@
             :value="currentUser.sessionTimer/3600 > 25 ? $t('never') : currentUser.sessionTimer/3600"
             :options="sessionTimerSelect"
           )
-          .btn.btn-success.border-bottom-shadow-success.mt-4.w-100(@click="changeAdmin") {{ $t("apply") }}
+          .btn.btn-success.mt-4.w-100(@click="changeAdmin") {{ $t("apply") }}
         .settings-box.container.mt-5(v-if="currentUser.permissionLevel.includes('admin')")
           h3.lh-1.font-weight-bold {{ $t("user") }}
           .w-100
@@ -131,7 +131,7 @@
             :tabindex="99",
             openDirection="top"
           )
-          .btn.btn-success.border-bottom-shadow-success.mt-4.w-100(@click="addUser()") {{ $t("add") }}
+          .btn.btn-success.mt-4.w-100(@click="addUser()") {{ $t("add") }}
           hr
           h5 {{ $t("registered_user") }}
           div.z-index-2(v-if="users.length > 1")
@@ -162,9 +162,9 @@
                 )
                 .row
                   .col
-                    .btn.btn-danger.border-bottom-shadow-danger.mt-4.w-100(@click="removeUser(user, index)") {{ $t("remove") }}
+                    .btn.btn-danger.mt-4.w-100(@click="removeUser(user, index)") {{ $t("remove") }}
                   .col
-                    .btn.btn-success.border-bottom-shadow-success.mt-4.w-100(@click="changeUser(user, index)") {{ $t("apply") }}
+                    .btn.btn-success.mt-4.w-100(@click="changeUser(user, index)") {{ $t("apply") }}
                 hr
           div(v-else)
             p.mt-5.text-center {{ $t("no_registered_user") }}
@@ -597,6 +597,10 @@ div >>> .custom-file-label {
 
 div >>> .border-bottom-shadow-danger {
   border-bottom: 3px solid #8c1e20 !important;
+}
+
+div >>> .border-bottom-shadow-primary {
+  border-bottom: 3px solid var(--third-color) !important;
 }
 
 div >>> .border-bottom-shadow-success {
