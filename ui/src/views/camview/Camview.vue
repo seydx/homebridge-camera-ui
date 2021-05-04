@@ -37,6 +37,8 @@ import { getSetting, changeSetting } from '@/api/settings.api';
 import AddCamera from '@/components/add-camera.vue';
 import VideoCard from '@/components/video-card.vue';
 
+import { writeStream } from '@/services/streams.service';
+
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
@@ -120,6 +122,11 @@ export default {
 
     document.removeEventListener('click', this.clickHandler);
     window.removeEventListener('resize', this.resizeHandler);
+  },
+  sockets: {
+    start_stream(data) {
+      writeStream(data.feed, data.buffer);
+    },
   },
   methods: {
     async handleFavouriteCamera(cam) {

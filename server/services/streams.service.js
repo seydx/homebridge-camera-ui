@@ -104,13 +104,11 @@ class Streams {
           );
 
           streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
-            detached: false,
+            env: process.env,
           });
 
           streams[cameraName].stream.stdout.on('data', (data) => {
-            if (this.io) {
-              this.io.to(`stream/${cameraName}`).emit('start_stream', { feed: cameraName, buffer: data });
-            }
+            this.io.to(`stream/${cameraName}`).emit('start_stream', { feed: cameraName, buffer: data });
           });
 
           const stderr = readline.createInterface({

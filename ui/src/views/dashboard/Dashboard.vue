@@ -39,6 +39,8 @@ import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
 import VideoCard from '@/components/video-card.vue';
 
+import { writeStream } from '@/services/streams.service';
+
 export default {
   name: 'Dashboard',
   components: {
@@ -91,6 +93,11 @@ export default {
     } catch (err) {
       this.$toast.error(err.message);
     }
+  },
+  sockets: {
+    start_stream(data) {
+      writeStream(data.feed, data.buffer);
+    },
   },
   methods: {
     async handleFavouriteCamera(cam) {
