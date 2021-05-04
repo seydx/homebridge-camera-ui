@@ -1,3 +1,5 @@
+//TODO: REWRITE THIS PART
+
 import app from '@/main';
 
 const loadSnapshot = (camera) => {

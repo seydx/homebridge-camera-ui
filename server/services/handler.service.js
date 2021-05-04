@@ -229,7 +229,7 @@ class MotionHandler {
         labels = (labels || ['human', 'face', 'person']).map((label) => label.toLowerCase());
         confidence = confidence || 80;
 
-        const imageLabels = await rekognition.detectLabels(imgBuffer);
+        let imageLabels = await rekognition.detectLabels(imgBuffer);
         detected = imageLabels.Labels.filter(
           (label) => label && labels.includes(label.Name.toLowerCase()) && label.Confidence >= confidence
         ).map((label) => label.Name);
@@ -243,6 +243,9 @@ class MotionHandler {
         );
 
         if (detected.length === 0) {
+          imageLabels = imageLabels.Labels.map((label) => {
+            return `${label.Name.toLowerCase()} (${label.Confidence}%)`;
+          });
           logger.debug(imageLabels, cameraName, true); //for debugging
           detected = [];
         }

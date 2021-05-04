@@ -10,6 +10,7 @@
   - Changed icon from "change favourite camera" button (dashboard/camview)
   - Added animation to "change favourite camera" button
   - Changed theme color from `yellow` to `orange`
+  - It is now possible to reload the stream in the Dashboard/Camview if the stream could not be started due to an ffmpeg error etc.
 
 ## Bugfixes
 - Fixed an issue where streams doesnt stop after changing stream settings

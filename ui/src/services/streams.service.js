@@ -1,3 +1,5 @@
+//TODO: REWRITE THIS PART
+
 import JSMpeg from 'jsmpeg-fast-player';
 import JSMpegWritableSource from '@/common/jsmpeg-source.js';
 import app from '@/main';
@@ -39,6 +41,9 @@ const startStream = (camera, cameraStatus) => {
       disableWebAssembly: true,
       pauseWhenHidden: false,
       videoBufferSize: 1024 * 1024,
+      onSourcePaused: () => {
+        loadStream({ name: camera.name });
+      },
       onSourceEstablished: () => {
         let spinner = document.querySelector(`[data-stream-spinner="${camera.name}"]`);
         if (spinner) {
@@ -83,11 +88,18 @@ const stopStream = (camera) => {
   }
 };
 
-const writeStream = (cameraName, buffer) => {
+const pauseStream = (cameraName) => {
   const player = players.find((player) => player && player.name === cameraName);
   if (player) {
-    player.source.write(buffer);
+    player.source.pause(true);
   }
 };
 
-export { loadStream, startStream, stopStream, writeStream };
+const writeStream = (cameraName, buffer) => {
+  const player = players.find((player) => player && player.name === cameraName);
+  if (player) {
+    player.source.write({ feed: cameraName, buffer: buffer });
+  }
+};
+
+export { loadStream, pauseStream, startStream, stopStream, writeStream };

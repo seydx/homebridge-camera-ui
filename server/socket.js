@@ -6,6 +6,7 @@ const NotificationsModel = require('./components/notifications/notifications.mod
 const Streams = require('./services/streams.service');
 
 const closeTimeout = {};
+const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class SocketIO {
   constructor(server) {
@@ -32,7 +33,7 @@ class SocketIO {
             '[Socket]'
           );
           socket.join(`stream/${data.feed}`);
-          this.handleStream(data.feed);
+          this.handleStream(data.feed, data.destroy);
         }
       });
 
@@ -44,7 +45,6 @@ class SocketIO {
             '[Socket]'
           );
           socket.leave(`stream/${data.feed}`);
-          this.rooms = this.rooms.filter((room) => room !== data.feed);
           this.handleStream(data.feed);
         }
       });
@@ -58,7 +58,12 @@ class SocketIO {
     });
   }
 
-  handleStream(cameraName) {
+  async handleStream(cameraName, destroy) {
+    if (destroy) {
+      Streams.stopStream(cameraName);
+      await timeout(1000);
+    }
+
     const clients = this.io.sockets.adapter.rooms.get(`stream/${cameraName}`)?.size || 0;
     logger.debug(`Active sockets in room (stream/${cameraName}): ${clients}`, false, '[Socket]');
 
@@ -68,12 +73,16 @@ class SocketIO {
     }
 
     if (clients) {
+      if (!this.rooms.includes(cameraName)) {
+        this.rooms.push(cameraName);
+      }
+
       Streams.startStream(cameraName);
-      if (!this.rooms.includes(cameraName)) this.rooms.push(cameraName);
     } else {
       logger.debug('If no clients connects to the Websocket, the stream will be closed in 15s', cameraName, '[Socket]');
-      closeTimeout[cameraName] = setTimeout(() => Streams.stopStream(cameraName), 15000);
       this.rooms = this.rooms.filter((room) => room !== cameraName);
+
+      closeTimeout[cameraName] = setTimeout(() => Streams.stopStream(cameraName), 15000);
     }
   }
 }

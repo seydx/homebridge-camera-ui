@@ -16,8 +16,10 @@ div
               :linkToCamera="true",
               :notificationOverlay="true",
               :showFullsizeIndicator="true",
+              :showRefreshIndicator="true",
               :showSpinner="true",
               :statusIndicator="true"
+              @refreshStream="refreshStreamSocket"
             )
   AddCamera(
     v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:dashboard:access'])"
@@ -39,7 +41,7 @@ import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
 import VideoCard from '@/components/video-card.vue';
 
-import { writeStream } from '@/services/streams.service';
+import { pauseStream, writeStream } from '@/services/streams.service';
 
 export default {
   name: 'Dashboard',
@@ -122,6 +124,10 @@ export default {
         console.log(err);
         this.$toast.error(err.message);
       }
+    },
+    refreshStreamSocket(event) {
+      pauseStream(event.camera);
+      this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     storeLayout() {
       const cameras = this.cameras

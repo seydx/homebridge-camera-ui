@@ -17,7 +17,9 @@ div
             :nameOverlay="true",
             :notificationOverlay="true",
             :showFullsizeIndicator="true",
+            :showRefreshIndicator="true",
             :showSpinner="true",
+            @refreshStream="refreshStreamSocket"
           )
   AddCamera(
     v-if="allCameras.length && checkLevel(['cameras:access', 'settings:cameras:access', 'settings:camview:access'])"
@@ -37,7 +39,7 @@ import { getSetting, changeSetting } from '@/api/settings.api';
 import AddCamera from '@/components/add-camera.vue';
 import VideoCard from '@/components/video-card.vue';
 
-import { writeStream } from '@/services/streams.service';
+import { pauseStream, writeStream } from '@/services/streams.service';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -196,6 +198,10 @@ export default {
     async logOut() {
       await this.$store.dispatch('auth/logout');
       this.$router.push('/');
+    },
+    refreshStreamSocket(event) {
+      pauseStream(event.camera);
+      this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
     resizeHandler() {
       if (this.grid) {

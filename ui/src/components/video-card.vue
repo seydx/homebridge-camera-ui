@@ -19,10 +19,12 @@ div(
       :class="fullscreen ? 'notOverlay-on' : ''"
       @click="index = 0"
     ) {{ $t("last_notification") + ": " + camera.lastNotification.time }}
-    router-link.nameOverlay.mt-save(
-      v-if="nameOverlay", :to='\'/cameras/\' + camera.name'
+    .nameOverlay.mt-save(
+      v-if="nameOverlay",
       :class="fullscreen ? 'nameOverlay-on' : ''"
-    )  {{ camera.name }}
+    )  
+      b-icon.mr-2.refresh-icon(v-if="showRefreshIndicator && fullsize", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
+      router-link.text-white(:to='\'/cameras/\' + camera.name') {{ camera.name }}
     .updateOverlay(
       v-if="camera.live === false", 
       :data-stream-timer="camera.name"
@@ -51,7 +53,9 @@ div(
       g
         path(fill-rule='evenodd' d='M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l6.69 9.365zm-10.114-9A2.001 2.001 0 0 0 0 5v6a2 2 0 0 0 2 2h5.728L.847 3.366zm9.746 11.925l-10-14 .814-.58 10 14-.814.58z')
   b-card-body(v-if="headerPosition === 'top' && !fullsize")
-    b-card-title.float-left {{ camera.name }}
+    b-card-title.float-left 
+      b-icon.mr-1.refresh-icon(v-if="showRefreshIndicator", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
+      | {{ camera.name }}
     b-icon.float-right.card-icon-status.ml-2(v-if="statusIndicator", icon="circle-fill", aria-hidden="true", :data-stream-status="camera.name", variant="danger")
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
@@ -78,7 +82,9 @@ div(
       :class="!fullsize ? headerPosition === 'top' ? 'card-img-bottom' : 'card-img-top' : ''",
     )
   b-card-body(v-if="headerPosition === 'bottom' && !fullsize")
-    b-card-title.float-left {{ camera.name }}
+    b-card-title.float-left 
+      b-icon.mr-1.refresh-icon(v-if="showRefreshIndicator", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
+      | {{ camera.name }}
     b-icon.float-right.card-icon-status.ml-2(v-if="statusIndicator", icon="circle-fill", aria-hidden="true", :data-stream-status="camera.name", variant="danger")
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
@@ -99,7 +105,14 @@ div(
 import CoolLightBox from 'vue-cool-lightbox';
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css';
 
-import { BIcon, BIconArrowsAngleExpand, BIconArrowsAngleContract, BIconBellFill, BIconCircleFill } from 'bootstrap-vue';
+import {
+  BIcon,
+  BIconArrowsAngleExpand,
+  BIconArrowsAngleContract,
+  BIconArrowClockwise,
+  BIconBellFill,
+  BIconCircleFill,
+} from 'bootstrap-vue';
 
 import { getCameraSnapshot, getCameraStatus } from '@/api/cameras.api';
 import { fetchSnapshot, loadSnapshot } from '@/services/snapshots.service';
@@ -111,6 +124,7 @@ export default {
     BIcon,
     BIconArrowsAngleExpand,
     BIconArrowsAngleContract,
+    BIconArrowClockwise,
     BIconBellFill,
     BIconCircleFill,
     CoolLightBox,
@@ -153,6 +167,10 @@ export default {
       default: false,
     },
     onlyStream: {
+      type: Boolean,
+      default: false,
+    },
+    showRefreshIndicator: {
       type: Boolean,
       default: false,
     },
@@ -254,7 +272,7 @@ export default {
         this.$refs.offline_icon.classList.add('d-none');
       }
     },
-    setTimer() {
+    setSnapshotTimer() {
       let timerIndicator = document.querySelector(`[data-stream-timer="${this.camera.name}"]`);
 
       if (timerIndicator) {
@@ -280,7 +298,7 @@ export default {
         fetchSnapshot(this.camera, status, snapshot);
 
         if (!this.onlySnapshot) {
-          this.setTimer();
+          this.setSnapshotTimer();
 
           this.snapshotTimeout = setTimeout(async () => {
             this.startSnapshot();
@@ -520,6 +538,11 @@ div >>> .card-img-top {
 
 .fix-top-50 {
   top: 50px !important;
+}
+
+.refresh-icon {
+  cursor: pointer;
+  color: var(--fourth-bg-color);
 }
 
 .camera-fs,

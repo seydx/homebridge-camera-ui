@@ -10,7 +10,9 @@ class JSMpegWritableSource {
     // Streaming is obiously true when using a stream
     this.streaming = true;
     this.started = false;
+    this.chunks = 0;
 
+    this.onPausedCallback = options.onSourcePaused;
     this.onEstablishedCallback = options.onSourceEstablished;
   }
 
@@ -24,6 +26,16 @@ class JSMpegWritableSource {
     this.progress = 1;
   }
 
+  pause(state) {
+    if (this.started) {
+      this.onPausedCallback(this);
+    }
+
+    this.chunks = 0;
+    this.paused = true;
+    this.started = !state;
+  }
+
   resume() {
     // eslint-disable-line class-methods-use-this
   }
@@ -33,6 +45,10 @@ class JSMpegWritableSource {
   }
 
   write(data) {
+    if (this.paused && !this.started && this.chunks < 10) {
+      return this.chunks++;
+    }
+
     const isFirstChunk = !this.started;
     this.started = true;
 
@@ -40,7 +56,7 @@ class JSMpegWritableSource {
       this.onEstablishedCallback(this);
     }
 
-    this.destination.write(data);
+    this.destination.write(data.buffer);
   }
 }
 

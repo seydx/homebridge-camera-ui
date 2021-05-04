@@ -152,7 +152,6 @@ class Streams {
       if (streams[cameraName].stream) {
         logger.debug('Stopping stream..', cameraName, '[Streams]');
         streams[cameraName].stream.kill();
-        streams[cameraName].stream = null;
       }
     } else {
       logger.error(`Can not find ${cameraName} to stop stream!`, cameraName, '[Streams]');
