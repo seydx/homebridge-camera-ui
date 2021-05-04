@@ -110,12 +110,12 @@ export default {
   },
   sockets: {
     start_stream(data) {
-      this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
+      this.$refs[data.feed].writeStream(data.feed, data.buffer);
     },
   },
   methods: {
     refreshStreamSocket(event) {
-      this.$refs[event.camera][0].pauseStream(true);
+      this.$refs[event.camera].pauseStream(true);
       this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
     },
   },
