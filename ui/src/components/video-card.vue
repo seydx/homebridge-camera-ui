@@ -7,6 +7,12 @@ div(
     :class="headerPosition === 'top' ? 'dif-wrapper-top' : 'dif-wrapper-bottom'"
     :style="fullsize ? 'top: 0!important; bottom: 0!important' : ''"
   )
+    b-icon.refreshOverlay(
+      icon="arrow-clockwise",
+      :class="fullscreen ? 'refreshOverlay-on' : ''"
+      v-if="showRefreshIndicator",
+      @click="$emit('refreshStream', { camera: camera.name })"
+    )
     b-icon.fullsizeOverlay(
       :icon="fullscreen ? 'arrows-angle-contract' : 'arrows-angle-expand'",
       :class="fullscreen ? 'fullsizeOverlay-on' : ''"
@@ -19,12 +25,11 @@ div(
       :class="fullscreen ? 'notOverlay-on' : ''"
       @click="index = 0"
     ) {{ $t("last_notification") + ": " + camera.lastNotification.time }}
-    .nameOverlay.mt-save(
+    router-link.nameOverlay.mt-save(
       v-if="nameOverlay",
       :class="fullscreen ? 'nameOverlay-on' : ''"
-    )  
-      b-icon.mr-2.refresh-icon(v-if="showRefreshIndicator && fullsize", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
-      router-link.text-white(:to='\'/cameras/\' + camera.name') {{ camera.name }}
+      :to='\'/cameras/\' + camera.name'
+    ) {{ camera.name }}
     .updateOverlay(
       v-if="camera.live === false", 
       :data-stream-timer="camera.name"
@@ -53,9 +58,7 @@ div(
       g
         path(fill-rule='evenodd' d='M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l6.69 9.365zm-10.114-9A2.001 2.001 0 0 0 0 5v6a2 2 0 0 0 2 2h5.728L.847 3.366zm9.746 11.925l-10-14 .814-.58 10 14-.814.58z')
   b-card-body(v-if="headerPosition === 'top' && !fullsize")
-    b-card-title.float-left 
-      b-icon.mr-1.refresh-icon(v-if="showRefreshIndicator", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
-      | {{ camera.name }}
+    b-card-title.float-left {{ camera.name }}
     b-icon.float-right.card-icon-status.ml-2(v-if="statusIndicator", icon="circle-fill", aria-hidden="true", :data-stream-status="camera.name", variant="danger")
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
@@ -82,9 +85,7 @@ div(
       :class="!fullsize ? headerPosition === 'top' ? 'card-img-bottom' : 'card-img-top' : ''",
     )
   b-card-body(v-if="headerPosition === 'bottom' && !fullsize")
-    b-card-title.float-left 
-      b-icon.mr-1.refresh-icon(v-if="showRefreshIndicator", icon="arrow-clockwise", aria-hidden="true", @click="$emit('refreshStream', { camera: camera.name })")
-      | {{ camera.name }}
+    b-card-title.float-left {{ camera.name }}
     b-icon.float-right.card-icon-status.ml-2(v-if="statusIndicator", icon="circle-fill", aria-hidden="true", :data-stream-status="camera.name", variant="danger")
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
@@ -512,6 +513,30 @@ div >>> .card-img-top {
   color: rgba(255, 255, 255, 0.5);
 }
 
+.refreshOverlay {
+  position: absolute;
+  left: 10px;
+  background: rgb(255 255 255 / 25%);
+  padding: 3px;
+  border-radius: 4px;
+  z-index: 1;
+  top: 5px;
+  cursor: pointer;
+  transition: 0.3s all;
+  font-size: 1.3rem;
+}
+
+.refreshOverlay-on {
+  z-index: 202;
+  top: calc(env(safe-area-inset-top, -17px) + 17px);
+  left: calc(env(safe-area-inset-left, -17px) + 17px);
+  position: fixed;
+}
+
+.refreshOverlay:hover {
+  background: rgb(255 255 255 / 45%);
+}
+
 .fullsizeOverlay {
   position: absolute;
   right: 10px;
@@ -519,7 +544,7 @@ div >>> .card-img-top {
   padding: 3px;
   border-radius: 4px;
   z-index: 1;
-  top: 10px;
+  top: 5px;
   cursor: pointer;
   transition: 0.3s all;
   font-size: 1.3rem;

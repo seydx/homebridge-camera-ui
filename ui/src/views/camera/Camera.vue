@@ -12,8 +12,10 @@ div
           cardClass="w-100 h-100",
           :fullsize="true",
           :showFullsizeIndicator="true",
+          :showRefreshIndicator="true",
           :showSpinner="true",
           :onlyStream="true",
+          @refreshStream="refreshStreamSocket"
         )
       b-card-title.mb-0.ml-1.mt-3 {{ $route.params.name }}
       b-card-text.text-muted.ml-1 {{ camera.settings.room }}
@@ -54,6 +56,8 @@ import BackToTop from '@/components/back-to-top.vue';
 import Footer from '@/components/footer.vue';
 import Navbar from '@/components/navbar.vue';
 import VideoCard from '@/components/video-card.vue';
+
+import { pauseStream, writeStream } from '@/services/streams.service';
 
 export default {
   name: 'Camera',
@@ -103,6 +107,17 @@ export default {
     } catch (err) {
       this.$toast.error(err.message);
     }
+  },
+  sockets: {
+    start_stream(data) {
+      writeStream(data.feed, data.buffer);
+    },
+  },
+  methods: {
+    refreshStreamSocket(event) {
+      pauseStream(event.camera);
+      this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
+    },
   },
 };
 </script>
