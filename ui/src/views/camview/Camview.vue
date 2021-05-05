@@ -102,6 +102,14 @@ export default {
 
           const lastNotification = await getNotifications(`?cameras=${camera.name}&pageSize=5`);
           camera.lastNotification = lastNotification.data.result.length > 0 ? lastNotification.data.result[0] : false;
+
+          if (camera.favourite && camera.live) {
+            this.$socket.client.on(camera.name, (data) => {
+              if (this.$refs[camera.name] && this.$refs[camera.name][0]) {
+                this.$refs[camera.name][0].writeStream(data);
+              }
+            });
+          }
         }
 
         this.allCameras = cameras.data.result;
@@ -126,13 +134,6 @@ export default {
     html.classList.remove('body-bg-dark');
 
     window.removeEventListener('resize', this.resizeHandler);
-  },
-  sockets: {
-    start_stream(data) {
-      if (this.$refs[data.feed] && this.$refs[data.feed][0]) {
-        this.$refs[data.feed][0].writeStream(data.feed, data.buffer);
-      }
-    },
   },
   methods: {
     async handleFavouriteCamera(cam) {

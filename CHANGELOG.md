@@ -1,6 +1,10 @@
 # Changelog
 
-# NEXT
+# v4.1.2 - 2021-05-05
+
+## Other changes
+- Server/Interface
+  - Instead of a JSON payload only the buffer of the stream is sent to increase the performance of socket.io
 
 ## Bugfixexs
 - Minor UI bugfixes

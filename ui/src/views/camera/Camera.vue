@@ -99,6 +99,12 @@ export default {
           };
         });
 
+        this.$socket.client.on(camera.data.name, (data) => {
+          if (this.$refs[camera.data.name]) {
+            this.$refs[camera.data.name].writeStream(data);
+          }
+        });
+
         this.camera = camera.data;
         this.loading = false;
       } else {
@@ -107,13 +113,6 @@ export default {
     } catch (err) {
       this.$toast.error(err.message);
     }
-  },
-  sockets: {
-    start_stream(data) {
-      if (this.$refs[data.feed]) {
-        this.$refs[data.feed].writeStream(data.feed, data.buffer);
-      }
-    },
   },
   methods: {
     refreshStreamSocket(event) {

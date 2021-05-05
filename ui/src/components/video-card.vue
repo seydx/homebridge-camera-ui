@@ -466,9 +466,9 @@ export default {
         this.player.source.pause(true);
       }
     },
-    writeStream(cameraName, buffer) {
+    writeStream(buffer) {
       if (this.player) {
-        this.player.source.write({ feed: cameraName, buffer: buffer });
+        this.player.source.write(buffer);
       }
     },
   },

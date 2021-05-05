@@ -108,7 +108,7 @@ class Streams {
           });
 
           streams[cameraName].stream.stdout.on('data', (data) => {
-            this.io.to(`stream/${cameraName}`).emit('start_stream', { feed: cameraName, buffer: data });
+            this.io.to(`stream/${cameraName}`).emit(cameraName, data);
           });
 
           const stderr = readline.createInterface({

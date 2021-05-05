@@ -44,7 +44,7 @@ class JSMpegWritableSource {
     this.started = false;
   }
 
-  write(data) {
+  write(buffer) {
     if (this.paused && !this.started && this.chunks < 10) {
       return this.chunks++;
     }
@@ -56,7 +56,7 @@ class JSMpegWritableSource {
       this.onEstablishedCallback(this);
     }
 
-    this.destination.write(data.buffer);
+    this.destination.write(buffer);
   }
 }
 
