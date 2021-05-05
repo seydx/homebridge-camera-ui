@@ -2,6 +2,7 @@
   "pluginAlias": "CameraUI",
   "pluginType": "platform",
   "singular": true,
+  "customUi": true,
   "footerDisplay": "For documentation please see [GitHub repository](https://github.com/SeydX/homebridge-camera-ui)",
   "schema": {
     "name": {

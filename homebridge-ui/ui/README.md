@@ -1,4 +1,4 @@
-# camera.ui
+# camera.ui - homebridge-ui
 
 ## Project setup
 ```

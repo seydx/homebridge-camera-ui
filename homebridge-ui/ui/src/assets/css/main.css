@@ -1,0 +1,15 @@
+html,
+body {
+  height: 100%;
+}
+
+a {
+  font-weight: bold !important;
+  text-decoration: none !important;
+  color: var(--primary-font-color) !important;
+}
+
+a:hover {
+  color: var(--primary-color) !important;
+  text-decoration: none !important;
+}

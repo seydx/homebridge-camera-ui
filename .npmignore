@@ -67,3 +67,4 @@ yarn.lock
 
 # dotenv environment variables file
 .envtest/
+homebridge-ui/ui

@@ -149,3 +149,5 @@ yarn-error.log
 
 interface
 test/storage/
+homebridge-ui/public
+homebridge-ui/ui/node_modules
