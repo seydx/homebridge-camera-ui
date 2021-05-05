@@ -4,7 +4,7 @@
 
 ## Notable changes
 - Config UI X:
-  - [Plugin UI Utils](https://github.com/homebridge/plugin-ui-utils) was integrated into camera.ui! Via the plugin setting _(Config UI X > Plugins > homebridge-camera-ui > Settings)_ it is now possible to see the livestream of any camera entered in config.json.
+  - [Plugin UI Utils](https://github.com/homebridge/plugin-ui-utils) was integrated into camera.ui! Via the plugin settings _(Config UI X > Plugins > homebridge-camera-ui > Settings)_ it is now possible to see the livestream of any camera entered in config.json.
 
 # v4.1.2 - 2021-05-05
 
