@@ -4,7 +4,7 @@
 
 ## Other changes
 - Interface:
-  - Changed recording subtitle from `Type - Date`to `Type - Room` (recordings)
+  - Changed recording subtitle from `Type - Date` to `Type - Room` (recordings)
   - Added additional media queries to recording cards
   - Minor UI improvements
 
