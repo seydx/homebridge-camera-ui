@@ -1,5 +1,16 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - Changed recording subtitle from `Type - Date`to `Type - Room` (recordings)
+  - Added additional media queries to recording cards
+  - Minor UI improvements
+
+## Bugfixexs
+- Minor UI bugfixes
+
 # v4.2.0 - 2021-05-05
 
 ## Notable changes

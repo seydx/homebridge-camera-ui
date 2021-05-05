@@ -19,7 +19,7 @@ div
       b-spinner.text-color-primary
     .container.pt-3(v-else)
       .row
-        .col-lg-4.col-md-6.col-12.my-1(
+        .col-lg-4.col-md-6.col-12.my-1.recording-cards(
           v-for="(recording, imageIndex) in recordings", 
           :key="imageIndex" 
           :data-id="recording.id" 
@@ -231,5 +231,33 @@ export default {
 .recording-fade-leave-to {
   transform: translateY(-30px);
   opacity: 0;
+}
+
+@media (max-width: 767px) {
+  .recording-cards {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .recording-cards {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .recording-cards {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 320px) {
+  .recording-cards {
+    max-width: 100%;
+    margin: 0 auto;
+  }
 }
 </style>

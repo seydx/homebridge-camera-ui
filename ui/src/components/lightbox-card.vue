@@ -1,14 +1,14 @@
 <template lang="pug">
 b-card(no-body)
   b-link(@click="$emit('show-image')")
-    b-card-img-lazy.object-fit(@error.native="handleErrorImg" :src="'/files/' + (recording.recordType === 'Video' ? `${recording.name}@2.jpeg` : recording.fileName)" :img-alt="recording.name" top height=250 blank-height=250)
+    b-card-img-lazy.object-fit(@error.native="handleErrorImg" :src="'/files/' + (recording.recordType === 'Video' ? `${recording.name}@2.jpeg` : recording.fileName)" :img-alt="recording.name" top height=225 blank-height=225)
   b-card-body
     b-card-title {{ recording.camera }}
-    small.text-muted {{ recording.recordType === "Snapshot" ? $t("snapshot") : $t("video") }} - {{ recording.time }}
-    b-card-text.mt-3
+    small.text-muted {{ recording.recordType === "Snapshot" ? $t("snapshot") : $t("video") }} - {{ recording.room }}
+    .card-text.mt-2.mb-2
       | {{ $t("recording_text").replace("@", recording.recordType === "Snapshot" ? $t("snapshot") : $t("video")).replace("%", recording.time).replace("#", recording.trigger === "motion" ? $t("motion") : $t("doorbell")) }}
     small.text-muted {{ `${$t("label")}: ${recording.label}` }}
-    div.mt-3
+    div.mt-2
       b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit')", @click="$emit('remove-image', recording)")
         b-icon(icon="trash-fill", aria-hidden="true")
       b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="'/files/' + recording.fileName")
@@ -105,8 +105,8 @@ export default {
   vertical-align: middle;
   color: #fff;
   border: 1px solid transparent;
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 20px;
 }
 

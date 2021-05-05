@@ -14,6 +14,7 @@ const recordingsTimer = new Map();
 class Cleartimer {
   async start() {
     try {
+      logger.debug('Initializing clear timer', false, true);
       await RecordingsModel.refresh();
 
       const notifications = await NotificationsModel.list({});
