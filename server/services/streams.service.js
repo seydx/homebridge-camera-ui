@@ -31,14 +31,12 @@ class Streams {
       let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
       let source = camera.videoConfig.source;
       let videoProcessor = config.options.videoProcessor;
-      let videoSize = setting.resolution;
+      let videoSize = setting.resolution || `${cameraWidth}x${cameraHeight}`;
 
       const options = {
         name: camera.name,
         source: source,
-        width: cameraWidth,
-        height: cameraHeight,
-        reloadTimer: 10,
+        ffmpegPath: videoProcessor,
         ffmpegOptions: {
           '-s': videoSize,
           '-b:v': '299k',
@@ -48,7 +46,6 @@ class Streams {
           '-threads': '1',
           '-loglevel': 'quiet',
         },
-        ffmpegPath: videoProcessor,
       };
 
       if (audio) {

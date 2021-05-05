@@ -1,22 +1,22 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.2.0-test.0",
+  "version": "4.2.0",
   "description": "User Interface for RTSP capable cameras.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
-    "build": "concurrently \"npm run build:ui\" \"npm run build:homebridge-ui\"",
-    "build:ui": "npm run build --prefix ui",
+    "build": "concurrently \"npm run build:homebridge-ui\" \"npm run build:ui\"",
     "build:homebridge-ui": "npm run build --prefix homebridge-ui/ui",
-    "lint": "concurrently \"npm run lint:plugin\" \"npm run lint:server\" \"npm run lint:ui\" \"npm run lint:homebridge-ui\"",
+    "build:ui": "npm run build --prefix ui",
+    "lint": "concurrently \"npm run lint:homebridge-ui\" \"npm run lint:plugin\" \"npm run lint:server\" \"npm run lint:ui\"",
+    "lint:homebridge-ui": "npm run lint --prefix homebridge-ui/ui",
     "lint:plugin": "eslint --fix ./plugin",
     "lint:server": "eslint --fix . --ignore-pattern 'plugin'",
     "lint:ui": "npm run lint --prefix ui",
-    "lint:homebridge-ui": "npm run lint --prefix homebridge-ui/ui",
     "test": "jest --runInBand --forceExit --detectOpenHandles --config ./test/jest.config.js",
-    "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\" \"npm run watch:homebridge-ui\"",
+    "watch": "concurrently \"npm run watch:homebridge-ui\" \"npm run watch:server\" \"npm run watch:ui\"",
+    "watch:homebridge-ui": "npm run serve --prefix homebridge-ui/ui",
     "watch:server": "nodemon --trace-warnings server/index.js",
     "watch:ui": "npm run serve --prefix ui",
-    "watch:homebridge-ui": "npm run serve --prefix homebridge-ui/ui",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
   },
   "main": "index.js",
@@ -83,7 +83,7 @@
     },
     {
       "type": "github",
-      "url": "https://github.com/SeydX"
+      "url": "https://github.com/sponsors/SeydX"
     }
   ],
   "homepage": "https://github.com/SeydX/homebridge-camera-ui#readme",
