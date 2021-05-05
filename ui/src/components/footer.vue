@@ -84,11 +84,11 @@ export default {
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   transition: 0.2s all;
+  border-bottom: 5px solid var(--primary-color);
 }
 
 .footer-inner {
   height: 55px;
-  border-bottom: 5px solid var(--primary-color);
   font-size: 12px;
 }
 

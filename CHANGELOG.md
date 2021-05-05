@@ -1,5 +1,10 @@
 # Changelog
 
+# NEXT
+
+## Bugfixexs
+- Minor UI bugfixes
+
 # v4.1.1 - 2021-05-05
 
 ## Other changes
