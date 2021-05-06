@@ -120,7 +120,7 @@ export default {
         this.cameras = cameras.data.result.filter((camera) => camera.favourite);
 
         this.loading = false;
-        await timeout(100);
+        await timeout(10);
         this.updateLayout();
 
         document.addEventListener('keydown', this.logKey);
@@ -165,25 +165,16 @@ export default {
     },
     fullscreenHandler() {
       if (document.fullscreenElement) {
-        console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
+        console.log('Entered fullscreen mode.');
         this.fullscreen = true;
       } else {
-        console.log('Leaving full-screen mode.');
+        console.log('Leaving fullscreen mode.');
         this.fullscreen = false;
       }
     },
     async handleFavouriteCamera(cam) {
       try {
-        this.loading = true;
-        let cameras = [...this.cameras];
-
-        this.grid.destroy(false);
-        this.grid = null;
-
-        this.cameras = [];
-
         const camera = this.allCameras.find((camera) => camera && camera.name === cam.name);
-
         const cameraSettings = await getSetting('cameras');
         for (const cameraSetting of cameraSettings.data) {
           if (cameraSetting.name === camera.name) {
@@ -194,16 +185,18 @@ export default {
         await changeSetting('cameras', cameraSettings.data);
 
         if (cam.state) {
-          cameras.push(camera);
+          this.cameras.push(camera);
         } else {
-          cameras = cameras.filter((camera) => camera && camera.name !== cam.name);
+          this.cameras = this.cameras.filter((camera) => camera && camera.name !== cam.name);
         }
 
-        this.cameras = cameras;
-        this.loading = false;
+        await timeout(10); //need to wait a lil bit for grid to create all components
 
-        await timeout(100);
-        this.updateLayout(true);
+        const nodes = this.getLayout();
+        this.grid.removeAll();
+
+        this.refreshLayout(nodes);
+        this.loading = false;
       } catch (err) {
         console.log(err);
         this.$toast.error(err.message);
@@ -254,6 +247,7 @@ export default {
         }
 
         nodes.push({
+          index: index,
           el: element,
           x: x,
           y: y,
@@ -322,6 +316,54 @@ export default {
       fullscreenButton.innerHTML = this.$t('close');
 
       this.fullscreen = true;
+    },
+    refreshLayout(nodes) {
+      let index_ = 0;
+      let x = 0;
+      let y = 0;
+      let w = nodes.length < 7 ? 6 : 4;
+      let h = 12 / Math.round((nodes.length % 2 === 0 ? nodes.length : nodes.length + 1) / (nodes.length < 7 ? 2 : 3));
+
+      for (const [index, node] of nodes.entries()) {
+        const beforeElement = nodes[index ? index - 1 : index].el;
+        let lastX = Number.parseInt(beforeElement.getAttribute('gs-x'));
+
+        x = nodes.length < 7 ? (index && !lastX ? 6 : 0) : index && !lastX ? 4 : lastX == 4 ? 8 : 0;
+
+        if (nodes.length < 7 && index % 2 == 0) {
+          y = index_ * h;
+          index_++;
+        }
+
+        if (nodes.length >= 7 && index % 3 == 0) {
+          y = index_ * h;
+          index_++;
+        }
+
+        if (nodes.length === 1) {
+          x = 0;
+          y = 0;
+          w = 12;
+          h = 12;
+        }
+
+        if (nodes.length === 2) {
+          x = 0;
+          y = index * 6;
+          w = 12;
+          h = 6;
+        }
+
+        const nodePosition = {
+          id: node.el.getAttribute('gs-id'),
+          x: x,
+          y: y,
+          w: w,
+          h: h,
+        };
+
+        this.grid.addWidget(node.el, nodePosition);
+      }
     },
     refreshStreamSocket(event) {
       if (this.$refs[event.camera] && this.$refs[event.camera][0]) {

@@ -55,13 +55,13 @@
         {
           "name": "Fail Camera 1",
           "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.999/onvif1"
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1"
           }
         },
         {
           "name": "Fail Camera 2",
           "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.999/ch0_0.h264"
+            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_0.h264"
           }
         }
       ]

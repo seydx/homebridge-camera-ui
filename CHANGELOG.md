@@ -4,7 +4,7 @@
 
 ## Other changes
 - Server:
-  Improvements in image rekognition. Replaced `node-rekognition` with `@aws/client-rekognition`
+  - Improvements in image rekognition. Replaced `node-rekognition` with `@aws/client-rekognition`
 - Interface:
   - Added `auto darkmode` switch to settings to automatically switch darkmode based on system settings (if supported)
 - Bump dependencies
