@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     handleErrorImg(event) {
-      const darkmode = localStorage.getItem('theme') || '';
+      const darkmode = localStorage.getItem('theme') === 'dark';
 
       event.target.classList.remove('object-fit-cover');
       event.target.classList.add('object-fit-none');
