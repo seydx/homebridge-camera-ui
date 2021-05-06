@@ -61,9 +61,11 @@ export default {
     this.loading = false;
   },
   beforeDestroy() {
-    this.player = null;
-    window.homebridge.request('/stopStreams');
-    window.homebridge.toast.info('Streams were stopped!');
+    if (this.player) {
+      this.player = null;
+      window.homebridge.request('/stopStreams');
+      window.homebridge.toast.info('Streams were stopped!');
+    }
   },
   methods: {
     preparePlayer(cameraName) {
@@ -115,46 +117,5 @@ export default {
 .btn-primary:active,
 .btn-primary:active:focus {
   background-color: var(--secondary-color) !important;
-}
-
-.lds-ring {
-  display: inline-block;
-  position: relative;
-  width: 32px;
-  height: 32px;
-}
-
-.lds-ring div {
-  box-sizing: border-box;
-  display: block;
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  margin: 4px;
-  border: 8px solid var(--primary-color);
-  border-radius: 50%;
-  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: var(--primary-color) transparent transparent transparent;
-}
-
-.lds-ring div:nth-child(1) {
-  animation-delay: -0.45s;
-}
-
-.lds-ring div:nth-child(2) {
-  animation-delay: -0.3s;
-}
-
-.lds-ring div:nth-child(3) {
-  animation-delay: -0.15s;
-}
-
-@keyframes lds-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 </style>
