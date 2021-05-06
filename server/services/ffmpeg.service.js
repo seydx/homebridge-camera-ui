@@ -37,13 +37,9 @@ class Ffmpeg {
   }
 
   async storeBuffer(cameraName, imageBuffer, name, isPlaceholder, recPath, label) {
-    if (imageBuffer && imageBuffer.length > 0) {
-      let outputPath = recPath + '/' + name + (isPlaceholder ? '@2' : '') + '.jpeg';
-      await fs.outputFile(outputPath, imageBuffer, { encoding: 'base64' });
-      this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
-    } else {
-      logger.debug('Can not store image, buffer is empty!');
-    }
+    let outputPath = recPath + '/' + name + (isPlaceholder ? '@2' : '') + '.jpeg';
+    await fs.outputFile(outputPath, imageBuffer, { encoding: 'base64' });
+    this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
 
     return;
   }
@@ -86,6 +82,10 @@ class Ffmpeg {
           });
 
           ffmpeg.on('close', () => {
+            if (!imageBuffer || (imageBuffer && imageBuffer.length <= 0)) {
+              return reject(new Error('Image Buffer is empty!'));
+            }
+
             if (store) this.replaceJpegWithExifJPEG(cameraName, destination, label);
             resolve(imageBuffer);
           });

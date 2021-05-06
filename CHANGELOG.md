@@ -11,6 +11,7 @@
 - Bump dependencies
 
 ## Bugfixes
+- Fixed an issue where an empty image buffer crashed image rekognition
 - Fixed an issue where changing layout (adding or removing camera via actionsheet) does not work properly
 - Minor UI bugfixes
 
