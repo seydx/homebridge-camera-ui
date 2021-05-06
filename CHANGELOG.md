@@ -3,11 +3,14 @@
 # NEXT
 
 ## Other changes
+- Server:
+  Improvements in image rekognition. Replaced `node-rekognition` with `@aws/client-rekognition`
 - Interface:
   - Added `auto darkmode` switch to settings to automatically switch darkmode based on system settings (if supported)
 - Bump dependencies
 
 ## Bugfixes
+- Fixed an issue where changing layout (adding or removing camera via actionsheet) does not work properly
 - Minor UI bugfixes
 
 # v4.2.3 - 2021-05-06
