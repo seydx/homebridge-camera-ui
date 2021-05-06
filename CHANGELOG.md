@@ -1,5 +1,11 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Interface:
+  - Added `auto darkmode` switch to settings to automatically switch darkmode based on system settings (if supported)
+
 # v4.2.3 - 2021-05-06
 
 ## Bugfixes
