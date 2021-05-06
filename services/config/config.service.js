@@ -70,7 +70,7 @@ class ConfigService {
 
     this.plugin = this.config.platforms.find((x) => x.platform === 'CameraUI');
 
-    return this.plugin;
+    return this.plugin || {};
   }
 
   getUiConfig() {
@@ -99,7 +99,6 @@ class ConfigService {
       this.getPluginConfig();
     }
 
-    this.ui.auth = this.plugin.auth || 'form';
     this.ui.language = this.plugin.language || 'en';
     this.ui.theme = this.plugin.theme || 'light-pink';
   }

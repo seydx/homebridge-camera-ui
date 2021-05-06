@@ -1,14 +1,16 @@
 # Changelog
 
-# NEXT
+# v4.2.1 - 2021-05-06
 
 ## Other changes
 - Interface:
+  - Added `fullscreen` button to bottom actionsheet (camview)
   - Changed recording subtitle from `Type - Date` to `Type - Room` (recordings)
   - Added additional media queries to recording cards
   - Minor UI improvements
 
 ## Bugfixexs
+- Fixed an issue where missing plugin config crashed homebridge
 - Minor UI bugfixes
 
 # v4.2.0 - 2021-05-05

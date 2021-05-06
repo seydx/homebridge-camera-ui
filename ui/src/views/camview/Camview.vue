@@ -27,6 +27,9 @@ div
     :showLeftNavi="true"
     :leftNaviName="$t('back')"
     @leftNaviClick="goBack"
+    :showMiddleNavi="true"
+    :middleNaviName="$t('fullscreen')"
+    @middleNaviClick="showFullscreen"
     :showRightNavi="true"
     :rightNaviName="$t('signout')"
     @rightNaviClick="logOut"
@@ -62,6 +65,7 @@ export default {
     return {
       allCameras: [],
       cameras: [],
+      fullscreen: false,
       grid: null,
       loading: true,
       prevRoute: null,
@@ -119,6 +123,8 @@ export default {
         await timeout(100);
         this.updateLayout();
 
+        document.addEventListener('keydown', this.logKey);
+        document.addEventListener('fullscreenchange', this.fullscreenHandler);
         window.addEventListener('resize', this.resizeHandler);
       } else {
         this.$toast.error(this.$t('no_access'));
@@ -133,9 +139,39 @@ export default {
     body.classList.remove('body-bg-dark');
     html.classList.remove('body-bg-dark');
 
+    document.removeEventListener('keydown', this.logKey);
+    document.removeEventListener('fullscreenchange', this.fullscreenHandler);
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {
+    closeFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        /* Firefox */
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        /* Chrome, Safari and Opera */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        /* IE/Edge */
+        document.msExitFullscreen();
+      }
+
+      const fullscreenButton = document.querySelector('.middle-button');
+      fullscreenButton.innerHTML = this.$t('fullscreen');
+
+      this.fullscreen = false;
+    },
+    fullscreenHandler() {
+      if (document.fullscreenElement) {
+        console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
+        this.fullscreen = true;
+      } else {
+        console.log('Leaving full-screen mode.');
+        this.fullscreen = false;
+      }
+    },
     async handleFavouriteCamera(cam) {
       try {
         const camera = this.allCameras.find((camera) => camera && camera.name === cam.name);
@@ -170,89 +206,6 @@ export default {
       } catch (err) {
         console.log(err);
         this.$toast.error(err.message);
-      }
-    },
-    goBack() {
-      if (this.prevRoute && !this.prevRoute.name && !this.prevRoute.meta.name) {
-        return this.$router.push('/dashboard');
-      } else {
-        this.$router.go(-1);
-      }
-    },
-    isMobile() {
-      let isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      return isMobile;
-    },
-    items() {
-      return document.querySelectorAll('.grid-stack-item');
-    },
-    async logOut() {
-      await this.$store.dispatch('auth/logout');
-      this.$router.push('/');
-    },
-    refreshStreamSocket(event) {
-      if (this.$refs[event.camera] && this.$refs[event.camera][0]) {
-        this.$refs[event.camera][0].pauseStream(true);
-      }
-
-      this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
-    },
-    resizeHandler() {
-      if (this.grid) {
-        this.grid.cellHeight(this.windowHeight() / 12, true);
-      }
-    },
-    saveToStorage() {
-      this.serializedData = this.grid.save();
-      for (const element of this.serializedData) delete element.content;
-      //console.log(`Storing layout: ${JSON.stringify(this.serializedData)}`);
-      this.$store.dispatch('camview/updateElements', this.serializedData);
-    },
-    updateLayout(manual) {
-      this.grid = GridStack.init({
-        alwaysShowResizeHandle: this.isMobile(),
-        disableOneColumnMode: true,
-        animate: true,
-        margin: 2,
-        row: 12,
-        float: true,
-        column: 12,
-        resizable: {
-          autoHide: !this.isMobile(),
-          handles: 'all',
-        },
-        cellHeight: this.windowHeight() / 12,
-      });
-
-      this.grid.on('dragstop resizestop', () => {
-        this.saveToStorage();
-      });
-
-      if (this.camviewLayout.length > 0 && this.camviewLayout.length === this.items().length && !manual) {
-        const layout = [...this.camviewLayout];
-        //console.log(`Loading layout: ${JSON.stringify(layout)}`);
-        //this.grid.load(layout, true);
-        //this.grid.load(layout, true); //TODO - .load() not updating (y) with gridstack v4.x
-        for (const element of this.items()) {
-          for (const pos of layout) {
-            const id = element.getAttribute('gs-id');
-            if (id === pos.id) {
-              this.grid.update(element, pos);
-            }
-          }
-        }
-      } else {
-        const nodes = this.getLayout();
-        nodes.forEach((node) => {
-          this.grid.update(node.el, {
-            x: node.x,
-            y: node.y,
-            w: node.w,
-            h: node.h,
-          });
-        });
       }
     },
     getLayout() {
@@ -309,6 +262,126 @@ export default {
       }
 
       return nodes;
+    },
+    goBack() {
+      if (this.prevRoute && !this.prevRoute.name && !this.prevRoute.meta.name) {
+        return this.$router.push('/dashboard');
+      } else {
+        this.$router.go(-1);
+      }
+    },
+    isMobile() {
+      let isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      return isMobile;
+    },
+    items() {
+      return document.querySelectorAll('.grid-stack-item');
+    },
+    logKey(event) {
+      if (event.key === 'F11' || event.keyCode === 122) {
+        event.preventDefault();
+        !this.fullscreen ? this.openFullscreen() : this.closeFullscreen();
+      } else if ((event.key === 'Escape' || event.keyCode === 27) && this.fullscreen) {
+        event.preventDefault();
+        this.closeFullscreen();
+      }
+    },
+    async logOut() {
+      await this.$store.dispatch('auth/logout');
+      this.$router.push('/');
+    },
+    openFullscreen() {
+      const elem = document.querySelector('html');
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+
+      const fullscreenButton = document.querySelector('.middle-button');
+      fullscreenButton.innerHTML = this.$t('close');
+
+      this.fullscreen = true;
+    },
+    refreshStreamSocket(event) {
+      if (this.$refs[event.camera] && this.$refs[event.camera][0]) {
+        this.$refs[event.camera][0].pauseStream(true);
+      }
+
+      this.$socket.client.emit('join_stream', { feed: event.camera, destroy: true });
+    },
+    resizeHandler() {
+      if (this.grid) {
+        this.grid.cellHeight(this.windowHeight() / 12, true);
+      }
+    },
+    saveToStorage() {
+      this.serializedData = this.grid.save();
+      for (const element of this.serializedData) delete element.content;
+      //console.log(`Storing layout: ${JSON.stringify(this.serializedData)}`);
+      this.$store.dispatch('camview/updateElements', this.serializedData);
+    },
+    showFullscreen() {
+      if (this.fullscreen) {
+        this.closeFullscreen();
+      } else {
+        this.openFullscreen();
+      }
+    },
+    updateLayout(manual) {
+      this.grid = GridStack.init({
+        alwaysShowResizeHandle: this.isMobile(),
+        disableOneColumnMode: true,
+        animate: true,
+        margin: 2,
+        row: 12,
+        float: true,
+        column: 12,
+        resizable: {
+          autoHide: !this.isMobile(),
+          handles: 'all',
+        },
+        cellHeight: this.windowHeight() / 12,
+      });
+
+      this.grid.on('dragstop resizestop', () => {
+        this.saveToStorage();
+      });
+
+      if (this.camviewLayout.length > 0 && this.camviewLayout.length === this.items().length && !manual) {
+        const layout = [...this.camviewLayout];
+        //console.log(`Loading layout: ${JSON.stringify(layout)}`);
+        //this.grid.load(layout, true);
+        //this.grid.load(layout, true); //TODO - .load() not updating (y) with gridstack v4.x
+        for (const element of this.items()) {
+          for (const pos of layout) {
+            const id = element.getAttribute('gs-id');
+            if (id === pos.id) {
+              this.grid.update(element, pos);
+            }
+          }
+        }
+      } else {
+        const nodes = this.getLayout();
+        nodes.forEach((node) => {
+          this.grid.update(node.el, {
+            x: node.x,
+            y: node.y,
+            w: node.w,
+            h: node.h,
+          });
+        });
+      }
     },
     windowHeight() {
       let windowHeight =

@@ -6,9 +6,11 @@ transition(name="fade" @enter="enter")
     b-modal(v-model="show" modal-class="overflow-hidden" dialog-class="modal-bottom" hide-footer hide-header)
       .row.pb-4(v-if="showLeftNavi || showRightNavi")
         .col.d-flex.flex-wrap.justify-content-start.align-content-center
-          b-button.back-button(pill, @click="$emit('leftNaviClick')") {{ leftNaviName }}
+          b-button.left-button(pill, @click="$emit('leftNaviClick')") {{ leftNaviName }}
+        .col.d-flex.flex-wrap.justify-content-center.align-content-center
+          b-button.middle-button(pill, @click="$emit('middleNaviClick')") {{ middleNaviName }}
         .col.d-flex.flex-wrap.justify-content-end.align-content-center
-          b-button.btn-primary.logout-button(pill, @click="$emit('rightNaviClick')") {{ rightNaviName }}
+          b-button.btn-primary.right-button(pill, @click="$emit('rightNaviClick')") {{ rightNaviName }}
       hr.mt-0.pt-0(v-if="showLeftNavi || showRightNavi")
       div(v-for="(item, i) in items" :key="item.name")
         .row
@@ -45,11 +47,19 @@ export default {
       type: String,
       default: 'Back',
     },
+    middleNaviName: {
+      type: String,
+      default: 'Fullscreen',
+    },
     rightNaviName: {
       type: String,
       default: 'Signout',
     },
     showLeftNavi: {
+      type: Boolean,
+      default: false,
+    },
+    showMiddleNavi: {
       type: Boolean,
       default: false,
     },
