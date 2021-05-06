@@ -1,6 +1,6 @@
 # Changelog
 
-# NEXT
+# v4.2.3 - 2021-05-06
 
 ## Bugfixes
 - Fixed an issue where `config` button does not load config.schema.json if no plugin configuration is found
