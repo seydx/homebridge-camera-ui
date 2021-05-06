@@ -1,5 +1,10 @@
 # Changelog
 
+# v4.2.2 - 2021-05-06
+
+## Bugfixes
+- Fixed an issue where missing plugin config crashed homebridge (again)
+
 # v4.2.1 - 2021-05-06
 
 ## Other changes
@@ -9,7 +14,7 @@
   - Added additional media queries to recording cards
   - Minor UI improvements
 
-## Bugfixexs
+## Bugfixes
 - Fixed an issue where missing plugin config crashed homebridge
 - Minor UI bugfixes
 
@@ -25,7 +30,7 @@
 - Server/Interface
   - Instead of a JSON payload only the buffer of the stream is sent to increase the performance of socket.io
 
-## Bugfixexs
+## Bugfixes
 - Minor UI bugfixes
 
 # v4.1.1 - 2021-05-05
