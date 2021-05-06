@@ -457,7 +457,7 @@ export default {
       try {
         this.downloadBackupSpinner = true;
         const userStorage = {
-          camviewLayout: localStorage.getItem('camview-layout'),
+          camviewLayout: localStorage.getItem('camview-layouts'),
           dashboardLayout: localStorage.getItem('dashboard-layout'),
           theme: localStorage.getItem('theme'),
           themeColor: localStorage.getItem('theme-color'),
@@ -503,7 +503,7 @@ export default {
     },
     restoreLocalStorage(storage) {
       if (storage.camviewLayout) {
-        localStorage.setItem('camview-layout', JSON.stringify(storage.camviewLayout));
+        localStorage.setItem('camview-layouts', JSON.stringify(storage.camviewLayout));
       }
       if (storage.dashboardLayout) {
         localStorage.setItem('dashboard-layout', JSON.stringify(storage.dashboardLayout));

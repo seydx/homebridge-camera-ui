@@ -195,8 +195,18 @@ export default {
         const nodes = this.getLayout();
         this.grid.removeAll();
 
-        this.refreshLayout(nodes);
-        this.loading = false;
+        const count = nodes.length.toString();
+
+        if (
+          this.camviewLayout[count] &&
+          this.camviewLayout[count].length > 0 &&
+          this.camviewLayout[count].length === nodes.length
+        ) {
+          const items = nodes.map((node) => node.el);
+          this.restoreFromStorage(count, items, true);
+        } else {
+          this.refreshLayout(nodes);
+        }
       } catch (err) {
         console.log(err);
         this.$toast.error(err.message);
@@ -377,11 +387,35 @@ export default {
         this.grid.cellHeight(this.windowHeight() / 12, true);
       }
     },
+    restoreFromStorage(count, items, add) {
+      items = items || this.items();
+      const layout = this.camviewLayout[count];
+      //console.log(`Loading layout: ${JSON.stringify(layout)}`);
+      //this.grid.load(layout, true);
+      //this.grid.load(layout, true); //TODO - .load() not updating (y) with gridstack v4.x
+      for (const element of items) {
+        for (const pos of layout) {
+          const id = element.getAttribute('gs-id');
+          if (id === pos.id) {
+            if (add) {
+              this.grid.addWidget(element, pos);
+            } else {
+              this.grid.update(element, pos);
+            }
+          }
+        }
+      }
+    },
     saveToStorage() {
-      this.serializedData = this.grid.save();
-      for (const element of this.serializedData) delete element.content;
+      const itemLayout = {};
+      itemLayout[this.items().length] = this.grid.save();
+
+      for (const element of itemLayout[this.items().length]) {
+        delete element.content;
+      }
+
       //console.log(`Storing layout: ${JSON.stringify(this.serializedData)}`);
-      this.$store.dispatch('camview/updateElements', this.serializedData);
+      this.$store.dispatch('camview/updateElements', itemLayout);
     },
     showFullscreen() {
       if (this.fullscreen) {
@@ -390,7 +424,7 @@ export default {
         this.openFullscreen();
       }
     },
-    updateLayout(manual) {
+    updateLayout() {
       this.grid = GridStack.init({
         alwaysShowResizeHandle: this.isMobile(),
         disableOneColumnMode: true,
@@ -410,19 +444,13 @@ export default {
         this.saveToStorage();
       });
 
-      if (this.camviewLayout.length > 0 && this.camviewLayout.length === this.items().length && !manual) {
-        const layout = [...this.camviewLayout];
-        //console.log(`Loading layout: ${JSON.stringify(layout)}`);
-        //this.grid.load(layout, true);
-        //this.grid.load(layout, true); //TODO - .load() not updating (y) with gridstack v4.x
-        for (const element of this.items()) {
-          for (const pos of layout) {
-            const id = element.getAttribute('gs-id');
-            if (id === pos.id) {
-              this.grid.update(element, pos);
-            }
-          }
-        }
+      const count = this.items().length.toString();
+      if (
+        this.camviewLayout[count] &&
+        this.camviewLayout[count].length > 0 &&
+        this.camviewLayout[count].length === this.items().length
+      ) {
+        this.restoreFromStorage(count);
       } else {
         this.getLayout(true);
       }

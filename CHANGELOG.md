@@ -7,6 +7,7 @@
   - Improvements in image rekognition. Replaced `node-rekognition` with `@aws/client-rekognition`
 - Interface:
   - Added `auto darkmode` switch to settings to automatically switch darkmode based on system settings (if supported)
+  - Added support for multi-layer configuration for camview. It is now possible to dynamically store each number of displayed videos separately in localStorage and call the layout. Fully automatic!
 - Bump dependencies
 
 ## Bugfixes
