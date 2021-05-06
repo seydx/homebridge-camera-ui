@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.2.4-test.1",
+  "version": "4.2.4-test.2",
   "description": "User Interface for RTSP capable cameras.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -21,6 +21,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.14.0",
     "@homebridge/plugin-ui-utils": "^0.0.19",
     "compare-versions": "^3.6.0",
     "connect-history-api-fallback": "^1.6.0",
@@ -38,7 +39,6 @@
     "mqtt": "^4.2.6",
     "multer": "^1.4.2",
     "nanoid": "^3.1.22",
-    "node-rekognition": "^0.4.0",
     "os": "^0.1.1",
     "piexifjs": "^1.0.6",
     "ping": "^0.4.1",

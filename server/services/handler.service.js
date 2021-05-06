@@ -4,7 +4,8 @@ const got = require('got');
 const { customAlphabet } = require('nanoid/async');
 const nanoid = customAlphabet('1234567890abcdef', 10);
 const moment = require('moment');
-const Rekognition = require('node-rekognition');
+//const Rekognition = require('node-rekognition');
+const { RekognitionClient, DetectLabelsCommand } = require('@aws-sdk/client-rekognition');
 const URL = require('url').URL;
 const webpush = require('web-push');
 
@@ -218,20 +219,36 @@ class MotionHandler {
   }
 
   async handleImageDetection(cameraName, aws, labels, confidence, imgBuffer) {
-    try {
-      let detected;
-      logger.debug(`Analyzing image for following labels: ${labels.toString()}`, cameraName, true);
+    let detected = [];
 
-      if (aws.accessKeyId && aws.secretAccessKey && aws.region) {
-        const rekognition = new Rekognition(aws);
+    labels = (labels || ['human', 'face', 'person']).map((label) => label.toLowerCase());
+    confidence = confidence || 80;
 
-        labels = (labels || ['human', 'face', 'person']).map((label) => label.toLowerCase());
-        confidence = confidence || 80;
+    logger.debug(`Analyzing image for following labels: ${labels.toString()}`, cameraName, true);
 
-        let imageLabels = await rekognition.detectLabels(imgBuffer);
-        detected = imageLabels.Labels.filter(
-          (label) => label && labels.includes(label.Name.toLowerCase()) && label.Confidence >= confidence
-        ).map((label) => label.Name);
+    if (aws.accessKeyId && aws.secretAccessKey && aws.region) {
+      try {
+        const client = new RekognitionClient({
+          credentials: {
+            accessKeyId: aws.accessKeyId,
+            secretAccessKey: aws.secretAccessKey,
+          },
+          region: aws.region,
+        });
+
+        const command = new DetectLabelsCommand({
+          Image: {
+            Bytes: imgBuffer,
+          },
+          MaxLabels: 10,
+          MinConfidence: 50,
+        });
+
+        let response = await client.send(command);
+
+        detected = response.Labels.filter(
+          (awsLabel) => awsLabel && labels.includes(awsLabel.Name.toLowerCase()) && awsLabel.Confidence >= confidence
+        ).map((awsLabel) => awsLabel.Name);
 
         logger.debug(
           `Label with confidence >= ${confidence}% ${
@@ -242,28 +259,25 @@ class MotionHandler {
         );
 
         if (detected.length === 0) {
-          imageLabels = imageLabels.Labels.map((label) => {
-            return `${label.Name.toLowerCase()} (${label.Confidence}%)`;
+          response = response.Labels.map((awsLabel) => {
+            return `${awsLabel.Name.toLowerCase()} (${Number.parseFloat(awsLabel.Confidence.toFixed(2))}%)`;
           });
-          logger.debug(imageLabels, cameraName, true); //for debugging
-          detected = [];
+          logger.debug(`Found labels are: ${response}`, cameraName, true); //for debugging
         }
 
         await this.handleAWS({
           contingent_left: aws.contingent_left - 1,
           last_rekognition: moment().format('YYYY-MM-DD HH:mm:ss'),
         });
-      } else {
-        logger.warn('No AWS credentials setted up in config.json!', cameraName, true);
+      } catch (error) {
+        logger.error('An error occured during image rekognition', cameraName, true);
+        logger.error(error);
       }
-
-      return detected.length > 0 ? detected[0] : false;
-    } catch (error) {
-      logger.error('An error occured during image rekognition', cameraName, true);
-      logger.error(error);
-
-      return false;
+    } else {
+      logger.warn('No AWS credentials setted up in config.json!', cameraName, true);
     }
+
+    return detected.length > 0 ? detected[0] : false;
   }
 
   async handleAWS(awsInfo) {

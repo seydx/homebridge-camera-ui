@@ -174,6 +174,14 @@ export default {
     },
     async handleFavouriteCamera(cam) {
       try {
+        this.loading = true;
+        let cameras = [...this.cameras];
+
+        this.grid.destroy(false);
+        this.grid = null;
+
+        this.cameras = [];
+
         const camera = this.allCameras.find((camera) => camera && camera.name === cam.name);
 
         const cameraSettings = await getSetting('cameras');
@@ -186,29 +194,22 @@ export default {
         await changeSetting('cameras', cameraSettings.data);
 
         if (cam.state) {
-          this.cameras.push(camera);
+          cameras.push(camera);
         } else {
-          this.cameras = this.cameras.filter((camera) => camera && camera.name !== cam.name);
+          cameras = cameras.filter((camera) => camera && camera.name !== cam.name);
         }
 
-        await timeout(100); //need to wait a lil bit for grid to create all components
+        this.cameras = cameras;
+        this.loading = false;
 
-        const nodes = this.getLayout();
-        this.grid.removeAll();
-        nodes.forEach((node) => {
-          this.grid.addWidget(node.el, {
-            x: node.x,
-            y: node.y,
-            w: node.w,
-            h: node.h,
-          });
-        });
+        await timeout(100);
+        this.updateLayout(true);
       } catch (err) {
         console.log(err);
         this.$toast.error(err.message);
       }
     },
-    getLayout() {
+    getLayout(update) {
       let nodes = [];
 
       let index_ = 0;
@@ -259,6 +260,15 @@ export default {
           w: w,
           h: h,
         });
+
+        if (update) {
+          this.grid.update(element, {
+            x: x,
+            y: y,
+            w: w,
+            h: h,
+          });
+        }
       }
 
       return nodes;
@@ -372,15 +382,7 @@ export default {
           }
         }
       } else {
-        const nodes = this.getLayout();
-        nodes.forEach((node) => {
-          this.grid.update(node.el, {
-            x: node.x,
-            y: node.y,
-            w: node.w,
-            h: node.h,
-          });
-        });
+        this.getLayout(true);
       }
     },
     windowHeight() {

@@ -17,7 +17,7 @@
       "debug": true,
       "mqtt": {
         "active": true,
-        "host": "192.168.178.99",
+        "host": "192.168.178.98",
         "port": 1883
       },
       "http": {
@@ -38,12 +38,30 @@
           "name": "Sricam",
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1"
+          },
+          "mqtt": {
+            "motionTopic": "sricam_test/motion",
+            "motionMessage": "ON",
+            "motionResetTopic": "sricam_test/motion",
+            "motionResetMessage": "OFF"
           }
         },
         {
           "name": "Yi Dome",
           "videoConfig": {
             "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_0.h264"
+          }
+        },
+        {
+          "name": "Fail Camera 1",
+          "videoConfig": {
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.999/onvif1"
+          }
+        },
+        {
+          "name": "Fail Camera 2",
+          "videoConfig": {
+            "source": "-rtsp_transport tcp -i rtsp://192.168.178.999/ch0_0.h264"
           }
         }
       ]

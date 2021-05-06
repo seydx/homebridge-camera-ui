@@ -5,6 +5,7 @@
 ## Other changes
 - Interface:
   - Added `auto darkmode` switch to settings to automatically switch darkmode based on system settings (if supported)
+- Bump dependencies
 
 ## Bugfixes
 - Minor UI bugfixes
