@@ -69,7 +69,7 @@ class ConfigService {
   getPluginConfig() {
     this.getHbConfig();
     this.plugin = this.config.platforms.find((x) => x.platform === 'CameraUI') || {};
-    
+
     return this.plugin;
   }
 

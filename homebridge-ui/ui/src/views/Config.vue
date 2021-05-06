@@ -1,11 +1,29 @@
 <template lang="pug">
-  div
+  .mt-5
+    .lds-ring(v-if="loading")
+      div
+      div
+      div
+      div
+    div(v-else)
 </template>
 
 <script>
 export default {
   name: 'Config',
-  mounted() {
+  data() {
+    return {
+      loading: true,
+    };
+  },
+  async mounted() {
+    const configured = await window.homebridge.getPluginConfig();
+
+    if (!configured.length) {
+      window.homebridge.updatePluginConfig([{}]);
+    }
+
+    this.loading = false;
     window.homebridge.showSchemaForm();
   },
   beforeDestroy() {
