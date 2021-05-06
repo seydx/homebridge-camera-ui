@@ -63,14 +63,14 @@ class ConfigService {
 
   getHbConfig() {
     this.config = fs.readJSONSync(configPath);
+    return this.config;
   }
 
   getPluginConfig() {
     this.getHbConfig();
-
-    this.plugin = this.config.platforms.find((x) => x.platform === 'CameraUI');
-
-    return this.plugin || {};
+    this.plugin = this.config.platforms.find((x) => x.platform === 'CameraUI') || {};
+    
+    return this.plugin;
   }
 
   getUiConfig() {
