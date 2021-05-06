@@ -207,9 +207,7 @@ export default {
   },
   async created() {
     try {
-      const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-
-      this.darkmode = currentTheme === 'dark';
+      this.darkmode = localStorage.getItem('theme') === 'dark';
 
       if ((this.showFilterCameras || this.showFilterRooms) && this.checkLevel('settings:cameras:access')) {
         const response = await getSetting('cameras');

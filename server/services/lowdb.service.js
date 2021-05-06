@@ -69,7 +69,6 @@ class Lowdb {
         },
         general: {
           atHome: false,
-          darkmode: false,
           theme: 'default',
           exclude: [],
           rooms: ['Standard'],

@@ -33,11 +33,11 @@ export default {
   },
   methods: {
     handleErrorImg(event) {
-      const darkMode = localStorage.getItem('theme') || '';
+      const darkmode = localStorage.getItem('theme') || '';
 
       event.target.classList.remove('object-fit-cover');
       event.target.classList.add('object-fit-none');
-      event.target.src = require(`@/assets/img/no_img${darkMode ? '_white' : ''}.png`);
+      event.target.src = require(`@/assets/img/no_img${darkmode ? '_white' : ''}.png`);
     },
   },
 };

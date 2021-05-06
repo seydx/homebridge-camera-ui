@@ -38,7 +38,18 @@
         h5 {{ $t("themes") }}
         div.mt-4
           .settings-box.container
-            .row
+            .row(v-if="supportMatchMedia")
+              .col-8.d-flex.flex-wrap.align-content-center {{ $t("auto_darkmode") }}
+              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                toggle-button.auto-darkmode-toggle(
+                  color="var(--primary-color) !important",
+                  :height="30",
+                  :sync="true",
+                  v-model="autoDarkmode"
+                  @input="switchAutoDarkmode"
+                )
+            hr(v-if="supportMatchMedia")
+            .row(v-if="supportMatchMedia && !autoDarkmode")
               .col-8.d-flex.flex-wrap.align-content-center {{ $t("darkmode") }}
               .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
                 toggle-button.darkmode-toggle(
@@ -48,7 +59,7 @@
                   v-model="darkmode"
                   @input="switchDarkmode"
                 )
-            hr
+            hr(v-if="supportMatchMedia && !autoDarkmode")
             .row
               .col-4.d-flex.flex-wrap.align-content-center {{ $t("themes") }}
               .col-8.text-right
@@ -116,6 +127,7 @@ export default {
   },
   data() {
     return {
+      autoDarkmode: false,
       cameras: [],
       darkmode: false,
       form: {
@@ -127,6 +139,7 @@ export default {
       },
       generalTimer: null,
       loading: true,
+      supportMatchMedia: false,
     };
   },
   computed: {
@@ -172,6 +185,7 @@ export default {
         this.cameras = cameras.data;
       }
 
+      this.supportMatchMedia = window.matchMedia;
       this.loading = false;
       await timeout(300);
 
@@ -184,15 +198,14 @@ export default {
       const toggleGreenSwitch = document.querySelector('.switch-green');
       const toggleGraySwitch = document.querySelector('.switch-gray');
 
-      const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-
       const currentColorTheme = localStorage.getItem('theme-color')
         ? localStorage.getItem('theme-color')
         : togglePinkSwitch
         ? togglePinkSwitch.click()
         : 'pink';
 
-      this.darkmode = currentTheme === 'dark';
+      this.autoDarkmode = localStorage.getItem('darkmode') === 'auto';
+      this.darkmode = localStorage.getItem('theme') === 'dark';
 
       if (currentColorTheme === 'pink' && togglePinkSwitch) {
         togglePinkSwitch.checked = true;
@@ -226,9 +239,43 @@ export default {
         this.$toast.error(this.$t('room_already_exists'));
       }
     },
+    matchMediaListener(event) {
+      const autoDarkmode = localStorage.getItem('darkmode') === 'auto';
+
+      if (autoDarkmode) {
+        if (event.matches) {
+          localStorage.setItem('theme', 'dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          localStorage.setItem('theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      }
+    },
     removeRoom(room, index) {
       this.$toast.success(this.$t('successfully_removed'));
       this.$delete(this.general.rooms, index);
+    },
+    switchAutoDarkmode(state) {
+      localStorage.setItem('darkmode', state ? 'auto' : 'manual');
+
+      if (state) {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          localStorage.setItem('theme', 'dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          localStorage.setItem('theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.matchMediaListener);
+      } else {
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        this.darkmode = currentTheme === 'dark';
+
+        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.matchMediaListener);
+      }
     },
     switchDarkmode(state) {
       document.documentElement.dataset.theme = state ? 'dark' : 'light';

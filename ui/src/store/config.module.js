@@ -62,13 +62,13 @@ export const config = {
       ];
 
       if (validThemes.includes(theme)) {
-        const darkMode = theme.split('-')[0];
+        const darkmode = theme.split('-')[0];
         const colorTheme = theme.split('-')[1];
 
-        document.documentElement.dataset.theme = darkMode;
+        document.documentElement.dataset.theme = darkmode;
         document.documentElement.dataset.themeColor = colorTheme;
 
-        localStorage.setItem('theme', darkMode);
+        localStorage.setItem('theme', darkmode);
         localStorage.setItem('theme-color', colorTheme);
       }
     },
