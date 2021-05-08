@@ -1,5 +1,19 @@
 # Changelog
 
+# v4.2.5 - 2021-05-08
+
+## Other changes
+- Plugin:
+  - Changed `getPort` with `pick-port`
+- Homebridge UI:
+  - Get ffmpeg path from `ffmpeg-for-homebridge` if no videoProcessor is set up in config.json
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where actionsheets buttons were also displayed with `show=false`
+- Fixed an issue where the `Fullscreen` button was also displayed on mobile devices (camview)
+- Minor plugin bugfixes
+
 # v4.2.4 - 2021-05-06
 
 ## Other changes

@@ -27,7 +27,7 @@ div
     :showLeftNavi="true"
     :leftNaviName="$t('back')"
     @leftNaviClick="goBack"
-    :showMiddleNavi="true"
+    :showMiddleNavi="!isMobile"
     :middleNaviName="$t('fullscreen')"
     @middleNaviClick="showFullscreen"
     :showRightNavi="true"

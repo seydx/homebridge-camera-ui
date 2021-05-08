@@ -1,11 +1,10 @@
-/* eslint-disable quotes */
 'use-strict';
 
 const logger = require('../../services/logger/logger.service');
 const sessions = require('../../services/sessions/sessions.service');
 
 const createSocket = require('dgram').createSocket;
-const getPort = require('get-port');
+const pickPort = require('pick-port');
 const spawn = require('child_process').spawn;
 
 const FfmpegProcess = require('../services/ffmpeg.service');
@@ -33,7 +32,7 @@ class Camera {
       }
     });
 
-    const options = {
+    this.controller = new this.hap.CameraController({
       cameraStreamCount: this.videoConfig.maxStreams || 2, // HomeKit requires at least 2 streams, but 1 is also just fine
       delegate: this,
       streamingOptions: {
@@ -69,9 +68,47 @@ class Camera {
           ],
         },
       },
+    });
+  }
+
+  //https://github.com/homebridge/camera-utils/blob/master/src/ports.ts
+  async reservePorts(count = 1, type = 'udp', attemptNumber) {
+    if (attemptNumber > 100) {
+      throw new Error('Failed to reserve ports after 100 tries');
+    }
+
+    const pickPortOptions = {
+      type,
+      reserveTimeout: 15, // 15 seconds is max setup time for HomeKit streams, so the port should be in use by then
+    };
+    const port = await pickPort(pickPortOptions);
+    const ports = [port];
+    const tryAgain = () => {
+      return this.reservePorts({
+        count,
+        type,
+        attemptNumber: attemptNumber + 1,
+      });
     };
 
-    this.controller = new this.hap.CameraController(options);
+    // eslint-disable-next-line unicorn/prevent-abbreviations
+    for (let i = 1; i < count; i++) {
+      try {
+        const targetConsecutivePort = port + i,
+          openPort = await pickPort({
+            ...pickPortOptions,
+            minPort: targetConsecutivePort,
+            maxPort: targetConsecutivePort,
+          });
+
+        ports.push(openPort);
+      } catch {
+        // can't reserve next port, bail and get another set
+        return tryAgain();
+      }
+    }
+
+    return ports;
   }
 
   determineResolution(request, isSnapshot) {
@@ -109,8 +146,10 @@ class Camera {
     if (noneFilter < 0 && (resultInfo.width > 0 || resultInfo.height > 0)) {
       resultInfo.resizeFilter =
         'scale=' +
+        // eslint-disable-next-line quotes
         (resultInfo.width > 0 ? "'min(" + resultInfo.width + ",iw)'" : 'iw') +
         ':' +
+        // eslint-disable-next-line quotes
         (resultInfo.height > 0 ? "'min(" + resultInfo.height + ",ih)'" : 'ih') +
         ':force_original_aspect_ratio=decrease';
 
@@ -238,10 +277,11 @@ class Camera {
       const snapshot = await (this.snapshotPromise || this.fetchSnapshot(resolution.snapFilter));
 
       logger.debug(
-        `Sending snapshot: 
-          ${resolution.width > 0 ? resolution.width : 'native'} x 
-          ${resolution.height > 0 ? resolution.height : 'native'}
-          ${cachedSnapshot ? ' (cached)' : ''}`,
+        'Sending snapshot: ' +
+          (resolution.width > 0 ? resolution.width : 'native') +
+          'x' +
+          (resolution.height > 0 ? resolution.height : 'native') +
+          (cachedSnapshot ? ' (cached)' : ''),
         this.accessory.displayName
       );
 
@@ -256,10 +296,10 @@ class Camera {
   }
 
   async prepareStream(request, callback) {
-    const videoReturnPort = await getPort();
-
+    const videoReturnPort = await this.reservePorts(1);
     const videoSSRC = this.hap.CameraController.generateSynchronisationSource();
-    const audioReturnPort = await getPort();
+
+    const audioReturnPort = await this.reservePorts(1);
     const audioSSRC = this.hap.CameraController.generateSynchronisationSource();
 
     const ipv6 = request.addressVersion === 'ipv6';
@@ -335,18 +375,29 @@ class Camera {
       }
 
       logger.debug(
-        `Video stream requested: ${request.video.width} x ${request.video.height},
-        ${request.video.fps} fps, ${request.video.max_bit_rate} kbps`,
+        'Video stream requested: ' +
+          request.video.width +
+          'x' +
+          request.video.height +
+          ', ' +
+          request.video.fps +
+          ' fps, ' +
+          request.video.max_bit_rate +
+          ' kbps',
         this.accessory.displayName
       );
 
       logger.info(
-        `Starting video stream: 
-        ${resolution.width > 0 ? resolution.width : 'native'} x 
-        ${resolution.height > 0 ? resolution.height : 'native'}, 
-        ${fps > 0 ? fps : 'native'} fps, 
-        ${videoBitrate > 0 ? videoBitrate : '???'} kbps
-        ${this.videoConfig.audio ? ' (' + request.audio.codec + ')' : ''}`,
+        'Starting video stream: ' +
+          (resolution.width > 0 ? resolution.width : 'native') +
+          'x' +
+          (resolution.height > 0 ? resolution.height : 'native') +
+          ', ' +
+          (fps > 0 ? fps : 'native') +
+          ' fps, ' +
+          (videoBitrate > 0 ? videoBitrate : '???') +
+          ' kbps' +
+          (this.videoConfig.audio ? ' (' + request.audio.codec + ')' : ''),
         this.accessory.displayName
       );
 
@@ -537,15 +588,18 @@ class Camera {
 
       case 'reconfigure': {
         logger.debug(
-          `Received request to reconfigure: 
-          ${request.video.width}x${request.video.height}, 
-          ${request.video.fps} fps, 
-          ${request.video.max_bit_rate} kbps (Ignored)`,
+          'Received request to reconfigure: ' +
+            request.video.width +
+            'x' +
+            request.video.height +
+            ', ' +
+            request.video.fps +
+            ' fps, ' +
+            request.video.max_bit_rate +
+            ' kbps (Ignored)',
           this.accessory.displayName
         );
-
         callback();
-
         break;
       }
 

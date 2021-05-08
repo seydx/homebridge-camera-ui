@@ -1,5 +1,7 @@
 const { HomebridgePluginUiServer, RequestError } = require('@homebridge/plugin-ui-utils');
+
 const child_process = require('child_process');
+const ffmpegPath = require('ffmpeg-for-homebridge');
 const fs = require('fs-extra');
 const readline = require('readline');
 
@@ -35,18 +37,18 @@ class UiServer extends HomebridgePluginUiServer {
           });
 
         for (const camera of cameras) {
-          let audio = true;
           let cameraHeight = camera.videoConfig.maxHeight || 720;
           let cameraWidth = camera.videoConfig.maxWidth || 1280;
           let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
           let source = camera.videoConfig.source;
           let videoProcessor =
-            cameraUI.options && cameraUI.options.videoProcessor ? cameraUI.options.videoProcessor : 'ffmpeg';
+            cameraUI.options && cameraUI.options.videoProcessor
+              ? cameraUI.options.videoProcessor
+              : ffmpegPath || 'ffmpeg';
 
           const options = {
             name: camera.name,
             source: source,
-            reloadTimer: 10,
             ffmpegOptions: {
               '-s': `${cameraWidth}x${cameraHeight}`,
               '-b:v': '299k',
@@ -54,20 +56,13 @@ class UiServer extends HomebridgePluginUiServer {
               '-bf': 0,
               '-preset:v': 'ultrafast',
               '-threads': '1',
-              '-loglevel': 'quiet',
-            },
-            ffmpegPath: videoProcessor,
-          };
-
-          if (audio) {
-            options.ffmpegOptions = {
-              ...options.ffmpegOptions,
               '-codec:a': 'mp2',
               '-ar': '44100',
               '-ac': '1',
               '-b:a': '128k',
-            };
-          }
+            },
+            ffmpegPath: videoProcessor,
+          };
 
           streams[camera.name] = options;
         }
@@ -120,8 +115,6 @@ class UiServer extends HomebridgePluginUiServer {
     stderr.on('line', (line) => {
       if (/\[(panic|fatal|error)]/.test(line)) {
         throw new RequestError(`${cameraName}: ${line}`);
-      } else {
-        console.log(`${cameraName}: ${line}`);
       }
     });
 
