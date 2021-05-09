@@ -85,7 +85,7 @@ To use image rekognition, you need to set up a AWS account with an IAM user. Mor
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/dashboard_white.png" align="center" alt="camera.ui">
 
- ### CamViews
+ ### Camview
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews.gif" align="center" alt="camera.ui">
 
