@@ -43,7 +43,7 @@ Once you have installed and configured the plugin you can access the interface v
 The default username is ``master`` and the default password is ``master``.
 
 
-## Example Config
+## Example Config (minimal)
 
 
 ```
@@ -51,36 +51,17 @@ The default username is ``master`` and the default password is ``master``.
    ...
     "platforms": [
         {
+            "platform": "CameraUI",
             "name": "CameraUI",
             "port": 8181,
-            "debug": true,
-            "mqtt": {
-                "active": false,
-                "host": "192.168.178.123",
-                "port": 1883
-            },
-            "http": {
-                "active": false,
-                "port": 7777,
-                "localhttp": false
-            },
-            "ssl": {
-                "active": false,
-                "key": "/path/to/key/server.key",
-                "cert": "/path/to/cert/server.crt"
-            },
-            "options": {
-                "videoProcessor": "ffmpeg"
-            },
-            "cameras": [ ... ],
-            "platform": "CameraUI"
+            "cameras": [ ... ]
         }
     ]
 }
 
 ```
 
-See [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
+For a full config.json, please look at [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
 
 # Image Rekognition
 
