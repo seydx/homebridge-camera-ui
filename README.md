@@ -14,29 +14,32 @@
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews_full_mobile_loss.gif" align="right" alt="camera.ui">
 
-**camera.ui** is a homebridge user interface to control your cameras. It supports almost everything you need for a camera user interface.
+**camera.ui** is a homebridge user interface to control your RTSP capable cameras. It supports almost everything you need for a camera user interface.
 
-- Livestreams on Web
-- Full functional Web App with push notifications and more
-- Multi-language support
+- **Live streams** on Web
+- **Web App** with push notifications and more (requires https)
+- **Multi-language** support
 - **CamViews**: A resizable, drag & drop camera overview
 - **Image Rekognition** with AWS
-- Telegram and Webhook Support
-- Record Snapshot/Video on movement detection
-- Beautiful User Interface with Themes and Darkmode
-- Config UI X Support
+- **Notifications** vie Telegram and Webhook
+- **Record Snapshot/Video** on movement detection
+- **User interface** with 8 different color themes and darkmode
+- **Config UI X** Support
 - and much mure...
 
-**Supported Languages:** :de: | :gb: | :netherlands:
+**Supported Languages:** 
+
+:de: | :gb: | :netherlands:
 
 
-## Installation Instructions
+## Installation
 
 
 ```
 sudo npm install -g --unsafe-perm homebridge-camera-ui@latest
 ```
 
+## Defaults
 
 Once you have installed and configured the plugin you can access the interface via http://localhost:8181.
 
@@ -75,37 +78,26 @@ To use image rekognition, you need to set up a AWS account with an IAM user. Mor
 # Usage
 
  ### Login
-On first login attempt, the interface will prompt you to change the credentials to continue. The Login screen is adjusted for all available screens.
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/login_white.png" align="center" alt="camera.ui">
 
  ### Dashboard
 
-Shows you your favourite cameras streams or snapshots (adjustable under settings)
-
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/dashboard_white.png" align="center" alt="camera.ui">
 
  ### CamViews
-
-The main function of this interface. Provide you a unique overview of you favourite cameras (adjustable under settings) with resize, drag & drop support!
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews.gif" align="center" alt="camera.ui">
 
  ### Recordings
 
-Shows you all recorded files under a hood
-
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/recordings_white.png" align="center" alt="camera.ui">
 
  ### Notifications
 
-The Interface also provides you with a notifications section to not miss any notifications.
-
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/nots_white.png" align="center" alt="camera.ui">
 
  ### Settings
-
-You can change your credentials, user image, themes and much more under settings!
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/settings_white.png" align="center" alt="camera.ui">
 
@@ -120,6 +112,7 @@ This plugin has been verified to work with the following apps/systems:
 - Apple Home
 - All 3rd party apps like Elgato Eve etc
 - Homebridge >= v1.1.6
+- Node >= 12
 
 ### Browser
 
