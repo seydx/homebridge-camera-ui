@@ -28,6 +28,7 @@ module.exports = {
     'space-before-function-paren': ['error', { named: 'never' }],
     'prettier/prettier': ['error'],
     'unicorn/filename-case': 'off',
+    'unicorn/numeric-separators-style': 'off',
     'unicorn/no-null': 'off',
     'unicorn/no-nested-ternary': 'off',
     'unicorn/prefer-module': 'off',
