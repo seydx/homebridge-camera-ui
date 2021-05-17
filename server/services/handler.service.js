@@ -93,7 +93,11 @@ class MotionHandler {
               const allowStream = sessions.requestSession(cameraName);
 
               if (allowStream) {
-                motionInfo.imgBuffer = await this.handleSnapshot(cameraName, Camera.videoConfig);
+                motionInfo.imgBuffer = await this.handleSnapshot(
+                  cameraName,
+                  Camera.videoConfig,
+                  Camera.settings.pingTimeout
+                );
 
                 motionInfo.label =
                   awsSettings.active &&
@@ -292,8 +296,8 @@ class MotionHandler {
     return await RecordingsModel.createRecording(motionInfo);
   }
 
-  async handleSnapshot(cameraName, videoConfig) {
-    return await CamerasModel.requestSnapshot(cameraName, videoConfig);
+  async handleSnapshot(cameraName, videoConfig, timeout) {
+    return await CamerasModel.requestSnapshot(cameraName, videoConfig, timeout);
   }
 
   async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, sendBuffer, sendVideo) {

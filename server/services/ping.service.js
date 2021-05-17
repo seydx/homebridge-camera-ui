@@ -25,14 +25,14 @@ class Ping {
     };
   }
 
-  async status(videoConfig, timeout) {
+  async status(videoConfig, timeout = 1) {
     const cameraSource = videoConfig.source;
-
-    logger.debug(`Incoming ping request: ${cameraSource}`, false, true);
 
     if (!cameraSource.split('-i ')[1]) {
       return false;
     }
+
+    logger.debug(`Incoming ping request for: ${cameraSource.split('-i ')[1]} - Timeout: ${timeout}s`, false, true);
 
     //for local cameras eg "-i /dev/video0"
     if (cameraSource.split('-i ')[1].startsWith('/')) {

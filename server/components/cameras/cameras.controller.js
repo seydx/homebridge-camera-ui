@@ -111,7 +111,7 @@ exports.getStatusByName = async (req, res) => {
       });
     }
 
-    const status = await CamerasModel.pingCamera(camera.videoConfig);
+    const status = await CamerasModel.pingCamera(camera.videoConfig, req.query.timeout);
 
     res.status(200).send({
       status: status ? 'ONLINE' : 'OFFLINE',
@@ -135,7 +135,11 @@ exports.getSnapshotByName = async (req, res) => {
       });
     }
 
-    const imageBuffer = await CamerasModel.requestSnapshot(req.params.name, camera.videoConfig);
+    const imageBuffer = await CamerasModel.requestSnapshot(
+      req.params.name,
+      camera.videoConfig,
+      camera.settings.pingTimeout
+    );
 
     if (req.query.buffer) {
       res.status(200).send(imageBuffer.toString('base64'));

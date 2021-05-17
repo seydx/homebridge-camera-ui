@@ -79,12 +79,13 @@ exports.patchCamera = async (name, cameraData) => {
   return await Cameras.find({ name: name }).assign(cameraData).write();
 };
 
-exports.pingCamera = async (videoConfig) => {
-  return await ping.status(videoConfig);
+exports.pingCamera = async (videoConfig, timeout) => {
+  timeout = (Number.parseInt(timeout) || 0) < 1 ? 1 : Number.parseInt(timeout);
+  return await ping.status(videoConfig, timeout);
 };
 
-exports.requestSnapshot = async (cameraName, videoConfig) => {
-  return await ffmpeg.getAndStoreSnapshot(cameraName, videoConfig);
+exports.requestSnapshot = async (cameraName, videoConfig, timeout) => {
+  return await ffmpeg.getAndStoreSnapshot(cameraName, videoConfig, null, null, null, null, null, timeout);
 };
 
 exports.removeByName = async (name) => {

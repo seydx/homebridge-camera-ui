@@ -44,9 +44,9 @@ class Ffmpeg {
     return;
   }
 
-  getAndStoreSnapshot(cameraName, videoConfig, name, additional, recPath, label, store) {
+  getAndStoreSnapshot(cameraName, videoConfig, name, additional, recPath, label, store, timeout) {
     return new Promise((resolve, reject) => {
-      ping.status(videoConfig, 2).then((status) => {
+      ping.status(videoConfig, timeout).then((status) => {
         if (status) {
           const videoProcessor = videoConfig.videoProcessor || 'ffmpeg';
           const source = videoConfig.source;
@@ -97,9 +97,9 @@ class Ffmpeg {
   }
 
   // eslint-disable-next-line no-unused-vars
-  storeVideo(cameraName, videoConfig, name, recPath, recTimer, label) {
+  storeVideo(cameraName, videoConfig, name, recPath, recTimer, label, timeout) {
     return new Promise((resolve, reject) => {
-      ping.status(videoConfig, 2).then((status) => {
+      ping.status(videoConfig, timeout).then((status) => {
         if (status) {
           const videoProcessor = videoConfig.videoProcessor || 'ffmpeg';
           const source = videoConfig.source;

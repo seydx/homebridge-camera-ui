@@ -35,6 +35,9 @@ exports.patchByTarget = async (target, settingsData) => {
       cameraSettings.rekognition.confidence = Number.parseInt(cameraSettings.rekognition.confidence);
       cameraSettings.rekognition.labels = cameraSettings.rekognition.labels.toString();
       cameraSettings.rekognition.labels = cameraSettings.rekognition.labels.split(',').map((value) => value.trim());
+
+      cameraSettings.pingTimeout =
+        (Number.parseInt(cameraSettings.pingTimeout) || 0) < 1 ? 1 : Number.parseInt(cameraSettings.pingTimeout);
     }
   }
 

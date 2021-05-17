@@ -15,7 +15,8 @@ const getCameras = async (parameters) => await api.get(`${resource}${parameters 
 const getCameraSnapshot = async (cameraName, parameters) =>
   await api.get(`${resource}/${cameraName}/${snapshot_resource}${parameters ? parameters : ''}`);
 
-const getCameraStatus = async (cameraName) => await api.get(`${resource}/${cameraName}/${status_resource}`);
+const getCameraStatus = async (cameraName, timeout) =>
+  await api.get(`${resource}/${cameraName}/${status_resource}?timeout=${timeout || 1}`);
 
 const removeCamera = async (cameraName) => await api.delete(`${resource}/${cameraName}/`);
 

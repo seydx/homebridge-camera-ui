@@ -295,7 +295,7 @@ export default {
       this.showLoading();
 
       if (!this.stopped) {
-        const status = await getCameraStatus(this.camera.name);
+        const status = await getCameraStatus(this.camera.name, this.camera.settings.pingTimeout);
 
         if (status.data.status === 'ONLINE') {
           const snapshot = await getCameraSnapshot(this.camera.name, '?buffer=true');
@@ -355,7 +355,7 @@ export default {
       this.showLoading();
 
       if (!this.stopped) {
-        const status = await getCameraStatus(this.camera.name);
+        const status = await getCameraStatus(this.camera.name, this.camera.settings.pingTimeout);
 
         if (status.data.status === 'ONLINE') {
           this.player = new JSMpeg.Player(null, {

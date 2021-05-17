@@ -98,7 +98,7 @@ export default {
             let statusFilter = true;
             if (filter.status.length > 0) {
               const status = filter.status.map((filterStatus) => filterStatus.toLowerCase());
-              let cameraStatus = await getCameraStatus(camera.name);
+              let cameraStatus = await getCameraStatus(camera.name, camera.settings.pingTimeout);
               statusFilter = status.includes(cameraStatus.data.status.toLowerCase());
             }
 

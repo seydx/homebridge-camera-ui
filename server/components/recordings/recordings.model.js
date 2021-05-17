@@ -126,11 +126,20 @@ exports.createRecording = async (data) => {
         data.type === 'Video',
         data.path,
         label,
-        true //store
+        true, //store
+        camera.settings.pingTimeout
       ));
 
   if (data.type === 'Video') {
-    await ffmpeg.storeVideo(cameraName, camera.videoConfig, fileName, data.path, data.timer, label);
+    await ffmpeg.storeVideo(
+      cameraName,
+      camera.videoConfig,
+      fileName,
+      data.path,
+      data.timer,
+      label,
+      camera.settings.pingTimeout
+    );
   }
   Recordings.push(recording).write();
 

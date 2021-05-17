@@ -101,6 +101,16 @@
                   :options="['256x144', '426x240', '480x360', '640x480', '1280x720', '1920x1080',]"
                 )
                 hr
+                label.fs-6 {{ $t("ping_timeout") }}
+                b-form-input(
+                  type='number',
+                  :min="1",
+                  :max="60",
+                  placeholder="1",
+                  v-model="camera.pingTimeout"
+                  number
+                )
+                hr
               .col-8.d-flex.flex-wrap.align-content-center {{ $t("audio") }}
               .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
                 toggle-button(
