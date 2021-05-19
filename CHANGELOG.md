@@ -1,5 +1,10 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Bump dependencies
+
 # v4.2.6 - 2021-05-17
 
 ## Other changes

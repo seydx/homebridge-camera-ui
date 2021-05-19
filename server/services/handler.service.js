@@ -4,7 +4,6 @@ const got = require('got');
 const { customAlphabet } = require('nanoid/async');
 const nanoid = customAlphabet('1234567890abcdef', 10);
 const moment = require('moment');
-//const Rekognition = require('node-rekognition');
 const { RekognitionClient, DetectLabelsCommand } = require('@aws-sdk/client-rekognition');
 const URL = require('url').URL;
 const webpush = require('web-push');
@@ -99,19 +98,20 @@ class MotionHandler {
                   Camera.settings.pingTimeout
                 );
 
-                motionInfo.label =
+                if (
                   awsSettings.active &&
                   awsSettings.contingent_total > 0 &&
                   awsSettings.contingent_left > 0 &&
                   Camera.settings.rekognition.active
-                    ? await this.handleImageDetection(
-                        cameraName,
-                        awsSettings,
-                        Camera.settings.rekognition.labels,
-                        Camera.settings.rekognition.confidence,
-                        motionInfo.imgBuffer
-                      )
-                    : null;
+                ) {
+                  motionInfo.label = await this.handleImageDetection(
+                    cameraName,
+                    awsSettings,
+                    Camera.settings.rekognition.labels,
+                    Camera.settings.rekognition.confidence,
+                    motionInfo.imgBuffer
+                  );
+                }
 
                 if (motionInfo.label || motionInfo.label === null) {
                   const notification = await this.handleNotification(motionInfo);
@@ -213,6 +213,7 @@ class MotionHandler {
     return {
       id: id,
       camera: cameraName,
+      label: null,
       path: recordingSettings.path,
       storing: recordingSettings.active,
       type: recordingSettings.type,
