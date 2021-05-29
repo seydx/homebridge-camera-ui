@@ -1,6 +1,6 @@
 # Changelog
 
-# NEXT
+# v4.2.7 - 2021-05-29
 
 ## Other changes
 - Bump dependencies
