@@ -112,7 +112,7 @@ This plugin has been verified to work with the following apps/systems:
 - Apple Home
 - All 3rd party apps like Elgato Eve etc
 - Homebridge >= v1.1.6
-- Node >= 12
+- Node >= 14
 
 ### Browser
 
