@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.14.6",
-    "@babel/eslint-parser": "7.14.7",
+    "@babel/eslint-parser": "7.14.9",
     "@babel/eslint-plugin": "7.14.5",
     "concurrently": "^6.2.0",
     "eslint": "^7.29.0",
