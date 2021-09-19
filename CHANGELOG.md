@@ -1,5 +1,14 @@
 # Changelog
 
+# NEXT
+
+## Other changes
+- Homebridge UI:
+  - Config UI X now displays an error message if the connection to the camera is not possible
+- Interface/Homebridge:
+  - Added new `stimeout` option to `videoConfig` in config.json to prevent hanging ffmpeg processes 
+- Bump dependencies
+
 # v4.2.7 - 2021-05-29
 
 ## Other changes

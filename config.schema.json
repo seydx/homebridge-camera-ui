@@ -319,6 +319,15 @@
                 "minimum": 188,
                 "description": "If audio or video is choppy try a smaller value."
               },
+              "stimeout": {
+                "title": "Socket Timeout",
+                "type": "number",
+                "description": "Socket TCP I/O timeout in seconds (-stimeout). If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time (if no response comes).",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 60,
+                "placeholder": 10
+              },
               "videoFilter": {
                 "title": "Additional Video Filters",
                 "type": "string",
@@ -440,6 +449,7 @@
             "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
+            "cameras[].videoConfig.stimeout",
             {
               "key": "cameras[]",
               "type": "section",

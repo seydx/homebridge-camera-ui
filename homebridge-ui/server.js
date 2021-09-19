@@ -73,62 +73,63 @@ class UiServer extends HomebridgePluginUiServer {
   }
 
   startStream(cameraName) {
-    if (!cameraName) return;
+    return new Promise((resolve, reject) => {
+      if (!cameraName) return;
 
-    if (!streams[cameraName]) {
-      throw new RequestError(`Camera "${cameraName}" not found!`);
-    }
-
-    const additionalFlags = [];
-
-    if (streams[cameraName].ffmpegOptions) {
-      for (const key of Object.keys(streams[cameraName].ffmpegOptions)) {
-        additionalFlags.push(key, streams[cameraName].ffmpegOptions[key]);
-      }
-    }
-
-    const spawnOptions = [
-      ...streams[cameraName].source.split(' '),
-      '-f',
-      'mpegts',
-      '-codec:v',
-      'mpeg1video',
-      ...additionalFlags,
-      '-',
-    ];
-
-    console.log(`Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`);
-
-    streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
-      env: process.env,
-    });
-
-    streams[cameraName].stream.stdout.on('data', (data) => {
-      this.pushEvent(`stream/${cameraName}`, data);
-    });
-
-    const stderr = readline.createInterface({
-      input: streams[cameraName].stream.stderr,
-      terminal: false,
-    });
-
-    stderr.on('line', (line) => {
-      if (/\[(panic|fatal|error)]/.test(line)) {
-        throw new RequestError(`${cameraName}: ${line}`);
-      }
-    });
-
-    streams[cameraName].stream.on('exit', (code, signal) => {
-      if (code === 1) {
-        throw new RequestError(`${cameraName}: RTSP stream exited with error! (${signal})`);
-      } else {
-        console.log(`${cameraName}: Stream Exit (expected)`);
+      if (!streams[cameraName]) {
+        reject(new RequestError(`Camera "${cameraName}" not found!`));
       }
 
-      streams[cameraName].stream = false;
-    });
+      const additionalFlags = [];
 
-    return;
+      if (streams[cameraName].ffmpegOptions) {
+        for (const key of Object.keys(streams[cameraName].ffmpegOptions)) {
+          additionalFlags.push(key, streams[cameraName].ffmpegOptions[key]);
+        }
+      }
+
+      const spawnOptions = [
+        ...streams[cameraName].source.split(' '),
+        '-f',
+        'mpegts',
+        '-codec:v',
+        'mpeg1video',
+        ...additionalFlags,
+        '-',
+      ];
+
+      console.log(`Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`);
+
+      streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
+        env: process.env,
+      });
+
+      streams[cameraName].stream.stdout.on('data', (data) => {
+        this.pushEvent(`stream/${cameraName}`, data);
+        resolve();
+      });
+
+      const stderr = readline.createInterface({
+        input: streams[cameraName].stream.stderr,
+        terminal: false,
+      });
+
+      stderr.on('line', (line) => {
+        if (/\[(panic|fatal|error)]/.test(line)) {
+          throw new RequestError(`${cameraName}: ${line}`);
+        }
+      });
+
+      streams[cameraName].stream.on('exit', (code, signal) => {
+        if (code === 1) {
+          reject(new RequestError(`${cameraName}: RTSP stream exited with error! (${signal})`));
+        } else {
+          console.log(`${cameraName}: Stream Exit (expected)`);
+        }
+
+        streams[cameraName].stream = false;
+      });
+    });
   }
 
   stopStream(cameraName) {

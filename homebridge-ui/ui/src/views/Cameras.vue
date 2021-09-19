@@ -42,7 +42,7 @@ export default {
       });
     });
 
-    this.$root.$on('bv::collapse::state', (cameraId, shown) => {
+    this.$root.$on('bv::collapse::state', async (cameraId, shown) => {
       const camera = this.cameras.find((camera) => camera && camera.id === cameraId);
 
       if (camera && !this.loading) {
@@ -50,7 +50,15 @@ export default {
           this.preparePlayer(camera.name);
 
           window.homebridge.toast.info(`${camera.name}: Loading stream...`);
-          window.homebridge.request('/startStream', camera.name);
+
+          try {
+            await window.homebridge.request('/startStream', camera.name);
+            console.log('DONE');
+          } catch (err) {
+            console.log(err);
+            window.homebridge.toast.error(err.message);
+            window.homebridge.request('/stopStream', camera.name);
+          }
         } else {
           window.homebridge.request('/stopStream', camera.name);
         }
@@ -69,6 +77,10 @@ export default {
   },
   methods: {
     preparePlayer(cameraName) {
+      const timeoutPlayer = setTimeout(() => {
+        window.homebridge.request('/stopStream', cameraName);
+      }, 5000);
+
       this.player = new JSMpeg.Player(null, {
         source: JSMpegWritableSource,
         canvas: document.querySelector(`[data-stream-box="${cameraName}"]`),
@@ -76,6 +88,7 @@ export default {
         disableWebAssembly: true,
         pauseWhenHidden: false,
         onSourceEstablished: () => {
+          clearTimeout(timeoutPlayer);
           window.homebridge.toast.success(`${cameraName}: Connection established!`);
         },
       });
