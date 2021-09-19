@@ -1,6 +1,6 @@
 # Changelog
 
-# NEXT
+# v4.2.9 - 2021-09-19
 
 ## Other changes
 - Homebridge UI:
