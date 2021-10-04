@@ -55,6 +55,10 @@ class MotionHandler {
           last_rekognition: SettingsDB.aws.last_rekognition,
         };
 
+        const notificationsSettings = {
+          active: SettingsDB.notifications.active,
+        };
+
         const recordingSettings = {
           active: SettingsDB.recordings.active,
           path: SettingsDB.recordings.path,
@@ -84,6 +88,7 @@ class MotionHandler {
         if (!atHome || (atHome && exclude.includes(cameraName))) {
           if (!movementHandler[cameraName]) {
             logger.debug(`New ${trigger} alert`, cameraName, true);
+
             movementHandler[cameraName] = true;
 
             const motionInfo = await this.getMotionInfo(cameraName, trigger, recordingSettings);
@@ -114,39 +119,52 @@ class MotionHandler {
                 }
 
                 if (motionInfo.label || motionInfo.label === null) {
-                  const notification = await this.handleNotification(motionInfo);
-                  await this.sendWebhook(cameraName, notification, webhookSettings);
+                  if (notificationsSettings.active) {
+                    const notification = await this.handleNotification(motionInfo);
+                    await this.sendWebhook(cameraName, notification, webhookSettings);
 
-                  await this.sendTelegram(
-                    cameraName,
-                    notification,
-                    recordingSettings,
-                    telegramSettings,
-                    motionInfo.imgBuffer,
-                    true
-                  );
+                    await this.sendTelegram(
+                      cameraName,
+                      notification,
+                      recordingSettings,
+                      telegramSettings,
+                      motionInfo.imgBuffer,
+                      true
+                    );
 
-                  await this.handleRecording(motionInfo);
+                    await this.handleRecording(motionInfo);
 
-                  await this.sendTelegram(
-                    cameraName,
-                    notification,
-                    recordingSettings,
-                    telegramSettings,
-                    motionInfo.imgBuffer,
-                    false,
-                    true
-                  );
+                    await this.sendTelegram(
+                      cameraName,
+                      notification,
+                      recordingSettings,
+                      telegramSettings,
+                      motionInfo.imgBuffer,
+                      false,
+                      true
+                    );
 
-                  if (recordingSettings.type === 'Video') {
-                    errorState = false;
-                    errorMessage = 'Notification send and video stored.';
+                    if (recordingSettings.type === 'Video') {
+                      errorState = false;
+                      errorMessage = 'Notification send and video stored.';
+                    } else {
+                      errorState = false;
+                      errorMessage = 'Notification send and snapshot stored.';
+                    }
+
+                    await this.sendWebpush(cameraName, notification, webpushSettings);
                   } else {
-                    errorState = false;
-                    errorMessage = 'Notification send and snapshot stored.';
-                  }
+                    await this.handleRecording(motionInfo);
 
-                  await this.sendWebpush(cameraName, notification, webpushSettings);
+                    errorState = false;
+
+                    errorMessage =
+                      recordingSettings.type === 'Video'
+                        ? 'Video stored. Skip push notification. Notifications are not enabled in the settings!'
+                        : 'Snapshot stored. Skip push notification. Notifications are not enabled in the settings!';
+
+                    logger.debug(errorMessage, cameraName, true);
+                  }
                 } else {
                   const message = `Skip handling movement. Configured label (${Camera.settings.rekognition.labels}) not detected.`;
 
@@ -160,14 +178,23 @@ class MotionHandler {
                 errorMessage = 'Max sessions exceeded.';
               }
             } else {
-              const notification = await this.handleNotification(motionInfo);
+              if (notificationsSettings.active) {
+                const notification = await this.handleNotification(motionInfo);
 
-              await this.sendWebhook(cameraName, notification, webhookSettings);
-              await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings);
-              await this.sendWebpush(cameraName, notification, webpushSettings);
+                await this.sendWebhook(cameraName, notification, webhookSettings);
+                await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings);
+                await this.sendWebpush(cameraName, notification, webpushSettings);
 
-              errorState = false;
-              errorMessage = 'Notification sent.';
+                errorState = false;
+                errorMessage = 'Notification sent.';
+              } else {
+                const message = 'Skip push notification. Notifications are not enabled in the settings!';
+
+                logger.debug(message, cameraName, true);
+
+                errorState = true;
+                errorMessage = message;
+              }
             }
           } else {
             const message = 'Can not handle movement, another movement currently in progress for this camera.';
@@ -303,7 +330,12 @@ class MotionHandler {
 
   async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, sendBuffer, sendVideo) {
     try {
-      if (telegramSettings.active && telegramSettings.token && telegramSettings.chatID && telegramSettings.type) {
+      if (
+        telegramSettings.active &&
+        telegramSettings.token &&
+        telegramSettings.chatID &&
+        telegramSettings.type !== 'Disabled'
+      ) {
         const telegramBot = await telegram.start({ token: telegramSettings.token });
 
         if (telegramSettings.type === 'Text' && !sendVideo) {
@@ -347,6 +379,10 @@ class MotionHandler {
         await telegram.stop(telegramBot);
       } else {
         logger.debug('Skip Telegram notification', cameraName, true);
+
+        if (telegramSettings.type === 'Disabled') {
+          logger.debug('Telegram is disabled for this camera!', cameraName, true);
+        }
       }
     } catch (error) {
       logger.error('An error occured during sending telegram notification', cameraName, true);

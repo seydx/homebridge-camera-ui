@@ -1,5 +1,16 @@
 # Changelog
 
+# v4.2.10 - 2021-10-04
+
+## Other changes
+- Interface:
+  - Added new option to notifications settings to enable/disable notifications
+  - Telegram notifications can now be disabled for each camera
+- Bump dependencies
+
+## Bugfixes
+- Minor bugfixes
+
 # v4.2.9 - 2021-09-19
 
 ## Other changes

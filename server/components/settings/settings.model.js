@@ -41,6 +41,11 @@ exports.patchByTarget = async (target, settingsData) => {
     }
   }
 
+  //patch v4.2.10
+  if (target === 'notifications' && settings.active === undefined) {
+    settings.active = settingsData.active;
+  }
+
   for (const [key, value] of Object.entries(settingsData)) {
     if (settings[key] !== undefined) {
       settings[key] = value;

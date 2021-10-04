@@ -74,6 +74,7 @@ class Lowdb {
           rooms: ['Standard'],
         },
         notifications: {
+          active: false,
           removeAfter: 3,
           telegram: {
             active: false,

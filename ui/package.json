@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
-    "axios": "^0.21.4",
+    "axios": "^0.22.0",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.18.1",
@@ -21,7 +21,7 @@
     "vee-validate": "^3.4.13",
     "vue": "^2.6.14",
     "vue-cool-lightbox": "^2.7.4",
-    "vue-i18n": "^8.26.2",
+    "vue-i18n": "^8.26.5",
     "vue-infinite-loading": "^2.4.5",
     "vue-js-toggle-button": "^1.3.3",
     "vue-multiselect": "^2.1.6",
