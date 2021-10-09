@@ -69,3 +69,4 @@ yarn.lock
 .envtest/
 homebridge-ui/ui
 test.js
+hsv_videos

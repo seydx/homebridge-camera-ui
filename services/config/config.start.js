@@ -181,6 +181,7 @@ class ConfigSetup {
           }
         }
 
+        //Amazon Rekognition
         if (camera.rekognition) {
           camera.rekognition = {
             active: camera.rekognition.active || false,
@@ -191,6 +192,15 @@ class ConfigSetup {
                 : ['human', 'person', 'face'],
           };
         }
+
+        //HSV
+        camera.videoConfig.recording = camera.videoConfig.recording || false;
+        camera.videoConfig.prebuffer = camera.videoConfig.recording && camera.videoConfig.prebuffer;
+        camera.videoConfig.prebufferLength =
+          camera.videoConfig.prebufferLength >= 4000 ? camera.videoConfig.prebufferLength : 4000;
+        camera.videoConfig.fragmentLength =
+          camera.videoConfig.fragmentLength >= 4000 ? camera.videoConfig.fragmentLength : 4000;
+
         return camera;
       })
       .filter((camera) => camera.videoConfig.source);

@@ -377,6 +377,22 @@
                 "required": true,
                 "default": false,
                 "description": "If prebuffering is enabled the video is recorded permanent to be able to capture even the seconds before motion was detected or the doorbell event."
+              },
+              "prebufferLength": {
+                "title": "Prebuffer Length",
+                "type": "number",
+                "default": 4000,
+                "minimum": 4000,
+                "placeholder": 4000,
+                "description": "Prebuffer length."
+              },
+              "fragmentLength": {
+                "title": "Fragment Length",
+                "type": "number",
+                "default": 4000,
+                "minimum": 4000,
+                "placeholder": 4000,
+                "description": "Fragment length."
               }
             }
           },
@@ -463,7 +479,6 @@
             "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
-            "cameras[].videoConfig.stimeout",
             {
               "key": "cameras[]",
               "type": "section",
@@ -484,12 +499,26 @@
               "expandable": true,
               "expanded": false,
               "items": [
+                "cameras[].videoConfig.stimeout",
                 "cameras[].videoConfig.maxStreams",
                 "cameras[].videoConfig.maxWidth",
                 "cameras[].videoConfig.maxHeight",
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
                 "cameras[].videoConfig.forceMax"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "HomeKit Secure Video",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].videoConfig.recording",
+                "cameras[].videoConfig.prebuffer",
+                "cameras[].videoConfig.prebufferLength",
+                "cameras[].videoConfig.fragmentLength"
               ]
             },
             {
@@ -506,19 +535,8 @@
                 "cameras[].videoConfig.videoFilter",
                 "cameras[].videoConfig.encoderOptions",
                 "cameras[].videoConfig.debug",
-                {
-                  "key": "cameras[]",
-                  "type": "section",
-                  "title": "EXPERIMENTAL - WIP",
-                  "expandable": true,
-                  "expanded": false,
-                  "items": [
-                    "cameras[].videoConfig.returnAudioTarget",
-                    "cameras[].videoConfig.debugReturn",
-                    "cameras[].videoConfig.recording",
-                    "cameras[].videoConfig.prebuffer"
-                  ]
-                }
+                "cameras[].videoConfig.returnAudioTarget",
+                "cameras[].videoConfig.debugReturn"
               ]
             },
             {

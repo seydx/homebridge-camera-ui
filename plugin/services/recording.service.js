@@ -4,9 +4,11 @@ const ffmpegPath = require('ffmpeg-for-homebridge');
 const logger = require('../../services/logger/logger.service');
 const cameraUtils = require('../utils/camera.utils');
 
-const PreBuffer = require('./prebuffer.service.js');
+//const PreBuffer = require('./prebuffer.service.js');
+const PreBuffer = require('../../services/prebuffer/prebuffer.service');
 
 const { spawn } = require('child_process');
+//const fs = require('fs');
 const { createServer } = require('net');
 
 class RecordingDelegate {
@@ -20,6 +22,8 @@ class RecordingDelegate {
 
     this.api.on('shutdown', () => {
       if (this.preBufferSession) {
+        console.log(this.preBufferSession);
+
         if (this.preBufferSession.process) {
           this.preBufferSession.process.kill();
         }
@@ -33,10 +37,11 @@ class RecordingDelegate {
 
   async startPreBuffer() {
     if (this.videoConfig.prebuffer && !this.preBuffer) {
-      this.preBuffer = new PreBuffer(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
+      this.preBuffer = PreBuffer.init(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
+      //this.preBuffer = new PreBuffer(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
 
       if (!this.preBufferSession) {
-        this.preBufferSession = await this.preBuffer.startPreBuffer();
+        this.preBufferSession = await this.preBuffer.startPreBuffer(this.cameraName);
       }
     }
   }
@@ -97,8 +102,7 @@ class RecordingDelegate {
     const ffmpegInput = [];
 
     if (this.videoConfig.prebuffer) {
-      const input = await this.preBuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
-
+      const input = await this.preBuffer.getVideo(this.cameraName, this.videoConfig.prebufferLength);
       ffmpegInput.push(...input);
     } else {
       ffmpegInput.push(...this.videoConfig.source.split(' '));
@@ -139,7 +143,18 @@ class RecordingDelegate {
         }
       }
     } catch (error) {
-      logger.info(`Recoding completed. (${error})`, this.cameraName);
+      logger.info(`Recording completed. (${error})`, this.cameraName);
+
+      /*
+      //const homedir = require('os').homedir();
+      //const path = require('path');
+      const writeStream = fs.createWriteStream(
+        '/home/pi/Desktop/homebridge-camera-ui/hsv_videos/' + Date.now() + '_video.mp4'
+      );
+
+      writeStream.write(filebuffer);
+      writeStream.end();
+      */
     } finally {
       socket.destroy();
       cp.kill();
@@ -167,6 +182,7 @@ class RecordingDelegate {
             };
           }
         }
+
         resolve({
           socket,
           cp,
@@ -197,6 +213,7 @@ class RecordingDelegate {
 
       let stdioValue = this.debug ? 'pipe' : 'ignore';
       this.process = spawn(ffmpegPath, arguments_, { env: process.env, stdio: stdioValue });
+
       const cp = this.process;
 
       if (this.debug) {

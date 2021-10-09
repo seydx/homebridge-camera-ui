@@ -19,8 +19,8 @@ class Camera {
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
-    this.recording = this.videoConfig.recording || false;
-    this.prebuffer = this.videoConfig.recording && this.videoConfig.prebuffer;
+    this.recording = this.videoConfig.recording;
+    this.prebuffer = this.videoConfig.prebuffer;
 
     logger.debug(this.recording ? 'Recording ON' : 'Recording OFF', this.accessory.displayName);
     logger.debug(this.prebuffer ? 'Prebuffering ON' : 'Prebuffering OFF', this.accessory.displayName);
@@ -98,12 +98,12 @@ class Camera {
       },
       recording: {
         options: {
-          prebufferLength: 4000,
+          prebufferLength: this.videoConfig.prebufferLength,
           eventTriggerOptions: 0x01 | 0x02,
           mediaContainerConfigurations: [
             {
               type: 0,
-              fragmentLength: 4000,
+              fragmentLength: this.videoConfig.fragmentLength,
             },
           ],
           video: {
