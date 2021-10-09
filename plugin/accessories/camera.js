@@ -8,6 +8,7 @@ const pickPort = require('pick-port');
 const spawn = require('child_process').spawn;
 
 const FfmpegProcess = require('../services/ffmpeg.service');
+const RecordingDelegate = require('../services/recording.service');
 
 class Camera {
   constructor(api, accessory, videoProcessor) {
@@ -18,6 +19,11 @@ class Camera {
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
+    this.recording = this.videoConfig.recording || false;
+    this.prebuffer = this.videoConfig.recording && this.videoConfig.prebuffer;
+
+    logger.debug(this.recording ? 'Recording ON' : 'Recording OFF', this.accessory.displayName);
+    logger.debug(this.prebuffer ? 'Prebuffering ON' : 'Prebuffering OFF', this.accessory.displayName);
 
     this.services = [];
     this.streamControllers = [];
@@ -26,11 +32,33 @@ class Camera {
     this.ongoingSessions = new Map();
     this.timeouts = new Map();
 
-    this.api.on('shutdown', () => {
-      for (const session in this.ongoingSessions) {
-        this.stopStream(session);
-      }
-    });
+    const recordingCodecs = [];
+    const samplerate = [];
+
+    for (const sr of [this.hap.AudioRecordingSamplerate.KHZ_32]) {
+      samplerate.push(sr);
+    }
+
+    for (const type of [this.hap.AudioRecordingCodecType.AAC_LC]) {
+      const entry = {
+        type,
+        bitrateMode: 0,
+        samplerate,
+        audioChannels: 1,
+      };
+
+      recordingCodecs.push(entry);
+    }
+
+    if (this.recording) {
+      this.recordingDelegate = new RecordingDelegate(
+        this.accessory.displayName,
+        this.videoConfig,
+        this.api,
+        this.hap,
+        this.videoProcessor
+      );
+    }
 
     this.controller = new this.hap.CameraController({
       cameraStreamCount: this.videoConfig.maxStreams || 2, // HomeKit requires at least 2 streams, but 1 is also just fine
@@ -68,6 +96,49 @@ class Camera {
           ],
         },
       },
+      recording: {
+        options: {
+          prebufferLength: 4000,
+          eventTriggerOptions: 0x01 | 0x02,
+          mediaContainerConfigurations: [
+            {
+              type: 0,
+              fragmentLength: 4000,
+            },
+          ],
+          video: {
+            codec: {
+              profiles: [this.hap.H264Profile.BASELINE, this.hap.H264Profile.MAIN, this.hap.H264Profile.HIGH],
+              levels: [this.hap.H264Level.LEVEL3_1, this.hap.H264Level.LEVEL3_2, this.hap.H264Level.LEVEL4_0],
+            },
+            resolutions: [
+              [320, 180, 30],
+              [320, 240, 15], // Apple Watch requires this configuration
+              [320, 240, 30],
+              [480, 270, 30],
+              [480, 360, 30],
+              [640, 360, 30],
+              [640, 480, 30],
+              [1280, 720, 30],
+              [1280, 960, 30],
+              [1920, 1080, 30],
+              [1600, 1200, 30],
+            ],
+          },
+          audio: {
+            codecs: recordingCodecs,
+          },
+          motionService: true,
+          doorbellService: true,
+        },
+        delegate: this.recordingDelegate,
+      },
+    });
+
+    this.api.on('shutdown', () => {
+      for (const session in this.ongoingSessions) {
+        this.stopStream(session);
+      }
     });
   }
 

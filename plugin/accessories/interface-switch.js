@@ -15,6 +15,12 @@ class SwitchAccessory {
 
     this.subname = `${capitalize(subtype.split('-')[0])} ${capitalize(subtype.split('-')[1])}`;
     this.name = type === 'accessory' ? accessory.displayName : `${accessory.displayName} ${this.subname}`;
+
+    if (accessory.context.config.excludeSwitch || accessory.context.config.subtype.includes('switch')) {
+      this.getService();
+    } else {
+      this.removeService();
+    }
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//

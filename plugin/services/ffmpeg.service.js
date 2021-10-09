@@ -9,10 +9,13 @@ class FfmpegProcess {
     logger.debug('Stream command: ' + videoProcessor + ' ' + command, cameraName);
 
     let started = false;
-
     const startTime = Date.now();
+    const commands = command.split(/\s+/);
 
-    this.process = spawn(videoProcessor, command.split(/\s+/), {
+    //const prebuffer = delegate.recordingDelegate.preBufferSession;
+    //commands.unshift('-i', prebuffer.process.spawnargs[prebuffer.process.spawnargs.length - 1]);
+
+    this.process = spawn(videoProcessor, commands, {
       env: process.env,
     });
 

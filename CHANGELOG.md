@@ -1,4 +1,13 @@
-# Changelog
+# Changelog#
+
+# NEXT
+
+## Notable Changes
+- Homebridge
+  - HSV Support
+
+## Bugfixes
+- Minor bugfixes
 
 # v4.2.10 - 2021-10-04
 

@@ -64,7 +64,10 @@ class SocketIO {
       await timeout(1000);
     }
 
-    const clients = this.io.sockets.adapter.rooms.get(`stream/${cameraName}`)?.size || 0;
+    const clients = this.io.sockets.adapter.rooms.get(`stream/${cameraName}`)
+      ? this.io.sockets.adapter.rooms.get(`stream/${cameraName}`).size
+      : 0;
+
     logger.debug(`Active sockets in room (stream/${cameraName}): ${clients}`, false, '[Socket]');
 
     if (closeTimeout[cameraName]) {

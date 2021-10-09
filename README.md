@@ -16,6 +16,7 @@
 
 **camera.ui** is a homebridge user interface to control your RTSP capable cameras. It supports almost everything you need for a camera user interface.
 
+- **HSV** Support (HomeKit Secure Video)
 - **Live streams** on Web
 - **Web App** with push notifications and more (requires https)
 - **Multi-language** support

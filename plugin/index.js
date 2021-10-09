@@ -6,8 +6,7 @@ const logger = require('../services/logger/logger.service');
 const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
-
-const InterfaceSwitch = require('homebridge-camera-ui/plugin/accessories/interface-switch');
+const InterfaceSwitch = require('./accessories/interface-switch');
 
 const Server = require('../server/index').server;
 const Config = require('../services/config/config.start');
@@ -143,21 +142,19 @@ CameraUI.prototype = {
     accessory.context.config = device;
 
     if (device.subtype.includes('camera')) {
-      new MotionSensor(this.api, accessory);
-      new DoorbellSensor(this.api, accessory);
-      const interfaceSwitches = new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');
-
-      if (device.excludeSwitch) {
-        interfaceSwitches.getService();
-      } else {
-        interfaceSwitches.removeService();
-      }
-
       const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
       accessory.configureController(cameraAccessory.controller);
+
+      if (device.videoConfig.prebuffer) {
+        logger.debug('Start prebuffering...', accessory.displayName);
+        cameraAccessory.recordingDelegate.startPreBuffer();
+      }
+
+      new MotionSensor(this.api, accessory);
+      new DoorbellSensor(this.api, accessory);
+      new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');
     } else if (device.subtype.includes('switch')) {
-      const interfaceSwitches = new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory');
-      interfaceSwitches.getService();
+      new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory');
     }
   },
 
