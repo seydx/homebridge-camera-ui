@@ -67,9 +67,15 @@ The default username is ``master`` and the default password is ``master``.
 
 For a full config.json, please look at [Example Config](https://github.com/SeydX/homebridge-camera-ui/blob/master/misc/example-config.json) for more details.
 
+# HomeKit Secure Video (HSV)
+
+When the plugin is used with HSV, all recordings from HomeKit Secure Video are automatically transferred to camera.ui as well and stored for them. All camera.ui features like WebPush, Telegram notifications etc. will still work with HSV.
+
+[How to configure cameras for HSV](https://support.apple.com/guide/iphone/configure-cameras-iph7bc5df9d9/ios)
+
 # Image Rekognition
 
-camera.ui uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
+If HomeKit Secure Video (HSV) is disabled, camera.ui also uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
 
 This makes it possible to analyze every movement before this is stored or sent as a notification.
 
@@ -114,6 +120,13 @@ This plugin has been verified to work with the following apps/systems:
 - All 3rd party apps like Elgato Eve etc
 - Homebridge >= v1.1.6
 - Node >= 14
+
+### What you need for HomeKit Secure Video
+
+- An iPhone, iPad, or iPod Touch with iOS 13.2 or later.
+- The Home app set up on your iPhone, iPad, or iPod touch with the Apple ID that you use with iCloud.
+- A home hub set up on an iPad, HomePod, or Apple TV.
+- A supported iCloud storage plan
 
 ### Browser
 

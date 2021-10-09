@@ -77,7 +77,7 @@ exports.findById = async (id) => {
   return Recordings.get('recordings').find({ id: id }).value();
 };
 
-exports.createRecording = async (data) => {
+exports.createRecording = async (data, hsv) => {
   const Cameras = await database_cams();
   const Settings = await database_settings();
   const cameraSettings = await Settings.get('cameras').value();
@@ -97,7 +97,13 @@ exports.createRecording = async (data) => {
   const time = moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss');
 
   const fileName =
-    cameraName.replace(/\s+/g, '_') + '-' + id + '-' + timestamp + (data.trigger === 'motion' ? '_m' : '_d') + '_CUI';
+    cameraName.replace(/\s+/g, '_') +
+    '-' +
+    id +
+    '-' +
+    timestamp +
+    (data.trigger === 'motion' ? '_m' : data.trigger === 'hsv' ? '_h' : '_d') +
+    '_CUI';
 
   const extension = data.type === 'Video' ? 'mp4' : 'jpeg';
   const label = (data.label || 'no label').toString();
@@ -117,30 +123,36 @@ exports.createRecording = async (data) => {
     label: label,
   };
 
-  await (data.imgBuffer
-    ? ffmpeg.storeBuffer(cameraName, data.imgBuffer, fileName, data.type === 'Video', data.path, label)
-    : ffmpeg.getAndStoreSnapshot(
+  if (hsv) {
+    await ffmpeg.storeBuffer(cameraName, hsv, fileName, data.type === 'Video', data.path, label, true);
+    await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, hsv);
+  } else {
+    await (data.imgBuffer
+      ? ffmpeg.storeBuffer(cameraName, data.imgBuffer, fileName, data.type === 'Video', data.path, label)
+      : ffmpeg.getAndStoreSnapshot(
+          cameraName,
+          camera.videoConfig,
+          fileName,
+          data.type === 'Video',
+          data.path,
+          label,
+          true, //store
+          camera.settings.pingTimeout
+        ));
+
+    if (data.type === 'Video') {
+      await ffmpeg.storeVideo(
         cameraName,
         camera.videoConfig,
         fileName,
-        data.type === 'Video',
         data.path,
+        data.timer,
         label,
-        true, //store
         camera.settings.pingTimeout
-      ));
-
-  if (data.type === 'Video') {
-    await ffmpeg.storeVideo(
-      cameraName,
-      camera.videoConfig,
-      fileName,
-      data.path,
-      data.timer,
-      label,
-      camera.settings.pingTimeout
-    );
+      );
+    }
   }
+
   Recordings.push(recording).write();
 
   const socket = require('../../index').io;

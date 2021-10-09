@@ -72,7 +72,7 @@ export default {
         props: {
           headerTxt: this.$t('notifications'),
           timeTxt: this.$t('now'),
-          triggerTxt: notification.trigger === 'motion' ? this.$t('motion') : this.$t('doorbell'),
+          triggerTxt: this.$t(notification.trigger),
           notification: notification,
         },
         listeners: {

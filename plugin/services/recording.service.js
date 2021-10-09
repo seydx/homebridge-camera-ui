@@ -7,6 +7,8 @@ const cameraUtils = require('../utils/camera.utils');
 //const PreBuffer = require('./prebuffer.service.js');
 const PreBuffer = require('../../services/prebuffer/prebuffer.service');
 
+const uiHandler = require('../../server/services/handler.service');
+
 const { spawn } = require('child_process');
 //const fs = require('fs');
 const { createServer } = require('net');
@@ -22,8 +24,6 @@ class RecordingDelegate {
 
     this.api.on('shutdown', () => {
       if (this.preBufferSession) {
-        console.log(this.preBufferSession);
-
         if (this.preBufferSession.process) {
           this.preBufferSession.process.kill();
         }
@@ -36,9 +36,15 @@ class RecordingDelegate {
   }
 
   async startPreBuffer() {
-    if (this.videoConfig.prebuffer && !this.preBuffer) {
-      this.preBuffer = PreBuffer.init(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
-      //this.preBuffer = new PreBuffer(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
+    //this.preBuffer = new PreBuffer(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
+    if (this.videoConfig.hsv.prebuffer && !this.preBuffer) {
+      this.preBuffer = PreBuffer.init(
+        this.videoConfig.source,
+        this.cameraName,
+        this.videoProcessor,
+        this.videoConfig.hsv.videoDuration,
+        this.debug
+      );
 
       if (!this.preBufferSession) {
         this.preBufferSession = await this.preBuffer.startPreBuffer(this.cameraName);
@@ -101,8 +107,8 @@ class RecordingDelegate {
 
     const ffmpegInput = [];
 
-    if (this.videoConfig.prebuffer) {
-      const input = await this.preBuffer.getVideo(this.cameraName, this.videoConfig.prebufferLength);
+    if (this.videoConfig.hsv.prebuffer) {
+      const input = await this.preBuffer.getVideo(this.cameraName, this.videoConfig.hsv.prebufferLength);
       ffmpegInput.push(...input);
     } else {
       ffmpegInput.push(...this.videoConfig.source.split(' '));
@@ -144,17 +150,7 @@ class RecordingDelegate {
       }
     } catch (error) {
       logger.info(`Recording completed. (${error})`, this.cameraName);
-
-      /*
-      //const homedir = require('os').homedir();
-      //const path = require('path');
-      const writeStream = fs.createWriteStream(
-        '/home/pi/Desktop/homebridge-camera-ui/hsv_videos/' + Date.now() + '_video.mp4'
-      );
-
-      writeStream.write(filebuffer);
-      writeStream.end();
-      */
+      uiHandler.handle('hsv', this.cameraName, true, filebuffer);
     } finally {
       socket.destroy();
       cp.kill();

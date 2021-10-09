@@ -9,62 +9,109 @@
   "accessories": [],
   "platforms": [
     {
-      "platform": "CameraUI",
       "name": "CameraUI",
-      "port": 3600,
+      "port": 3333,
+      "atHomeSwitch": true,
       "theme": "auto",
       "language": "auto",
       "debug": true,
       "mqtt": {
         "active": true,
-        "host": "192.168.178.98",
+        "host": "192.168.178.114",
         "port": 1883
       },
       "http": {
         "active": true,
-        "port": 2323,
+        "port": 7777,
         "localhttp": false
       },
       "ssl": {
-        "active": false,
-        "key": "/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.key",
-        "cert": "/home/pi/Desktop/homebridge-camera-ui/test/storage/cameraui_server.crt"
+        "active": true,
+        "key": "/var/lib/homebridge/mysite.key",
+        "cert": "/var/lib/homebridge/mysite.crt"
       },
       "options": {
-        "videoProcessor": "ffmpeg"
+        "videoProcessor": "ffmpeg",
+        "videoDuration": 15,
+        "prebufferLength": 4000,
+        "fragmentLength": 4000
+      },
+      "hsv": {
+        "recording": true,
+        "prebuffer": true,
+        "videoDuration": 15,
+        "prebufferLength": 4000,
+        "fragmentLength": 4000
       },
       "cameras": [
         {
           "name": "Sricam",
+          "manufacturer": "Sricam",
+          "model": "IP Camera",
+          "serialNumber": "873190",
+          "firmwareRevision": "1.0",
+          "excludeSwitch": true,
+          "motion": true,
+          "doorbell": false,
+          "switches": true,
+          "motionTimeout": 1,
+          "motionDoorbell": false,
+          "unbridge": true,
           "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1"
+            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
+            "stillImageSource": "-i rtsp://192.168.178.42/onvif1",
+            "maxStreams": 4,
+            "maxWidth": 1280,
+            "maxHeight": 720,
+            "maxFPS": 30,
+            "stimeout": 10,
+            "audio": true,
+            "debug": false
           },
           "mqtt": {
-            "motionTopic": "sricam_test/motion",
+            "motionTopic": "sricam/motion",
             "motionMessage": "ON",
-            "motionResetTopic": "sricam_test/motion",
+            "motionResetTopic": "sricam/motion",
             "motionResetMessage": "OFF"
           }
         },
         {
           "name": "Yi Dome",
+          "manufacturer": "Yi",
+          "model": "IP Camera",
+          "serialNumber": "873190",
+          "firmwareRevision": "1.0",
+          "excludeSwitch": true,
+          "motion": true,
+          "doorbell": false,
+          "switches": true,
+          "motionTimeout": 1,
+          "unbridge": true,
           "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_0.h264"
-          }
-        },
-        {
-          "name": "Fail Camera 1",
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1"
-          }
-        },
-        {
-          "name": "Fail Camera 2",
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_0.h264"
+            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_1.h264",
+            "stillImageSource": "-i rtsp://192.168.178.31/ch0_1.h264",
+            "maxStreams": 4,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 25,
+            "maxBitrate": 1000,
+            "stimeout": 10,
+            "audio": false,
+            "debug": false
+          },
+          "mqtt": {
+            "motionTopic": "yicam_dome_keller/motion",
+            "motionMessage": "ON",
+            "motionResetTopic": "yicam_dome_keller/motion",
+            "motionResetMessage": "OFF"
           }
         }
-      ]
+      ],
+      "_bridge": {
+        "username": "0E:51:34:A8:BB:2A",
+        "port": 31480
+      },
+      "platform": "CameraUI"
     }
   ]
 }

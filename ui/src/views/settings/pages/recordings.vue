@@ -25,21 +25,27 @@
               id="recordings"
             )
               hr
-              .row
+              .row#recordingType
                 .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
                 .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                   b-form-select(
                     v-model="recordings.type"
-                    :options="['Snapshot', 'Video']"
+                    :options="['Snapshot', 'Video']",
+                    :disabled="recordings.hsv.active"
                   )
+              b-popover(v-if="recordings.hsv.active", target="recordingType" triggers="hover" placement="top") 
+                b {{ $t("recording_type_not_editable") }}
               hr
-              .row
+              .row#recordingTimer
                 .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
                 .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                   b-form-select(
                     v-model="recordings.timer"
-                    :options="[10, 20, 30, 40, 50, 60]"
+                    :options="[10, 20, 30, 40, 50, 60]",
+                    :disabled="recordings.hsv.active"
                   )
+              b-popover(v-if="recordings.hsv.active", target="recordingTimer" triggers="hover" placement="top") 
+                b {{ $t("recording_timer_not_editable") }}
               hr
               .row
                 .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}

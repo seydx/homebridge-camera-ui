@@ -21,7 +21,7 @@ const movementHandler = {};
 
 class MotionHandler {
   // eslint-disable-next-line no-unused-vars
-  async handle(trigger, cameraName, active) {
+  async handle(trigger, cameraName, active, hsv) {
     let errorState, errorMessage;
 
     try {
@@ -85,15 +85,63 @@ class MotionHandler {
           subscription: SettingsDB.webpush.subscription,
         };
 
-        if (!atHome || (atHome && exclude.includes(cameraName))) {
-          if (!movementHandler[cameraName]) {
-            logger.debug(`New ${trigger} alert`, cameraName, true);
-
+        if (!atHome || (atHome && exclude.includes(cameraName)) || hsv) {
+          if (!movementHandler[cameraName] || hsv) {
             movementHandler[cameraName] = true;
+
+            logger.debug(`New ${trigger} alert`, cameraName, true);
 
             const motionInfo = await this.getMotionInfo(cameraName, trigger, recordingSettings);
 
-            if (recordingSettings.active) {
+            if (hsv) {
+              // HSV active, handle recording through HSV
+              motionInfo.label = 'HSV';
+              motionInfo.type = 'Video';
+
+              if (notificationsSettings.active) {
+                const notification = await this.handleNotification(motionInfo);
+                await this.sendWebhook(cameraName, notification, webhookSettings);
+
+                await this.sendTelegram(
+                  cameraName,
+                  notification,
+                  recordingSettings,
+                  telegramSettings,
+                  false,
+                  true,
+                  hsv
+                );
+
+                await this.handleRecording(motionInfo, hsv);
+
+                await this.sendTelegram(
+                  cameraName,
+                  notification,
+                  recordingSettings,
+                  telegramSettings,
+                  false,
+                  false,
+                  true,
+                  hsv
+                );
+
+                await this.sendWebpush(cameraName, notification, webpushSettings);
+
+                errorState = false;
+                errorMessage = 'Handled through HSV.';
+              } else {
+                await this.handleRecording(motionInfo, hsv);
+
+                errorState = false;
+                errorMessage = 'Handled through HSV.';
+
+                logger.debug(errorMessage, cameraName, true);
+              }
+
+              errorState = false;
+              errorMessage = 'Video stored through HSV and notification sent.';
+            } else if (recordingSettings.active) {
+              // UI Recording active & HSV not active, handle recording through UI
               const allowStream = sessions.requestSession(cameraName);
 
               if (allowStream) {
@@ -178,6 +226,7 @@ class MotionHandler {
                 errorMessage = 'Max sessions exceeded.';
               }
             } else {
+              // UI Recording & HSV not active, handle only notification
               if (notificationsSettings.active) {
                 const notification = await this.handleNotification(motionInfo);
 
@@ -320,8 +369,8 @@ class MotionHandler {
     return await NotificationsModel.createNotification(motionInfo);
   }
 
-  async handleRecording(motionInfo) {
-    return await RecordingsModel.createRecording(motionInfo);
+  async handleRecording(motionInfo, hsv) {
+    return await RecordingsModel.createRecording(motionInfo, hsv);
   }
 
   async handleSnapshot(cameraName, videoConfig, timeout) {

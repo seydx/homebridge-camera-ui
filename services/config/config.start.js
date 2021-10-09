@@ -10,6 +10,7 @@ class ConfigSetup {
   constructor() {
     this.ui = this._ui();
     this.options = this._options();
+    this.hsv = this._hsv();
     this.ssl = this._ssl();
     this.mqtt = this._mqtt();
     this.mqttConfigs = this._mqttConfigs();
@@ -19,6 +20,7 @@ class ConfigSetup {
     return {
       ...this.ui,
       ui: config.ui,
+      hsv: this.hsv,
       options: this.options,
       ssl: this.ssl,
       http: this.http,
@@ -38,6 +40,28 @@ class ConfigSetup {
     };
 
     return ui;
+  }
+
+  _hsv() {
+    const hsv = {
+      active: false,
+      recording: config.plugin.hsv && config.plugin.hsv.recording,
+      prebuffer: config.plugin.hsv && config.plugin.hsv.recording && config.plugin.hsv.prebuffer,
+      videoDuration:
+        config.plugin.hsv && config.plugin.hsv.videoDuration >= 10 && config.plugin.hsv.videoDuration <= 60
+          ? config.plugin.hsv.videoDuration * 1000
+          : 15000,
+      prebufferLength:
+        config.plugin.hsv && config.plugin.hsv.prebufferLength >= 4000 ? config.plugin.hsv.prebufferLength : 4000,
+      fragmentLength:
+        config.plugin.hsv && config.plugin.hsv.fragmentLength >= 4000 ? config.plugin.hsv.fragmentLength : 4000,
+    };
+
+    if (hsv.recording && hsv.prebuffer) {
+      hsv.active = true;
+    }
+
+    return hsv;
   }
 
   _options() {
@@ -194,12 +218,10 @@ class ConfigSetup {
         }
 
         //HSV
-        camera.videoConfig.recording = camera.videoConfig.recording || false;
-        camera.videoConfig.prebuffer = camera.videoConfig.recording && camera.videoConfig.prebuffer;
-        camera.videoConfig.prebufferLength =
-          camera.videoConfig.prebufferLength >= 4000 ? camera.videoConfig.prebufferLength : 4000;
-        camera.videoConfig.fragmentLength =
-          camera.videoConfig.fragmentLength >= 4000 ? camera.videoConfig.fragmentLength : 4000;
+        camera.videoConfig = {
+          ...camera.videoConfig,
+          hsv: this.hsv,
+        };
 
         return camera;
       })

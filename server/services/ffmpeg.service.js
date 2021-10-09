@@ -36,10 +36,13 @@ class Ffmpeg {
     return fs.writeFileSync(filePath, newJpeg);
   }
 
-  async storeBuffer(cameraName, imageBuffer, name, isPlaceholder, recPath, label) {
+  async storeBuffer(cameraName, imageBuffer, name, isPlaceholder, recPath, label, hsvRecording) {
     let outputPath = recPath + '/' + name + (isPlaceholder ? '@2' : '') + '.jpeg';
     await fs.outputFile(outputPath, imageBuffer, { encoding: 'base64' });
-    this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
+
+    if (!hsvRecording) {
+      this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
+    }
 
     return;
   }
@@ -140,6 +143,25 @@ class Ffmpeg {
           reject(new Error('Camera offline'));
         }
       });
+    });
+  }
+
+  storeVideoBuffer(cameraName, name, recPath, hsv) {
+    return new Promise((resolve, reject) => {
+      let videoName = recPath + '/' + name + '.mp4';
+
+      logger.debug(`Storing HSV Video to: ${videoName}`, cameraName, true);
+
+      const writeStream = fs.createWriteStream(videoName);
+
+      writeStream.write(hsv);
+      writeStream.end();
+
+      writeStream.on('finish', () => {
+        resolve();
+      });
+
+      writeStream.on('error', reject);
     });
   }
 }

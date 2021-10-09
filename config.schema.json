@@ -159,6 +159,76 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
+        },
+        "videoDuration": {
+          "title": "Video Duration (s)",
+          "type": "number",
+          "default": 15,
+          "minimum": 10,
+          "maximum": 60,
+          "placeholder": 15,
+          "description": "Video Duration (s) for HSV recordings."
+        },
+        "prebufferLength": {
+          "title": "Prebuffer Length",
+          "type": "number",
+          "default": 4000,
+          "minimum": 4000,
+          "placeholder": 4000,
+          "description": "Prebuffer length."
+        },
+        "fragmentLength": {
+          "title": "Fragment Length",
+          "type": "number",
+          "default": 4000,
+          "minimum": 4000,
+          "placeholder": 4000,
+          "description": "Fragment length."
+        }
+      }
+    },
+    "hsv": {
+      "titel": "HomeKit Secure Video",
+      "type": "object",
+      "properties": {
+        "recording": {
+          "title": "Enable Homekit Secure Video Recording",
+          "type": "boolean",
+          "required": true,
+          "default": false,
+          "description": "Enables Homekit Secure Video and records video on motion and doorbell events. Requires a home hub and iCloud plan with at least 200GB of storage."
+        },
+        "prebuffer": {
+          "title": "Enables prebuffering for Homekit Secure Video recording",
+          "type": "boolean",
+          "required": true,
+          "default": false,
+          "description": "If prebuffering is enabled the video is recorded permanent to be able to capture even the seconds before motion was detected or the doorbell event."
+        },
+        "videoDuration": {
+          "title": "Video Duration (s)",
+          "type": "number",
+          "default": 15,
+          "minimum": 10,
+          "maximum": 60,
+          "placeholder": 15,
+          "description": "Video Duration (s) for HSV recordings."
+        },
+        "prebufferLength": {
+          "title": "Prebuffer Length",
+          "type": "number",
+          "default": 4000,
+          "minimum": 4000,
+          "placeholder": 4000,
+          "description": "Prebuffer length in ms."
+        },
+        "fragmentLength": {
+          "title": "Fragment Length",
+          "type": "number",
+          "default": 4000,
+          "minimum": 4000,
+          "placeholder": 4000,
+          "description": "Fragment length in ms."
         }
       }
     },
@@ -231,6 +301,11 @@
           },
           "unbridge": {
             "title": "Unbridge Camera (Recommended)",
+            "type": "boolean",
+            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
+          },
+          "hsvActive": {
+            "title": "Enable HomeKit Secure Video (HSV)",
             "type": "boolean",
             "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
           },
@@ -363,36 +438,6 @@
                 "title": "Two-way FFmpeg Debug Logging",
                 "type": "boolean",
                 "description": "Includes debugging output from the FFmpeg process used for two-way audio in the Homebridge log."
-              },
-              "recording": {
-                "title": "Enable Homekit Secure Video Recording",
-                "type": "boolean",
-                "required": true,
-                "default": false,
-                "description": "Enables Homekit Secure Video and records video on motion and doorbell events. Requires a home hub and iCloud plan with at least 200GB of storage."
-              },
-              "prebuffer": {
-                "title": "Enables prebuffering for Homekit Secure Video recording",
-                "type": "boolean",
-                "required": true,
-                "default": false,
-                "description": "If prebuffering is enabled the video is recorded permanent to be able to capture even the seconds before motion was detected or the doorbell event."
-              },
-              "prebufferLength": {
-                "title": "Prebuffer Length",
-                "type": "number",
-                "default": 4000,
-                "minimum": 4000,
-                "placeholder": 4000,
-                "description": "Prebuffer length."
-              },
-              "fragmentLength": {
-                "title": "Fragment Length",
-                "type": "number",
-                "default": 4000,
-                "minimum": 4000,
-                "placeholder": 4000,
-                "description": "Fragment length."
               }
             }
           },
@@ -479,6 +524,7 @@
             "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
+            "cameras[].videoConfig.hsvActive",
             {
               "key": "cameras[]",
               "type": "section",
@@ -506,19 +552,6 @@
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
                 "cameras[].videoConfig.forceMax"
-              ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "HomeKit Secure Video",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].videoConfig.recording",
-                "cameras[].videoConfig.prebuffer",
-                "cameras[].videoConfig.prebufferLength",
-                "cameras[].videoConfig.fragmentLength"
               ]
             },
             {
@@ -572,6 +605,15 @@
           ]
         }
       ]
+    },
+    {
+      "key": "hsv",
+      "title": "HomeKit Secure Video",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": ["hsv.recording", "hsv.prebuffer", "hsv.videoDuration", "hsv.prebufferLength", "hsv.fragmentLength"]
     },
     {
       "key": "options",

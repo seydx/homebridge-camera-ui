@@ -6,6 +6,9 @@
 - Homebridge
   - HSV Support
 
+## Other changes
+- Bump dependencies
+
 ## Bugfixes
 - Minor bugfixes
 

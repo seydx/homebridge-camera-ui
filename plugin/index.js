@@ -145,7 +145,7 @@ CameraUI.prototype = {
       const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
       accessory.configureController(cameraAccessory.controller);
 
-      if (device.videoConfig.prebuffer) {
+      if (device.videoConfig.hsv.prebuffer) {
         logger.debug('Start prebuffering...', accessory.displayName);
         cameraAccessory.recordingDelegate.startPreBuffer();
       }

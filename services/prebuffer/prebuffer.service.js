@@ -8,16 +8,17 @@ const { EventEmitter } = require('events');
 const { createServer, Server } = require('net');
 
 const prebufferSession = {};
-const defaultPrebufferDuration = 15000; //15s
+//const defaultPrebufferDuration = 15000; //15s
 
 class PreBuffer {
-  init(ffmpegInput, cameraName, videoProcessor, debug) {
+  init(ffmpegInput, cameraName, videoProcessor, videoDuration, debug) {
     logger.debug('Initializing prebuffer', cameraName, '[PreBuffer]');
 
     prebufferSession[cameraName] = {
       cameraName: cameraName,
       ffmpegInput: ffmpegInput,
       ffmpegPath: videoProcessor,
+      videoDuration: videoDuration,
       prebufferFmp4: [],
       events: new EventEmitter(),
       released: false,
@@ -71,7 +72,7 @@ class PreBuffer {
           });
         }
 
-        while (self.prebufferFmp4.length > 0 && self.prebufferFmp4[0].time < now - defaultPrebufferDuration) {
+        while (self.prebufferFmp4.length > 0 && self.prebufferFmp4[0].time < now - self.videoDuration) {
           self.prebufferFmp4.shift();
         }
 

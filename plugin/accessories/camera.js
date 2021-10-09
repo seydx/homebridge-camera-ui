@@ -19,11 +19,19 @@ class Camera {
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
-    this.recording = this.videoConfig.recording;
-    this.prebuffer = this.videoConfig.prebuffer;
+    this.recording = this.videoConfig.hsv.recording;
+    this.prebuffer = this.videoConfig.hsv.prebuffer;
 
     logger.debug(this.recording ? 'Recording ON' : 'Recording OFF', this.accessory.displayName);
     logger.debug(this.prebuffer ? 'Prebuffering ON' : 'Prebuffering OFF', this.accessory.displayName);
+
+    logger.debug(
+      `Prebuffer options: ${JSON.stringify({
+        videoDuration: this.videoConfig.hsv.videoDuration,
+        prebufferLength: this.videoConfig.hsv.prebufferLength,
+        fragmentLength: this.videoConfig.hsv.fragmentLength,
+      })}`
+    );
 
     this.services = [];
     this.streamControllers = [];
@@ -98,12 +106,12 @@ class Camera {
       },
       recording: {
         options: {
-          prebufferLength: this.videoConfig.prebufferLength,
+          prebufferLength: this.videoConfig.hsv.prebufferLength,
           eventTriggerOptions: 0x01 | 0x02,
           mediaContainerConfigurations: [
             {
               type: 0,
-              fragmentLength: this.videoConfig.fragmentLength,
+              fragmentLength: this.videoConfig.hsv.fragmentLength,
             },
           ],
           video: {

@@ -8,7 +8,7 @@ const { EventEmitter } = require('events');
 const { createServer, Server } = require('net');
 
 let prebufferSession;
-const defaultPrebufferDuration = 15000;
+let defaultPrebufferDuration = 15000;
 
 class PreBuffer {
   constructor(ffmpegInput, cameraName, videoProcessor, debug) {

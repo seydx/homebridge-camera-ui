@@ -70,13 +70,17 @@ class Http {
           // => /doorbell
 
           let target = parseurl.pathname.includes('/reset') ? 'reset' : parseurl.pathname.split('/')[1];
-
           let active = target === 'dorbell' ? true : target === 'reset' ? false : true;
-
           target = target === 'reset' ? 'motion' : target;
 
-          const pluginResult = pluginHandler.handle(target, name, active);
-          const uiResult = await uiHandler.handle(target, name, active);
+          const camera = config.cameras.find((camera) => camera && camera.name === name);
+
+          let pluginResult = pluginHandler.handle(target, name, active);
+          let uiResult = 'Handled through HSV.';
+
+          if (!camera || (camera && !camera.videoConfig.hsvActive)) {
+            uiResult = await uiHandler.handle(target, name, active);
+          }
 
           results = {
             error: pluginResult.error && uiResult.error,

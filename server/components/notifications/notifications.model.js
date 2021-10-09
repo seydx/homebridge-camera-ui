@@ -95,7 +95,13 @@ exports.createNotification = async (data) => {
   const time = moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss');
 
   const fileName =
-    cameraName.replace(/\s+/g, '_') + '-' + id + '-' + timestamp + (data.trigger === 'motion' ? '_m' : '_d') + '_CUI';
+    cameraName.replace(/\s+/g, '_') +
+    '-' +
+    id +
+    '-' +
+    timestamp +
+    (data.trigger === 'motion' ? '_m' : data.trigger === 'hsv' ? '_h' : '_d') +
+    '_CUI';
 
   const extension = data.type === 'Video' ? 'mp4' : 'jpeg';
   const storing = data.type === 'Video' || data.type === 'Snapshot';

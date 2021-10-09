@@ -88,6 +88,7 @@ class Lowdb {
         },
         recordings: {
           active: false,
+          hsv: config.hsv,
           type: 'Snapshot',
           timer: 10,
           path: this.recPath,
@@ -192,6 +193,12 @@ class Lowdb {
 
       await User.push(admin).write();
     }
+
+    //prepare hsv settings
+    const SettingsRecordings = await database.get('settings').get('recordings');
+    const recordingsSettings = SettingsRecordings.value();
+    recordingsSettings.hsv = config.hsv;
+    await SettingsRecordings.assign(recordingsSettings).write();
   }
 
   async refreshDatabase() {
@@ -240,16 +247,21 @@ class Lowdb {
         let cameraName = rec.split('-')[0].replace(/_/g, ' '); // eslint-disable-line no-useless-escape
         let cameraSetting = database.get('settings').get('cameras').find({ name: cameraName }).value();
 
+        let isHSV = rec.includes('_h_');
+
         const jpeg = fs.readFileSync(filePath);
         let exifPayload;
+        let readableExifPayload = {};
 
-        try {
-          exifPayload = piexif.load(jpeg.toString('binary'));
-        } catch (error) {
-          logger.debug(`Can not read exif data of ${rec}: ${error.message}`);
+        if (!isHSV) {
+          try {
+            exifPayload = piexif.load(jpeg.toString('binary'));
+          } catch (error) {
+            logger.debug(`Can not read exif data of ${rec}: ${error.message}`);
+          }
+
+          readableExifPayload = getReadableExifPayload(exifPayload);
         }
-
-        const readableExifPayload = getReadableExifPayload(exifPayload);
 
         let recording = {
           id: id,
@@ -259,11 +271,11 @@ class Lowdb {
           extension: extension,
           recordStoring: true,
           recordType: isPlaceholder ? 'Video' : 'Snapshot',
-          trigger: rec.includes('_m') ? 'motion' : 'doorbell',
+          trigger: rec.includes('_m') ? 'motion' : rec.includes('_h') ? 'hsv' : 'doorbell',
           room: cameraSetting ? cameraSetting.room : 'Standard',
           time: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss'),
           timestamp: timestamp,
-          label: readableExifPayload.label,
+          label: isHSV ? 'HSV' : readableExifPayload.label,
         };
 
         return recording;

@@ -56,8 +56,13 @@ class Mqtt {
             : undefined;
 
         if (active !== undefined) {
+          const camera = config.cameras.find((camera) => camera && camera.name === name);
+
           pluginHandler.handle(target, name, active);
-          uiHandler.handle(target, name, active);
+
+          if (!camera || (camera && !camera.videoConfig.hsvActive)) {
+            uiHandler.handle(target, name, active);
+          }
         } else {
           logger.warn(
             `The incoming MQTT message (${message}) for the topic (${topic}) was not the same as set in config.json. Skip...`,
