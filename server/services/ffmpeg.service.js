@@ -36,15 +36,73 @@ class Ffmpeg {
     return fs.writeFileSync(filePath, newJpeg);
   }
 
-  async storeBuffer(cameraName, imageBuffer, name, isPlaceholder, recPath, label, hsvRecording) {
+  async storeBuffer(cameraName, videoConfig, imageBuffer, name, isPlaceholder, recPath, label, hsvRecording) {
     let outputPath = recPath + '/' + name + (isPlaceholder ? '@2' : '') + '.jpeg';
-    await fs.outputFile(outputPath, imageBuffer, { encoding: 'base64' });
 
-    if (!hsvRecording) {
-      this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
-    }
+    await (hsvRecording
+      ? this.storeFrameFromVideoBuffer(cameraName, outputPath, imageBuffer, videoConfig)
+      : fs.outputFile(outputPath, imageBuffer, { encoding: 'base64' }));
+
+    this.replaceJpegWithExifJPEG(cameraName, outputPath, label);
 
     return;
+  }
+
+  storeFrameFromVideoBuffer(cameraName, outputPath, videoBuffer, videoConfig) {
+    return new Promise((resolve, reject) => {
+      const width = videoConfig.maxWidth || 1280;
+      const height = videoConfig.maxHeight || 720;
+
+      logger.debug(`Storing HSV Snapshot to: ${outputPath}`, cameraName, true);
+
+      let ffmpegArguments = [
+        '-loglevel',
+        'error',
+        '-re',
+        '-y',
+        //Input
+        '-i',
+        '-',
+        //'-f',
+        //'image2',
+        //'-vcodec',
+        //'rawvideo',
+        //'-pix_fmt',
+        //'bgr24',
+        '-s',
+        `${width}x${height}`,
+        //Output
+        //'-b:v',
+        //'16M',
+        //'-maxrate',
+        //'16M',
+        //'-bufsize',
+        //'16M',
+        //'-pix_fmt',
+        //'bgr24',
+        '-r',
+        '1',
+        '-f',
+        'image2',
+        outputPath,
+      ];
+
+      const ffmpeg = spawn('ffmpeg', ffmpegArguments, { env: process.env });
+
+      ffmpeg.on('error', (error) => {
+        reject(error);
+      });
+
+      ffmpeg.on('close', () => {
+        resolve();
+      });
+
+      ffmpeg.stdin.write(videoBuffer);
+      //ffmpeg.stdin.close();
+      //ffmpeg.stdin.end();
+      ffmpeg.stdin.destroy();
+      //setTimeout(() => ffmpeg.stdin.destroy(), 1000);
+    });
   }
 
   getAndStoreSnapshot(cameraName, videoConfig, name, additional, recPath, label, store, timeout) {

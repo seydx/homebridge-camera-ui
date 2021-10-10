@@ -78,7 +78,7 @@ class Http {
           let pluginResult = pluginHandler.handle(target, name, active);
           let uiResult = 'Handled through HSV.';
 
-          if (!camera || (camera && !camera.videoConfig.hsvActive)) {
+          if (!camera || (camera && !camera.videoConfig.hsv.active)) {
             uiResult = await uiHandler.handle(target, name, active);
           }
 

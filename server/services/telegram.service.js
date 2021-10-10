@@ -37,15 +37,15 @@ class Telegram {
   async send(bot, chatID, content) {
     try {
       if (content.message) {
-        logger.debug(`Telegram: Sending Message ${content.txt}`, false, true);
+        logger.debug('Telegram: Sending Message', false, true);
         await bot.telegram.sendMessage(chatID, content.message);
-      } else if (content.img) {
-        //await bot.sendMessage(telegram.chatID, content.txt);
+      }
+
+      if (content.img) {
         logger.debug('Telegram: Sending Photo', false, true);
         await bot.telegram.sendPhoto(chatID, { source: content.img });
       } else if (content.video) {
-        //await bot.sendMessage(telegram.chatID, content.txt);
-        logger.debug(`Telegram: Sending Video ${content.video}`, false, true);
+        logger.debug('Telegram: Sending Video', false, true);
         await bot.telegram.sendVideo(chatID, { source: content.video });
       }
     } catch (error) {

@@ -4,13 +4,10 @@ const ffmpegPath = require('ffmpeg-for-homebridge');
 const logger = require('../../services/logger/logger.service');
 const cameraUtils = require('../utils/camera.utils');
 
-//const PreBuffer = require('./prebuffer.service.js');
-const PreBuffer = require('../../services/prebuffer/prebuffer.service');
-
+const PreBuffer = require('./prebuffer.service.js');
 const uiHandler = require('../../server/services/handler.service');
 
 const { spawn } = require('child_process');
-//const fs = require('fs');
 const { createServer } = require('net');
 
 class RecordingDelegate {
@@ -36,9 +33,8 @@ class RecordingDelegate {
   }
 
   async startPreBuffer() {
-    //this.preBuffer = new PreBuffer(this.videoConfig.source, this.cameraName, this.videoProcessor, this.debug);
-    if (this.videoConfig.hsv.prebuffer && !this.preBuffer) {
-      this.preBuffer = PreBuffer.init(
+    if (this.videoConfig.hsv.prebuffering && !this.preBuffer) {
+      this.preBuffer = new PreBuffer(
         this.videoConfig.source,
         this.cameraName,
         this.videoProcessor,
@@ -107,7 +103,7 @@ class RecordingDelegate {
 
     const ffmpegInput = [];
 
-    if (this.videoConfig.hsv.prebuffer) {
+    if (this.videoConfig.hsv.prebuffering) {
       const input = await this.preBuffer.getVideo(this.cameraName, this.videoConfig.hsv.prebufferLength);
       ffmpegInput.push(...input);
     } else {

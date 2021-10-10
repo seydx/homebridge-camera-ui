@@ -7,14 +7,12 @@ const { spawn } = require('child_process');
 const { EventEmitter } = require('events');
 const { createServer, Server } = require('net');
 
-let prebufferSession;
-let defaultPrebufferDuration = 15000;
-
 class PreBuffer {
-  constructor(ffmpegInput, cameraName, videoProcessor, debug) {
+  constructor(ffmpegInput, cameraName, videoProcessor, videoDuration, debug) {
     this.ffmpegInput = ffmpegInput;
     this.cameraName = cameraName;
     this.ffmpegPath = videoProcessor;
+    this.videoDuration = videoDuration;
 
     this.prebufferFmp4 = [];
     this.events = new EventEmitter();
@@ -22,15 +20,16 @@ class PreBuffer {
     this.idrInterval = 0;
     this.previousIdr = 0;
 
-    this.ftyp;
-    this.moov;
+    this.ftyp = null;
+    this.moov = null;
+    this.prebufferSession = null;
 
     this.debug = debug;
   }
 
   async startPreBuffer() {
-    if (prebufferSession) {
-      return prebufferSession;
+    if (this.prebufferSession) {
+      return this.prebufferSession;
     }
 
     //const acodec = ['-acodec', 'copy'];
@@ -63,7 +62,7 @@ class PreBuffer {
           });
         }
 
-        while (this.prebufferFmp4.length > 0 && this.prebufferFmp4[0].time < now - defaultPrebufferDuration) {
+        while (this.prebufferFmp4.length > 0 && this.prebufferFmp4[0].time < now - this.videoDuration) {
           this.prebufferFmp4.shift();
         }
 
@@ -96,9 +95,9 @@ class PreBuffer {
       cp.stderr.on('data', (data) => logger.debug(data.toString(), this.cameraName));
     }
 
-    prebufferSession = { server: fmp4OutputServer, process: cp };
+    this.prebufferSession = { server: fmp4OutputServer, process: cp };
 
-    return prebufferSession;
+    return this.prebufferSession;
   }
 
   async getVideo(requestedPrebuffer) {

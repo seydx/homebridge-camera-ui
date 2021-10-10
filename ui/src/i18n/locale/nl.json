@@ -133,6 +133,7 @@
     "successfully_created": "Succesvol gemaakt",
     "successfully_removed": "Succesvol verwijderd",
     "telegram": "Telegram",
+    "telegram_type_not_editable": "Telegram kan niet worden gewijzigd voor deze camera. HSV is actief.",
     "themes": "Themes",
     "type": "Type",
     "user": "Gebruiker",

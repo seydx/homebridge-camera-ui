@@ -85,7 +85,7 @@ class PluginHandler {
       const motionTrigger = accessory.getServiceById(HOMEBRIDGE.hap.Service.Switch, 'MotionTrigger');
 
       if (active) {
-        if (manual && !cameraConfig.videoConfig.hsvActive) {
+        if (manual && !cameraConfig.videoConfig.hsv.active) {
           uiHandler.handle('motion', accessory.displayName, active);
         }
 
@@ -154,7 +154,7 @@ class PluginHandler {
       const doorbellTrigger = accessory.getServiceById(HOMEBRIDGE.hap.Service.Switch, 'DoorbellTrigger');
 
       if (active) {
-        if (!fromMotion && manual && !cameraConfig.videoConfig.hsvActive) {
+        if (!fromMotion && manual && !cameraConfig.videoConfig.hsv.active) {
           uiHandler.handle('doorbell', accessory.displayName, active);
         }
 

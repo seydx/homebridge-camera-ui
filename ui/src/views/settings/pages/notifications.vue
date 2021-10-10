@@ -84,8 +84,8 @@
                     )
                 hr(v-if="notifications.telegram.active")
                 div(v-if="notifications.telegram.active")
-                  div(v-for="camera in cameras", :key="camera.name")
-                    .row
+                  div(v-for="(camera, index) in cameras", :key="camera.name")
+                    .row(:id='"telegramType" + index')
                       .col-12.d-flex.flex-wrap.align-content-center {{ camera.name }}
                       .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                         b-form-select(
@@ -146,6 +146,7 @@ export default {
         telegram: {},
         webhook: {},
       },
+      recordings: {},
       notificationsTimer: null,
       loading: true,
     };
@@ -193,6 +194,11 @@ export default {
       if (this.checkLevel('settings:cameras:access')) {
         const cameras = await getSetting('cameras');
         this.cameras = cameras.data;
+      }
+
+      if (this.checkLevel('settings:recordings:access')) {
+        const recordings = await getSetting('recordings');
+        this.recordings = recordings.data;
       }
 
       this.loading = false;

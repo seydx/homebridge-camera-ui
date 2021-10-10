@@ -44,9 +44,8 @@ class ConfigSetup {
 
   _hsv() {
     const hsv = {
-      active: false,
-      recording: config.plugin.hsv && config.plugin.hsv.recording,
-      prebuffer: config.plugin.hsv && config.plugin.hsv.recording && config.plugin.hsv.prebuffer,
+      active: config.plugin.hsv && config.plugin.hsv.active,
+      prebuffering: config.plugin.hsv && config.plugin.hsv.active && config.plugin.hsv.prebuffering,
       videoDuration:
         config.plugin.hsv && config.plugin.hsv.videoDuration >= 10 && config.plugin.hsv.videoDuration <= 60
           ? config.plugin.hsv.videoDuration * 1000
@@ -56,10 +55,6 @@ class ConfigSetup {
       fragmentLength:
         config.plugin.hsv && config.plugin.hsv.fragmentLength >= 4000 ? config.plugin.hsv.fragmentLength : 4000,
     };
-
-    if (hsv.recording && hsv.prebuffer) {
-      hsv.active = true;
-    }
 
     return hsv;
   }
@@ -222,6 +217,14 @@ class ConfigSetup {
           ...camera.videoConfig,
           hsv: this.hsv,
         };
+
+        if (camera.disableHSV) {
+          camera.videoConfig.hsv.active = false;
+        }
+
+        if (camera.disablePrebuffering) {
+          camera.videoConfig.hsv.prebuffering = false;
+        }
 
         return camera;
       })

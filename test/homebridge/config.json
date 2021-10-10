@@ -10,7 +10,7 @@
   "platforms": [
     {
       "name": "CameraUI",
-      "port": 3333,
+      "port": 3600,
       "atHomeSwitch": true,
       "theme": "auto",
       "language": "auto",
@@ -22,7 +22,7 @@
       },
       "http": {
         "active": true,
-        "port": 7777,
+        "port": 2323,
         "localhttp": false
       },
       "ssl": {
@@ -31,15 +31,12 @@
         "cert": "/var/lib/homebridge/mysite.crt"
       },
       "options": {
-        "videoProcessor": "ffmpeg",
-        "videoDuration": 15,
-        "prebufferLength": 4000,
-        "fragmentLength": 4000
+        "videoProcessor": "ffmpeg"
       },
       "hsv": {
-        "recording": true,
-        "prebuffer": true,
-        "videoDuration": 15,
+        "active": true,
+        "prebuffering": true,
+        "videoDuration": 30,
         "prebufferLength": 4000,
         "fragmentLength": 4000
       },
@@ -107,10 +104,6 @@
           }
         }
       ],
-      "_bridge": {
-        "username": "0E:51:34:A8:BB:2A",
-        "port": 31480
-      },
       "platform": "CameraUI"
     }
   ]

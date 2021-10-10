@@ -85,7 +85,7 @@ class MotionHandler {
           subscription: SettingsDB.webpush.subscription,
         };
 
-        if (!atHome || (atHome && exclude.includes(cameraName)) || hsv) {
+        if (!atHome || (atHome && exclude.includes(cameraName))) {
           if (!movementHandler[cameraName] || hsv) {
             movementHandler[cameraName] = true;
 
@@ -100,32 +100,11 @@ class MotionHandler {
 
               if (notificationsSettings.active) {
                 const notification = await this.handleNotification(motionInfo);
-                await this.sendWebhook(cameraName, notification, webhookSettings);
-
-                await this.sendTelegram(
-                  cameraName,
-                  notification,
-                  recordingSettings,
-                  telegramSettings,
-                  false,
-                  true,
-                  hsv
-                );
-
                 await this.handleRecording(motionInfo, hsv);
 
-                await this.sendTelegram(
-                  cameraName,
-                  notification,
-                  recordingSettings,
-                  telegramSettings,
-                  false,
-                  false,
-                  true,
-                  hsv
-                );
-
+                await this.sendWebhook(cameraName, notification, webhookSettings);
                 await this.sendWebpush(cameraName, notification, webpushSettings);
+                await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
 
                 errorState = false;
                 errorMessage = 'Handled through HSV.';
@@ -171,15 +150,6 @@ class MotionHandler {
                     const notification = await this.handleNotification(motionInfo);
                     await this.sendWebhook(cameraName, notification, webhookSettings);
 
-                    await this.sendTelegram(
-                      cameraName,
-                      notification,
-                      recordingSettings,
-                      telegramSettings,
-                      motionInfo.imgBuffer,
-                      true
-                    );
-
                     await this.handleRecording(motionInfo);
 
                     await this.sendTelegram(
@@ -187,9 +157,7 @@ class MotionHandler {
                       notification,
                       recordingSettings,
                       telegramSettings,
-                      motionInfo.imgBuffer,
-                      false,
-                      true
+                      motionInfo.imgBuffer
                     );
 
                     if (recordingSettings.type === 'Video') {
@@ -377,7 +345,7 @@ class MotionHandler {
     return await CamerasModel.requestSnapshot(cameraName, videoConfig, timeout);
   }
 
-  async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, sendBuffer, sendVideo) {
+  async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, hsv) {
     try {
       if (
         telegramSettings.active &&
@@ -387,42 +355,70 @@ class MotionHandler {
       ) {
         const telegramBot = await telegram.start({ token: telegramSettings.token });
 
-        if (telegramSettings.type === 'Text' && !sendVideo) {
-          if (telegramSettings.message) {
-            telegramSettings.message = telegramSettings.message.includes('@')
-              ? telegramSettings.message.replace('@', cameraName)
-              : telegramSettings.message;
+        if (telegramSettings.message) {
+          telegramSettings.message = telegramSettings.message.includes('@')
+            ? telegramSettings.message.replace('@', cameraName)
+            : telegramSettings.message;
+        }
 
-            await telegram.send(telegramBot, telegramSettings.chatID, {
-              message: telegramSettings.message,
-            });
+        switch (telegramSettings.type) {
+          case 'Text': {
+            //Message
+            if (telegramSettings.message) {
+              await telegram.send(telegramBot, telegramSettings.chatID, {
+                message: telegramSettings.message,
+              });
+            } else {
+              logger.debug(
+                'Can not send telegram notification (message). No telegram message defined!',
+                cameraName,
+                true
+              );
+            }
+
+            break;
           }
-        } else if (
-          recordingSettings.active &&
-          telegramSettings.type === 'Snapshot' &&
-          (recordingSettings.type === 'Snapshot' || sendBuffer) &&
-          !sendVideo
-        ) {
-          const content = {};
+          case 'Snapshot': {
+            //Snapshot
+            if (recordingSettings.active || imgBuffer || hsv) {
+              const content = {
+                message: telegramSettings.message,
+              };
 
-          if (imgBuffer) {
-            content.img = imgBuffer;
-          } else {
-            const fileName =
-              notification.recordType === 'Video' ? `${notification.name}@2.jpeg` : notification.fileName;
-            content.img = `${recordingSettings.path}/${fileName}`;
+              if (imgBuffer) {
+                content.img = imgBuffer;
+              } else {
+                const fileName =
+                  hsv || recordingSettings.type === 'Video' ? `${notification.name}@2.jpeg` : notification.fileName;
+
+                content.img = `${recordingSettings.path}/${fileName}`;
+              }
+
+              await telegram.send(telegramBot, telegramSettings.chatID, content);
+            } else {
+              logger.debug(
+                'Can not send telegram notification (snapshot). Recording not active or malformed image buffer!',
+                cameraName,
+                true
+              );
+            }
+
+            break;
           }
+          case 'Video': {
+            if ((recordingSettings.active && recordingSettings.type === 'Video') || hsv) {
+              const content = {
+                message: telegramSettings.message,
+              };
 
-          await telegram.send(telegramBot, telegramSettings.chatID, content);
-        } else if (
-          recordingSettings.active &&
-          recordingSettings.type === 'Video' &&
-          telegramSettings.type === 'Video' &&
-          sendVideo
-        ) {
-          await telegram.send(telegramBot, telegramSettings.chatID, {
-            video: `${recordingSettings.path}/${notification.fileName}`,
-          });
+              content.video = hsv ? hsv : `${recordingSettings.path}/${notification.fileName}`;
+
+              await telegram.send(telegramBot, telegramSettings.chatID, content);
+            }
+
+            break;
+          }
+          // No default
         }
 
         await telegram.stop(telegramBot);

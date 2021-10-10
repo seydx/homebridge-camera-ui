@@ -60,7 +60,7 @@ class Mqtt {
 
           pluginHandler.handle(target, name, active);
 
-          if (!camera || (camera && !camera.videoConfig.hsvActive)) {
+          if (!camera || (camera && !camera.videoConfig.hsv.active)) {
             uiHandler.handle(target, name, active);
           }
         } else {

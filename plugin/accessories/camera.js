@@ -19,19 +19,11 @@ class Camera {
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
-    this.recording = this.videoConfig.hsv.recording;
-    this.prebuffer = this.videoConfig.hsv.prebuffer;
+    this.recording = this.videoConfig.hsv.active;
+    this.prebuffer = this.videoConfig.hsv.prebuffering;
 
     logger.debug(this.recording ? 'Recording ON' : 'Recording OFF', this.accessory.displayName);
     logger.debug(this.prebuffer ? 'Prebuffering ON' : 'Prebuffering OFF', this.accessory.displayName);
-
-    logger.debug(
-      `Prebuffer options: ${JSON.stringify({
-        videoDuration: this.videoConfig.hsv.videoDuration,
-        prebufferLength: this.videoConfig.hsv.prebufferLength,
-        fragmentLength: this.videoConfig.hsv.fragmentLength,
-      })}`
-    );
 
     this.services = [];
     this.streamControllers = [];
@@ -104,43 +96,45 @@ class Camera {
           ],
         },
       },
-      recording: {
-        options: {
-          prebufferLength: this.videoConfig.hsv.prebufferLength,
-          eventTriggerOptions: 0x01 | 0x02,
-          mediaContainerConfigurations: [
-            {
-              type: 0,
-              fragmentLength: this.videoConfig.hsv.fragmentLength,
+      recording: this.recording
+        ? {
+            options: {
+              prebufferLength: this.videoConfig.hsv.prebufferLength,
+              eventTriggerOptions: 0x01 | 0x02,
+              mediaContainerConfigurations: [
+                {
+                  type: 0,
+                  fragmentLength: this.videoConfig.hsv.fragmentLength,
+                },
+              ],
+              video: {
+                codec: {
+                  profiles: [this.hap.H264Profile.BASELINE, this.hap.H264Profile.MAIN, this.hap.H264Profile.HIGH],
+                  levels: [this.hap.H264Level.LEVEL3_1, this.hap.H264Level.LEVEL3_2, this.hap.H264Level.LEVEL4_0],
+                },
+                resolutions: [
+                  [320, 180, 30],
+                  [320, 240, 15], // Apple Watch requires this configuration
+                  [320, 240, 30],
+                  [480, 270, 30],
+                  [480, 360, 30],
+                  [640, 360, 30],
+                  [640, 480, 30],
+                  [1280, 720, 30],
+                  [1280, 960, 30],
+                  [1920, 1080, 30],
+                  [1600, 1200, 30],
+                ],
+              },
+              audio: {
+                codecs: recordingCodecs,
+              },
+              motionService: true,
+              doorbellService: true,
             },
-          ],
-          video: {
-            codec: {
-              profiles: [this.hap.H264Profile.BASELINE, this.hap.H264Profile.MAIN, this.hap.H264Profile.HIGH],
-              levels: [this.hap.H264Level.LEVEL3_1, this.hap.H264Level.LEVEL3_2, this.hap.H264Level.LEVEL4_0],
-            },
-            resolutions: [
-              [320, 180, 30],
-              [320, 240, 15], // Apple Watch requires this configuration
-              [320, 240, 30],
-              [480, 270, 30],
-              [480, 360, 30],
-              [640, 360, 30],
-              [640, 480, 30],
-              [1280, 720, 30],
-              [1280, 960, 30],
-              [1920, 1080, 30],
-              [1600, 1200, 30],
-            ],
-          },
-          audio: {
-            codecs: recordingCodecs,
-          },
-          motionService: true,
-          doorbellService: true,
-        },
-        delegate: this.recordingDelegate,
-      },
+            delegate: this.recordingDelegate,
+          }
+        : undefined,
     });
 
     this.api.on('shutdown', () => {

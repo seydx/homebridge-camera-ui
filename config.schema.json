@@ -159,31 +159,6 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
-        },
-        "videoDuration": {
-          "title": "Video Duration (s)",
-          "type": "number",
-          "default": 15,
-          "minimum": 10,
-          "maximum": 60,
-          "placeholder": 15,
-          "description": "Video Duration (s) for HSV recordings."
-        },
-        "prebufferLength": {
-          "title": "Prebuffer Length",
-          "type": "number",
-          "default": 4000,
-          "minimum": 4000,
-          "placeholder": 4000,
-          "description": "Prebuffer length."
-        },
-        "fragmentLength": {
-          "title": "Fragment Length",
-          "type": "number",
-          "default": 4000,
-          "minimum": 4000,
-          "placeholder": 4000,
-          "description": "Fragment length."
         }
       }
     },
@@ -191,19 +166,15 @@
       "titel": "HomeKit Secure Video",
       "type": "object",
       "properties": {
-        "recording": {
-          "title": "Enable Homekit Secure Video Recording",
+        "active": {
+          "title": "Activate",
           "type": "boolean",
-          "required": true,
-          "default": false,
-          "description": "Enables Homekit Secure Video and records video on motion and doorbell events. Requires a home hub and iCloud plan with at least 200GB of storage."
+          "description": "Enables HSV for cameras that are not excluded from it. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
         },
-        "prebuffer": {
-          "title": "Enables prebuffering for Homekit Secure Video recording",
+        "prebuffering": {
+          "title": "Prebuffering",
           "type": "boolean",
-          "required": true,
-          "default": false,
-          "description": "If prebuffering is enabled the video is recorded permanent to be able to capture even the seconds before motion was detected or the doorbell event."
+          "description": "Enables prebuffering of videos that are not excluded from it. The video will be permanently recorded to capture the seconds before the motion detection or doorbell event."
         },
         "videoDuration": {
           "title": "Video Duration (s)",
@@ -304,10 +275,15 @@
             "type": "boolean",
             "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
           },
-          "hsvActive": {
-            "title": "Enable HomeKit Secure Video (HSV)",
+          "disableHSV": {
+            "title": "Disable HomeKit Secure Video (HSV)",
             "type": "boolean",
-            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
+            "description": "Excludes the camera from the HSV settings. This will display the camera in HomeKit as a normal camera."
+          },
+          "disablePrebuffering": {
+            "title": "Disable Prebuffering",
+            "type": "boolean",
+            "description": "Overwrites the prebuffering settings for the camera and excludes it from this. As a result, the video is no longer recorded constantly. Without prebuffering it is not possible to see the seconds before the motion detection or the doorbell event."
           },
           "videoConfig": {
             "title": "Video Configuration",
@@ -524,7 +500,8 @@
             "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
-            "cameras[].videoConfig.hsvActive",
+            "cameras[].disableHSV",
+            "cameras[].disablePrebuffering",
             {
               "key": "cameras[]",
               "type": "section",
@@ -613,7 +590,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": ["hsv.recording", "hsv.prebuffer", "hsv.videoDuration", "hsv.prebufferLength", "hsv.fragmentLength"]
+      "items": ["hsv.active", "hsv.prebuffering", "hsv.videoDuration", "hsv.prebufferLength", "hsv.fragmentLength"]
     },
     {
       "key": "options",

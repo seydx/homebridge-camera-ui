@@ -133,6 +133,7 @@
     "successfully_created": "Successfully created",
     "successfully_removed": "Successfully removed",
     "telegram": "Telegram",
+    "telegram_type_not_editable": "Telegram cannot be changed for this camera. HSV is active.",
     "themes": "Themes",
     "typ": "Typ",
     "user": "User",

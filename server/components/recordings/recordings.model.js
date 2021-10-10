@@ -124,11 +124,19 @@ exports.createRecording = async (data, hsv) => {
   };
 
   if (hsv) {
-    await ffmpeg.storeBuffer(cameraName, hsv, fileName, data.type === 'Video', data.path, label, true);
+    await ffmpeg.storeBuffer(cameraName, camera.videoConfig, hsv, fileName, true, data.path, label, true);
     await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, hsv);
   } else {
     await (data.imgBuffer
-      ? ffmpeg.storeBuffer(cameraName, data.imgBuffer, fileName, data.type === 'Video', data.path, label)
+      ? ffmpeg.storeBuffer(
+          cameraName,
+          camera.videoConfig,
+          data.imgBuffer,
+          fileName,
+          data.type === 'Video',
+          data.path,
+          label
+        )
       : ffmpeg.getAndStoreSnapshot(
           cameraName,
           camera.videoConfig,
