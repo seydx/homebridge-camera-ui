@@ -5,7 +5,7 @@ const logger = require('../../services/logger/logger.service');
 const { once } = require('events');
 
 module.exports = {
-  listenServer: async function (server) {
+  listenServer: async function (cameraName, server) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const port = 10000 + Math.round(Math.random() * 30000);
@@ -16,12 +16,13 @@ module.exports = {
         await once(server, 'listening');
         return server.address().port;
       } catch (error) {
-        logger.error(error);
+        //error ?
+        logger.debug(error && error.message ? error.message : error, cameraName);
       }
     }
   },
 
-  readLength: function (readable, length) {
+  readLength: function (cameraName, readable, length) {
     if (!length) {
       return Buffer.alloc(0);
     }
@@ -43,7 +44,7 @@ module.exports = {
       };
 
       const error = () => {
-        logger.warn(`Stream ended during read for minimum ${length} bytes`);
+        logger.debug(`Stream ended during read for minimum ${length} bytes`, cameraName);
 
         cleanup();
         //reject();
@@ -59,12 +60,12 @@ module.exports = {
     });
   },
 
-  parseFragmentedMP4: async function* (readable) {
+  parseFragmentedMP4: async function* (cameraName, readable) {
     while (true) {
-      const header = await this.readLength(readable, 8);
+      const header = await this.readLength(cameraName, readable, 8);
       const length = header.readInt32BE(0) - 8;
       const type = header.slice(4).toString();
-      const data = await this.readLength(readable, length);
+      const data = await this.readLength(cameraName, readable, length);
 
       yield {
         header,

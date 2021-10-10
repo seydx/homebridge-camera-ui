@@ -113,13 +113,14 @@ class RecordingDelegate {
     logger.debug('Start recording...', this.cameraName);
 
     const session = await this.startFFMPegFragmetedMP4Session(
+      this.cameraName,
       this.videoProcessor,
       ffmpegInput,
       audioArguments,
       videoArguments
     );
 
-    logger.info('Recording started', this.cameraName);
+    logger.debug('Recording started', this.cameraName);
 
     const { socket, cp, generator } = session;
     let pending = [];
@@ -145,7 +146,7 @@ class RecordingDelegate {
         }
       }
     } catch (error) {
-      logger.info(`Recording completed. (${error})`, this.cameraName);
+      logger.debug(`Recording completed. (${error})`, this.cameraName);
       uiHandler.handle('hsv', this.cameraName, true, filebuffer);
     } finally {
       socket.destroy();
@@ -153,7 +154,13 @@ class RecordingDelegate {
     }
   }
 
-  async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
+  async startFFMPegFragmetedMP4Session(
+    cameraName,
+    ffmpegPath,
+    ffmpegInput,
+    audioOutputArguments,
+    videoOutputArguments
+  ) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const server = createServer((socket) => {
@@ -161,10 +168,10 @@ class RecordingDelegate {
 
         async function* generator() {
           while (true) {
-            const header = await cameraUtils.readLength(socket, 8);
+            const header = await cameraUtils.readLength(cameraName, socket, 8);
             const length = header.readInt32BE(0) - 8;
             const type = header.slice(4).toString();
-            const data = await cameraUtils.readLength(socket, length);
+            const data = await cameraUtils.readLength(cameraName, socket, length);
 
             yield {
               header,
@@ -182,7 +189,7 @@ class RecordingDelegate {
         });
       });
 
-      const serverPort = await cameraUtils.listenServer(server);
+      const serverPort = await cameraUtils.listenServer(this.cameraName, server);
       const arguments_ = [];
 
       arguments_.push(

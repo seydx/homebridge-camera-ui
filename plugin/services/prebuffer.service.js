@@ -38,7 +38,7 @@ class PreBuffer {
     const fmp4OutputServer = createServer(async (socket) => {
       fmp4OutputServer.close();
 
-      const parser = cameraUtils.parseFragmentedMP4(socket);
+      const parser = cameraUtils.parseFragmentedMP4(this.cameraName, socket);
 
       for await (const atom of parser) {
         const now = Date.now();
@@ -70,7 +70,7 @@ class PreBuffer {
       }
     });
 
-    const fmp4Port = await cameraUtils.listenServer(fmp4OutputServer);
+    const fmp4Port = await cameraUtils.listenServer(this.cameraName, fmp4OutputServer);
 
     const ffmpegOutput = [
       '-f',
@@ -85,7 +85,7 @@ class PreBuffer {
     const arguments_ = [];
     arguments_.push(...this.ffmpegInput.split(' '), ...ffmpegOutput);
 
-    logger.info(this.ffmpegPath + ' ' + arguments_.join(' '), this.cameraName);
+    logger.debug(this.ffmpegPath + ' ' + arguments_.join(' '), this.cameraName);
 
     let stdioValue = this.debug ? 'pipe' : 'ignore';
     let cp = spawn(this.ffmpegPath, arguments_, { env: process.env, stdio: stdioValue });
@@ -136,7 +136,7 @@ class PreBuffer {
       this.events.on('atom', writeAtom);
 
       const cleanup = () => {
-        logger.info('Prebuffer request ended', this.cameraName);
+        logger.debug('Prebuffer request ended', this.cameraName);
 
         this.events.removeListener('atom', writeAtom);
         this.events.removeListener('killed', cleanup);
@@ -154,7 +154,7 @@ class PreBuffer {
 
     setTimeout(() => server.close(), 30000);
 
-    const port = await cameraUtils.listenServer(server);
+    const port = await cameraUtils.listenServer(this.cameraName, server);
     const ffmpegInput = ['-f', 'mp4', '-i', `tcp://127.0.0.1:${port}`];
 
     return ffmpegInput;
