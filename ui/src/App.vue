@@ -19,8 +19,10 @@
 import CoolLightBox from 'vue-cool-lightbox';
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css';
 
-import UpdateBanner from '@/components/update-banner.vue';
+//import UpdateBanner from '@/components/update-banner.vue';
 import NotificationBanner from '@/components/notification-banner.vue';
+
+import update from '@/mixins/update.mixin';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -28,15 +30,16 @@ export default {
   components: {
     CoolLightBox,
   },
+  mixins: [update],
   data() {
     return {
       id: '',
       idInfo: '',
       images: [],
       index: null,
-      refreshing: false,
-      registration: null,
-      updateExists: false,
+      //refreshing: false,
+      //registration: null,
+      //updateExists: false,
     };
   },
   computed: {
@@ -90,8 +93,9 @@ export default {
     },
   },
   created() {
-    if ('serviceWorker' in navigator) {
+    /*if ('serviceWorker' in navigator) {
       document.addEventListener('swUpdated', this.updateAvailable, { once: true });
+
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (this.refreshing) return;
         this.refreshing = true;
@@ -99,7 +103,7 @@ export default {
       });
     }
 
-    this.$store.dispatch('config/loadConfig');
+    this.$store.dispatch('config/loadConfig');*/
   },
   async mounted() {
     const preloader = document.querySelector('#preloader');
@@ -116,7 +120,7 @@ export default {
       this.$toast.dismiss(this.id);
       this.id = '';
     },
-    updateAvailable(event) {
+    /*updateAvailable(event) {
       this.registration = event.detail;
       this.updateExists = true;
 
@@ -136,13 +140,13 @@ export default {
       this.$toast(content, {
         id: this.idInfo,
       });
-    },
-    refreshApp() {
+    },*/
+    /*refreshApp() {
       this.updateExists = false;
       this.$toast.dismiss(this.idInfo);
       if (!this.registration || !this.registration.waiting) return;
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    },
+    },*/
   },
 };
 </script>

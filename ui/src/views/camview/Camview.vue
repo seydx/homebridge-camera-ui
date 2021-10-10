@@ -27,7 +27,7 @@ div
     :showLeftNavi="true"
     :leftNaviName="$t('back')"
     @leftNaviClick="goBack"
-    :showMiddleNavi="!isMobile"
+    :showMiddleNavi="!isMobile()"
     :middleNaviName="$t('fullscreen')"
     @middleNaviClick="showFullscreen"
     :showRightNavi="true"
@@ -286,7 +286,8 @@ export default {
     },
     isMobile() {
       let isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/.test(navigator.userAgent) ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform) ||
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       return isMobile;
     },

@@ -6,43 +6,54 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:dashboard:edit')")
-        h5 {{ $t("dashboard") }}
-        div.mt-4
-          .settings-box.container
-            .row
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("snapshot_timer") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                b-form-select(
-                  v-model="dashboard.refreshTimer"
-                  :options="[10, 20, 30, 40, 50, 60]"
-                )
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.dashboard ? "180" : "90"', @click="expand.dashboard = !expand.dashboard")
+        h5.cursor-pointer(@click="expand.dashboard = !expand.dashboard") {{ $t("dashboard") }}
+        b-collapse(
+          v-model="expand.dashboard",
+          id="expandDashboard"
+        )
+          div.mt-4
+            .settings-box.container
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("snapshot_timer") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  b-form-select(
+                    v-model="dashboard.refreshTimer"
+                    :options="[10, 20, 30, 40, 50, 60]"
+                  )
       .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
-        h5 {{ $t("favourites") }}
-        div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
-          .settings-box-header {{ camera.name }}
-          .settings-box.container.no-radius-top
-            .row
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("favourite") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button(
-                  v-model="camera.dashboard.favourite",
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true"
-                )
-            hr
-            .row
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("livestream") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button(
-                  v-model="camera.dashboard.live",
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true"
-                )
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "90"', @click="expand.favourites = !expand.favourites")
+        h5.cursor-pointer(@click="expand.favourites = !expand.favourites") {{ $t("favourites") }}
+        b-collapse(
+          v-model="expand.favourites",
+          id="expandFavourites"
+        )
+          div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
+            .settings-box-header {{ camera.name }}
+            .settings-box.container.no-radius-top
+              .row
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("favourite") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button(
+                    v-model="camera.dashboard.favourite",
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true"
+                  )
+              hr
+              .row
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("livestream") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button(
+                    v-model="camera.dashboard.live",
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true"
+                  )
 </template>
 
 <script>
+import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
@@ -50,6 +61,8 @@ import { getSetting, changeSetting } from '@/api/settings.api';
 export default {
   name: 'SettingsDashboard',
   components: {
+    BIcon,
+    BIconTriangleFill,
     ToggleButton,
   },
   data() {
@@ -57,6 +70,10 @@ export default {
       cameras: [],
       dashboard: {},
       dashboardTimer: null,
+      expand: {
+        dashboard: true,
+        favourites: true,
+      },
       loading: true,
     };
   },

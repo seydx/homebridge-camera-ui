@@ -3,13 +3,17 @@
 # NEXT
 
 ## Notable Changes
-- Homebridge
-  - HSV Support
+- HomeKit Secure Video (HSV)
+  - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
+  - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
 
 ## Other changes
 - Bump dependencies
+- Minor UI improvements
 
 ## Bugfixes
+- Fixed an issue where the service worker did not update the user interface correctly
+- Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
 - Minor bugfixes
 
 # v4.2.10 - 2021-10-04

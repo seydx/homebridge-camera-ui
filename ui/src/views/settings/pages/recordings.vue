@@ -6,66 +6,72 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:recordings:edit')")
-        h5 {{ $t("recordings") }}
-        div.mt-4
-          .settings-box.container
-            .row
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("active") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button(
-                  v-model="recordings.active"
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true",
-                  :aria-expanded="recordings.active ? 'true' : 'false'"
-                  aria-controls="recordings"
-                )
-            b-collapse(
-              v-model="recordings.active",
-              id="recordings"
-            )
-              hr
-              .row#recordingType
-                .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
-                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                  b-form-select(
-                    v-model="recordings.type"
-                    :options="['Snapshot', 'Video']",
-                    :disabled="recordings.hsv.active"
-                  )
-              b-popover(v-if="recordings.hsv.active", target="recordingType" triggers="hover" placement="top") 
-                b {{ $t("recording_type_not_editable") }}
-              hr
-              .row#recordingTimer
-                .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
-                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                  b-form-select(
-                    v-model="recordings.timer"
-                    :options="[10, 20, 30, 40, 50, 60]",
-                    :disabled="recordings.hsv.active"
-                  )
-              b-popover(v-if="recordings.hsv.active", target="recordingTimer" triggers="hover" placement="top") 
-                b {{ $t("recording_timer_not_editable") }}
-              hr
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.recordings ? "180" : "90"', @click="expand.recordings = !expand.recordings")
+        h5.cursor-pointer(@click="expand.recordings = !expand.recordings") {{ $t("recordings") }}
+        b-collapse(
+          v-model="expand.recordings",
+          id="expandRecordings"
+        )
+          div.mt-4
+            .settings-box.container
               .row
-                .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}
-                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                  b-form-input(
-                    type='text',
-                    :placeholder="$t('save_as')",
-                    v-model="recordings.path"
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("active") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button(
+                    v-model="recordings.active"
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true",
+                    :aria-expanded="recordings.active ? 'true' : 'false'"
+                    aria-controls="recordings"
                   )
-              hr
-              .row
-                .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_d") }}
-                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                  b-form-select(
-                    v-model="recordings.removeAfter"
-                    :options="[1, 3, 5, 7, 10]"
-                  )
+              b-collapse(
+                v-model="recordings.active",
+                id="recordings"
+              )
+                hr
+                .row#recordingType
+                  .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
+                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                    b-form-select(
+                      v-model="recordings.type"
+                      :options="['Snapshot', 'Video']",
+                      :disabled="recordings.hsv.active"
+                    )
+                b-popover(v-if="recordings.hsv.active", target="recordingType" triggers="hover" placement="top") 
+                  b {{ $t("recording_type_not_editable") }}
+                hr
+                .row#recordingTimer
+                  .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
+                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                    b-form-select(
+                      v-model="recordings.timer"
+                      :options="[10, 20, 30, 40, 50, 60]",
+                      :disabled="recordings.hsv.active"
+                    )
+                b-popover(v-if="recordings.hsv.active", target="recordingTimer" triggers="hover" placement="top") 
+                  b {{ $t("recording_timer_not_editable") }}
+                hr
+                .row
+                  .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}
+                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                    b-form-input(
+                      type='text',
+                      :placeholder="$t('save_as')",
+                      v-model="recordings.path"
+                    )
+                hr
+                .row
+                  .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_d") }}
+                  .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                    b-form-select(
+                      v-model="recordings.removeAfter"
+                      :options="[1, 3, 5, 7, 10]"
+                    )
 </template>
 
 <script>
+import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
@@ -73,10 +79,15 @@ import { getSetting, changeSetting } from '@/api/settings.api';
 export default {
   name: 'SettingsRecordings',
   components: {
+    BIcon,
+    BIconTriangleFill,
     ToggleButton,
   },
   data() {
     return {
+      expand: {
+        recordings: true,
+      },
       recordings: {},
       recordingsTimer: null,
       loading: true,

@@ -6,108 +6,123 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12.z-index-1.mb-5(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        h5 {{ $t("general") }}
-        div.mt-4
-          .settings-box.container
-            .row
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("at_home") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button(
-                  v-model="general.atHome"
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true",
-                )
-            hr
-            .row
-              .col-12.d-flex.flex-wrap.align-content-center {{ $t("exclude") }}
-              .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
-                multiselect(
-                  v-model="general.exclude",
-                  :options="cameras.map(camera => { return camera.name })",
-                  :searchable="false",
-                  :close-on-select="false",
-                  :show-labels="false"
-                  :placeholder="$t('select')",
-                  :multiple="true",
-                  :limit="2"
-                )
-                  template(slot="noOptions")
-                    strong {{ $t("empty") }}
-      .col-12.mb-5(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
-        h5 {{ $t("themes") }}
-        div.mt-4
-          .settings-box.container
-            .row(v-if="supportMatchMedia")
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("auto_darkmode") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button.auto-darkmode-toggle(
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true",
-                  v-model="autoDarkmode"
-                  @input="switchAutoDarkmode"
-                )
-            hr(v-if="supportMatchMedia")
-            .row(v-if="supportMatchMedia && !autoDarkmode")
-              .col-8.d-flex.flex-wrap.align-content-center {{ $t("darkmode") }}
-              .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                toggle-button.darkmode-toggle(
-                  color="var(--primary-color) !important",
-                  :height="30",
-                  :sync="true",
-                  v-model="darkmode"
-                  @input="switchDarkmode"
-                )
-            hr(v-if="supportMatchMedia && !autoDarkmode")
-            .row
-              .col-4.d-flex.flex-wrap.align-content-center {{ $t("themes") }}
-              .col-8.text-right
-                input#switch-pink.theme-switches.switch-pink(@input="switchTheme('pink')", type="radio", name="theme-group")
-                label.m-0(for="switch-pink")
-                input#switch-purple.theme-switches.switch-purple(@input="switchTheme('purple')", type="radio", name="theme-group")
-                label.m-0(for="switch-purple")
-                input#switch-blue.theme-switches.switch-blue(@input="switchTheme('blue')", type="radio", name="theme-group")
-                label.m-0(for="switch-blue")
-                input#switch-blgray.theme-switches.switch-blgray(@input="switchTheme('blgray')", type="radio", name="theme-group")
-                label.m-0(for="switch-blgray")
-                input#switch-brown.theme-switches.switch-brown(@input="switchTheme('brown')", type="radio", name="theme-group")
-                label.m-0(for="switch-brown")
-                input#switch-orange.theme-switches.switch-orange(@input="switchTheme('orange')", type="radio", name="theme-group")
-                label.m-0(for="switch-orange")
-                input#switch-green.theme-switches.switch-green(@input="switchTheme('green')", type="radio", name="theme-group")
-                label.m-0(for="switch-green")
-                input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
-                label.m-0(for="switch-gray")
-      .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        h5 {{ $t("rooms") }}
-        div.mt-4
-          .settings-box.container
-            .row
-              .col-10.d-flex.flex-wrap.align-content-center
-                b-form-input(
-                  type='text',
-                  :placeholder="$t('room_name')",
-                  v-model="form.newRoom",
-                  :state="roomState",
-                  lazy
-                )
-              .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
-                b-link.text-success
-                  b-icon(icon="plus-circle-fill", @click="addRoom()")
-            hr
-            div(v-for="(room, index) in general.rooms" :key="room" data-aos="fade-up" data-aos-duration="1000")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.general ? "180" : "90"', @click="expand.general = !expand.general")
+        h5.cursor-pointer(@click="expand.general = !expand.general") {{ $t("general") }}
+        b-collapse(
+          v-model="expand.general",
+          id="expandGeneral"
+        )
+          div.mt-4
+            .settings-box.container
               .row
-                .col-10
-                  span.fs-6 {{ room === 'Standard' ? $t("standard") : room }}
-                .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
-                  b-link.text-color-danger
-                    b-icon(icon="x-circle-fill", v-if="room !== 'Standard'", @click="removeRoom(room, index)")
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("at_home") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button(
+                    v-model="general.atHome"
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true",
+                  )
               hr
+              .row
+                .col-12.d-flex.flex-wrap.align-content-center {{ $t("exclude") }}
+                .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                  multiselect(
+                    v-model="general.exclude",
+                    :options="cameras.map(camera => { return camera.name })",
+                    :searchable="false",
+                    :close-on-select="false",
+                    :show-labels="false"
+                    :placeholder="$t('select')",
+                    :multiple="true",
+                    :limit="2"
+                  )
+                    template(slot="noOptions")
+                      strong {{ $t("empty") }}
+      .col-12.mb-5(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.themes ? "180" : "90"', @click="expand.themes = !expand.themes")
+        h5.cursor-pointer(@click="expand.themes = !expand.themes") {{ $t("themes") }}
+        b-collapse(
+          v-model="expand.themes",
+          id="expandThemes"
+        )
+          div.mt-4
+            .settings-box.container
+              .row(v-if="supportMatchMedia")
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("auto_darkmode") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button.auto-darkmode-toggle(
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true",
+                    v-model="autoDarkmode"
+                    @input="switchAutoDarkmode"
+                  )
+              hr(v-if="supportMatchMedia")
+              .row(v-if="supportMatchMedia && !autoDarkmode")
+                .col-8.d-flex.flex-wrap.align-content-center {{ $t("darkmode") }}
+                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                  toggle-button.darkmode-toggle(
+                    color="var(--primary-color) !important",
+                    :height="30",
+                    :sync="true",
+                    v-model="darkmode"
+                    @input="switchDarkmode"
+                  )
+              hr(v-if="supportMatchMedia && !autoDarkmode")
+              .row
+                .col-4.d-flex.flex-wrap.align-content-center {{ $t("themes") }}
+                .col-8.text-right
+                  input#switch-pink.theme-switches.switch-pink(@input="switchTheme('pink')", type="radio", name="theme-group")
+                  label.m-0(for="switch-pink")
+                  input#switch-purple.theme-switches.switch-purple(@input="switchTheme('purple')", type="radio", name="theme-group")
+                  label.m-0(for="switch-purple")
+                  input#switch-blue.theme-switches.switch-blue(@input="switchTheme('blue')", type="radio", name="theme-group")
+                  label.m-0(for="switch-blue")
+                  input#switch-blgray.theme-switches.switch-blgray(@input="switchTheme('blgray')", type="radio", name="theme-group")
+                  label.m-0(for="switch-blgray")
+                  input#switch-brown.theme-switches.switch-brown(@input="switchTheme('brown')", type="radio", name="theme-group")
+                  label.m-0(for="switch-brown")
+                  input#switch-orange.theme-switches.switch-orange(@input="switchTheme('orange')", type="radio", name="theme-group")
+                  label.m-0(for="switch-orange")
+                  input#switch-green.theme-switches.switch-green(@input="switchTheme('green')", type="radio", name="theme-group")
+                  label.m-0(for="switch-green")
+                  input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
+                  label.m-0(for="switch-gray")
+      .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.rooms ? "180" : "90"', @click="expand.rooms = !expand.rooms")
+        h5.cursor-pointer(@click="expand.rooms = !expand.rooms") {{ $t("rooms") }}
+        b-collapse(
+          v-model="expand.rooms",
+          id="expandRooms"
+        )
+          div.mt-4
+            .settings-box.container
+              .row
+                .col-10.d-flex.flex-wrap.align-content-center
+                  b-form-input(
+                    type='text',
+                    :placeholder="$t('room_name')",
+                    v-model="form.newRoom",
+                    :state="roomState",
+                    lazy
+                  )
+                .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
+                  b-link.text-success
+                    b-icon(icon="plus-circle-fill", @click="addRoom()")
+              hr
+              div(v-for="(room, index) in general.rooms" :key="room" data-aos="fade-up" data-aos-duration="1000")
+                .row
+                  .col-10
+                    span.fs-6 {{ room === 'Standard' ? $t("standard") : room }}
+                  .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
+                    b-link.text-color-danger
+                      b-icon(icon="x-circle-fill", v-if="room !== 'Standard'", @click="removeRoom(room, index)")
+                hr
 </template>
 
 <script>
-import { BIcon, BIconPlusCircleFill, BIconXCircleFill } from 'bootstrap-vue';
+import { BIcon, BIconPlusCircleFill, BIconTriangleFill, BIconXCircleFill } from 'bootstrap-vue';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import { ToggleButton } from 'vue-js-toggle-button';
@@ -121,6 +136,7 @@ export default {
   components: {
     BIcon,
     BIconPlusCircleFill,
+    BIconTriangleFill,
     BIconXCircleFill,
     Multiselect,
     ToggleButton,
@@ -130,6 +146,11 @@ export default {
       autoDarkmode: false,
       cameras: [],
       darkmode: false,
+      expand: {
+        general: true,
+        themes: true,
+        rooms: true,
+      },
       form: {
         newRoom: '',
       },

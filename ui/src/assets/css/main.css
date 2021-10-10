@@ -865,6 +865,14 @@ iframe {
   animation-delay: -0.15s;
 }
 
+.expandTriangle {
+  font-size: 10px;
+  float: left;
+  margin-left: 0;
+  margin-top: 6px;
+  margin-right: 10px;
+}
+
 @-webkit-keyframes lds-ring {
   0% {
     -webkit-transform: rotate(0deg);

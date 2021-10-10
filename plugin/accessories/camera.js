@@ -648,7 +648,7 @@ class Camera {
   handleStreamRequest(request, callback) {
     switch (request.type) {
       case 'start': {
-        let allowStream = sessions.requestSession(this.accessory.displayName);
+        const allowStream = sessions.requestSession(this.accessory.displayName);
 
         if (!allowStream) {
           return callback(new Error('Stream not allowed!'));
