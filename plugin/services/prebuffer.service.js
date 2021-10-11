@@ -70,7 +70,7 @@ class PreBuffer {
       }
     });
 
-    const fmp4Port = await cameraUtils.listenServer(this.cameraName, fmp4OutputServer, 21731);
+    const fmp4Port = await cameraUtils.listenServer(this.cameraName, fmp4OutputServer);
     const destination = `tcp://127.0.0.1:${fmp4Port}`;
 
     const ffmpegOutput = [
