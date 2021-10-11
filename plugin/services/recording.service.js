@@ -18,18 +18,6 @@ class RecordingDelegate {
     this.videoConfig = videoConfig;
     this.videoProcessor = videoProcessor || ffmpegPath || 'ffmpeg';
     this.debug = videoConfig.debug;
-
-    this.api.on('shutdown', () => {
-      if (this.preBufferSession) {
-        if (this.preBufferSession.process) {
-          this.preBufferSession.process.kill();
-        }
-
-        if (this.preBufferSession.server) {
-          this.preBufferSession.server.close();
-        }
-      }
-    });
   }
 
   async startPreBuffer() {
@@ -43,6 +31,7 @@ class RecordingDelegate {
       );
 
       if (!this.preBufferSession) {
+        logger.debug('Start prebuffering...', this.cameraName);
         this.preBufferSession = await this.preBuffer.startPreBuffer(this.cameraName);
       }
     }

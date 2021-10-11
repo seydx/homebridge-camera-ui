@@ -33,6 +33,13 @@
       "options": {
         "videoProcessor": "ffmpeg"
       },
+      "hsv": {
+        "active": true,
+        "prebuffering": true,
+        "videoDuration": 30,
+        "prebufferLength": 4000,
+        "fragmentLength": 4000
+      },
       "cameras": [
         {
           "name": "Sricam",

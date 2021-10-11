@@ -70,7 +70,8 @@ class PreBuffer {
       }
     });
 
-    const fmp4Port = await cameraUtils.listenServer(this.cameraName, fmp4OutputServer);
+    const fmp4Port = await cameraUtils.listenServer(this.cameraName, fmp4OutputServer, 21731);
+    const destination = `tcp://127.0.0.1:${fmp4Port}`;
 
     const ffmpegOutput = [
       '-f',
@@ -79,7 +80,7 @@ class PreBuffer {
       ...vcodec,
       '-movflags',
       'frag_keyframe+empty_moov+default_base_moof',
-      `tcp://127.0.0.1:${fmp4Port}`,
+      destination,
     ];
 
     const arguments_ = [];

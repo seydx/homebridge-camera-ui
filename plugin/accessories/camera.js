@@ -22,9 +22,6 @@ class Camera {
     this.recording = this.videoConfig.hsv.active;
     this.prebuffer = this.videoConfig.hsv.prebuffering;
 
-    logger.debug(this.recording ? 'Recording ON' : 'Recording OFF', this.accessory.displayName);
-    logger.debug(this.prebuffer ? 'Prebuffering ON' : 'Prebuffering OFF', this.accessory.displayName);
-
     this.services = [];
     this.streamControllers = [];
 
@@ -34,6 +31,8 @@ class Camera {
 
     const recordingCodecs = [];
     const samplerate = [];
+
+    this.recordingDelegate = null;
 
     for (const sr of [this.hap.AudioRecordingSamplerate.KHZ_32]) {
       samplerate.push(sr);
@@ -51,6 +50,8 @@ class Camera {
     }
 
     if (this.recording) {
+      logger.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
+
       this.recordingDelegate = new RecordingDelegate(
         this.accessory.displayName,
         this.videoConfig,
@@ -140,6 +141,20 @@ class Camera {
     this.api.on('shutdown', () => {
       for (const session in this.ongoingSessions) {
         this.stopStream(session);
+      }
+
+      if (this.recordingDelegate) {
+        const preBufferSession = this.recordingDelegate.preBufferSession;
+
+        if (preBufferSession) {
+          if (preBufferSession.process) {
+            preBufferSession.process.kill();
+          }
+
+          if (preBufferSession.server) {
+            preBufferSession.server.close();
+          }
+        }
       }
     });
   }
@@ -655,7 +670,6 @@ class Camera {
         }
 
         this.startStream(request, callback);
-
         break;
       }
 
@@ -679,7 +693,6 @@ class Camera {
       case 'stop': {
         this.stopStream(request.sessionID);
         callback();
-
         break;
       }
     }

@@ -30,45 +30,53 @@ function CameraUI(log, config, api) {
 
   this.api = api;
   this.accessories = [];
+  this.cameraAccessories = [];
 
   this.config = new Config();
   this.devices = new Map();
 
   for (const device of this.config.cameras) {
-    device.subtype = 'camera';
-
     const uuid = UUIDGen.generate(device.name);
 
     if (this.devices.has(uuid)) {
       logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
     } else {
+      device.subtype = 'camera';
       this.devices.set(uuid, device);
     }
   }
 
   if (this.config.atHomeSwitch) {
-    const device = {
-      name: 'At Home Switch',
-      subtype: 'athome-switch',
-      manufacturer: 'camera.ui',
-      model: 'Switch',
-    };
-
-    const uuid = UUIDGen.generate(device.name);
+    const name = 'At Home Switch';
+    const uuid = UUIDGen.generate(name);
 
     if (this.devices.has(uuid)) {
-      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
+      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', name);
     } else {
+      const device = {
+        name: name,
+        subtype: 'athome-switch',
+        manufacturer: 'camera.ui',
+        model: 'Switch',
+      };
+
       this.devices.set(uuid, device);
     }
   }
 
-  this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
+  this.api.on('didFinishLaunching', this.init.bind(this));
   this.api.on('shutdown', () => Server.stopServer());
 }
 
 CameraUI.prototype = {
-  didFinishLaunching: function () {
+  init: function () {
+    this.configure();
+
+    pluginHandler.initHandler(this.cameraAccessories, this.api.hap);
+    Server.startServer();
+  },
+
+  configure: function () {
     for (const [uuid, device] of this.devices) {
       if (device.unbridge) {
         logger.info('Configuring unbridged accessory...', device.name);
@@ -78,6 +86,10 @@ CameraUI.prototype = {
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 
         this.accessories.push(accessory);
+
+        if (device.subtype.includes('camera')) {
+          this.cameraAccessories.push(accessory);
+        }
       } else {
         const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
@@ -89,6 +101,10 @@ CameraUI.prototype = {
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 
           this.accessories.push(accessory);
+
+          if (device.subtype.includes('camera')) {
+            this.cameraAccessories.push(accessory);
+          }
         }
       }
     }
@@ -105,13 +121,6 @@ CameraUI.prototype = {
         logger.error(error);
       }
     }
-
-    pluginHandler.initHandler(
-      this.accessories.filter((accessory) => accessory.context.config.subtype === 'camera'),
-      this.api.hap
-    );
-
-    Server.startServer();
   },
 
   setupAccessory: function (accessory, device) {
@@ -141,21 +150,21 @@ CameraUI.prototype = {
 
     accessory.context.config = device;
 
-    if (device.subtype.includes('camera')) {
-      const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
-      accessory.configureController(cameraAccessory.controller);
-
-      if (device.videoConfig.hsv.prebuffering) {
-        logger.debug('Start prebuffering...', accessory.displayName);
-        cameraAccessory.recordingDelegate.startPreBuffer();
-      }
-
-      new MotionSensor(this.api, accessory);
-      new DoorbellSensor(this.api, accessory);
-      new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');
-    } else if (device.subtype.includes('switch')) {
+    if (device.subtype.includes('switch')) {
       new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory');
+      return;
     }
+
+    const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
+    accessory.configureController(cameraAccessory.controller);
+
+    if (device.videoConfig.hsv.active && device.videoConfig.hsv.prebuffering) {
+      cameraAccessory.recordingDelegate.startPreBuffer();
+    }
+
+    new MotionSensor(this.api, accessory);
+    new DoorbellSensor(this.api, accessory);
+    new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');
   },
 
   configureAccessory: function (accessory) {

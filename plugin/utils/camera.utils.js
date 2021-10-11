@@ -5,12 +5,12 @@ const logger = require('../../services/logger/logger.service');
 const { once } = require('events');
 
 module.exports = {
-  listenServer: async function (cameraName, server) {
+  listenServer: async function (cameraName, server, customPort) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const port = 10000 + Math.round(Math.random() * 30000);
 
-      server.listen(port);
+      server.listen(customPort ? customPort : port);
 
       try {
         await once(server, 'listening');

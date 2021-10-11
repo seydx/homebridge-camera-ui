@@ -40,6 +40,7 @@ class Streams {
         ffmpegOptions: {
           '-s': videoSize,
           '-b:v': '299k',
+          //'-b:v': '500k',
           '-r': rate,
           '-bf': 0,
           '-preset:v': 'ultrafast',
@@ -161,12 +162,20 @@ class Streams {
     }
   }
 
+  setStreamSource(cameraName, source) {
+    streams[cameraName].source = source.split(' ');
+  }
+
   setStreamOptions(cameraName, options) {
-    for (const [key, value] of Object.entries(options)) streams[cameraName].ffmpegOptions[key] = value;
+    for (const [key, value] of Object.entries(options)) {
+      streams[cameraName].ffmpegOptions[key] = value;
+    }
   }
 
   delStreamOptions(cameraName, options) {
-    for (const property of options) delete streams[cameraName].ffmpegOptions[property];
+    for (const property of options) {
+      delete streams[cameraName].ffmpegOptions[property];
+    }
   }
 }
 

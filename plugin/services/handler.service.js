@@ -1,7 +1,6 @@
 'use-strict';
 
 const logger = require('../../services/logger/logger.service');
-
 const uiHandler = require('../../server/services/handler.service');
 
 const HOMEBRIDGE = {
@@ -20,7 +19,9 @@ class PluginHandler {
     HOMEBRIDGE.hap = hap;
     HOMEBRIDGE.initialized = accessories && hap;
 
-    for (const accessory of accessories) cameras.set(accessory.UUID, accessory.context.config);
+    for (const accessory of accessories) {
+      cameras.set(accessory.UUID, accessory.context.config);
+    }
   }
 
   handle(target, name, active) {
@@ -71,10 +72,9 @@ class PluginHandler {
     const motionSensor = accessory.getService(HOMEBRIDGE.hap.Service.MotionSensor);
 
     if (motionSensor) {
-      let cameraConfig = cameras.get(accessory.UUID);
-
       logger.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
+      const cameraConfig = cameras.get(accessory.UUID);
       const timeout = motionTimers.get(accessory.UUID);
 
       if (timeout) {
@@ -91,9 +91,13 @@ class PluginHandler {
 
         motionSensor.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.MotionDetected, true);
 
-        if (motionTrigger) motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, true);
+        if (motionTrigger) {
+          motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, true);
+        }
 
-        if (cameraConfig.motionDoorbell) this.doorbellHandler(accessory, true, true);
+        if (cameraConfig.motionDoorbell) {
+          this.doorbellHandler(accessory, true, true);
+        }
 
         let timeoutConfig = !Number.isNaN(Number.parseInt(cameraConfig.motionTimeout)) ? cameraConfig.motionTimeout : 1;
 
@@ -102,10 +106,11 @@ class PluginHandler {
             logger.info('Motion handler timeout.', accessory.displayName);
 
             motionTimers.delete(accessory.UUID);
-
             motionSensor.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.MotionDetected, false);
 
-            if (motionTrigger) motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+            if (motionTrigger) {
+              motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+            }
           }, timeoutConfig * 1000);
 
           motionTimers.set(accessory.UUID, timer);
@@ -119,9 +124,13 @@ class PluginHandler {
       } else {
         motionSensor.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.MotionDetected, false);
 
-        if (motionTrigger) motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+        if (motionTrigger) {
+          motionTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+        }
 
-        if (cameraConfig.motionDoorbell) this.doorbellHandler(accessory, false, true);
+        if (cameraConfig.motionDoorbell) {
+          this.doorbellHandler(accessory, false, true);
+        }
 
         return {
           error: false,
@@ -140,10 +149,9 @@ class PluginHandler {
     const doorbell = accessory.getService(HOMEBRIDGE.hap.Service.Doorbell);
 
     if (doorbell) {
-      let cameraConfig = cameras.get(accessory.UUID);
-
       logger.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
+      const cameraConfig = cameras.get(accessory.UUID);
       const timeout = doorbellTimers.get(accessory.UUID);
 
       if (timeout) {
@@ -175,7 +183,6 @@ class PluginHandler {
               logger.debug('Doorbell handler timeout.', accessory.displayName);
 
               doorbellTimers.delete(accessory.UUID);
-
               doorbellTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
             }, timeoutConfig * 1000);
 
@@ -188,7 +195,9 @@ class PluginHandler {
           message: 'Doorbell switched on.',
         };
       } else {
-        if (doorbellTrigger) doorbellTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+        if (doorbellTrigger) {
+          doorbellTrigger.updateCharacteristic(HOMEBRIDGE.hap.Characteristic.On, false);
+        }
 
         return {
           error: false,

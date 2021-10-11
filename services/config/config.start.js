@@ -175,6 +175,7 @@ class ConfigSetup {
       .filter((camera) => camera.name && camera.videoConfig && camera.videoConfig.source)
       .map((camera) => {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
+
         if (!sourceArguments.includes('-i')) {
           logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
           camera.videoConfig.source = false;
@@ -183,10 +184,17 @@ class ConfigSetup {
         }*/
 
         if (camera.videoConfig.stimeout > 0 && !sourceArguments.includes('-stimeout')) {
-          camera.videoConfig.source = camera.videoConfig.source.replace(
-            '-i',
-            `-stimeout ${camera.videoConfig.stimeout * 10000000} -i` //-stimeout is in micro seconds
-          );
+          if (sourceArguments.includes('-re')) {
+            camera.videoConfig.source = camera.videoConfig.source.replace(
+              '-re',
+              `-stimeout ${camera.videoConfig.stimeout * 10000000} -re` //-stimeout is in micro seconds
+            );
+          } else if (sourceArguments.includes('-i')) {
+            camera.videoConfig.source = camera.videoConfig.source.replace(
+              '-i',
+              `-stimeout ${camera.videoConfig.stimeout * 10000000} -i` //-stimeout is in micro seconds
+            );
+          }
         }
 
         if (camera.videoConfig.stillImageSource) {
