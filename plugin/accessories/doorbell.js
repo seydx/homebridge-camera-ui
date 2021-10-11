@@ -22,7 +22,7 @@ class doorbellService {
 
     if (this.accessory.context.config.doorbell) {
       if (!service) {
-        logger.info('Adding doorbell service', this.accessory.displayName);
+        logger.debug('Adding doorbell service', this.accessory.displayName);
         service = this.accessory.addService(
           this.api.hap.Service.Doorbell,
           this.accessory.displayName + ' Doorbell',
@@ -31,14 +31,14 @@ class doorbellService {
       }
     } else {
       if (service) {
-        logger.info('Removing doorbell service', this.accessory.displayName);
+        logger.debug('Removing doorbell service', this.accessory.displayName);
         this.accessory.removeService(service);
       }
     }
 
     if (this.accessory.context.config.switches) {
       if (!switchService) {
-        logger.info('Adding switch service (doorbell)', this.accessory.displayName);
+        logger.debug('Adding switch service (doorbell)', this.accessory.displayName);
         switchService = this.accessory.addService(
           this.api.hap.Service.Switch,
           this.accessory.displayName + ' Doorbell Trigger',
@@ -52,7 +52,7 @@ class doorbellService {
       });
     } else {
       if (switchService) {
-        logger.info('Removing switch service (doorbell)', this.accessory.displayName);
+        logger.debug('Removing switch service (doorbell)', this.accessory.displayName);
         this.accessory.removeService(switchService);
       }
     }

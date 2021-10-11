@@ -45,7 +45,7 @@ class Streams {
           '-bf': 0,
           '-preset:v': 'ultrafast',
           '-threads': '1',
-          '-loglevel': 'quiet',
+          '-loglevel': camera.videoConfig.debug ? 'verbose' : 'warning',
         },
       };
 
@@ -92,6 +92,7 @@ class Streams {
             '-codec:v',
             'mpeg1video',
             ...additionalFlags,
+            '-hide_banner',
             '-',
           ];
 

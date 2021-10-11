@@ -31,7 +31,7 @@ class SwitchAccessory {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
 
     if (!service) {
-      logger.info(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
+      logger.debug(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
       service = this.accessory.addService(this.api.hap.Service.Switch, this.name, this.subtype);
     }
 
@@ -68,7 +68,7 @@ class SwitchAccessory {
   removeService() {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
     if (service) {
-      logger.info(`Removing switch service (${this.subtype})`, this.accessory.displayName);
+      logger.debug(`Removing switch service (${this.subtype})`, this.accessory.displayName);
       this.accessory.removeService(service);
     }
   }
