@@ -341,11 +341,13 @@ export default {
   margin-bottom: 20px;
   padding: 1rem;
   flex-direction: unset;
+  border-bottom: 1px solid var(--trans-border-color);
 }
 
 .card-img,
 .card-img-right {
   border-radius: 20px;
+  border: 3px solid var(--trans-border-color);
 }
 
 .card-title {

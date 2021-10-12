@@ -5,14 +5,14 @@
   transition-group(name="fade", mode="out-in", v-if="loading")
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
-      .col-12.z-index-1.mb-5(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.general ? "180" : "90"', @click="expand.general = !expand.general")
-        h5.cursor-pointer(@click="expand.general = !expand.general") {{ $t("general") }}
+      .col-12.z-index-1(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.general ? "180" : "-90"', @click="expand.general = !expand.general")
+        h5.cursor-pointer.settings-box-top(@click="expand.general = !expand.general") {{ $t("general") }}
         b-collapse(
           v-model="expand.general",
           id="expandGeneral"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row
                 .col-8.d-flex.flex-wrap.align-content-center {{ $t("at_home") }}
@@ -39,14 +39,14 @@
                   )
                     template(slot="noOptions")
                       strong {{ $t("empty") }}
-      .col-12.mb-5(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.themes ? "180" : "90"', @click="expand.themes = !expand.themes")
-        h5.cursor-pointer(@click="expand.themes = !expand.themes") {{ $t("themes") }}
+      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.themes ? "180" : "-90"', @click="expand.themes = !expand.themes")
+        h5.cursor-pointer.settings-box-top(@click="expand.themes = !expand.themes") {{ $t("themes") }}
         b-collapse(
           v-model="expand.themes",
           id="expandThemes"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row(v-if="supportMatchMedia")
                 .col-8.d-flex.flex-wrap.align-content-center {{ $t("auto_darkmode") }}
@@ -89,14 +89,14 @@
                   label.m-0(for="switch-green")
                   input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
                   label.m-0(for="switch-gray")
-      .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.rooms ? "180" : "90"', @click="expand.rooms = !expand.rooms")
-        h5.cursor-pointer(@click="expand.rooms = !expand.rooms") {{ $t("rooms") }}
+      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.rooms ? "180" : "-90"', @click="expand.rooms = !expand.rooms")
+        h5.cursor-pointer.settings-box-top(@click="expand.rooms = !expand.rooms") {{ $t("rooms") }}
         b-collapse(
           v-model="expand.rooms",
           id="expandRooms"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row
                 .col-10.d-flex.flex-wrap.align-content-center

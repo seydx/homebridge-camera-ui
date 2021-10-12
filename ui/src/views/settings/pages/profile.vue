@@ -8,13 +8,13 @@
       .col-12.col-md.mb-5(data-aos="fade-up" data-aos-duration="1000")
         .settings-box.d-flex.flex-wrap.justify-content-center.align-content-center.container
           .image-upload
-            label(for='file-input')
+            label.profile-avatar-bg(for='file-input')
               b-card-img-lazy.profile-avatar(@error.native="handleErrorImg" :src="currentUser.photo !== 'no_img.png' ? '/files/' + currentUser.photo : '@/assets/img/no_user.png'" alt="Avatar" width="8rem" height="8rem")
             input#file-input(type="file", name="photo", placeholder="Photo", required="", accept="image/png,image/jpeg", @change="changeProfileImg")
           .w-100.my-2
           h5.font-weight-bold.lh-1 {{ currentUser.username }}
           .w-100
-          span.text-muted.fs-7.lh-1.m-0 {{ currentUser.permissionLevel.includes("admin") ? $t("master") : $t("user") }}
+          span.text-color-primary.fs-7.lh-1.m-0 {{ currentUser.permissionLevel.includes("admin") ? $t("master") : $t("user") }}
         .btn.btn-danger.mt-2.w-100.p-2.mt-3(v-if="checkLevel('admin')", v-b-modal.modal-reset) {{ $t("reset") }}
         .settings-box.container.mt-5(v-if="checkLevel('admin')")
           h3.lh-1.font-weight-bold {{ $t("backup") }}
@@ -588,6 +588,11 @@ export default {
   border-radius: 4rem;
   overflow: hidden;
   object-fit: cover;
+}
+
+.profile-avatar-bg {
+  border-radius: 5rem;
+  border: 5px solid var(--trans-border-color);
 }
 
 div >>> .custom-file-label {

@@ -83,6 +83,7 @@ div(
     canvas.canvas.card-img.img-overlay.toggleArea(
       :data-stream-box="camera.name",
       :class="!fullsize ? headerPosition === 'top' ? 'card-img-bottom' : 'card-img-top' : ''",
+      :style="onlyStream ? 'height:' + aspectRatioHeight + 'px' : ''"
     )
   b-card-body(v-if="headerPosition === 'bottom' && !fullsize")
     b-card-title.float-left {{ camera.name }}
@@ -200,10 +201,16 @@ export default {
       timerCounter: 0,
       ldsVisible: null,
       offVisible: null,
+      aspectRatioHeight: 0,
     };
   },
   mounted() {
+    window.addEventListener('resize', this.aspectRatioHandler);
+
     this.stopped = false;
+
+    const containerWidth = window.innerWidth <= 1100 ? window.innerWidth : 1100;
+    this.aspectRatioHeight = Math.round((containerWidth / 16) * 9);
 
     if (this.camera.lastNotification) {
       const notification = this.camera.lastNotification;
@@ -231,8 +238,24 @@ export default {
     this.stopped = true;
     this.stopLivestream();
     this.stopSnapshot();
+
+    window.removeEventListener('resize', this.aspectRatioHandler);
   },
   methods: {
+    aspectRatioHandler() {
+      const containerWidth = window.innerWidth <= 1100 ? window.innerWidth : 1100;
+      const streamBox = document.getElementById('streamBox');
+
+      this.aspectRatioHeight = Math.round(
+        ((streamBox
+          ? streamBox.offsetWidth > 800
+            ? streamBox.offsetWidth - 100
+            : streamBox.offsetWidth
+          : containerWidth) /
+          16) *
+          9
+      );
+    },
     handleFullscreen(camera) {
       const fullscreenBg = document.querySelector('#cameraFsBg');
       const videoCard = document.querySelector(`[data-stream-box="${camera.name}"]`);

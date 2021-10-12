@@ -6,13 +6,13 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:dashboard:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.dashboard ? "180" : "90"', @click="expand.dashboard = !expand.dashboard")
-        h5.cursor-pointer(@click="expand.dashboard = !expand.dashboard") {{ $t("dashboard") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.dashboard ? "180" : "-90"', @click="expand.dashboard = !expand.dashboard")
+        h5.cursor-pointer.settings-box-top(@click="expand.dashboard = !expand.dashboard") {{ $t("dashboard") }}
         b-collapse(
           v-model="expand.dashboard",
           id="expandDashboard"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row
                 .col-12.d-flex.flex-wrap.align-content-center {{ $t("snapshot_timer") }}
@@ -21,14 +21,14 @@
                     v-model="dashboard.refreshTimer"
                     :options="[10, 20, 30, 40, 50, 60]"
                   )
-      .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "90"', @click="expand.favourites = !expand.favourites")
-        h5.cursor-pointer(@click="expand.favourites = !expand.favourites") {{ $t("favourites") }}
+      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "-90"', @click="expand.favourites = !expand.favourites")
+        h5.cursor-pointer.settings-box-top(@click="expand.favourites = !expand.favourites") {{ $t("favourites") }}
         b-collapse(
           v-model="expand.favourites",
           id="expandFavourites"
         )
-          div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
+          div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
             .settings-box-header {{ camera.name }}
             .settings-box.container.no-radius-top
               .row

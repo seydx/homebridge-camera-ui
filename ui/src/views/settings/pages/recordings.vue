@@ -6,13 +6,13 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:recordings:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.recordings ? "180" : "90"', @click="expand.recordings = !expand.recordings")
-        h5.cursor-pointer(@click="expand.recordings = !expand.recordings") {{ $t("recordings") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.recordings ? "180" : "-90"', @click="expand.recordings = !expand.recordings")
+        h5.cursor-pointer.settings-box-top(@click="expand.recordings = !expand.recordings") {{ $t("recordings") }}
         b-collapse(
           v-model="expand.recordings",
           id="expandRecordings"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row
                 .col-8.d-flex.flex-wrap.align-content-center {{ $t("active") }}

@@ -337,4 +337,20 @@ export default {
   border-top-right-radius: 5px !important;
   padding: 0.75rem 1.5rem !important;
 }
+
+.settings-box-top {
+  border-bottom: 1px solid var(--trans-bg-color);
+  padding-bottom: 10px;
+  margin-bottom: 0px !important;
+}
+
+.expandTriangle {
+  font-size: 8px;
+  float: right;
+  margin-left: 0;
+  margin-top: 8px;
+  margin-right: 10px;
+  color: var(--third-bg-color);
+  border-radius: 3px;
+}
 </style>

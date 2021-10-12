@@ -745,6 +745,7 @@ iframe {
   font-size: 14px !important;
   border: none !important;
   box-shadow: none !important;
+  border-radius: 0.5rem !important;
 }
 
 .btn-primary {
@@ -863,16 +864,6 @@ iframe {
 .lds-ring div:nth-child(3) {
   -webkit-animation-delay: -0.15s;
   animation-delay: -0.15s;
-}
-
-.expandTriangle {
-  font-size: 8px;
-  float: left;
-  margin-left: 0;
-  margin-top: 8px;
-  margin-right: 10px;
-  color: var(--third-bg-color);
-  border-radius: 3px;
 }
 
 @-webkit-keyframes lds-ring {

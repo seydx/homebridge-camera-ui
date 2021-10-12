@@ -8,8 +8,10 @@
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
 
 ## Other changes
+- Interface
+  - Added 16:9 aspect ratio to camera view
+  - Minor UI improvements
 - Bump dependencies
-- Minor UI improvements
 
 ## Bugfixes
 - Fixed an issue where the service worker did not update the user interface correctly

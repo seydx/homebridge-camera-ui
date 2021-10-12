@@ -6,13 +6,13 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel(['settings:cameras:edit'])")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.aws ? "180" : "90"', @click="expand.aws = !expand.aws")
-        h5.cursor-pointer(@click="expand.aws = !expand.aws") {{ $t("aws") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.aws ? "180" : "-90"', @click="expand.aws = !expand.aws")
+        h5.cursor-pointer.settings-box-top(@click="expand.aws = !expand.aws") {{ $t("aws") }}
         b-collapse(
           v-model="expand.aws",
           id="expandAws"
         )
-          div.mt-4
+          div.mt-2.mb-4
             .settings-box.container
               .row
                 .col-7.d-flex.flex-wrap.align-content-center {{ $t("active") }}
@@ -87,14 +87,14 @@
                       v-model="aws.last_rekognition"
                       style="background: var(--third-bg-color) !important"
                     )
-      .col-12.mt-5(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.cameras ? "180" : "90"', @click="expand.cameras = !expand.cameras")
-        h5.cursor-pointer(@click="expand.cameras = !expand.cameras") {{ $t("cameras") }}
+      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.cameras ? "180" : "-90"', @click="expand.cameras = !expand.cameras")
+        h5.cursor-pointer.settings-box-top(@click="expand.cameras = !expand.cameras") {{ $t("cameras") }}
         b-collapse(
           v-model="expand.cameras",
           id="expandCameras"
         )
-          div.mb-5.mt-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
+          div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
             .settings-box-header {{ camera.name }}
             .settings-box.container.no-radius-top
               .row

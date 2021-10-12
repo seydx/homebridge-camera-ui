@@ -5,8 +5,8 @@ div
   main.inner-container.w-100.h-100vh-calc.pt-save.footer-offset
     .container.pt-3.d-flex.flex-wrap.justify-content-center.align-content-center.position-absolute-fullsize(v-if="loading")
       b-spinner.text-color-primary
-    .container.pt-3(v-else-if="!loading && Object.keys(camera).length")
-      .card.overflow-hidden.bg-dark
+    #streamBox.container.pt-3(v-else-if="!loading && Object.keys(camera).length")
+      .card.overflow-hidden.bg-dark(style="border-radius: 7px !important;")
         VideoCard(
           :ref="camera.name"
           :key="camera.name",
@@ -188,7 +188,7 @@ export default {
 .card >>> .img-overlay {
   /*height: 11vw;*/
   height: 50vw;
-  max-height: 375px;
+  /*max-height: 375px;*/
 }
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
