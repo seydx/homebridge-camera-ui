@@ -63,7 +63,8 @@ div(
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
       b {{ $t("last_notification") + ": " }}
-      | {{ camera.lastNotification.time }}
+      br
+      span {{ camera.lastNotification.time }}
   router-link.position-relative.bg-dark(
     v-if="linkToCamera", 
     :to='\'/cameras/\' + camera.name', 
@@ -91,7 +92,8 @@ div(
     b-icon.float-right.text-color-primary.card-icon(v-if="notificationBell && camera.lastNotification", icon="bell-fill", aria-hidden="true", :id='\'popover-target-\' + camera.name.replace(/\s/g,"")')
     b-popover(v-if="notificationBell && camera.lastNotification", :target='\'popover-target-\' + camera.name.replace(/\s/g,"")' triggers="hover" placement="top") 
       b {{ $t("last_notification") + ": " }}
-      | {{ camera.lastNotification.time }}
+      br
+      span {{ camera.lastNotification.time }}
   #cameraFsBg(v-if="showFullsizeIndicator")
   CoolLightBox(
     v-if="notificationOverlay && camera.lastNotification"

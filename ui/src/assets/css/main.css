@@ -771,7 +771,7 @@ iframe {
 
 .btn-danger:hover {
   background-color: rgb(173, 12, 3) !important;
-  color: var(--primary-font-color) !important;
+  color: #fff !important;
 }
 
 .btn-danger:focus,

@@ -50,7 +50,7 @@ div
           template(v-if="checkLevel('notifications:edit')" v-slot:right)
             .swipeout-action(title="remove")
               .swipe-remove.d-flex.flex-wrap.justify-content-center.align-content-center(:data-remove-id="notification.id")
-                b-icon.text-color-danger.cursor-pointer(icon="trash-fill", aria-hidden="true", @click="remove(notification, i, $event)")
+                b-icon.text-color-danger.cursor-pointer.fs-5(icon="trash-fill", aria-hidden="true", @click="remove(notification, i, $event)")
       CoolLightBox(
         :items="images" 
         :index="index"
@@ -333,7 +333,7 @@ export default {
   min-width: 0;
   word-wrap: break-word;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 0.375rem;
+  border-radius: 0.7rem;
   background-color: var(--secondary-bg-color);
   background-clip: border-box;
   border: 0;
@@ -342,6 +342,11 @@ export default {
   padding: 1rem;
   flex-direction: unset;
   border-bottom: 1px solid var(--trans-border-color);
+  transition: 0.3s all;
+}
+
+a.card:hover {
+  background-color: var(--secondary-bg-hover-color);
 }
 
 .card-img,

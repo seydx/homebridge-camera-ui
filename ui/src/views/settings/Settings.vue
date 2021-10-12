@@ -339,7 +339,7 @@ export default {
 }
 
 .settings-box-top {
-  border-bottom: 1px solid var(--trans-bg-color);
+  border-bottom: 1px solid var(--trans-border-color-1);
   padding-bottom: 10px;
   margin-bottom: 0px !important;
 }
