@@ -118,7 +118,7 @@
                   .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
                     b-link.text-color-danger
                       b-icon(icon="x-circle-fill", v-if="room !== 'Standard'", @click="removeRoom(room, index)")
-                hr
+                hr(v-if="index < general.rooms.length - 1")
 </template>
 
 <script>

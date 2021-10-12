@@ -34,7 +34,7 @@
         "videoProcessor": "ffmpeg"
       },
       "hsv": {
-        "active": true,
+        "active": false,
         "prebuffering": true,
         "videoDuration": 30,
         "prebufferLength": 4000,

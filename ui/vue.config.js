@@ -102,39 +102,11 @@ module.exports = {
       payload[0].title = 'camera.ui';
       return payload;
     });
-    /*config.plugins.delete('prefetch');
-    config.plugin('preload').tap((options) => {
-      options[0].include = 'allChunks';
-      return options;
-    });*/
   },
   configureWebpack: {
     performance: {
       hints: process.env.NODE_ENV === 'production' ? false : 'warning',
     },
-    /*optimization: {
-      runtimeChunk: 'single',
-      splitChunks: {
-        chunks: 'all',
-        maxInitialRequests: Infinity,
-        minSize: 0,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `npm.${packageName.replace('@', '')}`;
-            },
-          },
-          styles: {
-            test: /\.css$/,
-            name: 'styles',
-            chunks: 'all',
-            enforce: true,
-          },
-        },
-      },
-    },*/
     resolve: {
       alias: {
         jquery: path.resolve(__dirname, 'node_modules/gridstack/dist/jq/jquery.js'),
