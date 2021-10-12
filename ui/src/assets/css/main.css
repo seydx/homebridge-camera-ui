@@ -871,7 +871,7 @@ iframe {
   margin-left: 0;
   margin-top: 8px;
   margin-right: 10px;
-  color: var(--primary-color);
+  color: var(--third-bg-color);
   border-radius: 3px;
 }
 

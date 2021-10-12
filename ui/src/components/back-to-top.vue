@@ -1,6 +1,6 @@
 <template lang="pug">
 .back-to-top.mr-save.mb-save.text-center(@click="backToTop()")
-  b-icon(icon="arrow-up-short", aria-hidden="true")
+  b-icon(icon="arrow-up-short", aria-hidden="true", style="vertical-align: -.2em !important")
 </template>
 
 <script>

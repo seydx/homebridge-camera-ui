@@ -55,7 +55,7 @@ export default {
   -webkit-backdrop-filter: blur(5px) !important;
   color: var(--primary-font-color) !important;
   border-radius: 16px !important;
-  padding: 16px !important;
+  padding: 14px !important;
 }
 
 .notification,
@@ -73,15 +73,16 @@ export default {
 .notification header {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 8px;
+  padding-bottom: 3px;
   font-size: 12px;
 }
 .notification header h2 {
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 10px;
 }
 .notification header .timestamp {
   text-transform: lowercase;
+  font-size: 10px;
 }
 .notification .content span {
   display: block;
@@ -91,6 +92,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 13px;
 }
 .notification .content .sender,
 .notification .content .event {
@@ -98,7 +100,7 @@ export default {
 }
 .notification .content .more {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 10px;
 }
 .notification .before,
 .notification .after {

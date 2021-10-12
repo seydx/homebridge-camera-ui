@@ -4,7 +4,7 @@ div
     .footer-inner.container.d-flex.flex-wrap.align-content-center.toggleArea
       .col.p-0.m-0.toggleArea © SeydX
       a(href="https://www.github.com/SeydX/homebridge-camera-ui", target="_blank" rel="noopener noreferrer")
-        b-icon.text-color-primary(icon="github", aria-hidden="true")
+        b-icon.text-color-primary.fs-6(icon="github", aria-hidden="true")
   .snapline
 </template>
 
