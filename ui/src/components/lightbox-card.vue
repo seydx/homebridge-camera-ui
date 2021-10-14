@@ -50,11 +50,12 @@ export default {
         xhr.responseType = 'blob';
 
         xhr.onload = function () {
-          saveAs(xhr.response, name);
+          saveAs(xhr.response, fileName);
         };
 
         xhr.onerror = function () {
           console.error('download failed', url);
+          this.$toast.error(`${this.$t('download_failed')}`);
         };
 
         xhr.send();

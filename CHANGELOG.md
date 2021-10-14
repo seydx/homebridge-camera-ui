@@ -11,12 +11,14 @@
 - Interface
   - Added 16:9 aspect ratio to `camera` view
   - Changed `removeAfter`duration for notifications/recordings
+  - The quality of the streams was increased (`-q 1`)
   - Minor UI improvements
 - Bump dependencies
 
 ## Bugfixes
 - Fixed an issue where the service worker did not update the user interface correctly
 - Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
+- Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
 - Minor bugfixes
 
 # v4.2.10 - 2021-10-04
