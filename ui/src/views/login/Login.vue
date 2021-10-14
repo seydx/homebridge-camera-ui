@@ -1,6 +1,6 @@
 <template lang="pug">
   main.d-flex.flex-wrap.justify-content-center.align-content-center.h-100vh.w-100
-    .login.container.bg-white
+    .login.container
       .login-inner.row
         #left-side.col-5.d-flex.flex-wrap.bg-color-primary.justify-content-center.align-content-center
           img.d-block.theme-img(src="@/assets/img/logo_white_both@pink.png", alt="camera.ui")
@@ -68,10 +68,16 @@ export default {
   -webkit-box-shadow: 0px 17px 28px -21px rgba(0, 0, 0, 0.68);
   box-shadow: 0px 17px 28px -21px rgba(0, 0, 0, 0.68);
   min-width: 700px;
+  border-radius: 30px;
 }
 
 .login-inner {
   height: 100%;
+}
+
+#left-side {
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
 }
 
 #left-side img {
@@ -82,6 +88,8 @@ export default {
 #right-side {
   padding: 50px 50px 50px 50px;
   background: var(--secondary-bg-color);
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 #right-side p,
@@ -92,16 +100,16 @@ export default {
 
 .mini-text-left {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 20px;
+  left: 30px;
   font-size: 10px;
   color: rgb(255, 255, 255, 0.4);
 }
 
 .mini-text-right {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 20px;
+  right: 30px;
   font-size: 10px;
   color: var(--secondary-font-color);
 }
@@ -125,7 +133,7 @@ export default {
     display: none !important;
   }
   #right-side {
-    border-radius: 10px;
+    border-radius: 30px;
   }
   main .container {
     padding-left: 0;

@@ -35,7 +35,7 @@
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="notifications.removeAfter"
-                      :options="[1, 3, 5, 9, 12, 24]"
+                      :options="[1, 3, 6, 12, 24]"
                     )
       b-collapse.w-100(
         v-model="notifications.active",

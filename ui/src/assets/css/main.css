@@ -944,6 +944,7 @@ iframe {
 .modal.fade .modal-dialog.modal-bottom {
   transition: transform 0.3s ease-out;
   transform: translate(0, 150px);
+  max-width: 100% !important;
 }
 
 .modal.show .modal-dialog.modal-bottom {

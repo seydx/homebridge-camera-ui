@@ -9,7 +9,8 @@
 
 ## Other changes
 - Interface
-  - Added 16:9 aspect ratio to camera view
+  - Added 16:9 aspect ratio to `camera` view
+  - Changed `removeAfter`duration for notifications/recordings
   - Minor UI improvements
 - Bump dependencies
 

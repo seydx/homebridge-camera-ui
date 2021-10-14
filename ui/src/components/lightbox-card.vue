@@ -11,12 +11,13 @@ b-card(no-body)
     div.mt-2
       b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit')", @click="$emit('remove-image', recording)")
         b-icon(icon="trash-fill", aria-hidden="true")
-      b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="'/files/' + recording.fileName")
+      b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="item.url", @click.prevent="downloadItem(item)")
         b-icon(icon="cloud-download-fill", aria-hidden="true")
 </template>
 
 <script>
 import { BIcon, BIconTrashFill, BIconCloudDownloadFill } from 'bootstrap-vue';
+import { saveAs } from 'file-saver';
 
 export default {
   name: 'LightboxCard',
@@ -31,7 +32,53 @@ export default {
       required: true,
     },
   },
+  data: function () {
+    return {
+      item: {
+        fileName: this.recording.fileName,
+        url: '/files/' + this.recording.fileName,
+      },
+    };
+  },
   methods: {
+    downloadItem({ url, fileName }) {
+      const isSafari = navigator.appVersion.indexOf('Safari/') !== -1 && navigator.appVersion.indexOf('Chrome') === -1;
+
+      if (isSafari) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+
+        xhr.onload = function () {
+          saveAs(xhr.response, name);
+        };
+
+        xhr.onerror = function () {
+          console.error('download failed', url);
+        };
+
+        xhr.send();
+        return;
+      }
+
+      // Create download link.
+      const link = document.createElement('a');
+
+      if (fileName) {
+        link.download = fileName;
+      }
+
+      link.href = url;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+
+      // Start download.
+      link.click();
+
+      // Remove download link.
+      document.body.removeChild(link);
+    },
     handleErrorImg(event) {
       const darkmode = localStorage.getItem('theme') === 'dark';
 

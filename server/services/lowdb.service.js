@@ -103,9 +103,10 @@ class Lowdb {
   }
 
   async ensureDatabase() {
-    const adapterDatabase = new FileAsync(this.dbPath);
     await fs.ensureFile(this.dbPath);
     await fs.ensureDir(this.userPath);
+
+    const adapterDatabase = new FileAsync(this.dbPath);
     const database = await low(adapterDatabase);
 
     if (Object.keys(database.value()).length > 0) {
@@ -192,6 +193,8 @@ class Lowdb {
       };
 
       await User.push(admin).write();
+
+      return;
     }
 
     //prepare hsv settings
@@ -205,9 +208,7 @@ class Lowdb {
     const adapterDatabase = new FileAsync(this.dbPath);
     const database = await low(adapterDatabase);
 
-    await database.read();
-
-    return;
+    return await database.read();
   }
 
   async resetDatabase() {
@@ -228,7 +229,6 @@ class Lowdb {
     const database = await low(adapterDatabase);
 
     this.recPath = await database.get('settings').get('recordings').get('path').value();
-
     await fs.ensureDir(this.recPath);
 
     let recordings = (await fs.readdir(this.recPath)) || [];

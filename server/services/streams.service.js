@@ -40,7 +40,6 @@ class Streams {
         ffmpegOptions: {
           '-s': videoSize,
           '-b:v': '299k',
-          //'-b:v': '500k',
           '-r': rate,
           '-bf': 0,
           '-preset:v': 'ultrafast',
@@ -92,6 +91,8 @@ class Streams {
             '-codec:v',
             'mpeg1video',
             ...additionalFlags,
+            '-q',
+            '1',
             '-hide_banner',
             '-',
           ];

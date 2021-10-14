@@ -13,6 +13,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.18.2",
+    "file-saver": "^2.0.5",
     "gridstack": "^4.2.7",
     "jsmpeg-fast-player": "^0.2.0",
     "register-service-worker": "^1.7.2",

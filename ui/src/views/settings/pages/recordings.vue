@@ -66,7 +66,7 @@
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="recordings.removeAfter"
-                      :options="[1, 3, 5, 7, 10]"
+                      :options="[1, 3, 7, 14, 30]"
                     )
 </template>
 
