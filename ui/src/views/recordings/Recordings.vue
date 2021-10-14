@@ -29,6 +29,7 @@ div
         )
           LightboxCard(
             :recording="recording",
+            :key="recording.fileName",
             @remove-image="remove($event, imageIndex)",
             @show-image="index = imageIndex"
           )
@@ -169,7 +170,7 @@ export default {
 
         const card = document.querySelector('div[data-id="' + recording.id + '"]');
 
-        card.dataset.aos = 'fade-right';
+        card.dataset.aos = 'fade';
         card.dataset.aosDuration = '500';
         card.classList.remove('aos-init');
         card.classList.remove('aos-animate');
@@ -180,6 +181,7 @@ export default {
         this.images = this.images.splice(index, 1);
         this.$delete(this.recordings, index);
 
+        //Refresh infinite loading
         if (this.recordings.length === 0) {
           this.infiniteId += 1;
         }

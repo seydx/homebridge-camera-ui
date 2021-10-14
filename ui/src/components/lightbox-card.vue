@@ -7,12 +7,16 @@ b-card(no-body)
     small.text-muted {{ recording.recordType === "Snapshot" ? $t("snapshot") : $t("video") }} - {{ recording.room }}
     .card-text.mt-2.mb-2
       | {{ $t("recording_text").replace("@", recording.recordType === "Snapshot" ? $t("snapshot") : $t("video")).replace("%", recording.time).replace("#", $t(recording.trigger)) }}
-    small.text-muted {{ `${$t("label")}: ${recording.label}` }}
+    small.text-muted {{ `${$t("label")}: ${recording.label.includes("no label") ? $t("no_label") : recording.label}` }}
     div.mt-2
-      b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit')", @click="$emit('remove-image', recording)")
+      b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit') && !removing", @click="removeItem")
         b-icon(icon="trash-fill", aria-hidden="true")
-      b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="item.url", @click.prevent="downloadItem(item)")
+      b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit') && removing")
+        b-spinner(small variant='light')
+      b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(:href="item.url", @click.prevent="downloadItem(item)", v-if="!downloading")
         b-icon(icon="cloud-download-fill", aria-hidden="true")
+      b-link.card-btn.float-right.d-flex.flex-wrap.align-content-center.justify-content-center.card-btn-dark(href="#", v-else)
+        b-spinner(small variant='light')
 </template>
 
 <script>
@@ -38,11 +42,19 @@ export default {
         fileName: this.recording.fileName,
         url: '/files/' + this.recording.fileName,
       },
+      downloading: false,
+      removing: false,
     };
   },
   methods: {
     downloadItem({ url, fileName }) {
+      this.downloading = true;
+
       const isSafari = navigator.appVersion.indexOf('Safari/') !== -1 && navigator.appVersion.indexOf('Chrome') === -1;
+
+      const downloadFinished = () => {
+        setTimeout(() => (this.downloading = false), 1000);
+      };
 
       if (isSafari) {
         const xhr = new XMLHttpRequest();
@@ -51,11 +63,13 @@ export default {
 
         xhr.onload = function () {
           saveAs(xhr.response, fileName);
+          downloadFinished();
         };
 
         xhr.onerror = function () {
           console.error('download failed', url);
           this.$toast.error(`${this.$t('download_failed')}`);
+          downloadFinished();
         };
 
         xhr.send();
@@ -79,6 +93,8 @@ export default {
 
       // Remove download link.
       document.body.removeChild(link);
+
+      downloadFinished();
     },
     handleErrorImg(event) {
       const darkmode = localStorage.getItem('theme') === 'dark';
@@ -86,6 +102,10 @@ export default {
       event.target.classList.remove('object-fit-cover');
       event.target.classList.add('object-fit-none');
       event.target.src = require(`@/assets/img/no_img${darkmode ? '_white' : ''}.png`);
+    },
+    removeItem() {
+      this.removing = true;
+      this.$emit('remove-image', this.recording);
     },
   },
 };
@@ -168,7 +188,7 @@ export default {
   }
 
   .card-btn-dark:hover {
-    background-color: #222222;
+    background-color: #383838;
   }
 }
 </style>

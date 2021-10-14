@@ -435,9 +435,10 @@ div >>> .multiselect__tags {
 }
 
 div >>> .multiselect__option {
-  white-space: unset !important;
+  /*white-space: unset !important;
   word-break: break-all !important;
-  padding: 10px 5px 10px 5px !important;
+  padding: 10px 5px 10px 5px !important;*/
+  font-size: 10px !important;
 }
 
 div >>> .multiselect__placeholder {

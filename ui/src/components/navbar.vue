@@ -169,11 +169,11 @@ div.navbar2-items > ul > li > a.router-link-active {
 }
 
 .camview-btn:hover {
-  background: #b3b3b3;
+  background: var(--third-bg-color-hover);
 }
 
 .camview-btn a:hover {
-  color: #fff !important;
+  color: var(--primary-font-color) !important;
 }
 
 .logout-btn {
@@ -183,7 +183,7 @@ div.navbar2-items > ul > li > a.router-link-active {
 }
 
 .logout-btn:hover {
-  background: var(--third-color);
+  background: var(--secondary-color);
 }
 
 .logout-btn a {
