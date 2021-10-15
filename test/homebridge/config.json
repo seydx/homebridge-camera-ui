@@ -66,9 +66,9 @@
             "debug": false
           },
           "mqtt": {
-            "motionTopic": "sricam/motion",
+            "motionTopic": "sricam/testmotion",
             "motionMessage": "ON",
-            "motionResetTopic": "sricam/motion",
+            "motionResetTopic": "sricam/testmotion",
             "motionResetMessage": "OFF"
           }
         },

@@ -42,9 +42,9 @@
   --third-bg-color-hover: rgb(92, 92, 92);
   --fourth-bg-color: rgb(103, 103, 103);
   --trans-bg-color: rgba(29, 29, 29, 0.8);
-  --trans-bg-color: rgba(29, 29, 29, 0.5);
-  --trans-bg-color: rgba(29, 29, 29, 0.3);
-  --trans-bg-color: rgba(29, 29, 29, 0.1);
+  --trans-bg-color-5: rgba(29, 29, 29, 0.5);
+  --trans-bg-color-3: rgba(29, 29, 29, 0.3);
+  --trans-bg-color-1: rgba(29, 29, 29, 0.1);
   --trans-font-color: rgba(255, 255, 255, 0.5);
   --trans-border-color: rgba(128, 128, 128, 0.05);
   --trans-border-color-1: rgba(255, 255, 255, 0.1);

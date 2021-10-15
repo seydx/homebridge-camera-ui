@@ -11,37 +11,6 @@ const SettingsModel = require('../components/settings/settings.model');
 const notificationsTimer = new Map();
 const recordingsTimer = new Map();
 
-async function timeout(timeValue, timeTyp, id, timestamp, isRecording) {
-  const endTime = moment.unix(timestamp).add(timeValue, timeTyp);
-
-  logger.debug(
-    `SET cleartimer for ${isRecording ? 'Recording' : 'Notification'} (${id}) - Endtime: ${endTime}`,
-    false,
-    true
-  );
-
-  const timer = setInterval(async () => {
-    const now = moment();
-
-    if (now > endTime) {
-      logger.debug(
-        `${isRecording ? 'Recording' : 'Notification'} (${id}) - Endtime: ${endTime} reached! Removing...`,
-        false,
-        true
-      );
-
-      clearInterval(timer);
-      await (isRecording ? this.clearRecording(id) : this.clearNotification(id));
-    }
-  }, 1000);
-
-  if (isRecording) {
-    recordingsTimer.set(id, timer);
-  } else {
-    notificationsTimer.set(id, timer);
-  }
-}
-
 class Cleartimer {
   async start() {
     try {
@@ -72,7 +41,7 @@ class Cleartimer {
           notificationsTimer.set(notification.id, false);
           await this.clearNotification(notification.id);
         } else {
-          timeout(removeAfterTimer / 60, 'minutes', notification.id, notification.timestamp, false);
+          this.timeout(removeAfterTimer / 60, 'hours', notification.id, notification.timestamp, false);
         }
       }
 
@@ -91,7 +60,7 @@ class Cleartimer {
           recordingsTimer.set(recording.id, false);
           await this.clearRecording(recording.id);
         } else {
-          timeout(removeAfterTimer / 24, 'days', recording.id, recording.timestamp, true);
+          this.timeout(removeAfterTimer / 24, 'days', recording.id, recording.timestamp, true);
         }
       }
     } catch (error) {
@@ -128,7 +97,7 @@ class Cleartimer {
       const settings = await SettingsModel.getByTarget('notifications');
       const clearTimer = settings.removeAfter;
 
-      timeout(clearTimer, 'minutes', id, timestamp, false);
+      this.timeout(clearTimer, 'hours', id, timestamp, false);
     } catch (error) {
       logger.error(`An error occured during setting up cleartimer for notification (${id})`, false, true);
       logger.error(error);
@@ -140,7 +109,7 @@ class Cleartimer {
       const settings = await SettingsModel.getByTarget('recordings');
       const clearTimer = settings.removeAfter;
 
-      timeout(clearTimer, 'days', id, timestamp, false);
+      this.timeout(clearTimer, 'days', id, timestamp, true);
     } catch (error) {
       logger.error(`An error occured during setting up cleartimer for recording (${id})`, false, true);
       logger.error(error);
@@ -184,6 +153,31 @@ class Cleartimer {
       const timer = recordingsTimer.get(id);
       clearInterval(timer);
       recordingsTimer.delete(id);
+    }
+  }
+
+  timeout(timeValue, timeTyp, id, timestamp, isRecording) {
+    const endTime = moment.unix(timestamp).add(timeValue, timeTyp);
+
+    logger.debug(
+      `SET cleartimer for ${isRecording ? 'Recording' : 'Notification'} (${id}) - Endtime: ${endTime}`,
+      false,
+      true
+    );
+
+    const timer = setInterval(async () => {
+      const now = moment();
+
+      if (now > endTime) {
+        clearInterval(timer);
+        await (isRecording ? this.clearRecording(id) : this.clearNotification(id));
+      }
+    }, 1000);
+
+    if (isRecording) {
+      recordingsTimer.set(id, timer);
+    } else {
+      notificationsTimer.set(id, timer);
     }
   }
 }
