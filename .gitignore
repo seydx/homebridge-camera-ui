@@ -151,3 +151,4 @@ interface
 test/storage/
 homebridge-ui/public
 homebridge-ui/ui/node_modules
+hsv_videos
