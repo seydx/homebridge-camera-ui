@@ -48,8 +48,6 @@ export default {
   },
   sockets: {
     notification(notification) {
-      console.log(notification);
-
       this.id = notification.id;
 
       if (notification.recordStoring) {
