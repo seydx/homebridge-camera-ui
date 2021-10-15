@@ -167,7 +167,7 @@ exports.createRecording = async (data, hsv) => {
   socket.io.emit('recording', recording);
 
   const ClearTimer = require('../../services/cleartimer.service');
-  ClearTimer.setRecording(id);
+  ClearTimer.setRecording(id, timestamp);
 
   return recording;
 };

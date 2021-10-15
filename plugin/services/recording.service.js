@@ -93,7 +93,7 @@ class RecordingDelegate {
     const ffmpegInput = [];
 
     if (this.videoConfig.hsv.prebuffering) {
-      const input = await this.preBuffer.getVideo(this.cameraName, this.videoConfig.hsv.prebufferLength);
+      const input = await this.preBuffer.getVideo(this.videoConfig.hsv.prebufferLength);
       ffmpegInput.push(...input);
     } else {
       ffmpegInput.push(...this.videoConfig.source.split(' '));

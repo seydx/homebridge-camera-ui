@@ -502,6 +502,7 @@
             "cameras[].videoConfig.audio",
             "cameras[].disableHSV",
             "cameras[].disablePrebuffering",
+            "cameras[].videoConfig.debug",
             {
               "key": "cameras[]",
               "type": "section",
@@ -544,7 +545,6 @@
                 "cameras[].videoConfig.mapaudio",
                 "cameras[].videoConfig.videoFilter",
                 "cameras[].videoConfig.encoderOptions",
-                "cameras[].videoConfig.debug",
                 "cameras[].videoConfig.returnAudioTarget",
                 "cameras[].videoConfig.debugReturn"
               ]

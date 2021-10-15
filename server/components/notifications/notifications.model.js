@@ -128,7 +128,7 @@ exports.createNotification = async (data) => {
   socket.io.emit('notification', notification);
 
   const ClearTimer = require('../../services/cleartimer.service');
-  ClearTimer.setNotification(id);
+  ClearTimer.setNotification(id, timestamp);
 
   return notification;
 };
