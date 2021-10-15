@@ -58,6 +58,7 @@ export default {
     return {
       allCameras: [],
       cameras: [],
+      connected: false,
       snapshotTimeout: null,
       loading: true,
     };
@@ -68,6 +69,17 @@ export default {
     },
     dashboardLayout() {
       return this.$store.state.dashboard.layout;
+    },
+  },
+  sockets: {
+    connect() {
+      if (this.connected) {
+        for (const camera of this.cameras) {
+          if (camera.live) {
+            this.refreshStreamSocket({ camera: camera.name });
+          }
+        }
+      }
     },
   },
   async mounted() {
@@ -98,6 +110,7 @@ export default {
 
         await this.updateLayout();
         this.loading = false;
+        this.connected = true;
       } else {
         this.$toast.error(this.$t('no_access'));
       }

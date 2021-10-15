@@ -9,7 +9,7 @@ let token;
 
 const user = {
   id: 'b5d76220-986d-4d96-8612-24eab4a9e3f0',
-  name: 'user',
+  username: 'user',
   password:
     '5UAbVs2gQBoasU8rgwXoUA==$F/zGXi4Zxg0vhqpdTlRBJAx9mC4GhdjjCAddj+qjL2A/RWvzvCG14+o3Q/62vzBUbXz0cpG0wdjGGjaUa3QvIw==',
   photo: '/images/user/anonym.png',
@@ -17,12 +17,12 @@ const user = {
 };
 
 const userCredentials = {
-  name: 'user',
+  username: 'user',
   password: 'test',
 };
 
 const masterCredentials = {
-  name: 'master',
+  username: 'master',
   password: 'master',
 };
 

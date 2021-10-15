@@ -6,5 +6,9 @@ export default io(
     : location.host,
   {
     autoConnect: false,
+    //forceNew: true,
+    reconnection: true,
+    reconnectionDelay: 500,
+    maxReconnectionAttempts: Infinity,
   }
 );

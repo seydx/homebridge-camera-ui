@@ -19,6 +19,8 @@
 - Fixed an issue where the service worker did not update the user interface correctly
 - Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
 - Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
+- Fixed an issue where the restored socket.io connection (on mobile devices) did not restore the live stream on `Dashboard` and `Camview`.
+- Fixed tests
 - Minor bugfixes
 
 # v4.2.10 - 2021-10-04

@@ -190,8 +190,6 @@ router.beforeEach(async (to, from, next) => {
     try {
       await checkLogin();
 
-      socket.open();
-
       if (to.meta.requiredLevel.length > 0) {
         const granted = user.permissionLevel.some(
           (level) => to.meta.requiredLevel.includes(level) || level === 'admin'
@@ -210,6 +208,8 @@ router.beforeEach(async (to, from, next) => {
       } else {
         next();
       }
+
+      socket.open();
     } catch {
       await store.dispatch('auth/logout');
       next('/');

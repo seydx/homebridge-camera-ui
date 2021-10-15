@@ -65,6 +65,7 @@ export default {
     return {
       allCameras: [],
       cameras: [],
+      connected: false,
       fullscreen: false,
       grid: null,
       loading: true,
@@ -85,6 +86,17 @@ export default {
     const html = document.querySelector('html');
     body.classList.add('body-bg-dark');
     html.classList.add('body-bg-dark');
+  },
+  sockets: {
+    connect() {
+      if (this.connected) {
+        for (const camera of this.cameras) {
+          if (camera.live) {
+            this.refreshStreamSocket({ camera: camera.name });
+          }
+        }
+      }
+    },
   },
   async mounted() {
     try {
@@ -120,6 +132,8 @@ export default {
         this.cameras = cameras.data.result.filter((camera) => camera.favourite);
 
         this.loading = false;
+        this.connected = true;
+
         await timeout(10);
         this.updateLayout();
 

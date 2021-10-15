@@ -10,7 +10,6 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class SocketIO {
   constructor(server) {
-    this.closeTimeout = null;
     this.rooms = [];
 
     this.io = require('socket.io')(server, {

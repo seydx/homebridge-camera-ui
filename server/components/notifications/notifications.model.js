@@ -90,7 +90,7 @@ exports.createNotification = async (data) => {
 
   const id = data.id || (await nanoid());
   const cameraName = camera.name;
-  const room = camera.settings.room;
+  const room = camera.settings ? camera.settings.room : 'Standard';
   const timestamp = data.timestamp || moment().unix();
   const time = moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss');
 

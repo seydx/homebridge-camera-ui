@@ -6,7 +6,7 @@ const supertest = require('supertest');
 const request = supertest(app);
 
 const masterCredentials = {
-  name: 'master',
+  username: 'master',
   password: 'master',
 };
 

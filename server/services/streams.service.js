@@ -42,6 +42,7 @@ class Streams {
           '-b:v': '299k',
           '-r': rate,
           '-bf': 0,
+          '-an': '',
           '-preset:v': 'ultrafast',
           '-threads': '1',
           '-loglevel': camera.videoConfig.debug ? 'verbose' : 'warning',
@@ -49,6 +50,8 @@ class Streams {
       };
 
       if (audio) {
+        delete options.ffmpegOptions['-an'];
+
         options.ffmpegOptions = {
           ...options.ffmpegOptions,
           '-codec:a': 'mp2',
@@ -94,8 +97,10 @@ class Streams {
             '-q',
             '1',
             '-hide_banner',
+            '-max_muxing_queue_size',
+            '1024',
             '-',
-          ];
+          ].filter((key) => key !== '');
 
           logger.debug(
             `Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`,

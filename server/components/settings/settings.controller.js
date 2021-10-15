@@ -69,6 +69,8 @@ exports.patchTarget = async (req, res) => {
         };
 
         if (camera.audio) {
+          Streams.delStreamOptions(camera.name, ['-an']);
+
           setting = {
             ...setting,
             '-codec:a': 'mp2',
@@ -78,6 +80,7 @@ exports.patchTarget = async (req, res) => {
           };
         } else {
           Streams.delStreamOptions(camera.name, ['-codec:a', '-ar', '-ac', '-b:a']);
+          setting['-an'] = '';
         }
 
         Streams.setStreamOptions(camera.name, setting);

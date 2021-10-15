@@ -7,7 +7,7 @@ const supertest = require('supertest');
 const request = supertest(app);
 
 const masterCredentials = {
-  name: 'master',
+  username: 'master',
   password: 'master',
 };
 
@@ -37,6 +37,8 @@ beforeAll(async () => {
   for (const file of files) {
     await fs.ensureFile(recPath + '/' + file);
   }
+
+  await lowdb.refreshRecordingsDatabase();
 });
 
 describe('GET /api/recordings', () => {
@@ -64,7 +66,7 @@ describe('GET /api/recordings/:id', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .get('/api/recordings/c45647fbdf')
+      .get('/api/recordings/48171187ca')
       .auth(auth.body.access_token, { type: 'bearer' })
       .send({ refresh: true });
     expect(response.statusCode).toEqual(200);
@@ -86,7 +88,7 @@ describe('DELETE /api/recordings/:id', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .delete('/api/recordings/c45647fbdf')
+      .delete('/api/recordings/48171187ca')
       .auth(auth.body.access_token, { type: 'bearer' })
       .send({ refresh: true });
     expect(response.statusCode).toEqual(204);

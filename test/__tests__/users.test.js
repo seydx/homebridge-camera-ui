@@ -6,19 +6,19 @@ const supertest = require('supertest');
 const request = supertest(app);
 
 const userCredentials = {
-  name: 'user',
+  username: 'user',
   password: 'test',
   permissionLevel: ['users:access'],
 };
 
 const masterCredentials = {
-  name: 'master',
+  username: 'master',
   password: 'master',
   permissionLevel: ['admin'],
 };
 
 const masterCredentials2 = {
-  name: 'master2',
+  username: 'master2',
   password: 'test',
   permissionLevel: ['admin'],
 };
@@ -101,7 +101,7 @@ describe('GET /api/users/:name', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .get('/api/users/' + masterCredentials.name)
+      .get('/api/users/' + masterCredentials.username)
       .auth(auth.body.access_token, { type: 'bearer' });
     expect(response.statusCode).toEqual(200);
     expect(Object.keys(response.body).length).toBeTruthy();
@@ -125,7 +125,7 @@ describe('PATCH /api/users/:name', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .patch('/api/users/' + masterCredentials.name)
+      .patch('/api/users/' + masterCredentials.username)
       .auth(auth.body.access_token, { type: 'bearer' });
     expect(response.statusCode).toEqual(400);
   });
@@ -135,7 +135,7 @@ describe('PATCH /api/users/:name', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .patch('/api/users/' + masterCredentials.name)
+      .patch('/api/users/' + masterCredentials.username)
       .auth(auth.body.access_token, { type: 'bearer' })
       .send({ photo: '/images/user/admin.png' });
     expect(response.statusCode).toEqual(204);
@@ -156,7 +156,7 @@ describe('DELETE /api/users/:name', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .delete('/api/users/' + masterCredentials.name)
+      .delete('/api/users/' + masterCredentials.username)
       .auth(auth.body.access_token, { type: 'bearer' });
     expect(response.statusCode).toEqual(409);
   });
@@ -166,7 +166,7 @@ describe('DELETE /api/users/:name', () => {
     expect(auth.statusCode).toEqual(201);
 
     const response = await request
-      .delete('/api/users/' + userCredentials.name)
+      .delete('/api/users/' + userCredentials.username)
       .auth(auth.body.access_token, { type: 'bearer' });
     expect(response.statusCode).toEqual(204);
   });

@@ -6,16 +6,18 @@ const BackupModel = require('./backup.model');
 
 exports.download = async (req, res) => {
   try {
-    const localStorage = JSON.parse(req.query.localStorage);
+    const localStorage = req.query.localStorage ? JSON.parse(req.query.localStorage) : false;
     const backup = await BackupModel.createBackup(localStorage);
 
     res.set('Content-Type', 'application/octet-stream');
     res.set('Content-Disposition', `attachment; filename=${backup.backupFileName}`);
 
     const readStream = fs.createReadStream(backup.backupPath);
+
     readStream.on('data', (data) => {
       res.write(data);
     });
+
     readStream.on('end', async () => {
       await BackupModel.removeBackup(backup);
       res.status(200).send();

@@ -247,21 +247,17 @@ class Lowdb {
         let cameraName = rec.split('-')[0].replace(/_/g, ' '); // eslint-disable-line no-useless-escape
         let cameraSetting = database.get('settings').get('cameras').find({ name: cameraName }).value();
 
-        //let isHSV = rec.includes('_h_');
-
         const jpeg = fs.readFileSync(filePath);
         let exifPayload;
         let readableExifPayload = {};
 
-        //if (!isHSV) {
         try {
           exifPayload = piexif.load(jpeg.toString('binary'));
         } catch (error) {
           logger.debug(`Can not read exif data of ${rec}: ${error.message}`);
         }
 
-        readableExifPayload = getReadableExifPayload(exifPayload);
-        //}
+        readableExifPayload = exifPayload ? getReadableExifPayload(exifPayload) : { label: 'no label' };
 
         let recording = {
           id: id,
@@ -275,7 +271,6 @@ class Lowdb {
           room: cameraSetting ? cameraSetting.room : 'Standard',
           time: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss'),
           timestamp: timestamp,
-          //label: isHSV ? 'HSV' : readableExifPayload.label,
           label: readableExifPayload.label,
         };
 

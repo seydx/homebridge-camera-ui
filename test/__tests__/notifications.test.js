@@ -15,7 +15,7 @@ const camera = {
 };
 
 const masterCredentials = {
-  name: 'master',
+  username: 'master',
   password: 'master',
 };
 

@@ -36,10 +36,10 @@ exports.createBackup = async (localStorage) => {
     database: databasePath,
     recordings: recPath,
     localStorage: {
-      camviewLayout: JSON.parse(localStorage.camviewLayout),
-      dashboardLayout: JSON.parse(localStorage.dashboardLayout),
-      theme: localStorage.theme,
-      themeColor: localStorage.themeColor,
+      camviewLayout: localStorage && localStorage.camviewLayout ? JSON.parse(localStorage.camviewLayout) : {},
+      dashboardLayout: localStorage && localStorage.dashboardLayout ? JSON.parse(localStorage.dashboardLayout) : [],
+      theme: localStorage && localStorage.theme ? localStorage.theme : 'light',
+      themeColor: localStorage && localStorage.themeColor ? localStorage.themeColor : 'pink',
     },
   });
 
