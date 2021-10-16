@@ -165,6 +165,8 @@ class Cleartimer {
       true
     );
 
+    const interval = isRecording ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000;
+
     const timer = setInterval(async () => {
       const now = moment();
 
@@ -172,7 +174,7 @@ class Cleartimer {
         clearInterval(timer);
         await (isRecording ? this.clearRecording(id) : this.clearNotification(id));
       }
-    }, 1000);
+    }, interval);
 
     if (isRecording) {
       recordingsTimer.set(id, timer);

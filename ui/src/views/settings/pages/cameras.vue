@@ -87,7 +87,7 @@
                       v-model="aws.last_rekognition"
                       style="background: var(--third-bg-color) !important"
                     )
-      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
+      .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
         b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.cameras ? "180" : "-90"', @click="expand.cameras = !expand.cameras")
         h5.cursor-pointer.settings-box-top(@click="expand.cameras = !expand.cameras") {{ $t("cameras") }}
         b-collapse(
@@ -160,7 +160,7 @@
                     )
                     hr
       .col-12.d-flex.justify-content-center(v-else)
-        span.text-muted {{ $t("no_cameras") }}
+        span.text-muted-2 {{ $t("no_cameras") }}
 </template>
 
 <script>

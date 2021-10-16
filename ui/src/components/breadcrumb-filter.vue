@@ -90,7 +90,7 @@
       )
         template(v-slot="{ inputValue, inputEvents, togglePopover }")
           .d-flex.flex-wrap.align-content.center.justify-content-center
-            span.date-range.mr-3 {{ (filter.dateRange.start || '/' ) + ' - ' + (filter.dateRange.end || '/') }}
+            span.date-range.mr-3 {{ (filter.dateRange.start || '' ) + (filter.dateRange.start && filter.dateRange.end ? ' - ' : '') + (filter.dateRange.end || '') }}
             b-icon.calendar-icon(icon="calendar-range-fill", @click="togglePopover()")
   .container.position-relative
 
@@ -496,6 +496,8 @@ div >>> .vc-container.vc-pink {
 div >>> .all-btn {
   box-shadow: none !important;
   padding: 5px 8px !important;
+  height: 33px;
+  border-radius: 5px !important;
 }
 
 .date-range {

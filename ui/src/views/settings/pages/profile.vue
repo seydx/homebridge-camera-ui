@@ -19,7 +19,7 @@
         .settings-box.container.mt-5(v-if="checkLevel('admin')")
           h3.lh-1.font-weight-bold {{ $t("backup") }}
           .w-100
-          span.lh-1.text-muted.fs-6 {{ $t("backup_and_restore") }}
+          span.lh-1.text-muted-2.fs-6 {{ $t("backup_and_restore") }}
           hr.mb-4
           b-form-file(
             id="backup-file", 
@@ -64,7 +64,7 @@
         .settings-box.container
           h3.lh-1.font-weight-bold {{ $t("account") }}
           .w-100
-          span.lh-1.text-muted.fs-6 {{ $t("general_information") }}
+          span.lh-1.text-muted-2.fs-6 {{ $t("general_information") }}
           hr.mb-4
           label.fs-6 {{ $t("username") }}
           b-form-input.admin-username(
@@ -94,7 +94,7 @@
         .settings-box.container.mt-5(v-if="currentUser.permissionLevel.includes('admin')")
           h3.lh-1.font-weight-bold {{ $t("user") }}
           .w-100
-          span.lh-1.text-muted.fs-6 {{ $t("registered_user") }}
+          span.lh-1.text-muted-2.fs-6 {{ $t("registered_user") }}
           hr.mb-4
           h5 {{ $t("add_new_user") }}
           .w-100.my-4
@@ -598,7 +598,7 @@ export default {
 div >>> .custom-file-label {
   background: var(--third-bg-color) !important;
   border-color: var(--fourth-bg-color) !important;
-  color: var(--primary-font-color) !important;
+  color: #737373 !important;
 }
 
 div >>> .border-bottom-shadow-danger {

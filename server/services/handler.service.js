@@ -99,8 +99,8 @@ class MotionHandler {
               motionInfo.type = 'Video';
 
               if (notificationsSettings.active) {
-                const notification = await this.handleNotification(motionInfo);
                 await this.handleRecording(motionInfo, hsv);
+                const notification = await this.handleNotification(motionInfo);
 
                 await this.sendWebhook(cameraName, notification, webhookSettings);
                 await this.sendWebpush(cameraName, notification, webpushSettings);
@@ -147,11 +147,11 @@ class MotionHandler {
 
                 if (motionInfo.label || motionInfo.label === null) {
                   if (notificationsSettings.active) {
-                    const notification = await this.handleNotification(motionInfo);
-                    await this.sendWebhook(cameraName, notification, webhookSettings);
-
                     await this.handleRecording(motionInfo);
+                    const notification = await this.handleNotification(motionInfo);
 
+                    await this.sendWebhook(cameraName, notification, webhookSettings);
+                    await this.sendWebpush(cameraName, notification, webpushSettings);
                     await this.sendTelegram(
                       cameraName,
                       notification,
@@ -167,8 +167,6 @@ class MotionHandler {
                       errorState = false;
                       errorMessage = 'Notification send and snapshot stored.';
                     }
-
-                    await this.sendWebpush(cameraName, notification, webpushSettings);
                   } else {
                     await this.handleRecording(motionInfo);
 
@@ -199,8 +197,8 @@ class MotionHandler {
                 const notification = await this.handleNotification(motionInfo);
 
                 await this.sendWebhook(cameraName, notification, webhookSettings);
-                await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings);
                 await this.sendWebpush(cameraName, notification, webpushSettings);
+                await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings);
 
                 errorState = false;
                 errorMessage = 'Notification sent.';

@@ -341,7 +341,7 @@ export default {
   margin-bottom: 20px;
   padding: 1rem;
   flex-direction: unset;
-  border-bottom: 1px solid var(--trans-border-color);
+  border-bottom: 2px solid var(--trans-border-color);
   transition: 0.3s all;
 }
 
@@ -357,7 +357,7 @@ a.card:hover {
 
 .card-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--primary-color);
 }
 

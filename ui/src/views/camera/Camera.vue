@@ -20,7 +20,7 @@ div
           @refreshStream="refreshStreamSocket"
         )
       b-card-title.mb-0.ml-1.mt-3 {{ $route.params.name }}
-      b-card-text.text-muted.ml-1 {{ camera.settings.room }}
+      b-card-text.text-muted-2.ml-1 {{ camera.settings.room }}
       .notifications-card
         b-card-title.notification-title.mb-4 {{ $t("notifications") }}
         ul(v-if="camera.lastNotifications.length")

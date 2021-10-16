@@ -21,7 +21,7 @@
                     v-model="dashboard.refreshTimer"
                     :options="[10, 20, 30, 40, 50, 60]"
                   )
-      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
+      .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
         b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "-90"', @click="expand.favourites = !expand.favourites")
         h5.cursor-pointer.settings-box-top(@click="expand.favourites = !expand.favourites") {{ $t("favourites") }}
         b-collapse(

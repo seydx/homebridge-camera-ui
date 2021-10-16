@@ -39,7 +39,7 @@
                   )
                     template(slot="noOptions")
                       strong {{ $t("empty") }}
-      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
+      .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
         b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.themes ? "180" : "-90"', @click="expand.themes = !expand.themes")
         h5.cursor-pointer.settings-box-top(@click="expand.themes = !expand.themes") {{ $t("themes") }}
         b-collapse(
@@ -89,7 +89,7 @@
                   label.m-0(for="switch-green")
                   input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
                   label.m-0(for="switch-gray")
-      .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
+      .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
         b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.rooms ? "180" : "-90"', @click="expand.rooms = !expand.rooms")
         h5.cursor-pointer.settings-box-top(@click="expand.rooms = !expand.rooms") {{ $t("rooms") }}
         b-collapse(

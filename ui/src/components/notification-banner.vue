@@ -9,6 +9,7 @@ b-link.notification(@click="$emit('showNotification')")
     span.sender {{ notification.camera }}
     span.message {{ message }}
     span.more {{ notification.room }}
+    span.detailBar
 </template>
 
 <script>
@@ -79,6 +80,7 @@ export default {
 .notification header h2 {
   text-transform: uppercase;
   font-size: 10px;
+  color: var(--fourth-bg-color);
 }
 .notification header .timestamp {
   text-transform: lowercase;
@@ -87,6 +89,16 @@ export default {
 .notification .content span {
   display: block;
   line-height: 1.4;
+}
+.notification .content .detailBar {
+  background: rgb(94 94 94 / 10%);
+  border-radius: 5px;
+  height: 5px;
+  margin-top: 5px;
+  margin-bottom: -5px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 .notification .content .message {
   white-space: nowrap;
@@ -101,6 +113,7 @@ export default {
 .notification .content .more {
   margin-top: 4px;
   font-size: 10px;
+  color: var(--fourth-bg-color);
 }
 .notification .before,
 .notification .after {

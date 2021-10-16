@@ -4,10 +4,10 @@ b-card(no-body)
     b-card-img-lazy.object-fit(@error.native="handleErrorImg" :src="'/files/' + (recording.recordType === 'Video' ? `${recording.name}@2.jpeg` : recording.fileName)" :img-alt="recording.name" top height=225 blank-height=225)
   b-card-body
     b-card-title {{ recording.camera }}
-    small.text-muted {{ recording.recordType === "Snapshot" ? $t("snapshot") : $t("video") }} - {{ recording.room }}
+    small.text-muted-2 {{ recording.recordType === "Snapshot" ? $t("snapshot") : $t("video") }} - {{ recording.room }}
     .card-text.mt-2.mb-2
       | {{ $t("recording_text").replace("@", recording.recordType === "Snapshot" ? $t("snapshot") : $t("video")).replace("%", recording.time).replace("#", $t(recording.trigger)) }}
-    small.text-muted {{ `${$t("label")}: ${recording.label.includes("no label") ? $t("no_label") : recording.label}` }}
+    small.text-muted-2 {{ `${$t("label")}: ${recording.label.includes("no label") ? $t("no_label") : recording.label}` }}
     div.mt-2
       b-link.card-btn.btn-danger.float-left.d-flex.flex-wrap.align-content-center.justify-content-center(v-if="checkLevel('recordings:edit') && !removing", @click="removeItem")
         b-icon(icon="trash-fill", aria-hidden="true")

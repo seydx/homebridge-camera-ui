@@ -41,7 +41,7 @@
         v-model="notifications.active",
         id="notifications"
       )
-        .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000")
+        .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
           b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.telegram ? "180" : "-90"', @click="expand.telegram = !expand.telegram")
           h5.cursor-pointer.settings-box-top(@click="expand.telegram = !expand.telegram") {{ $t("telegram") }}
           b-collapse(
@@ -103,7 +103,7 @@
                             :options="['Text', 'Snapshot', 'Video', 'Disabled']"
                           )
                       hr
-        .col-12.mt-3(data-aos="fade-up" data-aos-duration="1000")
+        .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
           b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.webhook ? "180" : "-90"', @click="expand.webhook = !expand.webhook")
           h5.cursor-pointer.settings-box-top(@click="expand.webhook = !expand.webhook") {{ $t("webhook") }}
           b-collapse(

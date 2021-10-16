@@ -244,6 +244,10 @@ input.custom-file-input,
 }
 
 .custom-file-label {
+  color: #737373 !important;
+}
+
+.custom-file-label {
   box-shadow: var(--trans-font-color) !important;
 }
 
@@ -306,7 +310,14 @@ textarea:focus:-ms-input-placeholder {
   color: #737373 !important;
 }
 
-.text-muted {
+.form-control::placeholder,
+.multiselect__placeholder {
+  font-size: 14px !important;
+  color: #737373 !important;
+}
+
+.text-muted,
+.text-muted-2 {
   color: #737373 !important;
 }
 
@@ -356,7 +367,9 @@ textarea:focus:-ms-input-placeholder {
   background: var(--primary-color) !important;
 }
 
+.custom-select,
 .form-control {
+  font-size: 14px !important;
   color: var(--primary-font-color) !important;
 }
 

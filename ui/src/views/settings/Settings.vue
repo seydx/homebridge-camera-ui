@@ -310,6 +310,7 @@ export default {
 
 <style>
 .settings-box {
+  position: relative;
   background: var(--secondary-bg-color);
   padding: 1.5rem !important;
   border-radius: 5px;
@@ -331,25 +332,29 @@ export default {
 }
 
 .settings-box-header {
+  position: relative;
   background: var(--primary-color);
   color: #ffffff;
-  border-top-left-radius: 5px !important;
-  border-top-right-radius: 5px !important;
   padding: 0.75rem 1.5rem !important;
+  border-radius: 5px;
+  margin-bottom: -5px;
+  z-index: 1;
+  border-bottom: 2px solid var(--secondary-color);
 }
 
 .settings-box-top {
   border-bottom: 1px solid var(--trans-border-color-1);
-  padding-bottom: 10px;
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
+  padding: 10px 15px;
+  font-size: 1rem !important;
 }
 
 .expandTriangle {
   font-size: 8px;
   float: right;
   margin-left: 0;
-  margin-top: 8px;
-  margin-right: 10px;
+  margin-top: 15px;
+  margin-right: 15px;
   color: var(--third-bg-color);
   border-radius: 3px;
 }
