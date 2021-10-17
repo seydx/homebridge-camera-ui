@@ -84,7 +84,7 @@ exports.pingCamera = async (videoConfig, timeout) => {
   return await ping.status(videoConfig, timeout);
 };
 
-exports.requestSnapshot = async (cameraName, videoConfig, timeout) => {
+exports.requestSnapshot = async (cameraName, videoConfig, timeout = 1) => {
   return await ffmpeg.getAndStoreSnapshot(cameraName, videoConfig, null, null, null, null, null, timeout);
 };
 

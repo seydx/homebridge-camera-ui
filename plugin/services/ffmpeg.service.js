@@ -12,9 +12,6 @@ class FfmpegProcess {
     const startTime = Date.now();
     const commands = command.split(/\s+/);
 
-    //const prebuffer = delegate.recordingDelegate.preBufferSession;
-    //commands.unshift('-i', prebuffer.process.spawnargs[prebuffer.process.spawnargs.length - 1]);
-
     this.process = spawn(videoProcessor, commands, {
       env: process.env,
     });

@@ -1,6 +1,6 @@
 'use-strict';
 
-const logger = require('../../services/logger/logger.service');
+const logger = require('../logger/logger.service');
 
 const { once } = require('events');
 
@@ -33,7 +33,8 @@ module.exports = {
       return returnValue;
     }
 
-    return new Promise((resolve) => {
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
       const r = () => {
         const returnValue = readable.read(length);
 
@@ -44,9 +45,10 @@ module.exports = {
       };
 
       const error = () => {
-        logger.debug(`Stream ended during read for minimum ${length} bytes`, cameraName);
-
+        //logger.debug(`Stream ended during read for minimum ${length} bytes`, cameraName);
         cleanup();
+        reject(`Stream ended during read for minimum ${length} bytes`);
+        //resolve();
         //reject();
       };
 

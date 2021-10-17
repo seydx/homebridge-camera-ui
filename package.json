@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.3.0-beta.46",
+  "version": "4.3.0-beta.53",
   "description": "User Interface for RTSP capable cameras with HSV support.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -21,8 +21,9 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@aws-sdk/client-rekognition": "^3.36.1",
+    "@aws-sdk/client-rekognition": "^3.37.0",
     "@homebridge/plugin-ui-utils": "^0.0.19",
+    "bunyan": "^1.8.15",
     "compare-versions": "^3.6.0",
     "connect-history-api-fallback": "^1.6.0",
     "cors": "^2.8.5",
@@ -32,6 +33,7 @@
     "got": "^11.8.2",
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash.escaperegexp": "^4.1.2",
     "lowdb": "^1.0.0",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
@@ -42,6 +44,7 @@
     "pick-port": "^1.0.0",
     "piexifjs": "^1.0.6",
     "ping": "^0.4.1",
+    "smtp-server": "^3.9.0",
     "socket.io": "4.0.1",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6",

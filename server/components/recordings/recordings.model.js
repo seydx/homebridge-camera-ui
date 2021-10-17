@@ -81,6 +81,7 @@ exports.createRecording = async (data, hsv) => {
   const Cameras = await database_cams();
   const Settings = await database_settings();
   const cameraSettings = await Settings.get('cameras').value();
+  const recordingsSettings = await Settings.get('recordings').value();
 
   const camera = await Cameras.find({ name: data.camera }).value();
 
@@ -149,15 +150,23 @@ exports.createRecording = async (data, hsv) => {
         ));
 
     if (data.type === 'Video') {
-      await ffmpeg.storeVideo(
-        cameraName,
-        camera.videoConfig,
-        fileName,
-        data.path,
-        data.timer,
-        label,
-        camera.settings.pingTimeout
-      );
+      let filebuffer = Buffer.alloc(0);
+
+      let generator = ffmpeg.handleFragmentsRequests(cameraName, camera.videoConfig, recordingsSettings.timer);
+
+      setTimeout(() => {
+        if (generator) {
+          generator.throw(`timer reached (${recordingsSettings.timer}s)`);
+        }
+      }, recordingsSettings.timer * 1000);
+
+      for await (const buffer of generator) {
+        filebuffer = Buffer.concat([filebuffer, Buffer.concat(buffer)]);
+      }
+
+      generator = null;
+
+      await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, filebuffer);
     }
   }
 

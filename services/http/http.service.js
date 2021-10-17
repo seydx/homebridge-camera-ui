@@ -10,7 +10,7 @@ const uiHandler = require('../../server/services/handler.service');
 
 class Http {
   start(config) {
-    logger.debug('Setting up HTTP server for motion detection...', false, '[Http]');
+    logger.debug('Setting up HTTP server for motion detection...', false, '[HTTP]');
 
     this.server = http.createServer();
 
@@ -23,14 +23,14 @@ class Http {
 
       let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
 
-      logger.debug(`HTTP server for motion detection is listening on ${bind}`, false, '[Http]');
+      logger.debug(`HTTP server for motion detection is listening on ${bind}`, false, '[HTTP]');
     });
 
     this.server.on('error', (error) => {
       let error_;
 
       if (error.syscall !== 'listen') {
-        logger.error(error, false, '[Http]');
+        logger.error(error, false, '[HTTP]');
       }
 
       let bind = typeof port === 'string' ? 'Pipe ' + config.http.port : 'Port ' + config.http.port;
@@ -46,11 +46,11 @@ class Http {
           error_ = error;
       }
 
-      logger.error(error_, false, '[Http]');
+      logger.error(error_, false, '[HTTP]');
     });
 
     this.server.on('close', () => {
-      logger.debug('Stopping HTTP server for motion detection...', false, '[Http]');
+      logger.debug('Stopping HTTP server for motion detection...', false, '[HTTP]');
     });
 
     this.server.on('request', async (request, response) => {
@@ -88,7 +88,7 @@ class Http {
             ui: uiResult.message,
           };
 
-          logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')', false, '[Http]');
+          logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')', false, '[HTTP]');
         }
       }
 

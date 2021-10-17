@@ -14,7 +14,7 @@ class Mqtt {
     const port = config.mqtt.port || '1883';
     const tls = config.mqtt.tls || false;
 
-    logger.debug('Setting up MQTT connection for motion detection...', false, '[Mqtt]');
+    logger.debug('Setting up MQTT connection for motion detection...', false, '[MQTT]');
 
     const client = mqtt.connect((tls ? 'mqtts://' : 'mqtt://') + config.mqtt.host + ':' + port, {
       username: config.mqtt.username,
@@ -22,16 +22,16 @@ class Mqtt {
     });
 
     client.on('connect', () => {
-      logger.debug('MQTT connected', false, '[Mqtt]');
+      logger.debug('MQTT connected', false, '[MQTT]');
 
       for (const [topic] of mqttConfigs) {
-        logger.debug(`Subscribing to MQTT topic: ${topic}`, false, '[Mqtt]');
+        logger.debug(`Subscribing to MQTT topic: ${topic}`, false, '[MQTT]');
         client.subscribe(topic + '/#');
       }
     });
 
     client.on('message', (topic, message) => {
-      logger.debug(`Received a new MQTT message ${message.toString()} (${topic})`, false, '[Mqtt]');
+      logger.debug(`Received a new MQTT message ${message.toString()} (${topic})`, false, '[MQTT]');
 
       const cameraMqttConfig = mqttConfigs.get(topic);
 
@@ -67,11 +67,11 @@ class Mqtt {
           logger.warn(
             `The incoming MQTT message (${message}) for the topic (${topic}) was not the same as set in config.json. Skip...`,
             false,
-            '[Mqtt]'
+            '[MQTT]'
           );
         }
       } else {
-        logger.warn(`Can not assign the MQTT topic (${topic}) to a camera!`, false, '[Mqtt]');
+        logger.warn(`Can not assign the MQTT topic (${topic}) to a camera!`, false, '[MQTT]');
       }
     });
   }

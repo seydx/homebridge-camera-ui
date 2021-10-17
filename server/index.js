@@ -7,16 +7,18 @@ const logger = require('../services/logger/logger.service');
 const app = require('./app');
 const http = require('http');
 const https = require('https');
-const SocketIO = require('./socket');
-
-const httpService = require('../services/http/http.service');
-const mqttService = require('../services/mqtt/mqtt.service');
+const socketio = require('./socket');
 
 const Config = require('../services/config/config.start');
-const Sessions = require('../services/sessions/sessions.service');
-const Streams = require('./services/streams.service');
-const ClearTimer = require('./services/cleartimer.service');
 const lowdb = require('./services/lowdb.service');
+
+const ClearTimer = require('./services/cleartimer.service');
+const HttpService = require('../services/http/http.service');
+const MqttService = require('../services/mqtt/mqtt.service');
+const Prebuffer = require('../services/prebuffer/prebuffer.service');
+const Sessions = require('../services/sessions/sessions.service');
+const SmtpService = require('../services/smtp/smtp.service');
+const Streams = require('./services/streams.service');
 
 const config = new Config();
 
@@ -30,7 +32,7 @@ const server = config.ssl
     )
   : http.createServer(app);
 
-const io = new SocketIO(server);
+const io = new socketio(server);
 
 server.on('listening', async () => {
   let addr = server.address();
@@ -47,12 +49,20 @@ server.on('listening', async () => {
   Sessions.init(config.cameras);
   Streams.init(io);
 
-  if (config.mqtt) {
-    mqttService.start(config);
+  if (config.prebuffering.active) {
+    await Prebuffer.start(config);
   }
 
-  if (config.http) {
-    httpService.start(config);
+  if (config.mqtt.active) {
+    MqttService.start(config);
+  }
+
+  if (config.http.active) {
+    HttpService.start(config);
+  }
+
+  if (config.smtp.active) {
+    SmtpService.start(config);
   }
 });
 
@@ -107,10 +117,15 @@ server.startServer = async () => {
 
 server.stopServer = async () => {
   ClearTimer.stop();
+  Prebuffer.stop();
   Streams.stopStreams();
 
+  if (config.prebuffering.active) {
+    Prebuffer.stop(config);
+  }
+
   if (config.http) {
-    httpService.stop();
+    HttpService.stop();
   }
 
   server.close();

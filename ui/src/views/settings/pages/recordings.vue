@@ -29,8 +29,8 @@
                 v-model="recordings.active",
                 id="recordings"
               )
-                hr
-                .row#recordingType
+                hr(v-if="!recordings.hsv.active")
+                .row(v-if="!recordings.hsv.active")
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
@@ -38,19 +38,15 @@
                       :options="['Snapshot', 'Video']",
                       :disabled="recordings.hsv.active"
                     )
-                b-popover(v-if="recordings.hsv.active", target="recordingType" triggers="hover" placement="top") 
-                  b {{ $t("recording_type_not_editable") }}
-                hr
-                .row#recordingTimer
+                hr(v-if="!recordings.hsv.active")
+                .row(v-if="!recordings.hsv.active")
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="recordings.timer"
-                      :options="[10, 20, 30, 40, 50, 60]",
+                      :options="[{ value: 10, text: '10 (+10s ' + $t('prebuffering') + ')' },{ value: 20, text: '20 (+10s ' + $t('prebuffering') + ')' },{ value: 30, text: '30 (+10s ' + $t('prebuffering') + ')' },{ value: 40, text: '40 (+10s ' + $t('prebuffering') + ')' },{ value: 50, text: '50 (+10s ' + $t('prebuffering') + ')' },{ value: 60, text: '60 (+10s ' + $t('prebuffering') + ')' }]",
                       :disabled="recordings.hsv.active"
                     )
-                b-popover(v-if="recordings.hsv.active", target="recordingTimer" triggers="hover" placement="top") 
-                  b {{ $t("recording_timer_not_editable") }}
                 hr
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}

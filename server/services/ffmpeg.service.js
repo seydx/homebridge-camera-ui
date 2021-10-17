@@ -1,10 +1,13 @@
 'use-strict';
 
+const { createServer } = require('net');
 const fs = require('fs-extra');
 const piexif = require('piexifjs');
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 
 const logger = require('../../services/logger/logger.service.js');
+const cameraUtils = require('../../services/prebuffer/camera.utils');
+const PreBuffer = require('../../services/prebuffer/prebuffer.service');
 const ping = require('./ping.service');
 
 class Ffmpeg {
@@ -147,7 +150,10 @@ class Ffmpeg {
               return reject(new Error('Image Buffer is empty!'));
             }
 
-            if (store) this.replaceJpegWithExifJPEG(cameraName, destination, label);
+            if (store) {
+              this.replaceJpegWithExifJPEG(cameraName, destination, label);
+            }
+
             resolve(imageBuffer);
           });
         } else {
@@ -220,6 +226,131 @@ class Ffmpeg {
       });
 
       writeStream.on('error', reject);
+    });
+  }
+
+  async *handleFragmentsRequests(cameraName, videoConfig, recTimer) {
+    logger.debug('Video fragments requested', cameraName, true);
+
+    const audioArguments = ['-c:a', 'aac'];
+    const videoArguments = ['-codec:v', 'copy'];
+    const prebufferLength = 10000; //10s
+
+    const ffmpegInput = [];
+
+    if (videoConfig.prebuffering.active) {
+      const input = await PreBuffer.getVideo(cameraName, prebufferLength);
+      ffmpegInput.push(...input, '-t', (prebufferLength / 1000 + recTimer).toString());
+    } else {
+      ffmpegInput.push(...videoConfig.source.split(' '), '-t', recTimer.toString());
+    }
+
+    const session = await this.startFFMPegFragmetedMP4Session(
+      cameraName,
+      videoConfig.videoProcessor,
+      ffmpegInput,
+      audioArguments,
+      videoArguments,
+      videoConfig.debug,
+      true,
+      recTimer
+    );
+
+    logger.debug('Recording started', cameraName, true);
+
+    const { socket, cp, generator } = session;
+    let pending = [];
+
+    try {
+      for await (const box of generator) {
+        const { header, type, length, data } = box;
+
+        pending.push(header, data);
+
+        if (type === 'moov' || type === 'mdat') {
+          const buffer = pending;
+          pending = [];
+
+          yield buffer;
+        }
+
+        if (videoConfig.debug) {
+          logger.debug(`mp4 box type ${type} and lenght: ${length}`, cameraName);
+        }
+      }
+    } catch (error) {
+      logger.debug(`Recording completed. (${error})`, cameraName, true);
+    } finally {
+      socket.destroy();
+      cp.kill();
+    }
+  }
+
+  async startFFMPegFragmetedMP4Session(
+    cameraName,
+    ffmpegPath,
+    ffmpegInput,
+    audioOutputArguments,
+    videoOutputArguments,
+    debug,
+    ui
+  ) {
+    logger.debug('Start recording...', cameraName, ui);
+
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      const server = createServer((socket) => {
+        server.close();
+
+        async function* generator() {
+          while (true) {
+            const header = await cameraUtils.readLength(cameraName, socket, 8);
+            const length = header.readInt32BE(0) - 8;
+            const type = header.slice(4).toString();
+            const data = await cameraUtils.readLength(cameraName, socket, length);
+
+            yield {
+              header,
+              length,
+              type,
+              data,
+            };
+          }
+        }
+
+        resolve({
+          socket,
+          cp,
+          generator: generator(),
+        });
+      });
+
+      const serverPort = await cameraUtils.listenServer(cameraName, server);
+      const arguments_ = [];
+
+      arguments_.push(
+        ...ffmpegInput,
+        '-f',
+        'mp4',
+        ...videoOutputArguments,
+        '-fflags',
+        '+genpts',
+        '-reset_timestamps',
+        '1',
+        '-movflags',
+        'frag_keyframe+empty_moov+default_base_moof',
+        'tcp://127.0.0.1:' + serverPort
+      );
+
+      logger.debug(ffmpegPath + ' ' + arguments_.join(' '), cameraName, ui);
+
+      let stdioValue = debug ? 'pipe' : 'ignore';
+      const cp = spawn(ffmpegPath, arguments_, { env: process.env, stdio: stdioValue });
+
+      if (debug) {
+        cp.stdout.on('data', (data) => logger.debug(data.toString(), cameraName, ui));
+        cp.stderr.on('data', (data) => logger.debug(data.toString(), cameraName, ui));
+      }
     });
   }
 }

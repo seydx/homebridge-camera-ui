@@ -1,14 +1,10 @@
 'use-strict';
 
-const ffmpegPath = require('ffmpeg-for-homebridge');
 const logger = require('../../services/logger/logger.service');
-const cameraUtils = require('../utils/camera.utils');
+const ffmpeg = require('../../server/services/ffmpeg.service');
 
-const PreBuffer = require('./prebuffer.service.js');
+const PreBuffer = require('../../services/prebuffer/prebuffer.service');
 const uiHandler = require('../../server/services/handler.service');
-
-const { spawn } = require('child_process');
-const { createServer } = require('net');
 
 class RecordingDelegate {
   constructor(cameraName, videoConfig, api, hap, videoProcessor) {
@@ -16,25 +12,8 @@ class RecordingDelegate {
     this.hap = hap;
     this.cameraName = cameraName;
     this.videoConfig = videoConfig;
-    this.videoProcessor = videoProcessor || ffmpegPath || 'ffmpeg';
+    this.videoProcessor = videoProcessor;
     this.debug = videoConfig.debug;
-  }
-
-  async startPreBuffer() {
-    if (this.videoConfig.hsv.prebuffering && !this.preBuffer) {
-      this.preBuffer = new PreBuffer(
-        this.videoConfig.source,
-        this.cameraName,
-        this.videoProcessor,
-        this.videoConfig.hsv.videoDuration,
-        this.debug
-      );
-
-      if (!this.preBufferSession) {
-        logger.debug('Start prebuffering...', this.cameraName);
-        this.preBufferSession = await this.preBuffer.startPreBuffer(this.cameraName);
-      }
-    }
   }
 
   async *handleFragmentsRequests(configuration) {
@@ -92,21 +71,24 @@ class RecordingDelegate {
 
     const ffmpegInput = [];
 
-    if (this.videoConfig.hsv.prebuffering) {
-      const input = await this.preBuffer.getVideo(this.videoConfig.hsv.prebufferLength);
+    if (this.videoConfig.prebuffering.active) {
+      const input = await PreBuffer.getVideo(
+        this.cameraName,
+        configuration.mediaContainerConfiguration.prebufferLength
+      );
       ffmpegInput.push(...input);
     } else {
       ffmpegInput.push(...this.videoConfig.source.split(' '));
     }
 
-    logger.debug('Start recording...', this.cameraName);
-
-    const session = await this.startFFMPegFragmetedMP4Session(
+    const session = await ffmpeg.startFFMPegFragmetedMP4Session(
       this.cameraName,
       this.videoProcessor,
       ffmpegInput,
       audioArguments,
-      videoArguments
+      videoArguments,
+      this.debug,
+      false
     );
 
     logger.debug('Recording started', this.cameraName);
@@ -141,74 +123,6 @@ class RecordingDelegate {
       socket.destroy();
       cp.kill();
     }
-  }
-
-  async startFFMPegFragmetedMP4Session(
-    cameraName,
-    ffmpegPath,
-    ffmpegInput,
-    audioOutputArguments,
-    videoOutputArguments
-  ) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const server = createServer((socket) => {
-        server.close();
-
-        async function* generator() {
-          while (true) {
-            const header = await cameraUtils.readLength(cameraName, socket, 8);
-            const length = header.readInt32BE(0) - 8;
-            const type = header.slice(4).toString();
-            const data = await cameraUtils.readLength(cameraName, socket, length);
-
-            yield {
-              header,
-              length,
-              type,
-              data,
-            };
-          }
-        }
-
-        resolve({
-          socket,
-          cp,
-          generator: generator(),
-        });
-      });
-
-      const serverPort = await cameraUtils.listenServer(this.cameraName, server);
-      const arguments_ = [];
-
-      arguments_.push(
-        ...ffmpegInput,
-        '-f',
-        'mp4',
-        ...videoOutputArguments,
-        '-fflags',
-        '+genpts',
-        '-reset_timestamps',
-        '1',
-        '-movflags',
-        'frag_keyframe+empty_moov+default_base_moof',
-        'tcp://127.0.0.1:' + serverPort
-      );
-
-      if (this.debug) {
-        logger.debug(ffmpegPath + ' ' + arguments_.join(' '), this.cameraName);
-      }
-
-      let stdioValue = this.debug ? 'pipe' : 'ignore';
-      this.process = spawn(ffmpegPath, arguments_, { env: process.env, stdio: stdioValue });
-
-      const cp = this.process;
-
-      if (this.debug) {
-        cp.stdout.on('data', (data) => logger.debug(data.toString(), this.cameraName));
-        cp.stderr.on('data', (data) => logger.debug(data.toString(), this.cameraName));
-      }
-    });
   }
 }
 

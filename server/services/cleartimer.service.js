@@ -159,11 +159,11 @@ class Cleartimer {
   timeout(timeValue, timeTyp, id, timestamp, isRecording) {
     const endTime = moment.unix(timestamp).add(timeValue, timeTyp);
 
-    logger.debug(
+    /*logger.debug(
       `SET cleartimer for ${isRecording ? 'Recording' : 'Notification'} (${id}) - Endtime: ${endTime}`,
       false,
       true
-    );
+    );*/
 
     const interval = isRecording ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000;
 

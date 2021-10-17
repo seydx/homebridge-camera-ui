@@ -25,6 +25,10 @@
         "port": 2323,
         "localhttp": false
       },
+      "smtp": {
+        "active": true,
+        "port": 2828
+      },
       "ssl": {
         "active": true,
         "key": "/var/lib/homebridge/mysite.key",
@@ -34,11 +38,10 @@
         "videoProcessor": "ffmpeg"
       },
       "hsv": {
-        "active": false,
-        "prebuffering": true,
-        "videoDuration": 30,
-        "prebufferLength": 4000,
-        "fragmentLength": 4000
+        "active": false
+      },
+      "prebuffering": {
+        "active": true
       },
       "cameras": [
         {
@@ -97,9 +100,9 @@
             "debug": false
           },
           "mqtt": {
-            "motionTopic": "yicam_dome_keller/motion",
+            "motionTopic": "yicam_dome_keller/testmotion",
             "motionMessage": "ON",
-            "motionResetTopic": "yicam_dome_keller/motion",
+            "motionResetTopic": "yicam_dome_keller/testmotion",
             "motionResetMessage": "OFF"
           }
         }

@@ -11,19 +11,23 @@ class ConfigSetup {
     this.ui = this._ui();
     this.options = this._options();
     this.hsv = this._hsv();
+    this.prebuffering = this._prebuffering();
     this.ssl = this._ssl();
     this.mqtt = this._mqtt();
     this.mqttConfigs = this._mqttConfigs();
     this.http = this._http();
+    this.smtp = this._smtp();
     this.cameras = this._cameras();
 
     return {
       ...this.ui,
       ui: config.ui,
       hsv: this.hsv,
+      prebuffering: this.prebuffering,
       options: this.options,
       ssl: this.ssl,
       http: this.http,
+      smtp: this.smtp,
       mqtt: this.mqtt,
       mqttConfigs: this.mqttConfigs,
       cameras: this.cameras,
@@ -45,18 +49,20 @@ class ConfigSetup {
   _hsv() {
     const hsv = {
       active: config.plugin.hsv && config.plugin.hsv.active,
-      prebuffering: config.plugin.hsv && config.plugin.hsv.active && config.plugin.hsv.prebuffering,
-      videoDuration:
-        config.plugin.hsv && config.plugin.hsv.videoDuration >= 10 && config.plugin.hsv.videoDuration <= 60
-          ? config.plugin.hsv.videoDuration * 1000
-          : 15000,
-      prebufferLength:
-        config.plugin.hsv && config.plugin.hsv.prebufferLength >= 4000 ? config.plugin.hsv.prebufferLength : 4000,
-      fragmentLength:
-        config.plugin.hsv && config.plugin.hsv.fragmentLength >= 4000 ? config.plugin.hsv.fragmentLength : 4000,
+      fragmentLength: 4000,
     };
 
     return hsv;
+  }
+
+  _prebuffering() {
+    const prebuffering = {
+      active: config.plugin.prebuffering && config.plugin.prebuffering.active,
+      videoDuration: 20000,
+      prebufferLength: 4000,
+    };
+
+    return prebuffering;
   }
 
   _options() {
@@ -89,19 +95,16 @@ class ConfigSetup {
   }
 
   _mqtt() {
-    if (config.plugin.mqtt && config.plugin.mqtt.active && config.plugin.mqtt.host) {
-      const mqtt = {
-        tls: config.plugin.mqtt.tls || false,
-        host: config.plugin.mqtt.host,
-        port: config.plugin.mqtt.port || 1883,
-        username: config.plugin.mqtt.username || '',
-        password: config.plugin.mqtt.password || '',
-      };
+    const mqtt = {
+      active: config.plugin.mqtt && config.plugin.mqtt.active && config.plugin.mqtt.host,
+      tls: config.plugin.mqtt && config.plugin.mqtt.tls,
+      host: config.plugin.mqtt && config.plugin.mqtt.host ? config.plugin.mqtt.host : false,
+      port: config.plugin.mqtt && !Number.isNaN(config.plugin.mqtt.port) ? config.plugin.mqtt.port : 1883,
+      username: config.plugin.mqtt && config.plugin.mqtt.username ? config.plugin.mqtt.username : '',
+      password: config.plugin.mqtt && config.plugin.mqtt.password ? config.plugin.mqtt.password : '',
+    };
 
-      return mqtt;
-    }
-
-    return false;
+    return mqtt;
   }
 
   _mqttConfigs() {
@@ -109,7 +112,7 @@ class ConfigSetup {
     const cameras = this._cameras();
 
     for (const camera of cameras) {
-      if (camera.mqtt && this.mqtt) {
+      if (camera.mqtt && this.mqtt.active) {
         //setup mqtt topics
         if (camera.mqtt.motionTopic) {
           const mqttOptions = {
@@ -156,16 +159,23 @@ class ConfigSetup {
   }
 
   _http() {
-    if (config.plugin.http && config.plugin.http.active) {
-      const http = {
-        port: config.plugin.http.port || 2525,
-        localhttp: config.plugin.http.localhttp,
-      };
+    const http = {
+      active: config.plugin.http && config.plugin.http.active,
+      port: config.plugin.http && !Number.isNaN(config.plugin.http.port) ? config.plugin.http.port : 7777,
+      localhttp: config.plugin.http && config.plugin.http.localhttp,
+    };
 
-      return http;
-    }
+    return http;
+  }
 
-    return false;
+  _smtp() {
+    const smtp = {
+      active: config.plugin.smtp && config.plugin.smtp.active,
+      port: config.plugin.smtp && !Number.isNaN(config.plugin.smtp.port) ? config.plugin.smtp.port : 2525,
+      space_replace: config.plugin.smtp && config.plugin.smtp.space_replace ? config.plugin.smtp.space_replace : '+',
+    };
+
+    return smtp;
   }
 
   _cameras() {
@@ -224,14 +234,11 @@ class ConfigSetup {
         camera.videoConfig = {
           ...camera.videoConfig,
           hsv: this.hsv,
+          prebuffering: this.prebuffering,
         };
 
         if (camera.disableHSV) {
           camera.videoConfig.hsv.active = false;
-        }
-
-        if (camera.disablePrebuffering) {
-          camera.videoConfig.hsv.prebuffering = false;
         }
 
         return camera;

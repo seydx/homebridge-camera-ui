@@ -20,7 +20,6 @@ class Camera {
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
     this.recording = this.videoConfig.hsv.active;
-    this.prebuffer = this.videoConfig.hsv.prebuffering;
 
     this.services = [];
     this.streamControllers = [];
@@ -100,7 +99,7 @@ class Camera {
       recording: this.recording
         ? {
             options: {
-              prebufferLength: this.videoConfig.hsv.prebufferLength,
+              prebufferLength: this.videoConfig.prebuffering.prebufferLength,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {
@@ -141,20 +140,6 @@ class Camera {
     this.api.on('shutdown', () => {
       for (const session in this.ongoingSessions) {
         this.stopStream(session);
-      }
-
-      if (this.recordingDelegate) {
-        const preBufferSession = this.recordingDelegate.preBufferSession;
-
-        if (preBufferSession) {
-          if (preBufferSession.process) {
-            preBufferSession.process.kill();
-          }
-
-          if (preBufferSession.server) {
-            preBufferSession.server.close();
-          }
-        }
       }
     });
   }

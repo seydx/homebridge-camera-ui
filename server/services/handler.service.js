@@ -98,8 +98,9 @@ class MotionHandler {
               motionInfo.label = 'HSV';
               motionInfo.type = 'Video';
 
+              await this.handleRecording(motionInfo, hsv);
+
               if (notificationsSettings.active) {
-                await this.handleRecording(motionInfo, hsv);
                 const notification = await this.handleNotification(motionInfo);
 
                 await this.sendWebhook(cameraName, notification, webhookSettings);
@@ -109,8 +110,6 @@ class MotionHandler {
                 errorState = false;
                 errorMessage = 'Handled through HSV.';
               } else {
-                await this.handleRecording(motionInfo, hsv);
-
                 errorState = false;
                 errorMessage = 'Handled through HSV.';
 
@@ -146,8 +145,9 @@ class MotionHandler {
                 }
 
                 if (motionInfo.label || motionInfo.label === null) {
+                  await this.handleRecording(motionInfo);
+
                   if (notificationsSettings.active) {
-                    await this.handleRecording(motionInfo);
                     const notification = await this.handleNotification(motionInfo);
 
                     await this.sendWebhook(cameraName, notification, webhookSettings);
@@ -168,8 +168,6 @@ class MotionHandler {
                       errorMessage = 'Notification send and snapshot stored.';
                     }
                   } else {
-                    await this.handleRecording(motionInfo);
-
                     errorState = false;
 
                     errorMessage =
