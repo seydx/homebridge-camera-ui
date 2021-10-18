@@ -45,11 +45,8 @@ module.exports = {
       };
 
       const error = () => {
-        //logger.debug(`Stream ended during read for minimum ${length} bytes`, cameraName);
         cleanup();
         reject(`Stream ended during read for minimum ${length} bytes`);
-        //resolve();
-        //reject();
       };
 
       const cleanup = () => {

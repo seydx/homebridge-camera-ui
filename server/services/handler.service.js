@@ -95,6 +95,8 @@ class MotionHandler {
 
             if (hsv) {
               // HSV active, handle recording through HSV
+              logger.debug('HSV enabled, handling recording through HSV', cameraName);
+
               motionInfo.label = 'HSV';
               motionInfo.type = 'Video';
 
@@ -120,6 +122,8 @@ class MotionHandler {
               errorMessage = 'Video stored through HSV and notification sent.';
             } else if (recordingSettings.active) {
               // UI Recording active & HSV not active, handle recording through UI
+              logger.debug('HSV not enabled, handling recording through camera.ui', cameraName);
+
               const allowStream = sessions.requestSession(cameraName);
 
               if (allowStream) {

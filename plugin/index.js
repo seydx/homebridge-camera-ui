@@ -158,10 +158,6 @@ CameraUI.prototype = {
     const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor);
     accessory.configureController(cameraAccessory.controller);
 
-    /*if (device.videoConfig.hsv.active && device.videoConfig.hsv.prebuffering) {
-      cameraAccessory.recordingDelegate.startPreBuffer();
-    }*/
-
     new MotionSensor(this.api, accessory);
     new DoorbellSensor(this.api, accessory);
     new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service');

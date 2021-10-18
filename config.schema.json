@@ -182,26 +182,9 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
-        }
-      }
-    },
-    "hsv": {
-      "titel": "HomeKit Secure Video",
-      "type": "object",
-      "properties": {
-        "active": {
-          "title": "Activate",
-          "type": "boolean",
-          "description": "Enables HSV for cameras that are not excluded from it. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
-        }
-      }
-    },
-    "prebuffering": {
-      "titel": "Prebuffering",
-      "type": "object",
-      "properties": {
-        "active": {
-          "title": "Activate",
+        },
+        "prebuffering": {
+          "title": "Prebuffering",
           "type": "boolean",
           "description": "Enables camera video prebuffering."
         }
@@ -279,10 +262,10 @@
             "type": "boolean",
             "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
           },
-          "disableHSV": {
-            "title": "Disable HomeKit Secure Video (HSV)",
+          "hsv": {
+            "title": "HomeKit Secure Video (HSV)",
             "type": "boolean",
-            "description": "Excludes the camera from the HSV settings. This will display the camera in HomeKit as a normal camera."
+            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
           },
           "videoConfig": {
             "title": "Video Configuration",
@@ -499,7 +482,7 @@
             "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
-            "cameras[].disableHSV",
+            "cameras[].hsv",
             "cameras[].videoConfig.debug",
             {
               "key": "cameras[]",
@@ -582,34 +565,16 @@
       ]
     },
     {
-      "key": "hsv",
-      "title": "HomeKit Secure Video",
-      "type": "object",
-      "orderable": false,
-      "expandable": true,
-      "expanded": false,
-      "items": ["hsv.active"]
-    },
-    {
-      "key": "prebuffering",
-      "title": "Prebuffering",
-      "type": "object",
-      "orderable": false,
-      "expandable": true,
-      "expanded": false,
-      "items": ["prebuffering.active"]
-    },
-    {
       "key": "options",
       "type": "object",
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": ["options.videoProcessor"]
+      "items": ["options.videoProcessor", "options.prebuffering"]
     },
     {
       "key": "mqtt",
-      "name": "MQTT",
+      "name": "MQTT Broker",
       "type": "object",
       "orderable": false,
       "expandable": true,

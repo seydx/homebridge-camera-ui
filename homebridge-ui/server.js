@@ -95,6 +95,11 @@ class UiServer extends HomebridgePluginUiServer {
         '-codec:v',
         'mpeg1video',
         ...additionalFlags,
+        '-q',
+        '1',
+        '-hide_banner',
+        '-max_muxing_queue_size',
+        '1024',
         '-',
       ];
 

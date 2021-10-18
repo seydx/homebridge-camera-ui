@@ -232,17 +232,42 @@ class Ffmpeg {
   async *handleFragmentsRequests(cameraName, videoConfig, recTimer) {
     logger.debug('Video fragments requested', cameraName, true);
 
+    const iframeIntervalSeconds = 4;
+    const rate = videoConfig.rate || 25;
     const audioArguments = ['-c:a', 'aac'];
-    const videoArguments = ['-codec:v', 'copy'];
+    //const videoArguments = ['-codec:v', 'copy'];
+    const videoArguments = [
+      '-an',
+      '-sn',
+      '-dn',
+      '-codec:v',
+      'libx264',
+      '-pix_fmt',
+      'yuv420p',
+      '-profile:v',
+      'high',
+      '-level:v',
+      '4.0',
+      '-b:v',
+      '299k',
+      '-force_key_frames',
+      `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
+      '-r',
+      rate.toString(),
+    ];
     const prebufferLength = 10000; //10s
 
-    const ffmpegInput = [];
+    let ffmpegInput = [...videoConfig.source.split(' '), '-t', recTimer.toString()];
 
     if (videoConfig.prebuffering.active) {
-      const input = await PreBuffer.getVideo(cameraName, prebufferLength);
-      ffmpegInput.push(...input, '-t', (prebufferLength / 1000 + recTimer).toString());
-    } else {
-      ffmpegInput.push(...videoConfig.source.split(' '), '-t', recTimer.toString());
+      try {
+        const input = await PreBuffer.getVideo(cameraName, prebufferLength);
+
+        ffmpegInput = [];
+        ffmpegInput.push(...input, '-t', (prebufferLength / 1000 + recTimer).toString());
+      } catch (error) {
+        logger.warn(`Can not access prebuffered video, skipping: ${error}`);
+      }
     }
 
     const session = await this.startFFMPegFragmetedMP4Session(

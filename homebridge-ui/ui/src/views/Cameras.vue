@@ -77,10 +77,6 @@ export default {
   },
   methods: {
     preparePlayer(cameraName) {
-      const timeoutPlayer = setTimeout(() => {
-        window.homebridge.request('/stopStream', cameraName);
-      }, 5000);
-
       this.player = new JSMpeg.Player(null, {
         source: JSMpegWritableSource,
         canvas: document.querySelector(`[data-stream-box="${cameraName}"]`),
@@ -88,7 +84,6 @@ export default {
         disableWebAssembly: true,
         pauseWhenHidden: false,
         onSourceEstablished: () => {
-          clearTimeout(timeoutPlayer);
           window.homebridge.toast.success(`${cameraName}: Connection established!`);
         },
       });

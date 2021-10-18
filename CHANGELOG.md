@@ -6,11 +6,13 @@
 - HomeKit Secure Video (HSV)
   - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
+- Prebuffering
+  - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 10 seconds (HSV off, or 4 sec. if HSV is enabled) to see the event BEFORE the movement. If HSV is not enabled, it means that additional 10 (or 4) seconds will be added to the setted recording duration (e.g. 10sec + 10 sec). When HSV is enabled, the duration of the recording is completely determined by Apple Home.
 
 ## Other changes
 - Interface
   - Added 16:9 aspect ratio to `camera` view
-  - Changed `removeAfter`duration for notifications/recordings
+  - Changed `removeAfter` duration for notifications/recordings
   - The quality of the streams was increased (`-q 1`)
   - Minor UI improvements
 - Bump dependencies
@@ -20,6 +22,7 @@
 - Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
 - Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
 - Fixed an issue where the restored socket.io connection (on mobile devices) did not restore the live stream on `Dashboard` and `Camview`.
+- Fixed an issue where camera streams that took a longer to start were stopped on homebridge-config-ui-x
 - Fixed tests
 - Minor bugfixes
 

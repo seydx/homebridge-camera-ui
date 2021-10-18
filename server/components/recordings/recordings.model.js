@@ -150,23 +150,35 @@ exports.createRecording = async (data, hsv) => {
         ));
 
     if (data.type === 'Video') {
-      let filebuffer = Buffer.alloc(0);
+      if (camera.videoConfig.prebuffering.active) {
+        let filebuffer = Buffer.alloc(0);
 
-      let generator = ffmpeg.handleFragmentsRequests(cameraName, camera.videoConfig, recordingsSettings.timer);
+        let generator = ffmpeg.handleFragmentsRequests(cameraName, camera.videoConfig, recordingsSettings.timer);
 
-      setTimeout(() => {
-        if (generator) {
-          generator.throw(`timer reached (${recordingsSettings.timer}s)`);
+        setTimeout(() => {
+          if (generator) {
+            generator.throw(`timer reached (${recordingsSettings.timer}s)`);
+          }
+        }, recordingsSettings.timer * 1000);
+
+        for await (const buffer of generator) {
+          filebuffer = Buffer.concat([filebuffer, Buffer.concat(buffer)]);
         }
-      }, recordingsSettings.timer * 1000);
 
-      for await (const buffer of generator) {
-        filebuffer = Buffer.concat([filebuffer, Buffer.concat(buffer)]);
+        generator = null;
+
+        await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, filebuffer);
+      } else {
+        await ffmpeg.storeVideo(
+          cameraName,
+          camera.videoConfig,
+          fileName,
+          data.path,
+          data.timer,
+          label,
+          camera.settings.pingTimeout
+        );
       }
-
-      generator = null;
-
-      await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, filebuffer);
     }
   }
 

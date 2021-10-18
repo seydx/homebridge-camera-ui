@@ -48,7 +48,9 @@ class ConfigSetup {
 
   _hsv() {
     const hsv = {
-      active: config.plugin.hsv && config.plugin.hsv.active,
+      active: (config.plugin.cameras || []).some(
+        (camera) => camera.name && camera.videoConfig && camera.videoConfig.source && camera.hsv
+      ),
       fragmentLength: 4000,
     };
 
@@ -57,7 +59,7 @@ class ConfigSetup {
 
   _prebuffering() {
     const prebuffering = {
-      active: config.plugin.prebuffering && config.plugin.prebuffering.active,
+      active: config.plugin.options && config.plugin.options.prebuffering,
       videoDuration: 20000,
       prebufferLength: 4000,
     };
@@ -179,9 +181,7 @@ class ConfigSetup {
   }
 
   _cameras() {
-    const cameras = config.plugin.cameras || [];
-
-    return cameras
+    const cameras = (config.plugin.cameras || [])
       .filter((camera) => camera.name && camera.videoConfig && camera.videoConfig.source)
       .map((camera) => {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
@@ -237,13 +237,15 @@ class ConfigSetup {
           prebuffering: this.prebuffering,
         };
 
-        if (camera.disableHSV) {
+        if (!camera.hsv) {
           camera.videoConfig.hsv.active = false;
         }
 
         return camera;
       })
       .filter((camera) => camera.videoConfig.source);
+
+    return cameras;
   }
 }
 

@@ -21,6 +21,7 @@
 - **Web App** with push notifications and more (requires https)
 - **Multi-language** support
 - **CamViews**: A resizable, drag & drop camera overview
+- **Motion Detection** with prebuffering
 - **Image Rekognition** with AWS
 - **Notifications** vie Telegram and Webhook
 - **Record Snapshot/Video** on movement detection

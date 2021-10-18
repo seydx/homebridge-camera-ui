@@ -50,7 +50,7 @@ server.on('listening', async () => {
   Streams.init(io);
 
   if (config.prebuffering.active) {
-    await Prebuffer.start(config);
+    Prebuffer.init(config);
   }
 
   if (config.mqtt.active) {
@@ -117,11 +117,10 @@ server.startServer = async () => {
 
 server.stopServer = async () => {
   ClearTimer.stop();
-  Prebuffer.stop();
   Streams.stopStreams();
 
   if (config.prebuffering.active) {
-    Prebuffer.stop(config);
+    Prebuffer.stop(true);
   }
 
   if (config.http) {
