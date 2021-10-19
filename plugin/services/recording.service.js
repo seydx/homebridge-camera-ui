@@ -7,12 +7,13 @@ const PreBuffer = require('../../services/prebuffer/prebuffer.service');
 const uiHandler = require('../../server/services/handler.service');
 
 class RecordingDelegate {
-  constructor(cameraName, videoConfig, api, hap, videoProcessor) {
+  constructor(cameraName, videoConfig, api, hap, videoProcessor, prebuffering) {
     this.api = api;
     this.hap = hap;
     this.cameraName = cameraName;
     this.videoConfig = videoConfig;
     this.videoProcessor = videoProcessor;
+    this.prebuffering = prebuffering;
     this.debug = videoConfig.debug;
   }
 
@@ -69,16 +70,20 @@ class RecordingDelegate {
       configuration.videoCodec.resolution[2].toString(),
     ];
 
-    const ffmpegInput = [];
+    let ffmpegInput = [...this.videoConfig.source.split(' ')];
 
-    if (this.videoConfig.prebuffering.active) {
-      const input = await PreBuffer.getVideo(
-        this.cameraName,
-        configuration.mediaContainerConfiguration.prebufferLength
-      );
-      ffmpegInput.push(...input);
-    } else {
-      ffmpegInput.push(...this.videoConfig.source.split(' '));
+    if (this.prebuffering) {
+      try {
+        const input = await PreBuffer.getVideo(
+          this.cameraName,
+          configuration.mediaContainerConfiguration.prebufferLength
+        );
+
+        ffmpegInput = [];
+        ffmpegInput.push(...input);
+      } catch (error) {
+        logger.warn(`Can not access prebuffered video, skipping: ${error}`);
+      }
     }
 
     const session = await ffmpeg.startFFMPegFragmetedMP4Session(

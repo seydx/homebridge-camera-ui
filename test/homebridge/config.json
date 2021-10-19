@@ -1,113 +1,46 @@
 {
-  "bridge": {
-    "name": "Homebridge",
-    "username": "0E:15:CC:8A:E9:1E",
-    "port": 51609,
-    "pin": "983-44-986"
-  },
-  "plugins": ["homebridge-camera-ui"],
-  "accessories": [],
-  "platforms": [
-    {
-      "name": "CameraUI",
-      "port": 3600,
-      "atHomeSwitch": true,
-      "theme": "auto",
-      "language": "auto",
-      "debug": true,
-      "mqtt": {
-        "active": true,
-        "host": "192.168.178.114",
-        "port": 1883
-      },
-      "http": {
-        "active": true,
-        "port": 2323,
-        "localhttp": false
-      },
-      "smtp": {
-        "active": true,
-        "port": 2828
-      },
-      "ssl": {
-        "active": true,
-        "key": "/var/lib/homebridge/mysite.key",
-        "cert": "/var/lib/homebridge/mysite.crt"
-      },
-      "options": {
-        "videoProcessor": "ffmpeg"
-      },
-      "hsv": {
-        "active": false
-      },
-      "prebuffering": {
-        "active": true
-      },
-      "cameras": [
+    "bridge": {
+        "name": "Homebridge",
+        "username": "0E:15:CC:8A:E9:1E",
+        "port": 51609,
+        "pin": "983-44-986"
+    },
+    "plugins": [
+        "homebridge-camera-ui"
+    ],
+    "accessories": [],
+    "platforms": [
         {
-          "name": "Sricam",
-          "manufacturer": "Sricam",
-          "model": "IP Camera",
-          "serialNumber": "873190",
-          "firmwareRevision": "1.0",
-          "excludeSwitch": true,
-          "motion": true,
-          "doorbell": false,
-          "switches": true,
-          "motionTimeout": 1,
-          "motionDoorbell": false,
-          "unbridge": true,
-          "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
-            "stillImageSource": "-i rtsp://192.168.178.42/onvif1",
-            "maxStreams": 4,
-            "maxWidth": 1280,
-            "maxHeight": 720,
-            "maxFPS": 30,
-            "stimeout": 10,
-            "audio": true,
-            "debug": false
-          },
-          "mqtt": {
-            "motionTopic": "sricam/testmotion",
-            "motionMessage": "ON",
-            "motionResetTopic": "sricam/testmotion",
-            "motionResetMessage": "OFF"
-          }
-        },
-        {
-          "name": "Yi Dome",
-          "manufacturer": "Yi",
-          "model": "IP Camera",
-          "serialNumber": "873190",
-          "firmwareRevision": "1.0",
-          "excludeSwitch": true,
-          "motion": true,
-          "doorbell": false,
-          "switches": true,
-          "motionTimeout": 1,
-          "unbridge": true,
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_1.h264",
-            "stillImageSource": "-i rtsp://192.168.178.31/ch0_1.h264",
-            "maxStreams": 4,
-            "maxWidth": 1920,
-            "maxHeight": 1080,
-            "maxFPS": 25,
-            "maxBitrate": 1000,
-            "stimeout": 10,
-            "audio": false,
-            "debug": false
-          },
-          "mqtt": {
-            "motionTopic": "yicam_dome_keller/testmotion",
-            "motionMessage": "ON",
-            "motionResetTopic": "yicam_dome_keller/testmotion",
-            "motionResetMessage": "OFF"
-          }
+            "name": "CameraUI",
+            "port": 3600,
+            "atHomeSwitch": true,
+            "theme": "auto",
+            "language": "auto",
+            "debug": true,
+            "mqtt": {
+                "active": true,
+                "host": "192.168.178.114",
+                "port": 1883
+            },
+            "http": {
+                "active": true,
+                "port": 2323,
+                "localhttp": false
+            },
+            "smtp": {
+                "active": true,
+                "port": 2828
+            },
+            "ssl": {
+                "active": true,
+                "key": "/var/lib/homebridge/mysite.key",
+                "cert": "/var/lib/homebridge/mysite.crt"
+            },
+            "options": {
+                "videoProcessor": "ffmpeg"
+            },
+            "cameras": [],
+            "platform": "CameraUI"
         }
-      ],
-      "platform": "CameraUI"
-    }
-  ]
+    ]
 }

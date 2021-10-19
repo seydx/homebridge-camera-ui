@@ -35,7 +35,7 @@
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="notifications.removeAfter"
-                      :options="[1, 3, 6, 12, 24]"
+                      :options="removeAfterTimer"
                     )
       b-collapse.w-100(
         v-model="notifications.active",
@@ -100,7 +100,7 @@
                         .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                           b-form-select(
                             v-model="camera.telegramType"
-                            :options="['Text', 'Snapshot', 'Video', 'Disabled']"
+                            :options="telegramTypes"
                           )
                       hr
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
@@ -172,6 +172,8 @@ export default {
       recordings: {},
       notificationsTimer: null,
       loading: true,
+      removeAfterTimer: [1, 3, 6, 12, 24],
+      telegramTypes: ['Text', 'Snapshot', 'Video', 'Disabled'],
     };
   },
   watch: {

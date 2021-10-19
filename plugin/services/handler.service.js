@@ -14,7 +14,7 @@ const motionTimers = new Map();
 const doorbellTimers = new Map();
 
 class PluginHandler {
-  initHandler(accessories, hap) {
+  init(accessories, hap) {
     HOMEBRIDGE.accessories = accessories;
     HOMEBRIDGE.hap = hap;
     HOMEBRIDGE.initialized = accessories && hap;
@@ -85,7 +85,7 @@ class PluginHandler {
       const motionTrigger = accessory.getServiceById(HOMEBRIDGE.hap.Service.Switch, 'MotionTrigger');
 
       if (active) {
-        if (manual && !cameraConfig.videoConfig.hsv.active) {
+        if (manual && !cameraConfig.hsv) {
           uiHandler.handle('motion', accessory.displayName, active);
         }
 
@@ -162,7 +162,7 @@ class PluginHandler {
       const doorbellTrigger = accessory.getServiceById(HOMEBRIDGE.hap.Service.Switch, 'DoorbellTrigger');
 
       if (active) {
-        if (!fromMotion && manual && !cameraConfig.videoConfig.hsv.active) {
+        if (!fromMotion && manual && !cameraConfig.hsv) {
           uiHandler.handle('doorbell', accessory.displayName, active);
         }
 

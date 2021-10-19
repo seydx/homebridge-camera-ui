@@ -108,7 +108,7 @@
                   label.fs-6 {{ $t("video_resolution") }}
                   b-form-select(
                     v-model="camera.resolution"
-                    :options="['256x144', '426x240', '480x360', '640x480', '1280x720', '1920x1080',]"
+                    :options="camerasResolutions"
                   )
                   hr
                   label.fs-6 {{ $t("ping_timeout") }}
@@ -182,6 +182,7 @@ export default {
       awsTimer: null,
       cameras: [],
       camerasTimer: null,
+      camerasResolutions: ['256x144', '426x240', '480x360', '640x480', '1280x720', '1920x1080'],
       expand: {
         aws: true,
         cameras: true,

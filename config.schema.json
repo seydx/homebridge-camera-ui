@@ -182,11 +182,6 @@
           "type": "string",
           "placeholder": "ffmpeg",
           "description": "Defines which video processor is used to decode and encode videos, must take the same parameters as FFmpeg. Common uses would be 'avconv' or the path to a custom-compiled version of FFmpeg. If not set, will use the included version of FFmpeg, or the version of FFmpeg installed on the system if no included version is available."
-        },
-        "prebuffering": {
-          "title": "Prebuffering",
-          "type": "boolean",
-          "description": "Enables camera video prebuffering."
         }
       }
     },
@@ -266,6 +261,11 @@
             "title": "HomeKit Secure Video (HSV)",
             "type": "boolean",
             "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
+          },
+          "prebuffering": {
+            "title": "Prebuffering",
+            "type": "boolean",
+            "description": "Enables camera video prebuffering."
           },
           "videoConfig": {
             "title": "Video Configuration",
@@ -483,6 +483,7 @@
             "cameras[].unbridge",
             "cameras[].videoConfig.audio",
             "cameras[].hsv",
+            "cameras[].prebuffering",
             "cameras[].videoConfig.debug",
             {
               "key": "cameras[]",
@@ -570,7 +571,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": ["options.videoProcessor", "options.prebuffering"]
+      "items": ["options.videoProcessor"]
     },
     {
       "key": "mqtt",

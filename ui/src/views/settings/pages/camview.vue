@@ -19,7 +19,7 @@
                 .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                   b-form-select(
                     v-model="camview.refreshTimer"
-                    :options="[10, 20, 30, 40, 50, 60]"
+                    :options="refreshTimer"
                   )
       .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:camview:edit', 'settings:cameras:edit'])")
         b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "-90"', @click="expand.favourites = !expand.favourites")
@@ -75,6 +75,7 @@ export default {
         favourites: true,
       },
       loading: true,
+      refreshTimer: [10, 20, 30, 40, 50, 60],
     };
   },
   watch: {

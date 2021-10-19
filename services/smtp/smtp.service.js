@@ -31,7 +31,7 @@ class Mqtt {
       ],
     });
 
-    const server = new SMTPServer({
+    this.server = new SMTPServer({
       authOptional: true,
       disabledCommands: ['STARTTLS'],
       logger: bunyan,
@@ -55,7 +55,13 @@ class Mqtt {
       },
     });
 
-    server.listen(smtpPort);
+    this.server.listen(smtpPort);
+  }
+
+  stop() {
+    if (this.server) {
+      this.server.close();
+    }
   }
 }
 

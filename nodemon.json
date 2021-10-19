@@ -1,10 +1,7 @@
 {
   "restartable": "rs",
   "verbose": true,
-  "watch": [
-    "src",
-    "services"
-  ],
+  "watch": ["server", "services"],
   "env": {
     "NODE_ENV": "test"
   },

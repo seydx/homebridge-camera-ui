@@ -30,7 +30,6 @@ beforeAll(async () => {
   await lowdb.ensureDatabase();
   await lowdb.resetDatabase();
   await lowdb.prepareDatabase(config.plugin);
-  lowdb.initTokensDatabase();
 
   const database = await lowdb.database();
   await database.get('users').push(user).write();

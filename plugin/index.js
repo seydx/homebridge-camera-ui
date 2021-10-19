@@ -8,9 +8,9 @@ const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
 const InterfaceSwitch = require('./accessories/interface-switch');
 
-const Server = require('../server/index').server;
 const Config = require('../services/config/config.start');
-const pluginHandler = require('./services/handler.service');
+const PluginHandler = require('./services/handler.service');
+const { server } = require('../server/index');
 
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
@@ -65,15 +65,15 @@ function CameraUI(log, config, api) {
   }
 
   this.api.on('didFinishLaunching', this.init.bind(this));
-  this.api.on('shutdown', () => Server.stopServer());
+  this.api.on('shutdown', () => server.stopServer());
 }
 
 CameraUI.prototype = {
   init: function () {
     this.configure();
 
-    pluginHandler.initHandler(this.cameraAccessories, this.api.hap);
-    Server.startServer();
+    PluginHandler.init(this.cameraAccessories, this.api.hap);
+    server.startServer();
   },
 
   configure: function () {

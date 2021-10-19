@@ -88,7 +88,6 @@ class Lowdb {
         },
         recordings: {
           active: false,
-          hsv: config.hsv,
           type: 'Snapshot',
           timer: 10,
           path: this.recPath,
@@ -122,6 +121,12 @@ class Lowdb {
       }
     }
 
+    databaseTokens
+      .defaults({
+        tokens: [],
+      })
+      .write();
+
     return await database.defaults(this.defaultDb).write();
   }
 
@@ -131,13 +136,12 @@ class Lowdb {
 
     //prepare cameras
     const Cameras = await database.get('cameras');
-    const cameras = config.cameras;
-    const SettingsCameras = await database.get('settings').get('cameras');
+    const CamerasSettings = await database.get('settings').get('cameras');
 
     await Cameras.remove((x) => config.cameras.filter((y) => y && y.name === x.name).length === 0).write();
-    await SettingsCameras.remove((x) => config.cameras.filter((y) => y && y.name === x.name).length === 0).write();
+    await CamerasSettings.remove((x) => config.cameras.filter((y) => y && y.name === x.name).length === 0).write();
 
-    for (const cam of cameras) {
+    for (const cam of config.cameras) {
       const camera = {
         name: cam.name,
         videoConfig: {
@@ -150,8 +154,8 @@ class Lowdb {
         ? Cameras.find({ name: camera.name }).assign(camera).write()
         : Cameras.push(camera).write());
 
-      if (!(await SettingsCameras.find({ name: cam.name }).value())) {
-        await SettingsCameras.push({
+      if (!(await CamerasSettings.find({ name: cam.name }).value())) {
+        await CamerasSettings.push({
           name: cam.name,
           room: 'Standard',
           resolution: '1280x720',
@@ -200,15 +204,11 @@ class Lowdb {
     //prepare hsv settings
     const SettingsRecordings = await database.get('settings').get('recordings');
     const recordingsSettings = SettingsRecordings.value();
-    recordingsSettings.hsv = config.hsv;
+
+    recordingsSettings.hsv = config.options.hsv;
+    recordingsSettings.prebuffering = config.options.prebuffering;
+
     await SettingsRecordings.assign(recordingsSettings).write();
-  }
-
-  async refreshDatabase() {
-    const adapterDatabase = new FileAsync(this.dbPath);
-    const database = await low(adapterDatabase);
-
-    return await database.read();
   }
 
   async resetDatabase() {
@@ -218,17 +218,19 @@ class Lowdb {
     return await database.setState(this.defaultDb).write();
   }
 
-  async database() {
+  async refreshDatabase() {
     const adapterDatabase = new FileAsync(this.dbPath);
-    return await low(adapterDatabase);
+    const database = await low(adapterDatabase);
+
+    return await database.read();
   }
 
-  //Memory Storage
   async refreshRecordingsDatabase() {
     const adapterDatabase = new FileAsync(this.dbPath);
     const database = await low(adapterDatabase);
 
     this.recPath = await database.get('settings').get('recordings').get('path').value();
+
     await fs.ensureDir(this.recPath);
 
     let recordings = (await fs.readdir(this.recPath)) || [];
@@ -285,17 +287,13 @@ class Lowdb {
       .write();
   }
 
-  recordingsDatabase() {
-    return databaseRecordings;
+  async database() {
+    const adapterDatabase = new FileAsync(this.dbPath);
+    return await low(adapterDatabase);
   }
 
-  //Memory Storage
-  initTokensDatabase() {
-    databaseTokens
-      .defaults({
-        tokens: [],
-      })
-      .write();
+  recordingsDatabase() {
+    return databaseRecordings;
   }
 
   tokensDatabase() {

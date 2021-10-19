@@ -95,6 +95,7 @@
     "permission_required": "Permission required",
     "ping_timeout": "Ping Timeout (s)",
     "prebuffering": "Prebuffering",
+    "prebuffering_if_enabled": "Prebuffering if enabled",
     "prev": "Previous",
     "profile": "Profile",
     "recording_text": "The @ was taken on % by a #.",

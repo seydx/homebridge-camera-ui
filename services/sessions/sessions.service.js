@@ -17,7 +17,7 @@ class Sessions {
   }
 
   requestSession(cameraName) {
-    if (sessions[cameraName].activeStreams < sessions[cameraName].maxStreams) {
+    if (sessions[cameraName] && sessions[cameraName].activeStreams < sessions[cameraName].maxStreams) {
       logger.debug(`${cameraName} added to active sessions`, false, '[Sessions]');
 
       sessions[cameraName].activeStreams++;

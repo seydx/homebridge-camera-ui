@@ -16,7 +16,6 @@ beforeAll(async () => {
   await lowdb.resetDatabase();
   await lowdb.prepareDatabase(config.plugin);
   await lowdb.refreshRecordingsDatabase();
-  lowdb.initTokensDatabase();
 
   const recordingsDatabase = lowdb.recordingsDatabase();
 

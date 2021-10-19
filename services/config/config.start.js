@@ -5,25 +5,22 @@ const fs = require('fs-extra');
 
 const config = require('./config.service');
 const logger = require('../logger/logger.service');
+const { version } = require('../../package.json');
 
 class ConfigSetup {
   constructor() {
     this.ui = this._ui();
+    this.cameras = this._cameras();
     this.options = this._options();
-    this.hsv = this._hsv();
-    this.prebuffering = this._prebuffering();
     this.ssl = this._ssl();
     this.mqtt = this._mqtt();
     this.mqttConfigs = this._mqttConfigs();
     this.http = this._http();
     this.smtp = this._smtp();
-    this.cameras = this._cameras();
 
     return {
       ...this.ui,
       ui: config.ui,
-      hsv: this.hsv,
-      prebuffering: this.prebuffering,
       options: this.options,
       ssl: this.ssl,
       http: this.http,
@@ -31,6 +28,7 @@ class ConfigSetup {
       mqtt: this.mqtt,
       mqttConfigs: this.mqttConfigs,
       cameras: this.cameras,
+      version: version,
     };
   }
 
@@ -46,54 +44,43 @@ class ConfigSetup {
     return ui;
   }
 
-  _hsv() {
-    const hsv = {
-      active: (config.plugin.cameras || []).some(
-        (camera) => camera.name && camera.videoConfig && camera.videoConfig.source && camera.hsv
-      ),
-      fragmentLength: 4000,
-    };
-
-    return hsv;
-  }
-
-  _prebuffering() {
-    const prebuffering = {
-      active: config.plugin.options && config.plugin.options.prebuffering,
-      videoDuration: 20000,
-      prebufferLength: 4000,
-    };
-
-    return prebuffering;
-  }
-
   _options() {
+    const hsvCameras = new Set(this.cameras.map((camera) => camera.hsv).filter((hsv) => hsv !== undefined));
+    const pbCameras = new Set(this.cameras.map((camera) => camera.prebuffering).filter((pb) => pb !== undefined));
+
     const options = {
       videoProcessor:
         config.plugin.options && config.plugin.options.videoProcessor
           ? config.plugin.options.videoProcessor
           : ffmpegPath || 'ffmpeg',
+      //required for UI
+      hsv: hsvCameras.size > 1 || hsvCameras.has(false) ? false : true,
+      prebuffering: pbCameras.size > 1 ? 2 : pbCameras.has(true) ? 1 : 0,
     };
 
     return options;
   }
 
   _ssl() {
-    if (config.plugin.ssl && config.plugin.ssl.active && config.plugin.ssl.key && config.plugin.ssl.cert) {
-      try {
-        const ssl = {
-          key: fs.readFileSync(config.plugin.ssl.key, 'utf8'),
-          cert: fs.readFileSync(config.plugin.ssl.cert, 'utf8'),
-        };
+    const ssl = {
+      active: Boolean(config.plugin.ssl && config.plugin.ssl.active && config.plugin.ssl.key && config.plugin.ssl.cert),
+      key: config.plugin.ssl && config.plugin.ssl.key ? config.plugin.ssl.key : false,
+      cert: config.plugin.ssl && config.plugin.ssl.cert ? config.plugin.ssl.cert : false,
+    };
 
-        return ssl;
+    if (ssl.active) {
+      try {
+        ssl.key = fs.readFileSync(ssl.key, 'utf8');
+        ssl.cert = fs.readFileSync(ssl.cert, 'utf8');
       } catch (error) {
         logger.warn('WARNING: Could not read SSL Cert/Key');
         logger.debug(error);
+
+        ssl.active = false;
       }
     }
 
-    return false;
+    return ssl;
   }
 
   _mqtt() {
@@ -111,7 +98,7 @@ class ConfigSetup {
 
   _mqttConfigs() {
     const mqttConfigs = new Map();
-    const cameras = this._cameras();
+    const cameras = this.cameras;
 
     for (const camera of cameras) {
       if (camera.mqtt && this.mqtt.active) {
@@ -189,9 +176,7 @@ class ConfigSetup {
         if (!sourceArguments.includes('-i')) {
           logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
           camera.videoConfig.source = false;
-        } /* else if (!sourceArguments.includes('-stimeout')) {
-          camera.videoConfig.source = camera.videoConfig.source.replace('-i', '-stimeout 10000000 -i');
-        }*/
+        }
 
         if (camera.videoConfig.stimeout > 0 && !sourceArguments.includes('-stimeout')) {
           if (sourceArguments.includes('-re')) {
@@ -216,34 +201,13 @@ class ConfigSetup {
             );
             camera.videoConfig.stillImageSource = false;
           }
-        }
-
-        //Amazon Rekognition
-        if (camera.rekognition) {
-          camera.rekognition = {
-            active: camera.rekognition.active || false,
-            confidence: camera.rekognition.confidence > 0 ? camera.rekognition.confidence : 90,
-            labels:
-              camera.rekognition.labels && camera.rekognition.labels.length > 0
-                ? camera.rekognition.labels.map((label) => label && label.toLowerCase()).filter((label) => label)
-                : ['human', 'person', 'face'],
-          };
-        }
-
-        //HSV
-        camera.videoConfig = {
-          ...camera.videoConfig,
-          hsv: this.hsv,
-          prebuffering: this.prebuffering,
-        };
-
-        if (!camera.hsv) {
-          camera.videoConfig.hsv.active = false;
+        } else {
+          camera.videoConfig.stillImageSource = camera.videoConfig.source;
         }
 
         return camera;
       })
-      .filter((camera) => camera.videoConfig.source);
+      .filter((camera) => camera.videoConfig && camera.videoConfig.source);
 
     return cameras;
   }

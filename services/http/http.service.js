@@ -50,7 +50,7 @@ class Http {
     });
 
     this.server.on('close', () => {
-      logger.debug('Stopping HTTP server for motion detection...', false, '[HTTP]');
+      logger.debug('HTTP Server closed', false, '[HTTP]');
     });
 
     this.server.on('request', async (request, response) => {
@@ -78,7 +78,7 @@ class Http {
           let pluginResult = pluginHandler.handle(target, name, active);
           let uiResult = 'Handled through HSV.';
 
-          if (!camera || (camera && !camera.videoConfig.hsv.active)) {
+          if (!camera || (camera && !camera.hsv)) {
             uiResult = await uiHandler.handle(target, name, active);
           }
 

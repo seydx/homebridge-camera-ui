@@ -150,10 +150,15 @@ exports.createRecording = async (data, hsv) => {
         ));
 
     if (data.type === 'Video') {
-      if (camera.videoConfig.prebuffering.active) {
+      if (camera.prebuffering) {
         let filebuffer = Buffer.alloc(0);
 
-        let generator = ffmpeg.handleFragmentsRequests(cameraName, camera.videoConfig, recordingsSettings.timer);
+        let generator = ffmpeg.handleFragmentsRequests(
+          cameraName,
+          camera.videoConfig,
+          camera.prebuffering,
+          recordingsSettings.timer
+        );
 
         setTimeout(() => {
           if (generator) {

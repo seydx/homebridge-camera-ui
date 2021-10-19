@@ -56,7 +56,7 @@ class Ffmpeg {
       const width = videoConfig.maxWidth || 1280;
       const height = videoConfig.maxHeight || 720;
 
-      logger.debug(`Storing HSV Snapshot to: ${outputPath}`, cameraName, true);
+      logger.debug(`Storing snapshot to: ${outputPath}`, cameraName, true);
 
       let ffmpegArguments = [
         '-loglevel',
@@ -214,7 +214,7 @@ class Ffmpeg {
     return new Promise((resolve, reject) => {
       let videoName = recPath + '/' + name + '.mp4';
 
-      logger.debug(`Storing HSV Video to: ${videoName}`, cameraName, true);
+      logger.debug(`Storing video to: ${videoName}`, cameraName, true);
 
       const writeStream = fs.createWriteStream(videoName);
 
@@ -229,9 +229,10 @@ class Ffmpeg {
     });
   }
 
-  async *handleFragmentsRequests(cameraName, videoConfig, recTimer) {
+  async *handleFragmentsRequests(cameraName, videoConfig, prebuffering, recTimer) {
     logger.debug('Video fragments requested', cameraName, true);
 
+    const prebufferLength = 10000; //10s
     const iframeIntervalSeconds = 4;
     const rate = videoConfig.rate || 25;
     const audioArguments = ['-c:a', 'aac'];
@@ -255,11 +256,10 @@ class Ffmpeg {
       '-r',
       rate.toString(),
     ];
-    const prebufferLength = 10000; //10s
 
     let ffmpegInput = [...videoConfig.source.split(' '), '-t', recTimer.toString()];
 
-    if (videoConfig.prebuffering.active) {
+    if (prebuffering) {
       try {
         const input = await PreBuffer.getVideo(cameraName, prebufferLength);
 

@@ -46,12 +46,9 @@ server.on('listening', async () => {
   );
 
   ClearTimer.start();
+  Prebuffer.init(config);
   Sessions.init(config.cameras);
   Streams.init(io);
-
-  if (config.prebuffering.active) {
-    Prebuffer.init(config);
-  }
 
   if (config.mqtt.active) {
     MqttService.start(config);
@@ -101,7 +98,6 @@ server.startServer = async () => {
     await lowdb.ensureDatabase();
     await lowdb.prepareDatabase();
     await lowdb.refreshRecordingsDatabase();
-    lowdb.initTokensDatabase();
 
     //start server
     server.listen(config.port);
@@ -117,11 +113,8 @@ server.startServer = async () => {
 
 server.stopServer = async () => {
   ClearTimer.stop();
+  Prebuffer.stop(true);
   Streams.stopStreams();
-
-  if (config.prebuffering.active) {
-    Prebuffer.stop(true);
-  }
 
   if (config.http) {
     HttpService.stop();

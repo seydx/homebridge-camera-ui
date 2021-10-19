@@ -13,27 +13,30 @@ const moment = require('moment');
 const config = new Config();
 const prebuffer = {};
 
+const videoDuration = 15000;
+
 class PreBuffer {
   init() {
     for (const camera of config.cameras) {
-      prebuffer[camera.name] = {
-        ffmpegInput: camera.videoConfig.source,
-        cameraName: camera.name,
-        ffmpegPath: config.options.videoProcessor,
-        videoDuration: config.prebuffering.videoDuration,
-        time: Date.now(),
-        date: moment().format(),
-        prebufferFmp4: [],
-        events: new EventEmitter(),
-        released: false,
-        idrInterval: 0,
-        prevIdr: 0,
-        ftyp: null,
-        moov: null,
-        killed: false,
-        prebufferSession: null,
-        debug: camera.videoConfig.debug,
-      };
+      if (camera.prebuffering) {
+        prebuffer[camera.name] = {
+          ffmpegInput: camera.videoConfig.source,
+          cameraName: camera.name,
+          ffmpegPath: config.options.videoProcessor,
+          time: Date.now(),
+          date: moment().format(),
+          prebufferFmp4: [],
+          events: new EventEmitter(),
+          released: false,
+          idrInterval: 0,
+          prevIdr: 0,
+          ftyp: null,
+          moov: null,
+          killed: false,
+          prebufferSession: null,
+          debug: camera.videoConfig.debug,
+        };
+      }
     }
 
     this.start();
@@ -47,8 +50,6 @@ class PreBuffer {
 
   async startCamera(cameraName) {
     if (prebuffer[cameraName]) {
-      logger.debug('Starting camera prebuffering', cameraName, '[Prebuffer]');
-
       try {
         prebuffer[cameraName].prebufferSession = await this.startPreBufferSessions(cameraName);
       } catch (error) {
@@ -72,7 +73,7 @@ class PreBuffer {
     if (prebuffer[cameraName]) {
       setTimeout(() => {
         this.stopCamera(cameraName);
-        this.start(cameraName);
+        this.startCamera(cameraName);
       }, 10000);
     } else {
       logger.warn('Can not RESTART prebuffering session, camera not found!', cameraName, '[Prebuffer]');
@@ -117,7 +118,7 @@ class PreBuffer {
       return prebuffer[cameraName].prebufferSession;
     }
 
-    logger.debug('Starting Prebuffer server', cameraName, '[Prebuffer]');
+    logger.debug('Start prebuffering...', cameraName, '[Prebuffer]');
 
     //const acodec = ['-acodec', 'copy'];
     const vcodec = ['-vcodec', 'copy'];
@@ -157,7 +158,7 @@ class PreBuffer {
 
           while (
             cameraOptions.prebufferFmp4.length > 0 &&
-            cameraOptions.prebufferFmp4[0].time < now - cameraOptions.videoDuration - 100
+            cameraOptions.prebufferFmp4[0].time < now - videoDuration - 100
           ) {
             cameraOptions.prebufferFmp4.shift();
           }

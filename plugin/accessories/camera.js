@@ -19,7 +19,13 @@ class Camera {
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
     this.videoConfig = accessory.context.config.videoConfig;
-    this.recording = this.videoConfig.hsv.active;
+    this.hsv = accessory.context.config.hsv;
+    this.prebuffering = accessory.context.config.prebuffering;
+
+    if (this.hsv && !this.unbridge) {
+      logger.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
+      this.hsv = false;
+    }
 
     this.services = [];
     this.streamControllers = [];
@@ -48,7 +54,7 @@ class Camera {
       recordingCodecs.push(entry);
     }
 
-    if (this.recording) {
+    if (this.hsv) {
       logger.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
 
       this.recordingDelegate = new RecordingDelegate(
@@ -56,7 +62,8 @@ class Camera {
         this.videoConfig,
         this.api,
         this.hap,
-        this.videoProcessor
+        this.videoProcessor,
+        this.prebuffering
       );
     }
 
@@ -96,15 +103,15 @@ class Camera {
           ],
         },
       },
-      recording: this.recording
+      recording: this.hsv
         ? {
             options: {
-              prebufferLength: this.videoConfig.prebuffering.prebufferLength,
+              prebufferLength: 4000,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {
                   type: 0,
-                  fragmentLength: this.videoConfig.hsv.fragmentLength,
+                  fragmentLength: 4000,
                 },
               ],
               video: {

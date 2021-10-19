@@ -33,13 +33,6 @@
       "options": {
         "videoProcessor": "ffmpeg"
       },
-      "hsv": {
-        "active": true,
-        "prebuffering": true,
-        "videoDuration": 30,
-        "prebufferLength": 4000,
-        "fragmentLength": 4000
-      },
       "cameras": [
         {
           "name": "Sricam",
@@ -54,6 +47,8 @@
           "motionDoorbell": false,
           "excludeSwitch": true,
           "unbridge": true,
+          "hsv": true,
+          "prebuffering": true,
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.111.1/onvif1",
             "stillImageSource": "-i rtsp://192.168.111.11/onvif1",
@@ -81,6 +76,8 @@
           "switches": false,
           "motionTimeout": 1,
           "unbridge": true,
+          "hsv": false,
+          "prebuffering": true,
           "excludeSwitch": false,
           "videoConfig": {
             "source": "-rtsp_transport tcp -i rtsp://192.168.111.22/ch0_0.h264",
