@@ -96,7 +96,7 @@ class PluginHandler {
         }
 
         if (cameraConfig.motionDoorbell) {
-          this.doorbellHandler(accessory, true, true);
+          this.doorbellHandler(accessory, true, false, true);
         }
 
         let timeoutConfig = !Number.isNaN(Number.parseInt(cameraConfig.motionTimeout)) ? cameraConfig.motionTimeout : 1;
@@ -129,7 +129,7 @@ class PluginHandler {
         }
 
         if (cameraConfig.motionDoorbell) {
-          this.doorbellHandler(accessory, false, true);
+          this.doorbellHandler(accessory, false, false, true);
         }
 
         return {
@@ -145,7 +145,7 @@ class PluginHandler {
     }
   }
 
-  doorbellHandler(accessory, active, fromMotion, manual) {
+  doorbellHandler(accessory, active, manual, fromMotion) {
     const doorbell = accessory.getService(HOMEBRIDGE.hap.Service.Doorbell);
 
     if (doorbell) {

@@ -39,7 +39,6 @@ class Mqtt {
         message = message.toString();
 
         let name = cameraMqttConfig.camera;
-
         let target = cameraMqttConfig.motion ? 'motion' : 'doorbell';
 
         let active =
@@ -60,7 +59,7 @@ class Mqtt {
 
           pluginHandler.handle(target, name, active);
 
-          if (!camera || (camera && !camera.hsv)) {
+          if (active && (!camera || (camera && !camera.hsv))) {
             uiHandler.handle(target, name, active);
           }
         } else {

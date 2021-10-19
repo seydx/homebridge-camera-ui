@@ -79,15 +79,15 @@ exports.findById = async (id) => {
 
 exports.createRecording = async (data, hsv) => {
   const Cameras = await database_cams();
-  const Settings = await database_settings();
-  const cameraSettings = await Settings.get('cameras').value();
-  const recordingsSettings = await Settings.get('recordings').value();
-
   const camera = await Cameras.find({ name: data.camera }).value();
 
   if (!camera) {
     throw new Error('Can not assign recording to camera!');
   }
+
+  const Settings = await database_settings();
+  const cameraSettings = await Settings.get('cameras').value();
+  const recordingsSettings = await Settings.get('recordings').value();
 
   camera.settings = cameraSettings.find((cameraSetting) => cameraSetting && cameraSetting.name === camera.name);
 
@@ -145,8 +145,7 @@ exports.createRecording = async (data, hsv) => {
           data.type === 'Video',
           data.path,
           label,
-          true, //store
-          camera.settings.pingTimeout
+          true //store
         ));
 
     if (data.type === 'Video') {
@@ -174,15 +173,7 @@ exports.createRecording = async (data, hsv) => {
 
         await ffmpeg.storeVideoBuffer(cameraName, fileName, data.path, filebuffer);
       } else {
-        await ffmpeg.storeVideo(
-          cameraName,
-          camera.videoConfig,
-          fileName,
-          data.path,
-          data.timer,
-          label,
-          camera.settings.pingTimeout
-        );
+        await ffmpeg.storeVideo(cameraName, camera.videoConfig, fileName, data.path, data.timer, label);
       }
     }
   }

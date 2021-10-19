@@ -2,7 +2,7 @@
 
 const Config = require('../../services/config/config.start');
 
-const child_process = require('child_process');
+const { spawn } = require('child_process');
 const logger = require('../../services/logger/logger.service');
 const lowdb = require('./lowdb.service');
 const readline = require('readline');
@@ -45,8 +45,9 @@ class Streams {
           '-an': '',
           '-preset:v': 'ultrafast',
           '-threads': '1',
-          '-loglevel': camera.videoConfig.debug ? 'verbose' : 'warning',
+          '-loglevel': 'error',
         },
+        debug: camera.videoConfig.debug,
       };
 
       if (audio) {
@@ -108,12 +109,16 @@ class Streams {
             '[Streams]'
           );
 
-          streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
+          streams[cameraName].stream = spawn(streams[cameraName].ffmpegPath, spawnOptions, {
             env: process.env,
           });
 
           streams[cameraName].stream.stdout.on('data', (data) => {
             this.io.to(`stream/${cameraName}`).emit(cameraName, data);
+
+            if (streams[cameraName].debug) {
+              logger.debug(data.toString(), cameraName, true);
+            }
           });
 
           const stderr = readline.createInterface({
@@ -125,7 +130,9 @@ class Streams {
             if (/\[(panic|fatal|error)]/.test(line)) {
               logger.error(line, cameraName, '[Streams]');
             } else {
-              logger.debug(line, cameraName, '[Streams]');
+              if (streams[cameraName].debug) {
+                logger.debug(line, cameraName, true);
+              }
             }
           });
 

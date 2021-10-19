@@ -384,8 +384,8 @@ class MotionHandler {
     return await RecordingsModel.createRecording(motionInfo, hsv);
   }
 
-  async handleSnapshot(cameraName, videoConfig, timeout) {
-    return await CamerasModel.requestSnapshot(cameraName, videoConfig, timeout);
+  async handleSnapshot(cameraName, videoConfig) {
+    return await CamerasModel.requestSnapshot(cameraName, videoConfig);
   }
 
   async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, hsv) {
@@ -396,7 +396,7 @@ class MotionHandler {
         telegramSettings.chatID &&
         telegramSettings.type !== 'Disabled'
       ) {
-        const telegramBot = await telegram.start({ token: telegramSettings.token });
+        await telegram.start({ token: telegramSettings.token });
 
         if (telegramSettings.message) {
           telegramSettings.message = telegramSettings.message.includes('@')
@@ -408,7 +408,7 @@ class MotionHandler {
           case 'Text': {
             //Message
             if (telegramSettings.message) {
-              await telegram.send(telegramBot, telegramSettings.chatID, {
+              await telegram.send(telegramSettings.chatID, {
                 message: telegramSettings.message,
               });
             } else {
@@ -437,7 +437,7 @@ class MotionHandler {
                 content.img = `${recordingSettings.path}/${fileName}`;
               }
 
-              await telegram.send(telegramBot, telegramSettings.chatID, content);
+              await telegram.send(telegramSettings.chatID, content);
             } else {
               logger.debug(
                 'Can not send telegram notification (snapshot). Recording not active or malformed image buffer!',
@@ -456,7 +456,7 @@ class MotionHandler {
 
               content.video = hsv ? hsv : `${recordingSettings.path}/${notification.fileName}`;
 
-              await telegram.send(telegramBot, telegramSettings.chatID, content);
+              await telegram.send(telegramSettings.chatID, content);
             }
 
             break;
@@ -464,7 +464,7 @@ class MotionHandler {
           // No default
         }
 
-        await telegram.stop(telegramBot);
+        //await telegram.stop();
       } else {
         logger.debug('Skip Telegram notification', cameraName, true);
 

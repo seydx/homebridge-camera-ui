@@ -186,7 +186,11 @@ class PreBuffer {
     const arguments_ = [];
     arguments_.push(...cameraOptions.ffmpegInput.split(' '), ...ffmpegOutput);
 
-    logger.debug(cameraOptions.ffmpegPath + ' ' + arguments_.join(' '), cameraName, '[Prebuffer]');
+    logger.debug(
+      `Prebuffering command: ${cameraOptions.ffmpegPath} ${arguments_.join(' ')}`,
+      cameraName,
+      '[Prebuffer]'
+    );
 
     let stdioValue = cameraOptions.debug ? 'pipe' : 'ignore';
     let cp = spawn(cameraOptions.ffmpegPath, arguments_, { env: process.env, stdio: stdioValue });

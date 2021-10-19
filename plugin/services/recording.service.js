@@ -18,7 +18,7 @@ class RecordingDelegate {
   }
 
   async *handleFragmentsRequests(configuration) {
-    logger.debug('Video fragments requested', this.cameraName);
+    logger.debug('Video fragments requested from HSV', this.cameraName);
 
     const iframeIntervalSeconds = 4;
 

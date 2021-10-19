@@ -135,11 +135,7 @@ exports.getSnapshotByName = async (req, res) => {
       });
     }
 
-    const imageBuffer = await CamerasModel.requestSnapshot(
-      req.params.name,
-      camera.videoConfig,
-      camera.settings.pingTimeout
-    );
+    const imageBuffer = await CamerasModel.requestSnapshot(req.params.name, camera.videoConfig);
 
     if (req.query.buffer) {
       res.status(200).send(imageBuffer.toString('base64'));

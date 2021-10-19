@@ -15,6 +15,7 @@
   - Changed `removeAfter` duration for notifications/recordings
   - The quality of the streams was increased (`-q 1`)
   - Minor UI improvements
+  - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
 - Bump dependencies
 
 ## Bugfixes
@@ -23,7 +24,9 @@
 - Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
 - Fixed an issue where the restored socket.io connection (on mobile devices) did not restore the live stream on `Dashboard` and `Camview`.
 - Fixed an issue where camera streams that took a longer to start were stopped on homebridge-config-ui-x
-- Fixed tests
+- Fixed an issue where sending multiple telegram messages could cause an error
+- Fixed an issue where `resetting` the motion detection caused the interface to treat it as normal motion detection
+- Fixed test cases
 - Minor bugfixes
 
 # v4.2.10 - 2021-10-04
