@@ -89,6 +89,16 @@ class MotionHandler {
           if (!movementHandler[cameraName] || hsv) {
             movementHandler[cameraName] = true;
 
+            /*
+             * Order for recording/notification on movement/doorbell
+             *
+             * 1) If webhook enabled, send webhook notification
+             * 2) If telegram enabled and type = "Text" for the camera, send telegram notification
+             * 3) Handle recording (Snapshot/Video)
+             * 4) Send webpush (ui) notification
+             * 5) If telegram enabled and type = "Snapshot" or "Video" for the camera, send telegram notification
+             */
+
             logger.debug(`New ${trigger} alert`, cameraName, true);
 
             const motionInfo = await this.getMotionInfo(cameraName, trigger, recordingSettings);
@@ -100,14 +110,27 @@ class MotionHandler {
               motionInfo.label = 'HSV';
               motionInfo.type = 'Video';
 
-              await this.handleRecording(motionInfo, hsv);
-
               if (notificationsSettings.active) {
                 const notification = await this.handleNotification(motionInfo);
 
+                // 1)
                 await this.sendWebhook(cameraName, notification, webhookSettings);
+
+                // 2)
+                if (telegramSettings.type === 'Text') {
+                  await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
+                }
+
+                // 3)
+                await this.handleRecording(motionInfo, hsv);
+
+                // 4)
                 await this.sendWebpush(cameraName, notification, webpushSettings);
-                await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
+
+                // 5)
+                if (telegramSettings.type === 'Snapshot' || telegramSettings.type === 'Video') {
+                  await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
+                }
 
                 errorState = false;
                 errorMessage = 'Handled through HSV.';
@@ -149,20 +172,39 @@ class MotionHandler {
                 }
 
                 if (motionInfo.label || motionInfo.label === null) {
-                  await this.handleRecording(motionInfo);
-
                   if (notificationsSettings.active) {
                     const notification = await this.handleNotification(motionInfo);
 
+                    // 1)
                     await this.sendWebhook(cameraName, notification, webhookSettings);
+
+                    // 2)
+                    if (telegramSettings.type === 'Text') {
+                      await this.sendTelegram(
+                        cameraName,
+                        notification,
+                        recordingSettings,
+                        telegramSettings,
+                        motionInfo.imgBuffer
+                      );
+                    }
+
+                    // 3)
+                    await this.handleRecording(motionInfo);
+
+                    // 4)
                     await this.sendWebpush(cameraName, notification, webpushSettings);
-                    await this.sendTelegram(
-                      cameraName,
-                      notification,
-                      recordingSettings,
-                      telegramSettings,
-                      motionInfo.imgBuffer
-                    );
+
+                    // 5)
+                    if (telegramSettings.type === 'Snapshot' || telegramSettings.type === 'Video') {
+                      await this.sendTelegram(
+                        cameraName,
+                        notification,
+                        recordingSettings,
+                        telegramSettings,
+                        motionInfo.imgBuffer
+                      );
+                    }
 
                     if (recordingSettings.type === 'Video') {
                       errorState = false;
@@ -196,6 +238,7 @@ class MotionHandler {
             } else {
               // UI Recording & HSV not active, handle only notification
               if (notificationsSettings.active) {
+                /// No need to handle recording here
                 const notification = await this.handleNotification(motionInfo);
 
                 await this.sendWebhook(cameraName, notification, webhookSettings);
