@@ -52,7 +52,7 @@
           "motionTimeout": 1,
           "motionDoorbell": false,
           "unbridge": true,
-          "hsv": true,
+          "hsv": false,
           "prebuffering": true,
           "videoConfig": {
             "source": "-rtsp_transport udp -i rtsp://192.168.178.42/onvif1",
@@ -66,7 +66,7 @@
             "debug": false
           },
           "mqtt": {
-            "motionTopic": "sricam/motion",
+            "motionTopic": "sricam/testmotion",
             "motionMessage": "ON",
             "motionResetTopic": "sricam/motion",
             "motionResetMessage": "OFF"
@@ -84,7 +84,7 @@
           "switches": true,
           "motionTimeout": 1,
           "unbridge": true,
-          "hsv": true,
+          "hsv": false,
           "prebuffering": true,
           "videoConfig": {
             "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_1.h264",
@@ -99,34 +99,10 @@
             "debug": false
           },
           "mqtt": {
-            "motionTopic": "yicam_dome_keller/motion",
+            "motionTopic": "yicam_dome_keller/testmotion",
             "motionMessage": "ON",
             "motionResetTopic": "yicam_dome_keller/motion",
             "motionResetMessage": "OFF"
-          }
-        },
-        {
-          "name": "Test 3",
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.31/ch0_1.h264"
-          }
-        },
-        {
-          "name": "Test 4",
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.32/ch0_1.h264"
-          }
-        },
-        {
-          "name": "Test 5",
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.33/ch0_1.h264"
-          }
-        },
-        {
-          "name": "Test 6",
-          "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.178.34/ch0_1.h264"
           }
         }
       ],

@@ -82,6 +82,23 @@ class Lowdb {
         notifications: {
           active: false,
           removeAfter: 3,
+          alexa: {
+            active: false,
+            domain: '',
+            serialNr: '',
+            message: '',
+            auth: {
+              cookie: '',
+              macDms: {
+                device_private_key: '',
+                adp_token: '',
+              },
+            },
+            proxy: {
+              clientHost: '',
+              port: 9494,
+            },
+          },
           telegram: {
             active: false,
             token: '',
@@ -214,6 +231,14 @@ class Lowdb {
     const prebuffering = config.options.prebuffering;
 
     await Settings.set('hsv', { active: hsv }).set('prebuffering', { active: prebuffering }).write();
+
+    //v4.4 inject alexa
+    const Notifications = await database.get('settings').get('notifications');
+    const notifications = await Notifications.value();
+
+    if (!notifications.alexa) {
+      await Notifications.set('alexa', this.defaultDb.settings.notifications.alexa).write();
+    }
   }
 
   async resetDatabase() {

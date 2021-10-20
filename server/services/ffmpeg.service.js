@@ -70,7 +70,7 @@ class Ffmpeg {
         '-',
         '-s',
         `${width}x${height}`,
-        '-r',
+        '-frames:v',
         '1',
         '-f',
         'image2',
@@ -83,11 +83,11 @@ class Ffmpeg {
 
       if (videoConfig.debug) {
         ffmpeg.stdout.on('data', (data) => logger.debug(data.toString(), cameraName, true));
-        ffmpeg.stderr.on('data', (data) => logger.debug(data.toString(), cameraName, true));
       }
 
-      ffmpeg.on('error', (error) => reject(error));
+      ffmpeg.stderr.on('data', (data) => logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, true));
 
+      ffmpeg.on('error', (error) => reject(error));
       ffmpeg.on('close', () => {
         logger.debug(`Snapshot stored to: ${outputPath}`, cameraName, true);
         resolve();
@@ -95,7 +95,6 @@ class Ffmpeg {
 
       ffmpeg.stdin.write(videoBuffer);
       ffmpeg.stdin.destroy();
-      setTimeout(() => ffmpeg.stdin.destroy(), 1000);
     });
   }
 
@@ -133,12 +132,9 @@ class Ffmpeg {
         }
       });
 
-      if (videoConfig.debug) {
-        ffmpeg.stderr.on('data', (data) => logger.debug(data.toString(), cameraName, true));
-      }
+      ffmpeg.stderr.on('data', (data) => logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, true));
 
       ffmpeg.on('error', (error) => reject(error));
-
       ffmpeg.on('close', () => {
         if (!imageBuffer || (imageBuffer && imageBuffer.length <= 0)) {
           return reject(new Error('Image Buffer is empty!'));
@@ -184,11 +180,11 @@ class Ffmpeg {
 
       if (videoConfig.debug) {
         ffmpeg.stdout.on('data', (data) => logger.debug(data.toString(), cameraName, true));
-        ffmpeg.stderr.on('data', (data) => logger.debug(data.toString(), cameraName, true));
       }
 
-      ffmpeg.on('error', (error) => reject(error));
+      ffmpeg.stderr.on('data', (data) => logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, true));
 
+      ffmpeg.on('error', (error) => reject(error));
       ffmpeg.on('close', () => {
         logger.debug(`Video stored to: ${videoName}`);
         resolve();

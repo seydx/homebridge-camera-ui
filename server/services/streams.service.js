@@ -5,7 +5,6 @@ const Config = require('../../services/config/config.start');
 const { spawn } = require('child_process');
 const logger = require('../../services/logger/logger.service');
 const lowdb = require('./lowdb.service');
-const readline = require('readline');
 const sessions = require('../../services/sessions/sessions.service');
 
 const database = () => lowdb.database().then((database_) => database_.get('settings'));
@@ -121,20 +120,9 @@ class Streams {
             }
           });
 
-          const stderr = readline.createInterface({
-            input: streams[cameraName].stream.stderr,
-            terminal: false,
-          });
-
-          stderr.on('line', (line) => {
-            if (/\[(panic|fatal|error)]/.test(line)) {
-              logger.error(line, cameraName, '[Streams]');
-            } else {
-              if (streams[cameraName].debug) {
-                logger.debug(line, cameraName, true);
-              }
-            }
-          });
+          streams[cameraName].stream.stderr.on('data', (data) =>
+            logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, '[Streams]')
+          );
 
           streams[cameraName].stream.on('exit', (code, signal) => {
             if (code === 1) {

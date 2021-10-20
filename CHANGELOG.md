@@ -8,6 +8,8 @@
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
 - Prebuffering
   - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 10 seconds (HSV off, or 4 sec. if HSV is enabled) to see the event BEFORE the movement. If HSV is not enabled, it means that additional 10 (or 4) seconds will be added to the setted recording duration (e.g. 10sec + 10 sec). When HSV is enabled, the duration of the recording is completely determined by Apple Home.
+- Notifications
+  - Alexa: It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Adjustable in the interface settings.
 
 ## Other changes
 - Interface

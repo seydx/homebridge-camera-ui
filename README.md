@@ -23,7 +23,7 @@
 - **CamViews**: A resizable, drag & drop camera overview
 - **Motion Detection** with prebuffering
 - **Image Rekognition** with AWS
-- **Notifications** vie Telegram and Webhook
+- **Notifications** via Alexa, Telegram, Webhook and WebPush
 - **Record Snapshot/Video** on movement detection
 - **Prebuffering:** See the seconds before the movement event
 - **User interface** with 8 different color themes and darkmode

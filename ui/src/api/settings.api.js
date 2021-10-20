@@ -8,7 +8,7 @@ const changeSetting = async (target, targetData, parameters) =>
 
 const getSettings = async () => await api.get(resource);
 
-const getSetting = async (target) => await api.get(`${resource}/${target}`);
+const getSetting = async (target, parameters) => await api.get(`${resource}/${target}${parameters ? parameters : ''}`);
 
 const resetSettings = async () => await api.put(`${resource}/${reset_resource}`);
 

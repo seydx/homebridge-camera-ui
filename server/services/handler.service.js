@@ -8,6 +8,7 @@ const { RekognitionClient, DetectLabelsCommand } = require('@aws-sdk/client-reko
 const URL = require('url').URL;
 const webpush = require('web-push');
 
+const alexa = require('./alexa.service');
 const logger = require('../../services/logger/logger.service');
 const sessions = require('../../services/sessions/sessions.service');
 const telegram = require('./telegram.service');
@@ -66,6 +67,15 @@ class MotionHandler {
           type: SettingsDB.recordings.type,
         };
 
+        const alexaSettings = {
+          active: SettingsDB.notifications.alexa.active,
+          domain: SettingsDB.notifications.alexa.domain,
+          serialNr: SettingsDB.notifications.alexa.serialNr,
+          auth: SettingsDB.notifications.alexa.auth,
+          proxy: SettingsDB.notifications.alexa.proxy,
+          message: SettingsDB.notifications.alexa.message,
+        };
+
         const telegramSettings = {
           active: SettingsDB.notifications.telegram.active,
           token: SettingsDB.notifications.telegram.token,
@@ -90,13 +100,14 @@ class MotionHandler {
             movementHandler[cameraName] = true;
 
             /*
-             * Order for recording/notification on movement/doorbell
+             * Order for new movement event
              *
              * 1) If webhook enabled, send webhook notification
-             * 2) If telegram enabled and type = "Text" for the camera, send telegram notification
-             * 3) Handle recording (Snapshot/Video)
-             * 4) Send webpush (ui) notification
-             * 5) If telegram enabled and type = "Snapshot" or "Video" for the camera, send telegram notification
+             * 2) If alexa enabled, send notification to alexa
+             * 3) If telegram enabled and type = "Text" for the camera, send telegram notification
+             * 4) Handle recording (Snapshot/Video)
+             * 5) Send webpush (ui) notification
+             * 6) If telegram enabled and type = "Snapshot" or "Video" for the camera, send telegram notification
              */
 
             logger.debug(`New ${trigger} alert`, cameraName, true);
@@ -117,17 +128,20 @@ class MotionHandler {
                 await this.sendWebhook(cameraName, notification, webhookSettings);
 
                 // 2)
+                await this.sendAlexa(cameraName, notification, alexaSettings);
+
+                // 3)
                 if (telegramSettings.type === 'Text') {
                   await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
                 }
 
-                // 3)
+                // 4)
                 await this.handleRecording(motionInfo, hsv);
 
-                // 4)
+                // 5)
                 await this.sendWebpush(cameraName, notification, webpushSettings);
 
-                // 5)
+                // 6)
                 if (telegramSettings.type === 'Snapshot' || telegramSettings.type === 'Video') {
                   await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings, false, hsv);
                 }
@@ -179,6 +193,9 @@ class MotionHandler {
                     await this.sendWebhook(cameraName, notification, webhookSettings);
 
                     // 2)
+                    await this.sendAlexa(cameraName, notification, alexaSettings);
+
+                    // 3)
                     if (telegramSettings.type === 'Text') {
                       await this.sendTelegram(
                         cameraName,
@@ -189,13 +206,13 @@ class MotionHandler {
                       );
                     }
 
-                    // 3)
+                    // 4)
                     await this.handleRecording(motionInfo);
 
-                    // 4)
+                    // 5)
                     await this.sendWebpush(cameraName, notification, webpushSettings);
 
-                    // 5)
+                    // 6)
                     if (telegramSettings.type === 'Snapshot' || telegramSettings.type === 'Video') {
                       await this.sendTelegram(
                         cameraName,
@@ -243,6 +260,7 @@ class MotionHandler {
 
                 await this.sendWebhook(cameraName, notification, webhookSettings);
                 await this.sendWebpush(cameraName, notification, webpushSettings);
+                await this.sendAlexa(cameraName, notification, alexaSettings);
                 await this.sendTelegram(cameraName, notification, recordingSettings, telegramSettings);
 
                 errorState = false;
@@ -386,6 +404,35 @@ class MotionHandler {
 
   async handleSnapshot(cameraName, videoConfig) {
     return await CamerasModel.requestSnapshot(cameraName, videoConfig);
+  }
+
+  async sendAlexa(cameraName, notification, alexaSettings) {
+    try {
+      if (
+        alexaSettings.active &&
+        alexaSettings.serialNr &&
+        alexaSettings.auth &&
+        alexaSettings.auth.cookie &&
+        alexaSettings.auth.macDms &&
+        alexaSettings.auth.macDms.device_private_key &&
+        alexaSettings.auth.macDms.adp_token
+      ) {
+        if (alexaSettings.message) {
+          alexaSettings.message = alexaSettings.message.includes('@')
+            ? alexaSettings.message.replace('@', cameraName)
+            : alexaSettings.message;
+        } else {
+          alexaSettings.message = `Attention! ${cameraName} has detected motion!`;
+        }
+
+        await alexa.send(alexaSettings);
+      } else {
+        logger.debug('Alexa not initialized, skip alexa notification', cameraName, true);
+      }
+    } catch (error) {
+      logger.error('An error occured during sending notification to alexa', cameraName, true);
+      logger.error(error);
+    }
   }
 
   async sendTelegram(cameraName, notification, recordingSettings, telegramSettings, imgBuffer, hsv) {

@@ -42,6 +42,84 @@
         id="notifications"
       )
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
+          b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.alexa.expand ? "180" : "-90"', @click="settingsLayout.notifications.alexa.expand = !settingsLayout.notifications.alexa.expand")
+          h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.alexa.expand = !settingsLayout.notifications.alexa.expand") {{ $t("alexa") }}
+          b-collapse(
+            v-model="settingsLayout.notifications.alexa.expand",
+            id="expandAlexa"
+          )
+            div.mt-2.mb-4
+              .settings-box.container
+                .row
+                  .col-7.d-flex.flex-wrap.align-content-center {{ $t("active") }}
+                  .col-5.d-flex.flex-wrap.align-content-center.justify-content-end
+                    toggle-button(
+                      v-model="notifications.alexa.active"
+                      color="var(--primary-color) !important",
+                      :height="30",
+                      :sync="true",
+                      :aria-expanded="notifications.alexa.active ? 'true' : 'false'"
+                      aria-controls="alexa"
+                    )
+                b-collapse(
+                  v-model="notifications.alexa.active",
+                  id="alexa"
+                )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("domain") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        placeholder="amazon.de",
+                        v-model="notifications.alexa.domain"
+                      )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("host") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        placeholder="192.168.188.111",
+                        v-model="notifications.alexa.proxy.clientHost"
+                      )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("port") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        placeholder=9494,
+                        tyoe="number",
+                        v-model="notifications.alexa.proxy.port"
+                      )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("serialNr") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        placeholder="G0XXXXXXXXXXXX",
+                        v-model="notifications.alexa.serialNr"
+                      )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("motion_message") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-form-input(
+                        type='text',
+                        :placeholder="$t('motion_message')",
+                        v-model="notifications.alexa.message"
+                      )
+                  hr.hr-underline(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
+                  .row(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
+                    .col-12
+                      span.reconnect {{ $t("reconnect") }}
+                      .d-block.float-right
+                        b-spinner.float-left.mt-3.mr-3.text-color-primary(type="grow" label="Loading..." small, v-if="loadingAlexa")
+                        a(:href="`http://${notifications.alexa.proxy.clientHost}:${notifications.alexa.proxy.port}`", @click.prevent="alexaReconnect" v-if="!loadingAlexa")
+                          img.d-block.alexaConnect(src="@/assets/img/alexa_connect.png", alt="Connect to Alexa")
+        .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
           b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.telegram.expand ? "180" : "-90"', @click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand")
           h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand") {{ $t("telegram") }}
           b-collapse(
@@ -163,12 +241,14 @@ export default {
         snapshotTimer: 10,
       },
       notifications: {
+        alexa: {},
         telegram: {},
         webhook: {},
       },
       recordings: {},
       notificationsTimer: null,
       loading: true,
+      loadingAlexa: false,
       removeAfterTimer: [1, 3, 6, 12, 24],
       settingsLayout: {},
       telegramTypes: ['Text', 'Snapshot', 'Video', 'Disabled'],
@@ -229,6 +309,33 @@ export default {
       this.$toast.error(err.message);
     }
   },
+  methods: {
+    async alexaReconnect() {
+      try {
+        this.loadingAlexa = true;
+
+        setTimeout(() => {
+          window.open(
+            `http://${this.notifications.alexa.proxy.clientHost}:${this.notifications.alexa.proxy.port}`,
+            '_blank'
+          );
+        }, 5000);
+
+        this.notifications.alexa.auth.cookie = false;
+        this.notifications.alexa.auth.macDms = false;
+
+        await changeSetting('notifications', this.notifications.alexa, '?reconnectAlexa=true');
+        const notifications = await getSetting('notifications');
+
+        this.notifications = notifications.data;
+
+        this.loadingAlexa = false;
+      } catch (err) {
+        this.loadingAlexa = false;
+        this.$toast.error(err.message);
+      }
+    },
+  },
 };
 </script>
 
@@ -241,5 +348,17 @@ export default {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+.alexaConnect {
+  width: 100px;
+  height: auto;
+  float: right;
+}
+
+.reconnect {
+  margin-top: 13px;
+  display: block;
+  float: left;
 }
 </style>

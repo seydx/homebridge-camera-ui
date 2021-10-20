@@ -271,13 +271,9 @@ class Camera {
         reject(`FFmpeg process creation failed: ${error.message}`);
       });
 
-      ffmpeg.stderr.on('data', (data) => {
-        for (const line of data.toString().split('\n')) {
-          if (line.length > 0) {
-            logger.error(line, `${this.accessory.displayName}] [Snapshot`);
-          }
-        }
-      });
+      ffmpeg.stderr.on('data', (data) =>
+        logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName)
+      );
 
       ffmpeg.on('close', () => {
         if (snapshotBuffer.length > 0) {

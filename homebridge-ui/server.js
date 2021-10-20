@@ -3,7 +3,6 @@ const { HomebridgePluginUiServer, RequestError } = require('@homebridge/plugin-u
 const child_process = require('child_process');
 const ffmpegPath = require('ffmpeg-for-homebridge');
 const fs = require('fs-extra');
-const readline = require('readline');
 
 let streams = {};
 
@@ -98,6 +97,8 @@ class UiServer extends HomebridgePluginUiServer {
         '-q',
         '1',
         '-hide_banner',
+        '-loglevel',
+        'error',
         '-max_muxing_queue_size',
         '1024',
         '-',
@@ -114,15 +115,8 @@ class UiServer extends HomebridgePluginUiServer {
         resolve();
       });
 
-      const stderr = readline.createInterface({
-        input: streams[cameraName].stream.stderr,
-        terminal: false,
-      });
-
-      stderr.on('line', (line) => {
-        if (/\[(panic|fatal|error)]/.test(line)) {
-          throw new RequestError(`${cameraName}: ${line}`);
-        }
+      streams[cameraName].stream.stderr.on('data', (data) => {
+        throw new RequestError(`${cameraName}: ${data}`);
       });
 
       streams[cameraName].stream.on('exit', (code, signal) => {

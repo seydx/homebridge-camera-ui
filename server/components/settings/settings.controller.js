@@ -3,6 +3,7 @@
 
 const SettingsModel = require('./settings.model');
 const Streams = require('../../services/streams.service');
+const Alexa = require('../../services/alexa.service');
 
 exports.show = async (req, res) => {
   try {
@@ -53,6 +54,11 @@ exports.patchTarget = async (req, res) => {
         statusCode: 404,
         message: 'Target not found',
       });
+    }
+
+    if (req.params.target === 'notifications' && req.query.reconnectAlexa === 'true') {
+      const response = await Alexa.start(req.body);
+      return res.status(204).send(response);
     }
 
     await SettingsModel.patchByTarget(req.params.target, req.body);
