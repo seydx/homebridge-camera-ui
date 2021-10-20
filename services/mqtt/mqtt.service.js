@@ -1,5 +1,12 @@
 'use-strict';
 
+/**
+ *
+ * @url https://github.com/Sunoo/homebridge-smtp-motion
+ * @author Sunoo
+ *
+ **/
+
 const mqtt = require('mqtt');
 
 const logger = require('../logger/logger.service');

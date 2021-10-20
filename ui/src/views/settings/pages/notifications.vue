@@ -6,10 +6,10 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel(['settings:cameras:edit', 'settings:notifications:edit'])")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.notifications ? "180" : "-90"', @click="expand.notifications = !expand.notifications")
-        h5.cursor-pointer.settings-box-top(@click="expand.notifications = !expand.notifications") {{ $t("notifications") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.notifications.expand ? "180" : "-90"', @click="settingsLayout.notifications.notifications.expand = !settingsLayout.notifications.notifications.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.notifications.expand = !settingsLayout.notifications.notifications.expand") {{ $t("notifications") }}
         b-collapse(
-          v-model="expand.notifications",
+          v-model="settingsLayout.notifications.notifications.expand",
           id="expandNotifications"
         )
           div.mt-2.mb-4
@@ -42,10 +42,10 @@
         id="notifications"
       )
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
-          b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.telegram ? "180" : "-90"', @click="expand.telegram = !expand.telegram")
-          h5.cursor-pointer.settings-box-top(@click="expand.telegram = !expand.telegram") {{ $t("telegram") }}
+          b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.telegram.expand ? "180" : "-90"', @click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand")
+          h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand") {{ $t("telegram") }}
           b-collapse(
-            v-model="expand.telegram",
+            v-model="settingsLayout.notifications.telegram.expand",
             id="expandTelegram"
           )
             div.mt-2.mb-4
@@ -104,10 +104,10 @@
                           )
                       hr.hr-underline
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
-          b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.webhook ? "180" : "-90"', @click="expand.webhook = !expand.webhook")
-          h5.cursor-pointer.settings-box-top(@click="expand.webhook = !expand.webhook") {{ $t("webhook") }}
+          b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.webhook.expand ? "180" : "-90"', @click="settingsLayout.notifications.webhook.expand = !settingsLayout.notifications.webhook.expand")
+          h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.webhook.expand = !settingsLayout.notifications.webhook.expand") {{ $t("webhook") }}
           b-collapse(
-            v-model="expand.webhook",
+            v-model="settingsLayout.notifications.webhook.expand",
             id="expandWebhook"
           )
             div.mt-2.mb-4
@@ -146,6 +146,7 @@ import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
+import localStorageMixin from '@/mixins/localstorage.mixin';
 
 export default {
   name: 'SettingsNotifications',
@@ -154,14 +155,10 @@ export default {
     BIconTriangleFill,
     ToggleButton,
   },
+  mixins: [localStorageMixin],
   data() {
     return {
       cameras: [],
-      expand: {
-        notifications: true,
-        telegram: true,
-        webhook: true,
-      },
       form: {
         snapshotTimer: 10,
       },
@@ -173,6 +170,7 @@ export default {
       notificationsTimer: null,
       loading: true,
       removeAfterTimer: [1, 3, 6, 12, 24],
+      settingsLayout: {},
       telegramTypes: ['Text', 'Snapshot', 'Video', 'Disabled'],
     };
   },

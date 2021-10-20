@@ -6,10 +6,10 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel(['settings:cameras:edit'])")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.aws ? "180" : "-90"', @click="expand.aws = !expand.aws")
-        h5.cursor-pointer.settings-box-top(@click="expand.aws = !expand.aws") {{ $t("aws") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.cameras.aws.expand ? "180" : "-90"', @click="settingsLayout.cameras.aws.expand = !settingsLayout.cameras.aws.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.cameras.aws.expand = !settingsLayout.cameras.aws.expand") {{ $t("aws") }}
         b-collapse(
-          v-model="expand.aws",
+          v-model="settingsLayout.cameras.aws.expand",
           id="expandAws"
         )
           div.mt-2.mb-4
@@ -88,10 +88,10 @@
                       style="background: var(--third-bg-color) !important"
                     )
       .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel('settings:cameras:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.cameras ? "180" : "-90"', @click="expand.cameras = !expand.cameras")
-        h5.cursor-pointer.settings-box-top(@click="expand.cameras = !expand.cameras") {{ $t("cameras") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.cameras.cameras.expand ? "180" : "-90"', @click="settingsLayout.cameras.cameras.expand = !settingsLayout.cameras.cameras.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.cameras.cameras.expand = !settingsLayout.cameras.cameras.expand") {{ $t("cameras") }}
         b-collapse(
-          v-model="expand.cameras",
+          v-model="settingsLayout.cameras.cameras.expand",
           id="expandCameras"
         )
           div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
@@ -172,6 +172,7 @@ import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
+import localStorageMixin from '@/mixins/localstorage.mixin';
 
 export default {
   name: 'SettingsCameras',
@@ -180,6 +181,7 @@ export default {
     BIconTriangleFill,
     ToggleButton,
   },
+  mixins: [localStorageMixin],
   data() {
     return {
       aws: {},
@@ -187,10 +189,6 @@ export default {
       cameras: [],
       camerasTimer: null,
       camerasResolutions: ['256x144', '426x240', '480x360', '640x480', '1280x720', '1920x1080'],
-      expand: {
-        aws: false,
-        cameras: true,
-      },
       form: {
         snapshotTimer: 10,
       },
@@ -201,6 +199,7 @@ export default {
       loading: true,
       hsv: null,
       prebuffering: null,
+      settingsLayout: {},
     };
   },
   watch: {

@@ -349,10 +349,16 @@ a.card:hover {
   background-color: var(--secondary-bg-hover-color);
 }
 
-.card-img,
-.card-img-right {
+.card-img {
   border-radius: 20px;
   border: 3px solid var(--trans-border-color);
+}
+
+.card-img-right {
+  border-radius: 30px;
+  border: 3px solid var(--trans-border-color);
+  width: 70px;
+  height: 70px;
 }
 
 .card-title {

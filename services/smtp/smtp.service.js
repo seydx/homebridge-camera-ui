@@ -1,5 +1,12 @@
 'use-strict';
 
+/**
+ *
+ * @url https://github.com/Sunoo/homebridge-smtp-motion
+ * @author Sunoo
+ *
+ **/
+
 const Bunyan = require('bunyan');
 const http = require('http');
 const EscapeRegExp = require('lodash.escaperegexp');

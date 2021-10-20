@@ -24,7 +24,9 @@ div(
       :data-stream-notification="camera.name"
       :class="fullscreen ? 'notOverlay-on' : ''"
       @click="index = 0"
-    ) {{ $t("last_notification") + ": " + camera.lastNotification.time }}
+    ) {{ $t("last_notification") + ": " }}
+      br 
+      span.notOverlayTime {{ camera.lastNotification.time }}
     router-link.nameOverlay.mt-save(
       v-if="nameOverlay",
       :class="fullscreen ? 'nameOverlay-on' : ''"
@@ -648,12 +650,16 @@ div >>> .card-img-top {
   transform: translateX(-50%);
   bottom: 20px;
   display: block;
-  background: rgb(0 0 0 / 30%);
+  background: rgb(0 0 0 / 40%);
   padding: 5px;
   border-radius: 5px;
   color: #ffffff;
   font-size: 10px;
   z-index: 1;
+}
+
+.notOverlayTime {
+  color: var(--fourht-bg-color) !important;
 }
 
 .notOverlay-on {

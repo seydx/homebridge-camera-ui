@@ -6,10 +6,10 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:recordings:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.recordings ? "180" : "-90"', @click="expand.recordings = !expand.recordings")
-        h5.cursor-pointer.settings-box-top(@click="expand.recordings = !expand.recordings") {{ $t("recordings") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.recordings.recordings.expand ? "180" : "-90"', @click="settingsLayout.recordings.recordings.expand = !settingsLayout.recordings.recordings.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.recordings.recordings.expand = !settingsLayout.recordings.recordings.expand") {{ $t("recordings") }}
         b-collapse(
-          v-model="expand.recordings",
+          v-model="settingsLayout.recordings.recordings.expand",
           id="expandRecordings"
         )
           div.mt-2.mb-4
@@ -71,6 +71,7 @@ import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
+import localStorageMixin from '@/mixins/localstorage.mixin';
 
 export default {
   name: 'SettingsRecordings',
@@ -79,11 +80,9 @@ export default {
     BIconTriangleFill,
     ToggleButton,
   },
+  mixins: [localStorageMixin],
   data() {
     return {
-      expand: {
-        recordings: true,
-      },
       hsv: null,
       prebuffering: null,
       recordings: {},
@@ -99,6 +98,7 @@ export default {
       ],
       recordingTypes: ['Snapshot', 'Video'],
       removeAfterTimer: [1, 3, 7, 14, 30],
+      settingsLayout: {},
     };
   },
   watch: {

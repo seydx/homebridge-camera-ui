@@ -127,6 +127,8 @@ export default {
   box-shadow: 0 0 2rem 0 rgb(136 152 170 / 18%);
   margin-bottom: 50px;
   border-bottom: 2px solid var(--third-bg-color);
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
 }
 
 .card-img,

@@ -6,10 +6,10 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:dashboard:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.dashboard ? "180" : "-90"', @click="expand.dashboard = !expand.dashboard")
-        h5.cursor-pointer.settings-box-top(@click="expand.dashboard = !expand.dashboard") {{ $t("dashboard") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.dashboard.dashboard.expand ? "180" : "-90"', @click="settingsLayout.dashboard.dashboard.expand = !settingsLayout.dashboard.dashboard.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.dashboard.dashboard.expand = !settingsLayout.dashboard.dashboard.expand") {{ $t("dashboard") }}
         b-collapse(
-          v-model="expand.dashboard",
+          v-model="settingsLayout.dashboard.dashboard.expand",
           id="expandDashboard"
         )
           div.mt-2.mb-4
@@ -22,17 +22,17 @@
                     :options="refreshTimer"
                   )
       .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="cameras.length && checkLevel(['settings:cameras:edit', 'settings:dashboard:edit'])")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.favourites ? "180" : "-90"', @click="expand.favourites = !expand.favourites")
-        h5.cursor-pointer.settings-box-top(@click="expand.favourites = !expand.favourites") {{ $t("favourites") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.dashboard.favourites.expand ? "180" : "-90"', @click="settingsLayout.dashboard.favourites.expand = !settingsLayout.dashboard.favourites.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.dashboard.favourites.expand = !settingsLayout.dashboard.favourites.expand") {{ $t("favourites") }}
         b-collapse(
-          v-model="expand.favourites",
+          v-model="settingsLayout.dashboard.favourites.expand",
           id="expandFavourites"
         )
           div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
-            b-icon.cursor-pointer.expandTriangleCamera(icon="triangle-fill", aria-hidden="true", :rotate='camera.expand ? "180" : "-90"', @click="camera.expand = !camera.expand")
-            .settings-box-header(@click="camera.expand = !camera.expand") {{ camera.name }}
+            b-icon.cursor-pointer.expandTriangleCamera(icon="triangle-fill", aria-hidden="true", :rotate='camera.dashboard.expand ? "180" : "-90"', @click="camera.dashboard.expand = !camera.dashboard.expand")
+            .settings-box-header(@click="camera.dashboard.expand = !camera.dashboard.expand") {{ camera.name }}
             b-collapse(
-              v-model="camera.expand"
+              v-model="camera.dashboard.expand"
             )
               .settings-box.container.no-radius-top
                 .row
@@ -61,6 +61,7 @@ import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
+import localStorageMixin from '@/mixins/localstorage.mixin';
 
 export default {
   name: 'SettingsDashboard',
@@ -69,17 +70,15 @@ export default {
     BIconTriangleFill,
     ToggleButton,
   },
+  mixins: [localStorageMixin],
   data() {
     return {
       cameras: [],
       dashboard: {},
       dashboardTimer: null,
-      expand: {
-        dashboard: true,
-        favourites: true,
-      },
       loading: true,
       refreshTimer: [10, 20, 30, 40, 50, 60],
+      settingsLayout: {},
     };
   },
   watch: {

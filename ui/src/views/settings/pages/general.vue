@@ -6,10 +6,10 @@
   transition-group(name="fade", mode="out-in", v-else)
     .d-flex.flex-wrap.justify-content-between(key="loaded")
       .col-12.z-index-1(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.general ? "180" : "-90"', @click="expand.general = !expand.general")
-        h5.cursor-pointer.settings-box-top(@click="expand.general = !expand.general") {{ $t("general") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.general.general.expand ? "180" : "-90"', @click="settingsLayout.general.general.expand = !settingsLayout.general.general.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.general.general.expand = !settingsLayout.general.general.expand") {{ $t("general") }}
         b-collapse(
-          v-model="expand.general",
+          v-model="settingsLayout.general.general.expand",
           id="expandGeneral"
         )
           div.mt-2.mb-4
@@ -40,10 +40,10 @@
                     template(slot="noOptions")
                       strong {{ $t("empty") }}
       .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000", v-if="!uiConfig || (uiConfig && uiConfig.theme === 'auto')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.themes ? "180" : "-90"', @click="expand.themes = !expand.themes")
-        h5.cursor-pointer.settings-box-top(@click="expand.themes = !expand.themes") {{ $t("themes") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.general.themes.expand ? "180" : "-90"', @click="settingsLayout.general.themes.expand = !settingsLayout.general.themes.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.general.themes.expand = !settingsLayout.general.themes.expand") {{ $t("themes") }}
         b-collapse(
-          v-model="expand.themes",
+          v-model="settingsLayout.general.themes.expand",
           id="expandThemes"
         )
           div.mt-2.mb-4
@@ -90,10 +90,10 @@
                   input#switch-gray.theme-switches.switch-gray(@input="switchTheme('gray')", type="radio", name="theme-group")
                   label.m-0(for="switch-gray")
       .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000" v-if="checkLevel('settings:general:edit')")
-        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.rooms ? "180" : "-90"', @click="expand.rooms = !expand.rooms")
-        h5.cursor-pointer.settings-box-top(@click="expand.rooms = !expand.rooms") {{ $t("rooms") }}
+        b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.general.rooms.expand ? "180" : "-90"', @click="settingsLayout.general.rooms.expand = !settingsLayout.general.rooms.expand")
+        h5.cursor-pointer.settings-box-top(@click="settingsLayout.general.rooms.expand = !settingsLayout.general.rooms.expand") {{ $t("rooms") }}
         b-collapse(
-          v-model="expand.rooms",
+          v-model="settingsLayout.general.rooms.expand",
           id="expandRooms"
         )
           div.mt-2.mb-4
@@ -128,6 +128,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
+import localStorageMixin from '@/mixins/localstorage.mixin';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -141,16 +142,12 @@ export default {
     Multiselect,
     ToggleButton,
   },
+  mixins: [localStorageMixin],
   data() {
     return {
       autoDarkmode: false,
       cameras: [],
       darkmode: false,
-      expand: {
-        general: true,
-        themes: true,
-        rooms: true,
-      },
       form: {
         newRoom: '',
       },
@@ -160,6 +157,7 @@ export default {
       },
       generalTimer: null,
       loading: true,
+      settingsLayout: {},
       supportMatchMedia: false,
     };
   },

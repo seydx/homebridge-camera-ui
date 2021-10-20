@@ -1,5 +1,12 @@
 'use-strict';
 
+/**
+ *
+ * @url https://github.com/Sunoo/homebridge-smtp-motion
+ * @author Sunoo
+ *
+ **/
+
 const http = require('http');
 const url = require('url');
 
