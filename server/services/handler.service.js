@@ -74,6 +74,8 @@ class MotionHandler {
           auth: SettingsDB.notifications.alexa.auth,
           proxy: SettingsDB.notifications.alexa.proxy,
           message: SettingsDB.notifications.alexa.message,
+          startTime: SettingsDB.notifications.alexa.startTime,
+          endTime: SettingsDB.notifications.alexa.endTime,
         };
 
         const telegramSettings = {
@@ -423,6 +425,23 @@ class MotionHandler {
             : alexaSettings.message;
         } else {
           alexaSettings.message = `Attention! ${cameraName} has detected motion!`;
+        }
+
+        if (alexaSettings.startTime && alexaSettings.endTime) {
+          const format = 'HH:mm';
+          const now = moment();
+          const startTime = moment(alexaSettings.startTime, format);
+          const endTime = moment(alexaSettings.endTime, format);
+
+          if (!now.isBetween(startTime, endTime)) {
+            logger.debug(
+              `Start/end time has been entered (${alexaSettings.startTime} - ${alexaSettings.endTime}). Current time is not in between, skip alexa notification`,
+              cameraName,
+              true
+            );
+
+            return;
+          }
         }
 
         await alexa.send(alexaSettings);

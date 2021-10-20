@@ -137,6 +137,8 @@
     "signout_after": "Sign out after",
     "snapshot": "Snapshot",
     "snapshot_timer": "Snapshot Timer",
+    "speaker_start_time": "Speaker start time",
+    "speaker_end_time": "Speaker end time",
     "standard": "Standard",
     "status": "State",
     "successfully_changed": "Successfully changed",

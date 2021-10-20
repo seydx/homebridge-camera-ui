@@ -21,6 +21,8 @@ import {
   FormInputPlugin,
   FormPlugin,
   FormSelectPlugin,
+  FormTimepickerPlugin,
+  InputGroupPlugin,
   LinkPlugin,
   ModalPlugin,
   OverlayPlugin,
@@ -49,6 +51,8 @@ Vue.use(FormFilePlugin);
 Vue.use(FormInputPlugin);
 Vue.use(FormPlugin);
 Vue.use(FormSelectPlugin);
+Vue.use(FormTimepickerPlugin);
+Vue.use(InputGroupPlugin);
 Vue.use(LinkPlugin);
 Vue.use(ModalPlugin);
 Vue.use(OverlayPlugin);

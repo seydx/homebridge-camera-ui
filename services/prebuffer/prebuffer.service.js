@@ -156,10 +156,7 @@ class PreBuffer {
             });
           }
 
-          while (
-            cameraOptions.prebufferFmp4.length > 0 &&
-            cameraOptions.prebufferFmp4[0].time < now - videoDuration - 100
-          ) {
+          while (cameraOptions.prebufferFmp4.length > 0 && cameraOptions.prebufferFmp4[0].time < now - videoDuration) {
             cameraOptions.prebufferFmp4.shift();
           }
 

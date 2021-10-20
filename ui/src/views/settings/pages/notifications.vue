@@ -111,6 +111,46 @@
                         :placeholder="$t('motion_message')",
                         v-model="notifications.alexa.message"
                       )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("speaker_start_time") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-input-group
+                        b-form-input(
+                          id="speakerStartTime"
+                          v-model="notifications.alexa.startTime"
+                          type="text"
+                          placeholder="HH:mm"
+                        )
+                        b-input-group-append
+                          b-form-timepicker(
+                            v-model="notifications.alexa.startTime"
+                            button-only
+                            no-close-button
+                            right
+                            aria-controls="speakerStartTime"
+                            class="timePicker"
+                          )
+                  hr.hr-underline(v-if="notifications.alexa.active")
+                  .row(v-if="notifications.alexa.active")
+                    .col-12.d-flex.flex-wrap.align-content-center {{ $t("speaker_end_time") }}
+                    .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
+                      b-input-group
+                        b-form-input(
+                          id="speakerEndTime"
+                          v-model="notifications.alexa.endTime"
+                          type="text"
+                          placeholder="HH:mm"
+                        )
+                        b-input-group-append
+                          b-form-timepicker(
+                            v-model="notifications.alexa.endTime"
+                            button-only
+                            no-close-button
+                            right
+                            aria-controls="speakerEndTime"
+                            class="timePicker"
+                          )
                   hr.hr-underline(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
                   .row(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
                     .col-12
@@ -275,6 +315,17 @@ export default {
             this.notificationsTimer = null;
           }
 
+          const startTime = this.notifications.alexa.startTime || '00:00:00';
+          const endTime = this.notifications.alexa.endTime || '23:59:00';
+
+          if (startTime.split(':').length > 2) {
+            this.notifications.alexa.startTime = startTime.split(':').slice(0, -1).join(':');
+          }
+
+          if (endTime.split(':').length > 2) {
+            this.notifications.alexa.endTime = endTime.split(':').slice(0, -1).join(':');
+          }
+
           this.notificationsTimer = setTimeout(async () => {
             try {
               await changeSetting('notifications', newValue);
@@ -360,5 +411,32 @@ export default {
   margin-top: 13px;
   display: block;
   float: left;
+}
+
+.timePicker >>> .dropdown-menu {
+  background: var(--secondary-bg-hover-color);
+  border: 1px solid var(--third-bg-color);
+  -webkit-box-shadow: 0px 0px 7px -2px rgb(0 0 0 / 50%);
+  box-shadow: 0px 0px 7px -4px rgb(0 0 0 / 50%);
+}
+
+.timePicker >>> button {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+.timePicker >>> .bi-chevron-up,
+.timePicker >>> .bi-circle-fill {
+  color: var(--primary-font-color) !important;
+}
+
+.timePicker >>> .form-control.focus {
+  border-color: var(--trans-bg-color-3);
+  box-shadow: 0 0 0 0.2rem var(--trans-bg-color-3);
+}
+
+.timePicker >>> .btn-secondary {
+  background-color: var(--third-bg-color);
+  color: var(--font-primary-color);
 }
 </style>

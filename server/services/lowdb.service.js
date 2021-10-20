@@ -87,6 +87,8 @@ class Lowdb {
             domain: '',
             serialNr: '',
             message: '',
+            startTime: '00:00',
+            endTime: '23:59',
             auth: {
               cookie: '',
               macDms: {

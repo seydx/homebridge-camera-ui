@@ -186,7 +186,7 @@ class Ffmpeg {
 
       ffmpeg.on('error', (error) => reject(error));
       ffmpeg.on('close', () => {
-        logger.debug(`Video stored to: ${videoName}`);
+        logger.debug(`Video stored to: ${videoName}`, cameraName, true);
         resolve();
       });
     });

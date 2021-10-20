@@ -138,6 +138,8 @@
     "signout_after": "Ausloggen nach",
     "snapshot": "Bild",
     "snapshot_timer": "Snapshot Timer",
+    "speaker_start_time": "Lautsprecheraussage von",
+    "speaker_end_time": "Lautsprecheraussage bis",
     "standard": "Standard",
     "status": "Status",
     "successfully_changed": "Erfolgreich geändert",
