@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "4.3.0-beta.69",
+  "version": "4.3.0-beta.70",
   "description": "User Interface for RTSP capable cameras with HSV support.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {

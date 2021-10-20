@@ -63,7 +63,7 @@ class Ffmpeg {
 
       let ffmpegArguments = [
         '-loglevel',
-        'verbose',
+        'error',
         '-re',
         '-y',
         '-i',
@@ -72,9 +72,10 @@ class Ffmpeg {
         `${width}x${height}`,
         '-r',
         '1',
+        '-f',
         'image2',
         outputPath,
-      ].flat();
+      ];
 
       logger.debug(`Snapshot command: ${videoProcessor} ${ffmpegArguments.join(' ')}`, cameraName, true);
 
@@ -85,27 +86,16 @@ class Ffmpeg {
         ffmpeg.stderr.on('data', (data) => logger.debug(data.toString(), cameraName, true));
       }
 
-      ffmpeg.stdout.on('data', (data) => console.log(data.toString()));
-      ffmpeg.stderr.on('data', (data) => console.log(data.toString()));
-
-      ffmpeg.on('error', (error) => {
-        logger.debug('ERROR', cameraName, true);
-        reject(error);
-      });
+      ffmpeg.on('error', (error) => reject(error));
 
       ffmpeg.on('close', () => {
-        logger.debug(`CLOSE - Snapshot stored to: ${outputPath}`, cameraName, true);
+        logger.debug(`Snapshot stored to: ${outputPath}`, cameraName, true);
         resolve();
-      });
-
-      ffmpeg.on('exit', () => {
-        logger.debug(`EXIT - Snapshot stored to: ${outputPath}`, cameraName, true);
-        //resolve();
       });
 
       ffmpeg.stdin.write(videoBuffer);
       ffmpeg.stdin.destroy();
-      //setTimeout(() => ffmpeg.stdin.destroy(), 1000);
+      setTimeout(() => ffmpeg.stdin.destroy(), 1000);
     });
   }
 
