@@ -54,7 +54,8 @@ class ConfigSetup {
           ? config.plugin.options.videoProcessor
           : ffmpegPath || 'ffmpeg',
       //required for UI
-      hsv: hsvCameras.size > 1 || hsvCameras.has(false) ? false : true,
+      //0 = no cameras; 1 = all cameras; 2 = some cameras
+      hsv: hsvCameras.size > 1 ? 2 : hsvCameras.has(true) ? 1 : 0,
       prebuffering: pbCameras.size > 1 ? 2 : pbCameras.has(true) ? 1 : 0,
     };
 

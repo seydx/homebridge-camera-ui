@@ -29,25 +29,25 @@
                 v-model="recordings.active",
                 id="recordings"
               )
-                hr(v-if="!recordings.hsv")
-                .row(v-if="!recordings.hsv")
+                hr.hr-underline(v-if="hsv === 0 || hsv > 1")
+                .row(v-if="hsv === 0 || hsv > 1")
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_type") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="recordings.type"
                       :options="recordingTypes",
-                      :disabled="recordings.hsv"
+                      :disabled="hsv === 1"
                     )
-                hr(v-if="!recordings.hsv")
-                .row(v-if="!recordings.hsv")
+                hr.hr-underline(v-if="hsv === 0 || hsv > 1")
+                .row(v-if="hsv === 0 || hsv > 1")
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("recording_time") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
                     b-form-select(
                       v-model="recordings.timer"
                       :options="recordingTimer",
-                      :disabled="recordings.hsv"
+                      :disabled="hsv === 1"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("save_as") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -56,7 +56,7 @@
                       :placeholder="$t('save_as')",
                       v-model="recordings.path"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_d") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -84,6 +84,8 @@ export default {
       expand: {
         recordings: true,
       },
+      hsv: null,
+      prebuffering: null,
       recordings: {},
       recordingsTimer: null,
       loading: true,
@@ -125,18 +127,25 @@ export default {
       if (this.checkLevel('settings:recordings:access')) {
         const recordings = await getSetting('recordings');
         this.recordings = recordings.data;
+
+        const hsv = await getSetting('hsv');
+        const prebuffering = await getSetting('prebuffering');
+
+        this.hsv = hsv.data.active;
+        this.prebuffering = prebuffering.data.active;
       }
 
-      if (this.recordings.prebuffering > 0) {
+      if (this.prebuffering > 0) {
         this.recordingTimer.forEach((timer) => {
           timer.text += ` (+10s ${
-            this.recordings.prebuffering === 1 ? this.$t('prebuffering') : this.$t('prebuffering_if_enabled')
+            this.prebuffering === 1 ? this.$t('prebuffering') : this.$t('prebuffering_if_enabled')
           })`;
         });
       }
 
       this.loading = false;
     } catch (err) {
+      console.log(err.data);
       this.$toast.error(err.message);
     }
   },

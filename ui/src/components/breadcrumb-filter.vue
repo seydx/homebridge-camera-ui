@@ -428,10 +428,11 @@ div >>> .multiselect__option--selected {
 
 div >>> .multiselect__tags {
   font-size: 12px !important;
-  min-height: 30px !important;
-  padding: 5px !important;
+  min-height: 33px !important;
+  padding: 3px 5px !important;
   color: var(--primary-font-color) !important;
   text-align: center;
+  line-height: 2;
 }
 
 div >>> .multiselect__option {
@@ -504,7 +505,11 @@ div >>> .all-btn {
   display: none;
 }
 
-@media (max-width: 333px) {
+div >>> .vc-container.vc-is-dark {
+  border-color: var(--third-bg-color) !important;
+}
+
+/*@media (max-width: 333px) {
   div >>> .multiselect {
     font-size: 10px !important;
   }
@@ -512,7 +517,7 @@ div >>> .all-btn {
   div >>> .multiselect__tags {
     font-size: 10px !important;
   }
-}
+}*/
 
 @media (min-width: 480px) {
   .filter-text {

@@ -7,7 +7,7 @@ div
       b-spinner.text-color-primary
     .container.pt-3.toggleArea(v-else)
       draggable(v-model='cameras', ghost-class="ghost-box", @change="storeLayout", animation=200, delay="200" delay-on-touch-only="true")
-        transition-group(type="transition", class="row")
+        transition-group(type="transition", class="row justify-content-center")
           .col-lg-4.col-md-6.col-12.my-1.toggleArea(v-for="(camera, i) in cameras", :key="camera.name")
             VideoCard(
               :ref="camera.name"

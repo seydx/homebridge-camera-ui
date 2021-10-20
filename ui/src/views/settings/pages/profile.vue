@@ -20,7 +20,7 @@
           h3.lh-1.font-weight-bold {{ $t("backup") }}
           .w-100
           span.lh-1.text-muted-2.fs-6 {{ $t("backup_and_restore") }}
-          hr.mb-4
+          hr.hr-underline.mb-4
           b-form-file(
             id="backup-file", 
             :placeholder="$t('backup')",
@@ -65,7 +65,7 @@
           h3.lh-1.font-weight-bold {{ $t("account") }}
           .w-100
           span.lh-1.text-muted-2.fs-6 {{ $t("general_information") }}
-          hr.mb-4
+          hr.hr-underline.mb-4
           label.fs-6 {{ $t("username") }}
           b-form-input.admin-username(
             type='text',
@@ -95,7 +95,7 @@
           h3.lh-1.font-weight-bold {{ $t("user") }}
           .w-100
           span.lh-1.text-muted-2.fs-6 {{ $t("registered_user") }}
-          hr.mb-4
+          hr.hr-underline.mb-4
           h5 {{ $t("add_new_user") }}
           .w-100.my-4
           label.fs-6 {{ $t("username") }}
@@ -133,46 +133,51 @@
             openDirection="top"
           )
           .btn.btn-success.mt-4.w-100(@click="addUser()") {{ $t("add") }}
-          hr
+          hr.hr-underline
+          b-icon.showHideUser(icon="plus-circle-fill", @click="showUser = !showUser", v-if="!showUser && users.length > 1")
+          b-icon.showHideUser(icon="dash-circle-fill", @click="showUser = !showUser", v-if="showUser && users.length > 1")
           h5 {{ $t("registered_user") }}
           div.z-index-2(v-if="users.length > 1")
-            div(v-for="(user, index) in users" data-aos="fade-up" data-aos-duration="1000")
-              div.mt-4(v-if="!user.permissionLevel.includes('admin')")
-                label.fs-6 {{ $t("username") }}
-                b-form-input.users(
-                  type='text',
-                  :placeholder="$t('username')"
-                  :value="user.username"
-                )
-                .w-100.my-3
-                label.fs-6 {{ $t("permissions") }}
-                multiselect(
-                  v-model="user.permissionLevel",
-                  :options="permissions",
-                  :searchable="false",
-                  :close-on-select="false",
-                  :show-labels="false"
-                  :placeholder="$t('select')",
-                  :multiple="true",
-                  :limit="2"
-                  :allow-empty="false",
-                  group-values="permissionLevel",
-                  group-label="catagory",
-                  :group-select="true",
-                  openDirection="top"
-                )
-                .row
-                  .col
-                    .btn.btn-danger.mt-4.w-100(@click="removeUser(user, index)") {{ $t("remove") }}
-                  .col
-                    .btn.btn-success.mt-4.w-100(@click="changeUser(user, index)") {{ $t("apply") }}
-                hr
+            b-collapse(
+              v-model="showUser"
+            )
+              div(v-for="(user, index) in users" data-aos="fade-up" data-aos-duration="1000")
+                div.mt-4(v-if="!user.permissionLevel.includes('admin')")
+                  label.fs-6 {{ $t("username") }}
+                  b-form-input.users(
+                    type='text',
+                    :placeholder="$t('username')"
+                    :value="user.username"
+                  )
+                  .w-100.my-3
+                  label.fs-6 {{ $t("permissions") }}
+                  multiselect(
+                    v-model="user.permissionLevel",
+                    :options="permissions",
+                    :searchable="false",
+                    :close-on-select="false",
+                    :show-labels="false"
+                    :placeholder="$t('select')",
+                    :multiple="true",
+                    :limit="2"
+                    :allow-empty="false",
+                    group-values="permissionLevel",
+                    group-label="catagory",
+                    :group-select="true",
+                    openDirection="top"
+                  )
+                  .row
+                    .col
+                      .btn.btn-danger.mt-4.w-100(@click="removeUser(user, index)") {{ $t("remove") }}
+                    .col
+                      .btn.btn-success.mt-4.w-100(@click="changeUser(user, index)") {{ $t("apply") }}
+                  hr.hr-underline
           div(v-else)
             p.mt-5.text-center {{ $t("no_registered_user") }}
 </template>
 
 <script>
-import { BIcon, BIconXCircleFill } from 'bootstrap-vue';
+import { BIcon, BIconDashCircleFill, BIconPlusCircleFill } from 'bootstrap-vue';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 
@@ -186,7 +191,8 @@ export default {
   name: 'SettingsProfile',
   components: {
     BIcon,
-    BIconXCircleFill,
+    BIconDashCircleFill,
+    BIconPlusCircleFill,
     Multiselect,
   },
   data() {
@@ -302,6 +308,7 @@ export default {
           ],
         },
       ],
+      showUser: false,
       sessionTimerSelect: [1, 4, 6, 9, 12, 24, this.$t('never')],
       downloadBackupSpinner: false,
       uploadBackupSpinner: false,
@@ -614,6 +621,13 @@ div >>> .border-bottom-shadow-success {
 }
 
 .custom-file {
+  cursor: pointer;
+}
+
+.showHideUser {
+  float: right;
+  margin-top: 5px;
+  color: var(--primary-color);
   cursor: pointer;
 }
 </style>

@@ -73,6 +73,12 @@ class Lowdb {
           exclude: [],
           rooms: ['Standard'],
         },
+        hsv: {
+          active: null, //will be changed on start from config.json
+        },
+        prebuffering: {
+          active: null, //will be changed on start from config.json
+        },
         notifications: {
           active: false,
           removeAfter: 3,
@@ -201,14 +207,13 @@ class Lowdb {
       return;
     }
 
-    //prepare hsv settings
-    const SettingsRecordings = await database.get('settings').get('recordings');
-    const recordingsSettings = SettingsRecordings.value();
+    //prepare hsv/prebuffering settings
+    const Settings = await database.get('settings');
 
-    recordingsSettings.hsv = config.options.hsv;
-    recordingsSettings.prebuffering = config.options.prebuffering;
+    const hsv = config.options.hsv;
+    const prebuffering = config.options.prebuffering;
 
-    await SettingsRecordings.assign(recordingsSettings).write();
+    await Settings.set('hsv', { active: hsv }).set('prebuffering', { active: prebuffering }).write();
   }
 
   async resetDatabase() {

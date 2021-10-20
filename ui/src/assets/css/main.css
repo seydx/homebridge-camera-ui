@@ -18,6 +18,10 @@ body {
 /*--------------------------------------------------------------
 # Utils
 --------------------------------------------------------------*/
+.hr-underline {
+  border-top: 1px solid rgba(145, 145, 145, 0.1) !important;
+}
+
 .cool-lightbox-toolbar {
   top: env(safe-area-inset-top) !important;
   right: 50% !important;
@@ -310,9 +314,13 @@ textarea:focus:-ms-input-placeholder {
   color: #737373 !important;
 }
 
-.form-control::placeholder,
-.multiselect__placeholder {
+.form-control::placeholder {
   font-size: 14px !important;
+  color: #737373 !important;
+}
+
+.multiselect__placeholder {
+  font-size: 12px !important;
   color: #737373 !important;
 }
 

@@ -76,8 +76,13 @@ export default {
 }
 
 #left-side {
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-right: 2px solid var(--secondary-color);
+  -webkit-box-shadow: 2px 0px 0px 0px var(--primary-bg-color);
+  box-shadow: 2px 0px 0px 0px var(--primary-bg-color);
+  position: relative;
+  z-index: 1;
 }
 
 #left-side img {
@@ -88,8 +93,8 @@ export default {
 #right-side {
   padding: 50px 50px 50px 50px;
   background: var(--secondary-bg-color);
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 #right-side p,
@@ -133,12 +138,13 @@ export default {
     display: none !important;
   }
   #right-side {
-    border-radius: 30px;
+    border-radius: 20px;
   }
   main .container {
     padding-left: 0;
     padding-right: 0;
     width: 80%;
+    max-width: 400px;
   }
 }
 

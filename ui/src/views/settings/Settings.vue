@@ -358,4 +358,16 @@ export default {
   color: var(--third-bg-color);
   border-radius: 3px;
 }
+
+.expandTriangleCamera {
+  z-index: 2;
+  position: relative;
+  font-size: 8px;
+  float: right;
+  margin-left: 0;
+  margin-top: 20px;
+  margin-right: 20px;
+  color: #fff;
+  border-radius: 3px;
+}
 </style>

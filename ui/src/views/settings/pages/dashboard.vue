@@ -29,27 +29,31 @@
           id="expandFavourites"
         )
           div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
-            .settings-box-header {{ camera.name }}
-            .settings-box.container.no-radius-top
-              .row
-                .col-8.d-flex.flex-wrap.align-content-center {{ $t("favourite") }}
-                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                  toggle-button(
-                    v-model="camera.dashboard.favourite",
-                    color="var(--primary-color) !important",
-                    :height="30",
-                    :sync="true"
-                  )
-              hr
-              .row
-                .col-8.d-flex.flex-wrap.align-content-center {{ $t("livestream") }}
-                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                  toggle-button(
-                    v-model="camera.dashboard.live",
-                    color="var(--primary-color) !important",
-                    :height="30",
-                    :sync="true"
-                  )
+            b-icon.cursor-pointer.expandTriangleCamera(icon="triangle-fill", aria-hidden="true", :rotate='camera.expand ? "180" : "-90"', @click="camera.expand = !camera.expand")
+            .settings-box-header(@click="camera.expand = !camera.expand") {{ camera.name }}
+            b-collapse(
+              v-model="camera.expand"
+            )
+              .settings-box.container.no-radius-top
+                .row
+                  .col-8.d-flex.flex-wrap.align-content-center {{ $t("favourite") }}
+                  .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                    toggle-button(
+                      v-model="camera.dashboard.favourite",
+                      color="var(--primary-color) !important",
+                      :height="30",
+                      :sync="true"
+                    )
+                hr.hr-underline(v-if="camera.dashboard.favourite")
+                .row(v-if="camera.dashboard.favourite")
+                  .col-8.d-flex.flex-wrap.align-content-center {{ $t("livestream") }}
+                  .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                    toggle-button(
+                      v-model="camera.dashboard.live",
+                      color="var(--primary-color) !important",
+                      :height="30",
+                      :sync="true"
+                    )
 </template>
 
 <script>

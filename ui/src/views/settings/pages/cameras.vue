@@ -29,7 +29,7 @@
                 v-model="aws.active",
                 id="aws"
               )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_access_key_id") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -38,7 +38,7 @@
                       :placeholder="$t('aws_access_key_id')",
                       v-model="aws.accessKeyId"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_secret_access_key") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -47,7 +47,7 @@
                       :placeholder="$t('aws_secret_access_key')",
                       v-model="aws.secretAccessKey"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_region") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -56,7 +56,7 @@
                       :placeholder="$t('aws_region')",
                       v-model="aws.region"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_total") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -67,7 +67,7 @@
                       :placeholder="$t('aws_contingent_total')",
                       v-model="aws.contingent_total"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_contingent_left") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -77,7 +77,7 @@
                       v-model="aws.contingent_left"
                       style="background: var(--third-bg-color) !important"
                     )
-                hr
+                hr.hr-underline
                 .row
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("aws_last_rekognition") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -95,70 +95,74 @@
           id="expandCameras"
         )
           div.mt-2.mb-4(v-for="camera in cameras" :key="camera.name" data-aos="fade-up" data-aos-duration="1000")
-            .settings-box-header {{ camera.name }}
-            .settings-box.container.no-radius-top
-              .row
-                .col-12
-                  label.fs-6 {{ $t("room") }}
-                  b-form-select(
-                    v-model="camera.room"
-                    :options="general.rooms",
-                  )
-                  hr
-                  label.fs-6 {{ $t("video_resolution") }}
-                  b-form-select(
-                    v-model="camera.resolution"
-                    :options="camerasResolutions"
-                  )
-                  hr
-                  label.fs-6 {{ $t("ping_timeout") }}
-                  b-form-input(
-                    type='number',
-                    :min="1",
-                    :max="60",
-                    placeholder="1",
-                    v-model="camera.pingTimeout"
-                    number
-                  )
-                  hr
-                .col-8.d-flex.flex-wrap.align-content-center {{ $t("audio") }}
-                .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
-                  toggle-button(
-                    v-model="camera.audio",
-                    color="var(--primary-color) !important",
-                    :height="30",
-                    :sync="true"
-                  )
-                .row.w-100.m-0.p-0(v-if="aws.active")
+            b-icon.cursor-pointer.expandTriangleCamera(icon="triangle-fill", aria-hidden="true", :rotate='camera.expand ? "180" : "-90"', @click="camera.expand = !camera.expand")
+            .settings-box-header(@click="camera.expand = !camera.expand") {{ camera.name }}
+            b-collapse(
+              v-model="camera.expand"
+            )
+              .settings-box.container.no-radius-top
+                .row
                   .col-12
-                    hr
-                  .col-8.d-flex.flex-wrap.align-content-center {{ $t("rekognition") }}
+                    label.fs-6 {{ $t("room") }}
+                    b-form-select(
+                      v-model="camera.room"
+                      :options="general.rooms",
+                    )
+                    hr.hr-underline
+                    label.fs-6 {{ $t("video_resolution") }}
+                    b-form-select(
+                      v-model="camera.resolution"
+                      :options="camerasResolutions"
+                    )
+                    hr.hr-underline
+                    label.fs-6 {{ $t("ping_timeout") }}
+                    b-form-input(
+                      type='number',
+                      :min="1",
+                      :max="60",
+                      placeholder="1",
+                      v-model="camera.pingTimeout"
+                      number
+                    )
+                    hr.hr-underline
+                  .col-8.d-flex.flex-wrap.align-content-center {{ $t("audio") }}
                   .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
                     toggle-button(
-                      v-model="camera.rekognition.active",
+                      v-model="camera.audio",
                       color="var(--primary-color) !important",
                       :height="30",
                       :sync="true"
                     )
-                  .col-12
-                    hr
-                  .col-12
-                    label.fs-6 {{ `${$t("confidence")} %` }}
-                    b-form-input(
-                      type='number',
-                      :min="0",
-                      :max="100",
-                      :placeholder="`${$t('confidence')} %`",
-                      v-model="camera.rekognition.confidence"
-                    )
-                    hr
-                    label.fs-6 {{ $t("labels") }}
-                    b-form-input(
-                      type='text',
-                      :placeholder="$t('labels')",
-                      v-model="camera.rekognition.labels"
-                    )
-                    hr
+                  .row.w-100.m-0.p-0(v-if="aws.active && (hsv === 0 || hsv > 1)")
+                    .col-12
+                      hr.hr-underline
+                    .col-8.d-flex.flex-wrap.align-content-center {{ $t("rekognition") }}
+                    .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
+                      toggle-button(
+                        v-model="camera.rekognition.active",
+                        color="var(--primary-color) !important",
+                        :height="30",
+                        :sync="true"
+                      )
+                    .col-12
+                      hr.hr-underline
+                    .col-12
+                      label.fs-6 {{ `${$t("confidence")} %` }}
+                      b-form-input(
+                        type='number',
+                        :min="0",
+                        :max="100",
+                        :placeholder="`${$t('confidence')} %`",
+                        v-model="camera.rekognition.confidence"
+                      )
+                      hr.hr-underline
+                      label.fs-6 {{ $t("labels") }}
+                      b-form-input(
+                        type='text',
+                        :placeholder="$t('labels')",
+                        v-model="camera.rekognition.labels"
+                      )
+                      hr.hr-underline
       .col-12.d-flex.justify-content-center(v-else)
         span.text-muted-2 {{ $t("no_cameras") }}
 </template>
@@ -184,7 +188,7 @@ export default {
       camerasTimer: null,
       camerasResolutions: ['256x144', '426x240', '480x360', '640x480', '1280x720', '1920x1080'],
       expand: {
-        aws: true,
+        aws: false,
         cameras: true,
       },
       form: {
@@ -195,6 +199,8 @@ export default {
         rooms: [],
       },
       loading: true,
+      hsv: null,
+      prebuffering: null,
     };
   },
   watch: {
@@ -254,6 +260,12 @@ export default {
         const aws = await getSetting('aws');
         this.aws = aws.data;
       }
+
+      const hsv = await getSetting('hsv');
+      const prebuffering = await getSetting('prebuffering');
+
+      this.hsv = hsv.data.active;
+      this.prebuffering = prebuffering.data.active;
 
       this.loading = false;
     } catch (err) {

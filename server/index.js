@@ -116,8 +116,12 @@ server.stopServer = async () => {
   Prebuffer.stop(true);
   Streams.stopStreams();
 
-  if (config.http) {
+  if (config.http.active) {
     HttpService.stop();
+  }
+
+  if (config.smtp.active) {
+    SmtpService.stop();
   }
 
   server.close();

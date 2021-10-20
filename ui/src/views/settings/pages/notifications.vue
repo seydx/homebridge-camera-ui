@@ -29,7 +29,7 @@
                 v-model="notifications.active",
                 id="notifications"
               )
-                hr(v-if="notifications.active")
+                hr.hr-underline(v-if="notifications.active")
                 .row(v-if="notifications.active")
                   .col-12.d-flex.flex-wrap.align-content-center {{ $t("remove_after_h") }}
                   .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -65,7 +65,7 @@
                   v-model="notifications.telegram.active",
                   id="telegram"
                 )
-                  hr(v-if="notifications.telegram.active")
+                  hr.hr-underline(v-if="notifications.telegram.active")
                   .row(v-if="notifications.telegram.active")
                     .col-12.d-flex.flex-wrap.align-content-center {{ $t("token") }}
                     .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -74,7 +74,7 @@
                         :placeholder="$t('token')",
                         v-model="notifications.telegram.token"
                       )
-                  hr(v-if="notifications.telegram.active")
+                  hr.hr-underline(v-if="notifications.telegram.active")
                   .row(v-if="notifications.telegram.active")
                     .col-12.d-flex.flex-wrap.align-content-center {{ $t("chat_id") }}
                     .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -83,7 +83,7 @@
                         :placeholder="$t('chat_id')",
                         v-model="notifications.telegram.chatID"
                       )
-                  hr(v-if="notifications.telegram.active")
+                  hr.hr-underline(v-if="notifications.telegram.active")
                   .row(v-if="notifications.telegram.active")
                     .col-12.d-flex.flex-wrap.align-content-center {{ $t("motion_message") }}
                     .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -92,7 +92,7 @@
                         :placeholder="$t('motion_message')",
                         v-model="notifications.telegram.message"
                       )
-                  hr(v-if="notifications.telegram.active")
+                  hr.hr-underline(v-if="notifications.telegram.active")
                   div(v-if="notifications.telegram.active")
                     div(v-for="(camera, index) in cameras", :key="camera.name")
                       .row(:id='"telegramType" + index')
@@ -102,7 +102,7 @@
                             v-model="camera.telegramType"
                             :options="telegramTypes"
                           )
-                      hr
+                      hr.hr-underline
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
           b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='expand.webhook ? "180" : "-90"', @click="expand.webhook = !expand.webhook")
           h5.cursor-pointer.settings-box-top(@click="expand.webhook = !expand.webhook") {{ $t("webhook") }}
@@ -127,7 +127,7 @@
                   v-model="notifications.webhook.active",
                   id="webhook"
                 )
-                  hr
+                  hr.hr-underline
                   div
                     div(v-for="camera in cameras", :key="camera.name")
                       .row
@@ -138,7 +138,7 @@
                             placeholder="https://webhook.site/88e98f7e",
                             v-model="camera.webhookUrl"
                           )
-                      hr
+                      hr.hr-underline
 </template>
 
 <script>

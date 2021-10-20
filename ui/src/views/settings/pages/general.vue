@@ -23,7 +23,7 @@
                     :height="30",
                     :sync="true",
                   )
-              hr
+              hr.hr-underline
               .row
                 .col-12.d-flex.flex-wrap.align-content-center {{ $t("exclude") }}
                 .col-12.d-flex.flex-wrap.align-content-center.justify-content-end.mt-3
@@ -58,7 +58,7 @@
                     v-model="autoDarkmode"
                     @input="switchAutoDarkmode"
                   )
-              hr(v-if="supportMatchMedia")
+              hr.hr-underline(v-if="supportMatchMedia")
               .row(v-if="supportMatchMedia && !autoDarkmode")
                 .col-8.d-flex.flex-wrap.align-content-center {{ $t("darkmode") }}
                 .col-4.d-flex.flex-wrap.align-content-center.justify-content-end
@@ -69,7 +69,7 @@
                     v-model="darkmode"
                     @input="switchDarkmode"
                   )
-              hr(v-if="supportMatchMedia && !autoDarkmode")
+              hr.hr-underline(v-if="supportMatchMedia && !autoDarkmode")
               .row
                 .col-4.d-flex.flex-wrap.align-content-center {{ $t("themes") }}
                 .col-8.text-right
@@ -110,15 +110,15 @@
                 .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
                   b-link.text-success
                     b-icon(icon="plus-circle-fill", @click="addRoom()")
-              hr
-              div(v-for="(room, index) in general.rooms" :key="room" data-aos="fade-up" data-aos-duration="1000")
+              hr.hr-underline
+              div(v-for="(room, index) in general.rooms" :key="room")
                 .row
                   .col-10
                     span.fs-6 {{ room === 'Standard' ? $t("standard") : room }}
                   .col.d-flex.flex-wrap.align-content-center.justify-content-end.align-content-center.pl-0
                     b-link.text-color-danger
                       b-icon(icon="x-circle-fill", v-if="room !== 'Standard'", @click="removeRoom(room, index)")
-                hr(v-if="index < general.rooms.length - 1")
+                hr.hr-underline(v-if="index < general.rooms.length - 1")
 </template>
 
 <script>
