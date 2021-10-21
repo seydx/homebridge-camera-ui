@@ -19,6 +19,7 @@ const RecordingsModel = require('../components/recordings/recordings.model');
 const SettingsModel = require('../components/settings/settings.model');
 
 const movementHandler = {};
+const motionTimers = new Map();
 
 class MotionHandler {
   // eslint-disable-next-line no-unused-vars
@@ -35,6 +36,25 @@ class MotionHandler {
       }
 
       if (Camera && Camera.videoConfig) {
+        if (!hsv) {
+          const timeout = motionTimers.get(cameraName);
+          const timeoutConfig = !Number.isNaN(Number.parseInt(Camera.motionTimeout)) ? Camera.motionTimeout : 1;
+
+          if (!timeout) {
+            const eventTimeout = setTimeout(() => {
+              logger.info('Motion handler timeout.', cameraName, true);
+              motionTimers.delete(cameraName);
+            }, timeoutConfig * 1000);
+
+            motionTimers.set(cameraName, eventTimeout);
+          } else {
+            return {
+              error: true,
+              message: `Event blocked due to motionTimeout (${timeoutConfig}s)`,
+            };
+          }
+        }
+
         const SettingsDB = await SettingsModel.show();
 
         const atHome = SettingsDB.general.atHome;
@@ -161,7 +181,7 @@ class MotionHandler {
               errorMessage = 'Video stored through HSV and notification sent.';
             } else if (recordingSettings.active) {
               // UI Recording active & HSV not active, handle recording through UI
-              logger.debug('Handling recording through camera.ui', cameraName);
+              logger.debug('Handling recording through interface', cameraName);
 
               const allowStream = sessions.requestSession(cameraName);
 

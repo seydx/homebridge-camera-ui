@@ -20,6 +20,11 @@ exports.show = async (req, res) => {
 
 exports.getTarget = async (req, res) => {
   try {
+    if (req.query.pingAlexa) {
+      const status = await Alexa.connect();
+      return res.status(200).send({ status: status ? 'success' : 'error' });
+    }
+
     const result = await SettingsModel.getByTarget(req.params.target);
 
     if (!result) {
@@ -57,8 +62,8 @@ exports.patchTarget = async (req, res) => {
     }
 
     if (req.params.target === 'notifications' && req.query.reconnectAlexa === 'true') {
-      const response = await Alexa.start(req.body);
-      return res.status(204).send(response);
+      const status = await Alexa.start(req.body);
+      return res.status(204).send({ status: status ? 'success' : 'error' });
     }
 
     await SettingsModel.patchByTarget(req.params.target, req.body);

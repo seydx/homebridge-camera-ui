@@ -37,15 +37,20 @@ class Mqtt {
       }
     });
 
-    client.on('message', (topic, message) => {
-      logger.debug(`Received a new MQTT message ${message.toString()} (${topic})`, false, '[MQTT]');
+    client.on('message', async (topic, message) => {
+      let results = {
+        error: true,
+        message: `Malformed MQTT message ${message.toString()} (${topic})`,
+      };
+
+      let name = 'undefined';
 
       const cameraMqttConfig = mqttConfigs.get(topic);
 
       if (cameraMqttConfig) {
         message = message.toString();
 
-        let name = cameraMqttConfig.camera;
+        name = cameraMqttConfig.camera;
         let target = cameraMqttConfig.motion ? 'motion' : 'doorbell';
 
         let active =
@@ -64,21 +69,39 @@ class Mqtt {
         if (active !== undefined) {
           const camera = config.cameras.find((camera) => camera && camera.name === name);
 
-          pluginHandler.handle(target, name, active);
+          if (camera) {
+            let pluginResult = pluginHandler.handle(target, name, active);
+            let uiResult = 'Handled through HSV.';
 
-          if (active && (!camera || (camera && !camera.hsv))) {
-            uiHandler.handle(target, name, active);
+            if (active && !camera.hsv) {
+              uiResult = await uiHandler.handle(target, name, active);
+            }
+
+            results = {
+              error: pluginResult.error && uiResult.error,
+              plugin: pluginResult.message,
+              ui: uiResult.message,
+            };
+          } else {
+            results = {
+              error: true,
+              message: `Camera ${name} not found!`,
+            };
           }
         } else {
-          logger.warn(
-            `The incoming MQTT message (${message}) for the topic (${topic}) was not the same as set in config.json. Skip...`,
-            false,
-            '[MQTT]'
-          );
+          results = {
+            error: true,
+            message: `The incoming MQTT message (${message}) for the topic (${topic}) was not the same as set in config.json. Skip...`,
+          };
         }
       } else {
-        logger.warn(`Can not assign the MQTT topic (${topic}) to a camera!`, false, '[MQTT]');
+        results = {
+          error: true,
+          message: `Can not assign the MQTT topic (${topic}) to a camera!`,
+        };
       }
+
+      logger.debug('Received a new MQTT message ' + JSON.stringify(results) + ' (' + name + ')', false, '[MQTT]');
     });
   }
 }

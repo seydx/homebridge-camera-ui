@@ -8,12 +8,10 @@ const { EventEmitter } = require('events');
 const { createServer, Server } = require('net');
 const { spawn } = require('child_process');
 
-const moment = require('moment');
-
 const config = new Config();
 const prebuffer = {};
 
-const videoDuration = 15000;
+const videoDuration = 10000;
 
 class PreBuffer {
   init() {
@@ -24,7 +22,6 @@ class PreBuffer {
           cameraName: camera.name,
           ffmpegPath: config.options.videoProcessor,
           time: Date.now(),
-          date: moment().format(),
           prebufferFmp4: [],
           events: new EventEmitter(),
           released: false,
@@ -56,7 +53,7 @@ class PreBuffer {
         logger.warn('An error occurrd during starting camera prebuffer!', cameraName, '[Prebuffer]');
         logger.error(error, cameraName, '[Prebuffer]');
 
-        this.restartCamera(cameraName);
+        setTimeout(() => this.restartCamera(cameraName), 10000);
       }
     } else {
       logger.warn('Can not START prebuffering session, camera not found!', cameraName, '[Prebuffer]');
@@ -71,10 +68,8 @@ class PreBuffer {
 
   restartCamera(cameraName) {
     if (prebuffer[cameraName]) {
-      setTimeout(() => {
-        this.stopCamera(cameraName);
-        this.startCamera(cameraName);
-      }, 10000);
+      this.stopCamera(cameraName);
+      setTimeout(() => this.startCamera(cameraName), 5000);
     } else {
       logger.warn('Can not RESTART prebuffering session, camera not found!', cameraName, '[Prebuffer]');
     }
@@ -132,9 +127,7 @@ class PreBuffer {
 
         for await (const atom of parser) {
           const now = Date.now();
-
           cameraOptions.time = now;
-          cameraOptions.date = moment().format();
 
           if (!cameraOptions.ftyp) {
             cameraOptions.ftyp = atom;
@@ -152,7 +145,6 @@ class PreBuffer {
             cameraOptions.prebufferFmp4.push({
               atom,
               time: now,
-              date: moment().format(),
             });
           }
 
@@ -199,7 +191,7 @@ class PreBuffer {
 
     cp.on('close', () => {
       if (!prebuffer[cameraName].killed) {
-        logger.debug('Prebufferring process closed, restarting in 10s...', cameraName, '[Prebuffer]');
+        logger.debug('Prebufferring process closed, restarting...', cameraName, '[Prebuffer]');
         this.restartCamera(cameraName);
       }
     });

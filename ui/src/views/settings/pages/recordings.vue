@@ -137,7 +137,7 @@ export default {
 
       if (this.prebuffering > 0) {
         this.recordingTimer.forEach((timer) => {
-          timer.text += ` (+10s ${
+          timer.text += ` (+ ~4s ${
             this.prebuffering === 1 ? this.$t('prebuffering') : this.$t('prebuffering_if_enabled')
           })`;
         });

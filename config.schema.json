@@ -245,7 +245,7 @@
             "type": "integer",
             "placeholder": 1,
             "minimum": 0,
-            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP."
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP. This will also affect the interface timeout."
           },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",

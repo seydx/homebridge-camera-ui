@@ -64,16 +64,23 @@ class Ffmpeg {
       let ffmpegArguments = [
         '-loglevel',
         'error',
+        '-an',
+        '-sn',
+        '-dn',
         '-re',
         '-y',
         '-i',
         '-',
         '-s',
         `${width}x${height}`,
-        '-frames:v',
-        '1',
+        /*'-frames:v',
+        '1',*/
         '-f',
         'image2',
+        //'-r',
+        //'1',
+        '-update',
+        '1',
         outputPath,
       ];
 
@@ -83,9 +90,10 @@ class Ffmpeg {
 
       if (videoConfig.debug) {
         ffmpeg.stdout.on('data', (data) => logger.debug(data.toString(), cameraName, true));
+        ffmpeg.stderr.on('data', (data) =>
+          logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, true)
+        );
       }
-
-      ffmpeg.stderr.on('data', (data) => logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), cameraName, true));
 
       ffmpeg.on('error', (error) => reject(error));
       ffmpeg.on('close', () => {
@@ -208,21 +216,25 @@ class Ffmpeg {
     });
   }
 
-  async *handleFragmentsRequests(cameraName, videoConfig, prebuffering, recTimer) {
+  async *handleFragmentsRequests(cameraName, videoConfig, prebuffering) {
     logger.debug('Video fragments requested from interface', cameraName, true);
 
-    const prebufferLength = 10000; //10s
+    const prebufferLength = 4000;
     const audioArguments = ['-codec:a', 'copy'];
     const videoArguments = ['-codec:v', 'copy'];
 
-    /*
-    const iframeIntervalSeconds = 4;
+    /*const iframeIntervalSeconds = 4;
     const rate = videoConfig.rate || 25;
-    const audioArguments = ['-c:a', 'aac'];
+
+    const audioArguments = [];
+
+    if (!videoConfig.audio) {
+      audioArguments.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+    }
+
+    audioArguments.push('-c:a', 'aac');
+
     const videoArguments = [
-      '-an',
-      '-sn',
-      '-dn',
       '-codec:v',
       'libx264',
       '-pix_fmt',
@@ -237,19 +249,18 @@ class Ffmpeg {
       `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
       '-r',
       rate.toString(),
-    ];
-    */
+    ];*/
 
-    let ffmpegInput = [...videoConfig.source.split(' '), '-t', recTimer.toString()];
+    let ffmpegInput = [...videoConfig.source.split(' ')];
 
     if (prebuffering) {
       try {
         const input = await PreBuffer.getVideo(cameraName, prebufferLength);
 
         ffmpegInput = [];
-        ffmpegInput.push(...input, '-t', (prebufferLength / 1000 + recTimer).toString());
+        ffmpegInput.push(...input);
       } catch (error) {
-        logger.warn(`Can not access prebuffered video, skipping: ${error}`);
+        logger.warn(`Can not access prebuffered video, skipping: ${error}`, cameraName, true);
       }
     }
 
@@ -260,8 +271,7 @@ class Ffmpeg {
       audioArguments,
       videoArguments,
       videoConfig.debug,
-      true,
-      recTimer
+      true
     );
 
     logger.debug('Recording started', cameraName, true);
@@ -312,10 +322,10 @@ class Ffmpeg {
 
         async function* generator() {
           while (true) {
-            const header = await cameraUtils.readLength(cameraName, socket, 8);
+            const header = await cameraUtils.readLength(socket, 8);
             const length = header.readInt32BE(0) - 8;
             const type = header.slice(4).toString();
-            const data = await cameraUtils.readLength(cameraName, socket, length);
+            const data = await cameraUtils.readLength(socket, length);
 
             yield {
               header,
@@ -341,6 +351,7 @@ class Ffmpeg {
         '-f',
         'mp4',
         ...videoOutputArguments,
+        //...audioOutputArguments,
         '-fflags',
         '+genpts',
         '-reset_timestamps',

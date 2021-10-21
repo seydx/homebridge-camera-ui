@@ -152,13 +152,22 @@
                             class="timePicker"
                           )
                   hr.hr-underline(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
-                  .row(v-if="notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
+                  .row(v-if="notifications.alexa && notifications.alexa.active && notifications.alexa.proxy.clientHost && notifications.alexa.proxy.port && notifications.alexa.domain")
                     .col-12
-                      span.reconnect {{ $t("reconnect") }}
                       .d-block.float-right
+                        b-icon.mr-2(
+                          icon="check-circle-fill" 
+                          variant="success"
+                          v-if="alexaPing && !loadingAlexa"
+                        )
+                        b-icon.mr-2(
+                          icon="exclamation-circle-fill" 
+                          variant="danger"
+                          v-if="!alexaPing && !loadingAlexa"
+                        )
                         b-spinner.float-left.mt-3.mr-3.text-color-primary(type="grow" label="Loading..." small, v-if="loadingAlexa")
-                        a(:href="`http://${notifications.alexa.proxy.clientHost}:${notifications.alexa.proxy.port}`", @click.prevent="alexaReconnect" v-if="!loadingAlexa")
-                          img.d-block.alexaConnect(src="@/assets/img/alexa_connect.png", alt="Connect to Alexa")
+                        a.text-danger.alexaConnect(:href="`http://${notifications.alexa.proxy.clientHost}:${notifications.alexa.proxy.port}`", @click.prevent="alexaReconnect" v-if="!loadingAlexa && !alexaPing") {{ $t("reconnect") }}
+                        span.text-success(v-if="!loadingAlexa && alexaPing") {{ $t("connected") }}
         .col-12.mt-2(data-aos="fade-up" data-aos-duration="1000")
           b-icon.cursor-pointer.expandTriangle(icon="triangle-fill", aria-hidden="true", :rotate='settingsLayout.notifications.telegram.expand ? "180" : "-90"', @click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand")
           h5.cursor-pointer.settings-box-top(@click="settingsLayout.notifications.telegram.expand = !settingsLayout.notifications.telegram.expand") {{ $t("telegram") }}
@@ -260,7 +269,7 @@
 </template>
 
 <script>
-import { BIcon, BIconTriangleFill } from 'bootstrap-vue';
+import { BIcon, BIconCheckCircleFill, BIconExclamationCircleFill, BIconTriangleFill } from 'bootstrap-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { getSetting, changeSetting } from '@/api/settings.api';
@@ -270,12 +279,15 @@ export default {
   name: 'SettingsNotifications',
   components: {
     BIcon,
+    BIconCheckCircleFill,
+    BIconExclamationCircleFill,
     BIconTriangleFill,
     ToggleButton,
   },
   mixins: [localStorageMixin],
   data() {
     return {
+      alexaPing: false,
       cameras: [],
       form: {
         snapshotTimer: 10,
@@ -343,6 +355,49 @@ export default {
       if (this.checkLevel('settings:notifications:access')) {
         const notifications = await getSetting('notifications');
         this.notifications = notifications.data;
+
+        this.notifications.alexa = this.notifications.alexa || {};
+        this.notifications.alexa.auth = this.notifications.alexa.auth || {};
+        this.notifications.alexa.auth.macDms = this.notifications.alexa.auth.macDms || {};
+        this.notifications.alexa.proxy = this.notifications.alexa.proxy || {};
+
+        const alexa = {
+          active: this.notifications.alexa.active || false,
+          domain: this.notifications.alexa.domain || '',
+          serialNr: this.notifications.alexa.serialNr || '',
+          message: this.notifications.alexa.message || '',
+          startTime: this.notifications.alexa.startTime || '00:00',
+          endTime: this.notifications.alexa.endTime || '23:59',
+          auth: {
+            cookie: this.notifications.alexa.auth.cookie || false,
+            macDms: {
+              device_private_key: this.notifications.alexa.auth.macDms.device_private_key || false,
+              adp_token: this.notifications.alexa.auth.macDms.adp_token || false,
+            },
+          },
+          proxy: {
+            clientHost: this.notifications.alexa.proxy.clientHost || '',
+            port: this.notifications.alexa.proxy.port || 9494,
+          },
+        };
+
+        const alexaConfigured =
+          alexa.active &&
+          alexa.domain &&
+          alexa.auth.cookie &&
+          alexa.auth.macDms.device_private_key &&
+          alexa.auth.macDms.device_private_key &&
+          alexa.proxy.clientHost &&
+          alexa.proxy.port;
+
+        this.notifications.alexa = alexa;
+
+        if (!alexaConfigured) {
+          this.alexaPing = false;
+        } else {
+          const status = await getSetting('notifications', '?pingAlexa=true');
+          this.alexaPing = status.data.status === 'success';
+        }
       }
 
       if (this.checkLevel('settings:cameras:access')) {
@@ -402,15 +457,12 @@ export default {
 }
 
 .alexaConnect {
-  width: 100px;
-  height: auto;
-  float: right;
 }
 
 .reconnect {
   margin-top: 13px;
   display: block;
-  float: left;
+  float: right;
 }
 
 .timePicker >>> .dropdown-menu {

@@ -15,6 +15,8 @@ const logger = require('../logger/logger.service');
 const pluginHandler = require('../../plugin/services/handler.service');
 const uiHandler = require('../../server/services/handler.service');
 
+//const motionTimers = new Map();
+
 class Http {
   start(config) {
     logger.debug('Setting up HTTP server for motion detection...', false, '[HTTP]');
@@ -82,18 +84,25 @@ class Http {
 
           const camera = config.cameras.find((camera) => camera && camera.name === name);
 
-          let pluginResult = pluginHandler.handle(target, name, active);
-          let uiResult = 'Handled through HSV.';
+          if (camera) {
+            let pluginResult = pluginHandler.handle(target, name, active);
+            let uiResult = 'Handled through HSV.';
 
-          if (active && (!camera || (camera && !camera.hsv))) {
-            uiResult = await uiHandler.handle(target, name, active);
+            if (active && !camera.hsv) {
+              uiResult = await uiHandler.handle(target, name, active);
+            }
+
+            results = {
+              error: pluginResult.error && uiResult.error,
+              plugin: pluginResult.message,
+              ui: uiResult.message,
+            };
+          } else {
+            results = {
+              error: true,
+              message: `Camera ${name} not found!`,
+            };
           }
-
-          results = {
-            error: pluginResult.error && uiResult.error,
-            plugin: pluginResult.message,
-            ui: uiResult.message,
-          };
 
           logger.debug('Received a new HTTP message ' + JSON.stringify(results) + ' (' + name + ')', false, '[HTTP]');
         }

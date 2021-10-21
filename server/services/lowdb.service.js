@@ -169,6 +169,9 @@ class Lowdb {
     for (const cam of config.cameras) {
       const camera = {
         name: cam.name,
+        hsv: cam.hsv,
+        motionTimeout: cam.motionTimeout,
+        prebuffering: cam.prebuffering,
         videoConfig: {
           ...cam.videoConfig,
           videoProcessor: config.options.videoProcessor,

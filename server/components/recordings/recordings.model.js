@@ -159,9 +159,9 @@ exports.createRecording = async (data, hsv) => {
           recordingsSettings.timer
         );
 
-        setTimeout(() => {
+        setTimeout(async () => {
           if (generator) {
-            generator.throw(`timer reached (${recordingsSettings.timer}s)`);
+            generator.throw('dataSend close (ui)');
           }
         }, recordingsSettings.timer * 1000);
 

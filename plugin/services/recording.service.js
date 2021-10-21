@@ -22,7 +22,13 @@ class RecordingDelegate {
 
     const iframeIntervalSeconds = 4;
 
-    const audioArguments = [
+    let audioArguments = [];
+
+    if (!this.videoConfig.audio) {
+      audioArguments.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+    }
+
+    audioArguments.push(
       '-acodec',
       'libfdk_aac',
       ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
@@ -33,8 +39,8 @@ class RecordingDelegate {
       '-b:a',
       `${configuration.audioCodec.bitrate}k`,
       '-ac',
-      `${configuration.audioCodec.audioChannels}`,
-    ];
+      `${configuration.audioCodec.audioChannels}`
+    );
 
     const profile =
       configuration.videoCodec.profile === this.hap.H264Profile.HIGH
@@ -68,12 +74,16 @@ class RecordingDelegate {
       `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
       '-r',
       configuration.videoCodec.resolution[2].toString(),
+      //'-vf',
+      //`scale=w=${configuration.videoCodec.resolution[0]}:h=${configuration.videoCodec.resolution[1]}:force_original_aspect_ratio=1,pad=${configuration.videoCodec.resolution[0]}:${configuration.videoCodec.resolution[1]}:(ow-iw)/2:(oh-ih)/2`,
     ];
 
     let ffmpegInput = [...this.videoConfig.source.split(' ')];
 
     if (this.prebuffering) {
       try {
+        logger.debug('Setting prebuffer stream as input', this.cameraName);
+
         const input = await PreBuffer.getVideo(
           this.cameraName,
           configuration.mediaContainerConfiguration.prebufferLength
@@ -82,7 +92,7 @@ class RecordingDelegate {
         ffmpegInput = [];
         ffmpegInput.push(...input);
       } catch (error) {
-        logger.warn(`Can not access prebuffered video, skipping: ${error}`);
+        logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
       }
     }
 
@@ -122,8 +132,13 @@ class RecordingDelegate {
         }
       }
     } catch (error) {
-      logger.debug(`Recording completed. (${error})`, this.cameraName);
-      uiHandler.handle('hsv', this.cameraName, true, filebuffer);
+      if (error === 'dataSend close') {
+        logger.debug(`Recording completed. (${error})`, this.cameraName);
+        uiHandler.handle('hsv', this.cameraName, true, filebuffer);
+      } else {
+        logger.debug(error, this.cameraName);
+        logger.debug('Waiting for "dataSend close" event to send data to interface', this.cameraName);
+      }
     } finally {
       socket.destroy();
       cp.kill();
