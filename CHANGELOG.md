@@ -2,6 +2,24 @@
 
 # NEXT
 
+Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui
+
+[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project. It has been completely decoupled from Homebridge and can also be used as a standalone app.
+
+**homebridge-camera-ui** is the connection between camera.ui and homebridge and should give users a beautiful interface and HomeKit support.
+
+---
+
+<p align="center">
+If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_blank" ><b>hombebride-camera-ui</b></a> please consider starring the project on GitHub or <a href="https://www.paypal.com/seydx" target="_blank" ><b>donating via PayPal</b></a>.
+</p>
+
+---
+
+## Breaking Changes
+- **Database**
+  - Due to the extensive restructuring of **camera.ui**, the old database is no longer compatible and will be recreated after updating and rebooting. Thereby already set configuration will be lost, and must be reconfigured after the first start!
+
 ## Notable Changes
 - **HomeKit Secure Video (HSV)**
   - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
@@ -13,12 +31,18 @@
 
 ## Other changes
 - **Interface**
+  - Added a new `onboard page` for first start
+  - Added a new page to settings: `"configuration"`
   - Added 16:9 aspect ratio to `camera` view
+  - Added form validation for settings
   - Changed `removeAfter` duration for notifications/recordings
   - The quality of the streams was increased (`-q 1`)
-  - Minor UI improvements
   - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
   - Added `motionTimeout` also to ui-only events
+  - Minor UI Improvements
+- **Server**
+  - Added jwt authentication to socket.io to prevent starting stream if not logged in
+  - Auto logout if socket disconnected/unauthenticated
 - Bump dependencies
 
 ## Bugfixes

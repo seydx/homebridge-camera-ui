@@ -1,140 +1,185 @@
 'use-strict';
 
-const crypto = require('crypto');
-const fs = require('fs-extra');
-const os = require('os');
-const path = require('path');
+const ffmpegPath = require('ffmpeg-for-homebridge');
+const logger = require('../logger/logger.service');
 
-const configPath =
-  process.env.NODE_ENV === 'test'
-    ? path.join(__dirname, '../../test/homebridge/config.json')
-    : process.env.HB_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
+class ConfigSetup {
+  constructor(config) {
+    this.config = config;
 
-const storagePath =
-  process.env.NODE_ENV === 'test'
-    ? path.join(__dirname, '../../test/storage')
-    : process.env.HB_STORAGE_PATH || path.resolve(os.homedir(), '.homebridge');
+    this.ui = this._ui();
+    this.cameras = this._cameras();
+    this.options = this._options();
+    this.ssl = this._ssl();
+    this.mqtt = this._mqtt();
+    this.mqttConfigs = this._mqttConfigs();
+    this.http = this._http();
+    this.smtp = this._smtp();
 
-const secretPath = path.resolve(storagePath, '.camera.ui.secrets');
-
-const uiSettings = {
-  dbPath: storagePath,
-  permissionLevels: [
-    'admin',
-    //API
-    'backup:download',
-    'backup:restore',
-    'cameras:access',
-    'cameras:edit',
-    'config:access',
-    'notifications:access',
-    'notifications:edit',
-    'recordings:access',
-    'recordings:edit',
-    'settings:access',
-    'settings:edit',
-    'users:access',
-    'users:edit',
-    //CLIENT
-    'camview:access',
-    'dashboard:access',
-    'settings:cameras:access',
-    'settings:cameras:edit',
-    'settings:camview:access',
-    'settings:camview:edit',
-    'settings:dashboard:access',
-    'settings:dashboard:edit',
-    'settings:general:access',
-    'settings:general:edit',
-    'settings:notifications:access',
-    'settings:notifications:edit',
-    'settings:profile:access',
-    'settings:profile:edit',
-    'settings:recordings:access',
-    'settings:recordings:edit',
-  ],
-};
-
-class ConfigService {
-  constructor() {
-    this.getPluginConfig();
-    this.getUiConfig();
+    return {
+      ...this.ui,
+      options: this.options,
+      ssl: this.ssl,
+      http: this.http,
+      smtp: this.smtp,
+      mqtt: this.mqtt,
+      mqttConfigs: this.mqttConfigs,
+      cameras: this.cameras,
+    };
   }
 
-  getHbConfig() {
-    this.config = fs.readJSONSync(configPath);
-    return this.config;
+  _ui() {
+    return {
+      debug: this.config.debug,
+      port: this.config.port || 8181,
+      language: this.config.language || 'auto',
+      theme: this.config.theme || 'auto',
+      atHomeSwitch: this.config.atHomeSwitch || false,
+    };
   }
 
-  getPluginConfig() {
-    this.getHbConfig();
-    this.plugin = this.config.platforms.find((x) => x.platform === 'CameraUI') || {};
-
-    return this.plugin;
+  _options() {
+    return {
+      videoProcessor: this.config.options?.videoProcessor || ffmpegPath || 'ffmpeg',
+    };
   }
 
-  getUiConfig() {
-    this.ui = uiSettings;
-
-    this.getPluginUiConfig();
-    this.getJwtSecrets();
-
-    return this.ui;
+  _ssl() {
+    return {
+      active: this.config.ssl?.active && this.config.ssl?.key && this.config.ssl?.cert,
+      key: this.config.ssl?.key || false,
+      cert: this.config.ssl?.cert || false,
+    };
   }
 
-  saveHbConfig(platformConfig) {
-    this.getHbConfig();
-
-    for (const index in this.config.platforms) {
-      if (this.config.platforms[index].platform === 'CameraUI') {
-        this.config.platforms[index] = platformConfig;
-      }
-    }
-
-    fs.writeJSONSync(configPath, this.config, { spaces: 4 });
+  _mqtt() {
+    return {
+      active: this.config.mqtt?.active && this.config.mqtt?.host,
+      tls: this.config.mqtt?.tls || false,
+      host: this.config.mqtt?.host || false,
+      port: !Number.isNaN(this.config.mqtt?.port) ? this.config.mqtt.port : 1883,
+      username: this.config.mqtt?.username || '',
+      password: this.config.mqtt?.password || '',
+    };
   }
 
-  getPluginUiConfig() {
-    if (!this.plugin) {
-      this.getPluginConfig();
-    }
+  _mqttConfigs() {
+    const mqttConfigs = new Map();
+    const cameras = this.cameras;
 
-    this.ui.language = this.plugin.language || 'en';
-    this.ui.theme = this.plugin.theme || 'light-pink';
-  }
+    for (const camera of cameras) {
+      if (camera.mqtt && this.mqtt.active) {
+        //setup mqtt topics
+        if (camera.mqtt.motionTopic) {
+          const mqttOptions = {
+            motionTopic: camera.mqtt.motionTopic,
+            motionMessage: camera.mqtt.motionMessage || 'ON',
+            motionResetMessage: camera.mqtt.motionResetMessage || 'OFF',
+            camera: camera.name,
+            motion: true,
+          };
 
-  getJwtSecrets() {
-    if (fs.pathExistsSync(secretPath)) {
-      try {
-        const secrets = fs.readJsonSync(secretPath);
-
-        if (!secrets.jwt_secret) {
-          return this.generateJwtSecrets();
-        } else {
-          this.ui.jwt_secret = secrets.jwt_secret;
-
-          return secrets;
+          mqttConfigs.set(mqttOptions.motionTopic, mqttOptions);
         }
-      } catch {
-        return this.generateJwtSecrets();
+
+        if (camera.mqtt.motionResetTopic && camera.mqtt.motionResetTopic !== camera.mqtt.motionTopic) {
+          const mqttOptions = {
+            motionResetTopic: camera.mqtt.motionResetTopic,
+            motionResetMessage: camera.mqtt.motionResetMessage || 'OFF',
+            camera: camera.name,
+            motion: true,
+            reset: true,
+          };
+
+          mqttConfigs.set(mqttOptions.motionResetTopic, mqttOptions);
+        }
+
+        if (
+          camera.mqtt.doorbellTopic &&
+          camera.mqtt.doorbellTopic !== camera.mqtt.motionTopic &&
+          camera.mqtt.doorbellTopic !== camera.mqtt.motionResetTopic
+        ) {
+          const mqttOptions = {
+            doorbellTopic: camera.mqtt.doorbellTopic,
+            doorbellMessage: camera.mqtt.doorbellMessage || 'ON',
+            camera: camera.name,
+            doorbell: true,
+          };
+
+          mqttConfigs.set(mqttOptions.doorbellTopic, mqttOptions);
+        }
       }
-    } else {
-      return this.generateJwtSecrets();
     }
+
+    return mqttConfigs;
   }
 
-  generateJwtSecrets() {
-    const secrets = {
-      jwt_secret: crypto.randomBytes(32).toString('hex'),
+  _http() {
+    const http = {
+      active: this.config.http?.active || false,
+      port: !Number.isNaN(this.config.http?.port) ? this.config.http.port : 7777,
+      localhttp: this.config.http?.localhttp || false,
     };
 
-    this.ui.jwt_secret = secrets.jwt_secret;
+    return http;
+  }
 
-    fs.ensureFileSync(secretPath);
-    fs.writeJsonSync(secretPath, secrets, { spaces: 2 });
+  _smtp() {
+    const smtp = {
+      active: this.config.smtp?.active || false,
+      port: !Number.isNaN(this.config.smtp?.port) ? this.config.smtp.port : 2525,
+      space_replace: this.config.smtp?.space_replace || '+',
+    };
 
-    return secrets;
+    return smtp;
+  }
+
+  _cameras() {
+    const cameras = (this.config.cameras || [])
+      .filter((camera) => camera.name && camera.videoConfig && camera.videoConfig.source)
+      .map((camera) => {
+        const sourceArguments = camera.videoConfig.source.split(/\s+/);
+
+        if (!sourceArguments.includes('-i')) {
+          logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
+          camera.videoConfig.source = false;
+        }
+
+        if (camera.videoConfig.stimeout > 0 && !sourceArguments.includes('-stimeout')) {
+          if (sourceArguments.includes('-re')) {
+            camera.videoConfig.source = camera.videoConfig.source.replace(
+              '-re',
+              `-stimeout ${camera.videoConfig.stimeout * 10000000} -re` //-stimeout is in micro seconds
+            );
+          } else if (sourceArguments.includes('-i')) {
+            camera.videoConfig.source = camera.videoConfig.source.replace(
+              '-i',
+              `-stimeout ${camera.videoConfig.stimeout * 10000000} -i` //-stimeout is in micro seconds
+            );
+          }
+        }
+
+        if (camera.videoConfig.stillImageSource) {
+          const stillArguments = camera.videoConfig.stillImageSource.split(/\s+/);
+          if (!stillArguments.includes('-i')) {
+            logger.warn(
+              'The stillImageSource for this camera is missing "-i", it is likely misconfigured.',
+              camera.name
+            );
+            camera.videoConfig.stillImageSource = false;
+          }
+        } else {
+          camera.videoConfig.stillImageSource = camera.videoConfig.source;
+        }
+
+        camera.recordOnMovement = camera.hsv ? false : true;
+
+        return camera;
+      })
+      .filter((camera) => camera.videoConfig && camera.videoConfig.source);
+
+    return cameras;
   }
 }
 
-module.exports = new ConfigService();
+module.exports = ConfigSetup;

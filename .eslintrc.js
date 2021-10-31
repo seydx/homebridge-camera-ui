@@ -5,20 +5,13 @@ module.exports = {
     sourceType: 'module',
     requireConfigFile: false,
   },
-  ignorePatterns: ['ui', 'homebridge-ui', 'node_modules', 'misc', 'interface'],
-  plugins: ['@babel', 'jest', 'prettier', 'unicorn'],
-  extends: [
-    'eslint:recommended',
-    'plugin:jest/recommended',
-    'plugin:jest/style',
-    'plugin:prettier/recommended',
-    'plugin:unicorn/recommended',
-  ],
+  ignorePatterns: ['homebridge-ui', 'node_modules'],
+  plugins: ['@babel', 'prettier', 'unicorn'],
+  extends: ['eslint:recommended', 'plugin:prettier/recommended', 'plugin:unicorn/recommended'],
   root: true,
   env: {
     es2021: true,
     node: true,
-    jest: true,
   },
   rules: {
     quotes: ['error', 'single'],

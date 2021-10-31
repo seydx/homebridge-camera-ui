@@ -3,7 +3,7 @@
 </p>
 
 
-# camera.ui
+# homebridge-camera-ui
 
 [![npm](https://img.shields.io/npm/v/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
 [![npm](https://img.shields.io/npm/dt/homebridge-camera-ui.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-camera-ui)
@@ -14,7 +14,7 @@
 
 <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews_full_mobile_loss.gif" align="right" alt="camera.ui">
 
-**camera.ui** is a homebridge user interface to control your RTSP capable cameras. It supports almost everything you need for a camera user interface.
+**homebridge-camera-iu** is a homebridge user interface to control your RTSP capable cameras.
 
 - **HSV** Support (HomeKit Secure Video)
 - **Live streams** on Web

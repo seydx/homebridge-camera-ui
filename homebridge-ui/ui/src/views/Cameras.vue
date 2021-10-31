@@ -18,7 +18,7 @@
 
 <script>
 import JSMpeg from 'jsmpeg-fast-player';
-import JSMpegWritableSource from '../../../../ui/src/common/jsmpeg-source';
+import JSMpegWritableSource from '../../../../node_modules/camera.ui/ui/src/common/jsmpeg-source';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

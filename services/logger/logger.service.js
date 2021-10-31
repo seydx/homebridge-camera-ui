@@ -9,21 +9,11 @@ class Logger {
     DEBUG = debug;
   }
 
-  formatMessage(message, accessoryName, ui) {
+  formatMessage(message, accessoryName) {
     let formatted = '';
 
-    if (!(accessoryName === undefined && ui === undefined)) {
-      if (typeof ui === 'string') {
-        formatted += `${ui} `;
-      } else if (ui) {
-        formatted += '[Interface] ';
-      } else {
-        formatted += '[Plugin] ';
-      }
-
-      if (accessoryName) {
-        formatted += accessoryName + ': ';
-      }
+    if (accessoryName) {
+      formatted += accessoryName + ': ';
     }
 
     if (message instanceof Error) {
@@ -37,21 +27,21 @@ class Logger {
     return formatted;
   }
 
-  info(message, accessoryName, ui) {
-    LOG.info(this.formatMessage(message, accessoryName, ui));
+  info(message, accessoryName) {
+    LOG.info(this.formatMessage(message, accessoryName));
   }
 
-  warn(message, accessoryName, ui) {
-    LOG.warn(this.formatMessage(message, accessoryName, ui));
+  warn(message, accessoryName) {
+    LOG.warn(this.formatMessage(message, accessoryName));
   }
 
-  error(message, accessoryName, ui) {
-    LOG.error(this.formatMessage(message, accessoryName, ui));
+  error(message, accessoryName) {
+    LOG.error(this.formatMessage(message, accessoryName));
   }
 
-  debug(message, accessoryName, ui) {
+  debug(message, accessoryName) {
     if (DEBUG) {
-      LOG.info(this.formatMessage(message, accessoryName, ui));
+      LOG.info(this.formatMessage(message, accessoryName));
     }
   }
 }
