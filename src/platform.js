@@ -1,6 +1,7 @@
 'use-strict';
 
 const CameraUI = require('camera.ui');
+const fs = require('fs-extra');
 
 const packageFile = require('../package.json');
 const logger = require('../services/logger/logger.service');
@@ -72,6 +73,7 @@ function HomebridgeCameraUi(log, config, api) {
 
   this.api.on('didFinishLaunching', this.init.bind(this));
   this.api.on('shutdown', () => this.cameraUi.close());
+  this.cameraUi.on('config', (configJson) => this.changeConfig.bind(this, configJson));
 }
 
 HomebridgeCameraUi.prototype = {
@@ -80,6 +82,27 @@ HomebridgeCameraUi.prototype = {
 
     this.configure();
     this.handler.finishLoading(this.accessories, this.cameraUi);
+  },
+
+  changeConfig: async function (configJson) {
+    try {
+      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
+
+      for (const index in config.platforms) {
+        if (config.platforms[index].platform === 'CameraUI') {
+          for (const [key, value] of Object.entries(configJson)) {
+            if (config.platforms[index][key] !== undefined) {
+              config.platforms[index][key] = value;
+            }
+          }
+        }
+      }
+
+      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+    } catch (error) {
+      logger.warn('An error occured during changing config.json');
+      logger.error(error);
+    }
   },
 
   configure: function () {
