@@ -28,6 +28,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 4 seconds to see the event BEFORE the movement. When HSV is enabled, the duration of the recording is completely determined by Apple Home.
 - **Notifications**
   - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
+- **Settings**
+  - **Config:** Added new endpoints to control (update/reboot/configure) the system. To control these endpoints, a new "Config" page has been added under "Settings". So it is now possible to update camera.ui, reboot the instance or configure your config.json with a nice editor.
 
 ## Other changes
 - **Interface**
@@ -43,6 +45,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Server**
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout if socket disconnected/unauthenticated
+  - Auto restart stream on reconnect to socket
 - Bump dependencies
 
 ## Bugfixes
