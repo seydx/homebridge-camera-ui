@@ -73,7 +73,9 @@ function HomebridgeCameraUi(log, config, api) {
 
   this.api.on('didFinishLaunching', this.init.bind(this));
   this.api.on('shutdown', () => this.cameraUi.close());
-  this.cameraUi.on('config', (configJson) => this.changeConfig.bind(this, configJson));
+
+  this.cameraUi.on('config', (configJson) => this.changeConfig(configJson));
+  this.cameraUi.on('restart', () => this.restartProcess());
 }
 
 HomebridgeCameraUi.prototype = {
@@ -84,8 +86,20 @@ HomebridgeCameraUi.prototype = {
     this.handler.finishLoading(this.accessories, this.cameraUi);
   },
 
+  restartProcess: function () {
+    logger.info('Shutting down...');
+    this.cameraUi.close();
+
+    setTimeout(() => {
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(1);
+    }, 5000);
+  },
+
   changeConfig: async function (configJson) {
     try {
+      logger.info('Config changed through interface, saving...');
+
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
       for (const index in config.platforms) {
@@ -99,6 +113,8 @@ HomebridgeCameraUi.prototype = {
       }
 
       fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+
+      logger.info('config.json saved!');
     } catch (error) {
       logger.warn('An error occured during changing config.json');
       logger.error(error);
