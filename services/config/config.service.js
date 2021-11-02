@@ -30,7 +30,7 @@ class ConfigSetup {
 
   _ui() {
     return {
-      debug: this.config.debug,
+      debug: this.config.debug || false,
       port: this.config.port || 8181,
       language: this.config.language || 'auto',
       theme: this.config.theme || 'auto',
@@ -46,7 +46,7 @@ class ConfigSetup {
 
   _ssl() {
     return {
-      active: this.config.ssl?.active && this.config.ssl?.key && this.config.ssl?.cert,
+      active: Boolean(this.config.ssl?.active && this.config.ssl?.key && this.config.ssl?.cert),
       key: this.config.ssl?.key || false,
       cert: this.config.ssl?.cert || false,
     };
@@ -54,9 +54,9 @@ class ConfigSetup {
 
   _mqtt() {
     return {
-      active: this.config.mqtt?.active && this.config.mqtt?.host,
+      active: Boolean(this.config.mqtt?.active && this.config.mqtt?.host),
       tls: this.config.mqtt?.tls || false,
-      host: this.config.mqtt?.host || false,
+      host: this.config.mqtt?.host || '',
       port: !Number.isNaN(this.config.mqtt?.port) ? this.config.mqtt.port : 1883,
       username: this.config.mqtt?.username || '',
       password: this.config.mqtt?.password || '',
