@@ -12,6 +12,7 @@ class Handler {
     this.cameraUi = cameraUi;
 
     this.cameraUi.on('motion', (cameraName, trigger, state) => {
+      //handle motion from mqtt/http/smtp (passed through camera.ui)
       this.handle(trigger, cameraName, state);
     });
 
@@ -28,7 +29,7 @@ class Handler {
     this.initialized = true;
   }
 
-  handle(target, name, active) {
+  async handle(target, name, active) {
     if (this.initialized) {
       const accessory = this.accessories.find((accessory) => accessory.displayName == name);
 
@@ -38,13 +39,13 @@ class Handler {
         switch (target) {
           case 'motion':
             logger.debug(`Motion event triggered. State: ${active}`, accessory.displayName);
-            data = this.motionHandler(accessory, active);
+            data = await this.motionHandler(accessory, active);
 
             break;
 
           case 'doorbell':
             logger.debug(`Doorbell event triggered. State: ${active}`, accessory.displayName);
-            data = this.doorbellHandler(accessory, active);
+            data = await this.doorbellHandler(accessory, active);
 
             break;
 
@@ -72,11 +73,11 @@ class Handler {
     };
   }
 
-  motionHandler(accessory, active, manual) {
+  async motionHandler(accessory, active, manual) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
 
     if (motionSensor) {
-      logger.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
+      const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
 
       const cameraConfig = cameras.get(accessory.UUID);
       const timeout = motionTimers.get(accessory.UUID);
@@ -86,7 +87,26 @@ class Handler {
         motionTimers.delete(accessory.UUID);
       }
 
-      const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
+      if (manual) {
+        const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+        const atHome = generalSettings?.atHome || false;
+        const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
+
+        if (atHome && !cameraExcluded) {
+          logger.debug(
+            `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
+            accessory.displayName
+          );
+
+          if (motionTrigger) {
+            setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+          }
+
+          return;
+        }
+      }
+
+      logger.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
       if (active) {
         if (manual && !cameraConfig.hsv) {
@@ -149,11 +169,11 @@ class Handler {
     }
   }
 
-  doorbellHandler(accessory, active, manual, fromMotion) {
+  async doorbellHandler(accessory, active, manual, fromMotion) {
     const doorbell = accessory.getService(this.hap.Service.Doorbell);
 
     if (doorbell) {
-      logger.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
+      const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
 
       const cameraConfig = cameras.get(accessory.UUID);
       const timeout = doorbellTimers.get(accessory.UUID);
@@ -163,7 +183,26 @@ class Handler {
         doorbellTimers.delete(accessory.UUID);
       }
 
-      const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
+      if (manual) {
+        const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+        const atHome = generalSettings?.atHome || false;
+        const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
+
+        if (atHome && !cameraExcluded) {
+          logger.debug(
+            `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
+            accessory.displayName
+          );
+
+          if (doorbellTrigger) {
+            setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+          }
+
+          return;
+        }
+      }
+
+      logger.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
       if (active) {
         if (!fromMotion && manual && !cameraConfig.hsv) {

@@ -172,6 +172,14 @@ class ConfigSetup {
           camera.videoConfig.stillImageSource = camera.videoConfig.source;
         }
 
+        //validate some required parameter
+        camera.videoConfig.maxWidth = camera.videoConfig.maxWidth || 1280;
+        camera.videoConfig.maxHeight = camera.videoConfig.maxHeight || 720;
+        camera.videoConfig.maxFPS = camera.videoConfig.maxFPS >= 20 ? camera.videoConfig.maxFPS : 20;
+        camera.videoConfig.maxStreams = camera.videoConfig.maxStreams >= 1 ? camera.videoConfig.maxStreams : 3;
+        camera.videoConfig.maxBitrate = camera.videoConfig.maxBitrate || 299;
+        camera.videoConfig.vcodec = camera.videoConfig.vcodec || 'libx264';
+        camera.videoConfig.encoderOptions = camera.videoConfig.encoderOptions || '-preset ultrafast -tune zerolatency';
         camera.recordOnMovement = camera.hsv ? false : true;
 
         return camera;
