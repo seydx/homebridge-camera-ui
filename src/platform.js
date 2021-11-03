@@ -2,8 +2,8 @@
 
 const CameraUI = require('camera.ui');
 const fs = require('fs-extra');
+const { version } = require('../package.json');
 
-const packageFile = require('../package.json');
 const logger = require('../services/logger/logger.service');
 
 const Camera = require('./accessories/camera');
@@ -39,7 +39,13 @@ function HomebridgeCameraUi(log, config, api) {
   this.config = new Config(config);
   this.devices = new Map();
 
-  this.cameraUi = new CameraUI(this.config, `${this.api.user.storagePath()}/camera.ui`, logger);
+  this.cameraUi = new CameraUI(this.config, `${this.api.user.storagePath()}/camera.ui`, logger, {
+    moduleName: 'homebridge-camera-ui',
+    moduleVersion: version,
+    global: true,
+    sudo: true,
+  });
+
   this.handler = new Handler(this.api.hap, this.cameraUi);
 
   for (const device of this.config.cameras) {
@@ -189,7 +195,7 @@ HomebridgeCameraUi.prototype = {
       );
       AccessoryInformation.setCharacteristic(
         this.api.hap.Characteristic.FirmwareRevision,
-        device.firmwareRevision || packageFile.version
+        device.firmwareRevision || version
       );
     }
 

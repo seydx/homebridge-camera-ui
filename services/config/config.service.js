@@ -47,8 +47,8 @@ class ConfigSetup {
   _ssl() {
     return {
       active: Boolean(this.config.ssl?.active && this.config.ssl?.key && this.config.ssl?.cert),
-      key: this.config.ssl?.key || false,
-      cert: this.config.ssl?.cert || false,
+      key: this.config.ssl?.key,
+      cert: this.config.ssl?.cert,
     };
   }
 

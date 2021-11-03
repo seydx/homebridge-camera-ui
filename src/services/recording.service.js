@@ -55,12 +55,31 @@ class RecordingDelegate {
         ? '3.2'
         : '3.1';
 
+    let fps =
+      this.videoConfig.maxFPS &&
+      (this.videoConfig.forceMax || configuration.videoCodec.resolution[2] > this.videoConfig.maxFPS)
+        ? this.videoConfig.maxFPS
+        : configuration.videoCodec.resolution[2];
+
+    let videoBitrate =
+      this.videoConfig.maxBitrate &&
+      (this.videoConfig.forceMax || configuration.videoCodec.bitrate > this.videoConfig.maxBitrate)
+        ? this.videoConfig.maxBitrate
+        : configuration.videoCodec.bitrate;
+
+    const vcodec = this.videoConfig.vcodec || 'libx264';
+
+    if (vcodec === 'copy') {
+      fps = 0;
+      videoBitrate = 0;
+    }
+
     const videoArguments = [
       '-an',
       '-sn',
       '-dn',
       '-codec:v',
-      'libx264',
+      vcodec,
       '-pix_fmt',
       'yuv420p',
       '-profile:v',
@@ -68,13 +87,11 @@ class RecordingDelegate {
       '-level:v',
       level,
       '-b:v',
-      `${configuration.videoCodec.bitrate}k`,
+      `${videoBitrate}k`,
       '-force_key_frames',
       `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
       '-r',
-      configuration.videoCodec.resolution[2].toString(),
-      //'-vf',
-      //`scale=w=${configuration.videoCodec.resolution[0]}:h=${configuration.videoCodec.resolution[1]}:force_original_aspect_ratio=1,pad=${configuration.videoCodec.resolution[0]}:${configuration.videoCodec.resolution[1]}:(ow-iw)/2:(oh-ih)/2`,
+      fps.toString(),
     ];
 
     let ffmpegInput = [...this.videoConfig.source.split(' ')];
