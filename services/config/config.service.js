@@ -182,7 +182,7 @@ class ConfigSetup {
           }
 
           if (camera.videoConfig.analyzeDuration) {
-            camera.videoConfig.source = `-analyzeduration ${camera.videoConfig.analyzeduration} ${camera.videoConfig.source}`;
+            camera.videoConfig.source = `-analyzeduration ${camera.videoConfig.analyzeDuration} ${camera.videoConfig.source}`;
           }
 
           if (camera.videoConfig.rtspTransport) {
