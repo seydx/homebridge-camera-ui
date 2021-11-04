@@ -145,20 +145,6 @@ class ConfigSetup {
           camera.videoConfig.source = false;
         }
 
-        if (camera.videoConfig.stimeout > 0 && !sourceArguments.includes('-stimeout')) {
-          if (sourceArguments.includes('-re')) {
-            camera.videoConfig.source = camera.videoConfig.source.replace(
-              '-re',
-              `-stimeout ${camera.videoConfig.stimeout * 10000000} -re` //-stimeout is in micro seconds
-            );
-          } else if (sourceArguments.includes('-i')) {
-            camera.videoConfig.source = camera.videoConfig.source.replace(
-              '-i',
-              `-stimeout ${camera.videoConfig.stimeout * 10000000} -i` //-stimeout is in micro seconds
-            );
-          }
-        }
-
         if (camera.videoConfig.stillImageSource) {
           const stillArguments = camera.videoConfig.stillImageSource.split(/\s+/);
           if (!stillArguments.includes('-i')) {
@@ -172,14 +158,38 @@ class ConfigSetup {
           camera.videoConfig.stillImageSource = camera.videoConfig.source;
         }
 
-        //validate some required parameter
-        camera.videoConfig.maxWidth = camera.videoConfig.maxWidth || 1280;
-        camera.videoConfig.maxHeight = camera.videoConfig.maxHeight || 720;
-        camera.videoConfig.maxFPS = camera.videoConfig.maxFPS >= 20 ? camera.videoConfig.maxFPS : 20;
-        camera.videoConfig.maxStreams = camera.videoConfig.maxStreams >= 1 ? camera.videoConfig.maxStreams : 3;
-        camera.videoConfig.maxBitrate = camera.videoConfig.maxBitrate || 299;
-        camera.videoConfig.vcodec = camera.videoConfig.vcodec || 'libx264';
-        camera.videoConfig.encoderOptions = camera.videoConfig.encoderOptions || '-preset ultrafast -tune zerolatency';
+        if (camera.videoConfig.source) {
+          if (camera.videoConfig.readRate) {
+            camera.videoConfig.source = `-re ${camera.videoConfig.source}`;
+          }
+
+          if (camera.videoConfig.stimeout > 0) {
+            camera.videoConfig.source = `-stimeout ${camera.videoConfig.stimeout * 10000000} ${
+              camera.videoConfig.source
+            }`;
+          }
+
+          if (camera.videoConfig.maxDelay) {
+            camera.videoConfig.source = `-max_delay ${camera.videoConfig.maxDelay} ${camera.videoConfig.source}`;
+          }
+
+          if (camera.videoConfig.reorderQueueSize) {
+            camera.videoConfig.source = `-reorder_queue_size ${camera.videoConfig.reorderQueueSize} ${camera.videoConfig.source}`;
+          }
+
+          if (camera.videoConfig.probeSize) {
+            camera.videoConfig.source = `-probesize ${camera.videoConfig.probeSize} ${camera.videoConfig.source}`;
+          }
+
+          if (camera.videoConfig.analyzeDuration) {
+            camera.videoConfig.source = `-analyzeduration ${camera.videoConfig.analyzeduration} ${camera.videoConfig.source}`;
+          }
+
+          if (camera.videoConfig.rtspTransport) {
+            camera.videoConfig.source = `-rtsp_transport ${camera.videoConfig.rtspTransport} ${camera.videoConfig.source}`;
+          }
+        }
+
         camera.recordOnMovement = camera.hsv ? false : true;
 
         return camera;

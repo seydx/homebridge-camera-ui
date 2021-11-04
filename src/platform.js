@@ -36,15 +36,15 @@ function HomebridgeCameraUi(log, config, api) {
   this.accessories = [];
   this.cameraAccessories = [];
 
-  this.config = new Config(config);
-  this.devices = new Map();
-
-  this.cameraUi = new CameraUI(this.config, `${this.api.user.storagePath()}/camera.ui`, logger, {
+  this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, logger, {
     moduleName: 'homebridge-camera-ui',
     moduleVersion: version,
     global: true,
     sudo: true,
   });
+
+  this.config = new Config(config);
+  this.devices = new Map();
 
   this.handler = new Handler(this.api.hap, this.cameraUi);
 

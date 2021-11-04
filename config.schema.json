@@ -283,6 +283,55 @@
                 "type": "string",
                 "description": "If your camera also provides a URL for a still image, that can be defined here with the same syntax as 'source'. If not set, the plugin will grab one frame from 'source'."
               },
+              "readRate": {
+                "title": "Read Rate",
+                "type": "boolean",
+                "description": "Read input at native frame rate (-re)."
+              },
+              "rtspTransport": {
+                "title": "RTSP Transport",
+                "required": true,
+                "type": "string",
+                "oneOf": [
+                  {
+                    "title": "udp",
+                    "enum": ["udp"]
+                  },
+                  {
+                    "title": "tcp",
+                    "enum": ["tcp"]
+                  },
+                  {
+                    "title": "http",
+                    "enum": ["http"]
+                  },
+                  {
+                    "title": "udp_multicast",
+                    "enum": ["udp_multicast"]
+                  }
+                ],
+                "description": "Set RTSP transport protocols (-rtsp_transport)"
+              },
+              "analyzeDuration": {
+                "title": "Analyze Duration",
+                "type": "integer",
+                "description": "Specify how many microseconds are analyzed to probe the input. A higher value will enable detecting more accurate information, but will increase latency. It defaults to 5,000,000 microseconds = 5 seconds (-analyzeduration)."
+              },
+              "probeSize": {
+                "title": "Probe Size",
+                "type": "integer",
+                "description": "Set probing size in bytes, i.e. the size of the data to analyze to get stream information. A higher value will enable detecting more information in case it is dispersed into the stream, but will increase latency. Must be an integer not lesser than 32. It is 5000000 by default (-probesize)."
+              },
+              "reorderQueueSize": {
+                "title": "Reorder Queue Size (Jitter buffer size)",
+                "type": "integer",
+                "description": "Packets may be received out of order, so before they can be passed onwards, they need to be reordered. Default jitter buffer size is 500. This option allows you to specify it manually. Higher values will lead to greater latency. Only applicable for reception over UDP (-reorder_queue_size)."
+              },
+              "maxDelay": {
+                "title": "Max Delay",
+                "type": "integer",
+                "description": "When receiving data over UDP, the demuxer tries to reorder received packets (since they may arrive out of order, or packets may get lost totally). This can be disabled by setting the maximum demuxing delay to zero (-max_delay)."
+              },
               "returnAudioTarget": {
                 "title": "Two-way Audio Target (EXPERIMENTAL - WIP)",
                 "type": "string",
@@ -301,7 +350,7 @@
                 "placeholder": 1280,
                 "multipleOf": 2,
                 "minimum": 0,
-                "description": "The maximum width used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+                "description": "The maximum width used for video stream. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests (-s)."
               },
               "maxHeight": {
                 "title": "Maximum Height",
@@ -309,31 +358,26 @@
                 "placeholder": 720,
                 "multipleOf": 2,
                 "minimum": 0,
-                "description": "The maximum height used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+                "description": "The maximum height used for video stream. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests (-s)."
               },
               "maxFPS": {
                 "title": "Maximum Framerate",
                 "type": "integer",
-                "placeholder": 30,
+                "placeholder": 20,
                 "minimum": 0,
-                "description": "The maximum frame rate used for video streamed to HomeKit. If set to 0, the framerate of the source is used. If not set, will use any framerate HomeKit requests."
+                "description": "The maximum frame rate used for video streamed to HomeKit. If set to 0, the framerate of the source is used. If not set, will use any framerate HomeKit requests (-r)."
               },
               "maxBitrate": {
                 "title": "Maximum Bitrate",
                 "type": "integer",
                 "placeholder": 299,
                 "minimum": 0,
-                "description": "The maximum bitrate used for video streamed to HomeKit, in kbit/s. If not set, will use any bitrate HomeKit requests."
+                "description": "The maximum bitrate used for video stream, in kbit/s. If not set, will use any bitrate HomeKit requests (-b:v)."
               },
               "forceMax": {
                 "title": "Force Maximums",
                 "type": "boolean",
                 "description": "If set, the settings requested by HomeKit will be overridden with any 'maximum' values defined in this config."
-              },
-              "preserveRatio": {
-                "title": "Preserve Aspect Ratio",
-                "type": "boolean",
-                "description": "Preserves the aspect ratio of the source video."
               },
               "vcodec": {
                 "title": "Video Codec",
@@ -342,7 +386,7 @@
                 "typeahead": {
                   "source": ["libx264", "h264_omx", "h264_videotoolbox", "copy"]
                 },
-                "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available."
+                "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available (-vcodec)."
               },
               "packetSize": {
                 "title": "Packet Size",
@@ -355,8 +399,7 @@
               "stimeout": {
                 "title": "Socket Timeout",
                 "type": "number",
-                "description": "Socket TCP I/O timeout in seconds (-stimeout). If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time (if no response comes).",
-                "default": 0,
+                "description": "Socket TCP I/O timeout in seconds. If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time, if no response comes (-stimeout).",
                 "minimum": 0,
                 "maximum": 60,
                 "placeholder": 10
@@ -364,7 +407,7 @@
               "videoFilter": {
                 "title": "Additional Video Filters",
                 "type": "string",
-                "description": "Comma-delimited list of additional video filters for FFmpeg to run on the video. If 'none' is included, the default video filters are disabled."
+                "description": "Comma-delimited list of additional video filters for FFmpeg to run on the video. If 'none' is included, the default video filters are disabled (-filter:v)."
               },
               "encoderOptions": {
                 "title": "Encoder Options",
@@ -375,12 +418,12 @@
               "mapvideo": {
                 "type": "string",
                 "title": "Video Stream",
-                "description": "Selects the stream used for video."
+                "description": "Selects the stream used for video (-map)."
               },
               "mapaudio": {
                 "type": "string",
                 "title": "Audio Stream",
-                "description": "Selects the stream used for audio."
+                "description": "Selects the stream used for audio (-map)."
               },
               "audio": {
                 "title": "Enable Audio",
@@ -445,7 +488,7 @@
   "layout": [
     {
       "type": "section",
-      "title": "User Interface",
+      "title": "Interface",
       "expandable": true,
       "expanded": false,
       "orderable": false,
@@ -478,13 +521,9 @@
           "buttonText": "Add Camera",
           "items": [
             "cameras[].name",
-            "cameras[].videoConfig.source",
-            "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
-            "cameras[].videoConfig.audio",
             "cameras[].hsv",
             "cameras[].prebuffering",
-            "cameras[].videoConfig.debug",
             {
               "key": "cameras[]",
               "type": "section",
@@ -501,27 +540,37 @@
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Video Output",
+              "title": "Stream Configuration",
               "expandable": true,
               "expanded": false,
               "items": [
-                "cameras[].videoConfig.stimeout",
+                "cameras[].videoConfig.source",
+                "cameras[].videoConfig.stillImageSource",
                 "cameras[].videoConfig.maxStreams",
                 "cameras[].videoConfig.maxWidth",
                 "cameras[].videoConfig.maxHeight",
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
-                "cameras[].videoConfig.forceMax"
+                "cameras[].videoConfig.audio",
+                "cameras[].videoConfig.forceMax",
+                "cameras[].videoConfig.debug"
               ]
             },
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Advanced",
+              "title": "Advanced Stream Configuration",
               "expandable": true,
               "expanded": false,
               "items": [
+                "cameras[].videoConfig.readRate",
                 "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.rtspTransport",
+                "cameras[].videoConfig.analyzeDuration",
+                "cameras[].videoConfig.probeSize",
+                "cameras[].videoConfig.reorderQueueSize",
+                "cameras[].videoConfig.maxDelay",
+                "cameras[].videoConfig.stimeout",
                 "cameras[].videoConfig.packetSize",
                 "cameras[].videoConfig.mapvideo",
                 "cameras[].videoConfig.mapaudio",
