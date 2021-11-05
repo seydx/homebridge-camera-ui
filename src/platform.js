@@ -36,6 +36,9 @@ function HomebridgeCameraUi(log, config, api) {
   this.accessories = [];
   this.cameraAccessories = [];
 
+  // eslint-disable-next-line unicorn/no-array-for-each
+  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera?.hsv ? false : true));
+
   this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, logger, {
     moduleName: 'homebridge-camera-ui',
     moduleVersion: version,

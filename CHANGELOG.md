@@ -46,6 +46,9 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout if socket disconnected/unauthenticated
   - Auto restart stream on reconnect to socket
+- **Plugin**
+  - Refactored config.schema.json
+  - Added more ffmpeg options
 - Bump dependencies
 
 ## Bugfixes
