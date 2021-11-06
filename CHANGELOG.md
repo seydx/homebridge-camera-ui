@@ -34,6 +34,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 ## Other changes
 - **Interface**
   - Added a new `onboard page` for first start
+  - Added new `automation` section to general settings page
   - Added a new page to settings: `"configuration"`
   - Added 16:9 aspect ratio to `camera` view
   - Added form validation for settings
