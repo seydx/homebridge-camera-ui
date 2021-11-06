@@ -327,6 +327,11 @@
                 "type": "integer",
                 "description": "Packets may be received out of order, so before they can be passed onwards, they need to be reordered. Default jitter buffer size is 500. This option allows you to specify it manually. Higher values will lead to greater latency. Only applicable for reception over UDP (-reorder_queue_size)."
               },
+              "threadQueueSize": {
+                "title": "Thread Queue Size",
+                "type": "integer",
+                "description": "This option sets the maximum number of queued packets when reading from the file or device. With low latency / high rate live streams, packets may be discarded if they are not read in a timely manner; setting this value can force ffmpeg to use a separate input thread and read packets as soon as they arrive. By default ffmpeg only do this if multiple inputs are specified. (-thread_queue_size)."
+              },
               "maxDelay": {
                 "title": "Max Delay",
                 "type": "integer",
@@ -579,6 +584,7 @@
                 "cameras[].videoConfig.analyzeDuration",
                 "cameras[].videoConfig.probeSize",
                 "cameras[].videoConfig.reorderQueueSize",
+                "cameras[].videoConfig.threadQueueSize",
                 "cameras[].videoConfig.maxDelay",
                 "cameras[].videoConfig.stimeout",
                 "cameras[].videoConfig.packetSize",

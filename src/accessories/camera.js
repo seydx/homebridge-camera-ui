@@ -108,7 +108,7 @@ class Camera {
       recording: this.hsv
         ? {
             options: {
-              prebufferLength: 4000,
+              prebufferLength: 6000,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {
@@ -479,7 +479,7 @@ class Camera {
         this.accessory.displayName
       );
 
-      let ffmpegArguments = this.videoConfig.source;
+      let ffmpegArguments = '-hide_banner ' + this.videoConfig.source;
 
       ffmpegArguments += // Video
         (this.videoConfig.mapvideo ? ' -map ' + this.videoConfig.mapvideo : ' -an -sn -dn') +

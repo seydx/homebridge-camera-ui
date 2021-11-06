@@ -129,8 +129,8 @@ class RecordingDelegate {
         //'-dn',
         '-codec:v',
         vcodec,
-        //'-pix_fmt',
-        //'yuv420p',
+        '-pix_fmt',
+        'yuv420p',
         '-profile:v',
         profile,
         '-level:v',
@@ -159,7 +159,6 @@ class RecordingDelegate {
     let pending = [];
     let filebuffer = Buffer.alloc(0);
 
-    //try {
     try {
       for await (const box of generator) {
         const { header, type, length, data } = box;
@@ -180,30 +179,19 @@ class RecordingDelegate {
         }
       }
     } catch (error) {
-      if (error !== 'dataSend close') {
-        logger.warn('An error occured during recording hsv video!', this.cameraName);
-        logger.error(error, this.cameraName);
-      } else {
+      if (error === 'connection closed') {
+        logger.warn('HSV connection closed!', this.cameraName);
+      } else if (error === 'dataSend close') {
         logger.debug('Recording completed. (dataSend close (hsv))', this.cameraName);
         this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
+      } else {
+        logger.warn('An error occured during recording hsv video!', this.cameraName);
+        logger.error(error, this.cameraName);
       }
-
-      /*
-      logger.warn(error.message ? error.message : error, this.cameraName);
-      
-      if (error === 'dataSend close' || error === 'connection closed') {
-        logger.debug(`Recording completed. (${error} (hsv))`, this.cameraName);
-        this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
-      }
-      */
     } finally {
       socket.destroy();
       cp.kill();
     }
-    /*} catch(error) {
-      logger.debug(`Recording completed after error. (${error} (hsv))`, this.cameraName);
-      this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
-    }*/
   }
 
   async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
