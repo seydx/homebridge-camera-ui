@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "5.0.0-alpha.37",
+  "version": "5.0.0-alpha.43",
   "description": "User Interface for RTSP capable cameras with HSV support.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -9,7 +9,7 @@
     "lint:homebridge-ui": "npm run lint --prefix homebridge-ui/ui",
     "lint:plugin": "eslint --fix .",
     "watch": "npm run watch:homebridge-ui",
-    "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
+    "prepublishOnly": "npm i --package-lock-only && npm audit fix && npm run lint && npm run build"
   },
   "main": "index.js",
   "dependencies": {
@@ -17,19 +17,19 @@
     "ffmpeg-for-homebridge": "^0.0.9",
     "fs-extra": "10.0.0",
     "pick-port": "^1.0.0",
-    "camera.ui": "^1.0.0-alpha.37"
+    "camera.ui": "^1.0.0-alpha.43"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
     "@babel/eslint-parser": "7.16.0",
     "@babel/eslint-plugin": "7.14.5",
     "concurrently": "^6.3.0",
-    "eslint": "^8.1.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-jest": "^25.2.2",
+    "eslint-plugin-jest": "^25.2.3",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-unicorn": "^37.0.1",
+    "eslint-plugin-unicorn": "^38.0.0",
     "prettier": "^2.4.1"
   },
   "bugs": {

@@ -25,21 +25,59 @@ class RecordingDelegate {
 
     const iframeIntervalSeconds = 4;
 
-    let audioArguments = [];
+    let ffmpegInput = ['-thread_queue_size 1024', ...this.videoConfig.source.split(' ')];
 
-    audioArguments.push(
-      '-acodec',
-      'libfdk_aac',
-      ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
-        ? ['-profile:a', 'aac_low']
-        : ['-profile:a', 'aac_eld']),
-      '-ar',
-      `${this.hap.AudioRecordingSamplerateValues[configuration.audioCodec.samplerate]}k`,
-      '-b:a',
-      `${configuration.audioCodec.bitrate}k`,
-      '-ac',
-      `${configuration.audioCodec.audioChannels}`
-    );
+    if (this.prebuffering) {
+      const controller = this.cameraUi.cameraController.get(this.cameraName);
+
+      if (controller && controller.prebuffer) {
+        try {
+          logger.debug('Setting prebuffer stream as input', this.cameraName);
+
+          const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
+
+          ffmpegInput.push(...input);
+        } catch (error) {
+          logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
+        }
+      }
+    }
+
+    if (!this.videoConfig.audio) {
+      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+    }
+
+    let acodec = this.videoConfig.acodec || 'libfdk_aac';
+    const audioArguments = [];
+
+    if (acodec === 'copy' && this.videoConfig.audio) {
+      audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
+    } else {
+      if (acodec !== 'libfdk_aac') {
+        logger.warn(
+          'Recording audio codec is not explicitly "libfdk_aac", forcing transcoding. Setting audio codec to "libfdk_aac" is recommended.',
+          this.cameraName
+        );
+
+        acodec = 'libfdk_aac';
+      }
+
+      audioArguments.push(
+        '-bsf:a',
+        'aac_adtstoasc',
+        '-acodec',
+        `${acodec}`,
+        ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
+          ? ['-profile:a', 'aac_low']
+          : ['-profile:a', 'aac_eld']),
+        '-ar',
+        `${this.hap.AudioRecordingSamplerateValues[configuration.audioCodec.samplerate]}k`,
+        '-b:a',
+        `${configuration.audioCodec.bitrate}k`,
+        '-ac',
+        `${configuration.audioCodec.audioChannels}`
+      );
+    }
 
     const profile =
       configuration.videoCodec.profile === this.hap.H264Profile.HIGH
@@ -55,6 +93,18 @@ class RecordingDelegate {
         ? '3.2'
         : '3.1';
 
+    let width =
+      this.videoConfig.maxWidth &&
+      (this.videoConfig.forceMax || configuration.videoCodec.resolution[0] > this.videoConfig.maxWidth)
+        ? this.videoConfig.maxWidth
+        : configuration.videoCodec.resolution[0];
+
+    let height =
+      this.videoConfig.maxHeight &&
+      (this.videoConfig.forceMax || configuration.videoCodec.resolution[1] > this.videoConfig.maxHeight)
+        ? this.videoConfig.maxHeight
+        : configuration.videoCodec.resolution[1];
+
     let fps =
       this.videoConfig.maxFPS &&
       (this.videoConfig.forceMax || configuration.videoCodec.resolution[2] > this.videoConfig.maxFPS)
@@ -68,49 +118,32 @@ class RecordingDelegate {
         : configuration.videoCodec.bitrate;
 
     const vcodec = this.videoConfig.vcodec || 'libx264';
+    const videoArguments = [];
 
     if (vcodec === 'copy') {
-      fps = 0;
-      videoBitrate = 0;
-    }
-
-    const videoArguments = [
-      '-an',
-      '-sn',
-      '-dn',
-      '-codec:v',
-      vcodec,
-      '-pix_fmt',
-      'yuv420p',
-      '-profile:v',
-      profile,
-      '-level:v',
-      level,
-      '-b:v',
-      `${videoBitrate}k`,
-      '-force_key_frames',
-      `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
-      '-r',
-      fps.toString(),
-    ];
-
-    let ffmpegInput = [...this.videoConfig.source.split(' ')];
-
-    if (this.prebuffering) {
-      const controller = this.cameraUi.cameraController.get(this.cameraName);
-
-      if (controller && controller.prebuffer) {
-        try {
-          logger.debug('Setting prebuffer stream as input', this.cameraName);
-
-          const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
-
-          ffmpegInput = [];
-          ffmpegInput.push(...input);
-        } catch (error) {
-          logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
-        }
-      }
+      videoArguments.push('-vcodec', 'copy');
+    } else {
+      videoArguments.push(
+        //'-an',
+        //'-sn',
+        //'-dn',
+        '-codec:v',
+        vcodec,
+        //'-pix_fmt',
+        //'yuv420p',
+        '-profile:v',
+        profile,
+        '-level:v',
+        level,
+        '-b:v',
+        `${videoBitrate}k`,
+        '-force_key_frames',
+        `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
+        '-r',
+        fps.toString(),
+        '-vf',
+        `scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`
+      );
     }
 
     const session = await this.startFFMPegFragmetedMP4Session(
@@ -126,6 +159,7 @@ class RecordingDelegate {
     let pending = [];
     let filebuffer = Buffer.alloc(0);
 
+    //try {
     try {
       for await (const box of generator) {
         const { header, type, length, data } = box;
@@ -153,10 +187,23 @@ class RecordingDelegate {
         logger.debug('Recording completed. (dataSend close (hsv))', this.cameraName);
         this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
       }
+
+      /*
+      logger.warn(error.message ? error.message : error, this.cameraName);
+      
+      if (error === 'dataSend close' || error === 'connection closed') {
+        logger.debug(`Recording completed. (${error} (hsv))`, this.cameraName);
+        this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
+      }
+      */
     } finally {
       socket.destroy();
       cp.kill();
     }
+    /*} catch(error) {
+      logger.debug(`Recording completed after error. (${error} (hsv))`, this.cameraName);
+      this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
+    }*/
   }
 
   async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
@@ -190,10 +237,10 @@ class RecordingDelegate {
         });
       });
       const serverPort = await this.listenServer(server);
-      const arguments_ = [];
+      const arguments_ = [...ffmpegInput];
 
       arguments_.push(
-        ...ffmpegInput,
+        ...audioOutputArguments,
         '-f',
         'mp4',
         ...videoOutputArguments,
@@ -208,7 +255,7 @@ class RecordingDelegate {
 
       logger.debug(ffmpegPath + ' ' + arguments_.join(' '), this.cameraName);
 
-      const cp = spawn(ffmpegPath, arguments_, { env: process.env, stdio: this.debug ? 'pipe' : 'ignore' });
+      const cp = spawn(ffmpegPath, arguments_, { env: process.env });
 
       if (this.debug) {
         cp.stdout.on('data', (data) => logger.debug(data.toString(), this.cameraName));
@@ -229,7 +276,7 @@ class RecordingDelegate {
       }
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const r = () => {
         const returnValue = readable.read(length);
         if (returnValue) {
@@ -239,8 +286,8 @@ class RecordingDelegate {
       };
 
       const e = () => {
+        logger.warn(`Stream ended during read for minimum ${length} bytes`, this.cameraName);
         cleanup();
-        reject(new Error(`stream ended during read for minimum ${length} bytes`));
       };
 
       const cleanup = () => {

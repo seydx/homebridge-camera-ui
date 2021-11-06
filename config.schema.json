@@ -388,6 +388,15 @@
                 },
                 "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available (-vcodec)."
               },
+              "acodec": {
+                "title": "Audio Codec",
+                "type": "string",
+                "placeholder": "libfdk_aac",
+                "typeahead": {
+                  "source": ["libfdk_aac", "copy"]
+                },
+                "description": "Set the codec used for encoding audio sent to HomeKit for HSV, must be AAC-based (-acodec)."
+              },
               "packetSize": {
                 "title": "Packet Size",
                 "type": "number",
@@ -564,6 +573,7 @@
               "expanded": false,
               "items": [
                 "cameras[].videoConfig.readRate",
+                "cameras[].videoConfig.acodec",
                 "cameras[].videoConfig.vcodec",
                 "cameras[].videoConfig.rtspTransport",
                 "cameras[].videoConfig.analyzeDuration",
