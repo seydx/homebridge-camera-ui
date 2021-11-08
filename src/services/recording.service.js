@@ -23,36 +23,39 @@ class RecordingDelegate {
   async *handleFragmentsRequests(configuration) {
     logger.debug('Video fragments requested from HSV', this.cameraName);
 
+    const controller = this.cameraUi.cameraController.get(this.cameraName);
     const iframeIntervalSeconds = 4;
 
     let ffmpegInput = [...this.videoConfig.source.split(' ')];
 
-    if (this.prebuffering) {
-      const controller = this.cameraUi.cameraController.get(this.cameraName);
+    if (this.prebuffering && controller?.prebuffer) {
+      try {
+        logger.debug('Setting prebuffer stream as input', this.cameraName);
 
-      if (controller && controller.prebuffer) {
-        try {
-          logger.debug('Setting prebuffer stream as input', this.cameraName);
+        const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
 
-          const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
-
-          ffmpegInput.push(...input);
-        } catch (error) {
-          logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
-        }
+        ffmpegInput = [...input];
+      } catch (error) {
+        logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
       }
     }
 
-    if (!this.videoConfig.audio) {
-      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
-    }
-
+    let pcmAudio = controller?.media.codecs.audio.some((parameter) => parameter?.includes('pcm'));
+    let aacAudio = controller?.media.codecs.audio.some((parameter) => parameter?.includes('aac'));
     let acodec = this.videoConfig.acodec || 'libfdk_aac';
+
     const audioArguments = [];
 
-    if (acodec === 'copy' && this.videoConfig.audio) {
-      audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
-    } else {
+    if (pcmAudio) {
+      logger.warn('PCM audio detected, skip transcoding...', this.cameraName);
+    } else if (aacAudio) {
+      logger.debug('Audio already AAC, no need to transcode...', this.cameraName);
+      acodec = 'copy';
+    }
+
+    if (!this.videoConfig.audio || pcmAudio) {
+      audioArguments.push('-an');
+    } else if (this.videoConfig.acodec !== 'copy') {
       if (acodec !== 'libfdk_aac') {
         logger.warn(
           'Recording audio codec is not explicitly "libfdk_aac", forcing transcoding. Setting audio codec to "libfdk_aac" is recommended.',
@@ -77,6 +80,8 @@ class RecordingDelegate {
         '-ac',
         `${configuration.audioCodec.audioChannels}`
       );
+    } else {
+      audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
     }
 
     const profile =
@@ -124,9 +129,6 @@ class RecordingDelegate {
       videoArguments.push('-vcodec', 'copy');
     } else {
       videoArguments.push(
-        //'-an',
-        //'-sn',
-        //'-dn',
         '-codec:v',
         vcodec,
         '-pix_fmt',
@@ -161,7 +163,7 @@ class RecordingDelegate {
 
     try {
       for await (const box of generator) {
-        const { header, type, length, data } = box;
+        const { header, type, data } = box;
 
         pending.push(header, data);
 
@@ -174,9 +176,9 @@ class RecordingDelegate {
           yield fragment;
         }
 
-        if (this.debug) {
+        /*if (this.debug) {
           logger.debug(`mp4 box type ${type} and lenght: ${length}`, this.cameraName);
-        }
+        }*/
       }
     } catch (error) {
       if (error === 'connection closed') {
@@ -195,6 +197,8 @@ class RecordingDelegate {
   }
 
   async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
+    logger.debug('Start recording...', this.cameraName);
+
     // eslint-disable-next-line unicorn/no-this-assignment
     const self = this;
 
@@ -218,16 +222,20 @@ class RecordingDelegate {
             };
           }
         }
+
         resolve({
           socket,
           cp,
           generator: generator(),
         });
       });
+
       const serverPort = await this.listenServer(server);
-      const arguments_ = [...ffmpegInput];
+      const arguments_ = [];
 
       arguments_.push(
+        '-hide_banner',
+        ...ffmpegInput,
         ...audioOutputArguments,
         '-f',
         'mp4',
@@ -241,9 +249,17 @@ class RecordingDelegate {
         'tcp://127.0.0.1:' + serverPort
       );
 
-      logger.debug(ffmpegPath + ' ' + arguments_.join(' '), this.cameraName);
+      logger.debug(`Recording command: ${ffmpegPath} ${arguments_.join(' ')}`, this.cameraName);
 
       const cp = spawn(ffmpegPath, arguments_, { env: process.env });
+
+      cp.on('exit', (code, signal) => {
+        if (code === 1) {
+          logger.error(`FFmpeg recording process exited with error! (${signal})`, this.cameraName);
+        } else {
+          logger.debug('FFmpeg recording process exit (expected)', this.cameraName);
+        }
+      });
 
       if (this.debug) {
         cp.stdout.on('data', (data) => logger.debug(data.toString(), this.cameraName));
@@ -264,7 +280,7 @@ class RecordingDelegate {
       }
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const r = () => {
         const returnValue = readable.read(length);
         if (returnValue) {
@@ -274,8 +290,8 @@ class RecordingDelegate {
       };
 
       const e = () => {
-        logger.warn(`Stream ended during read for minimum ${length} bytes`, this.cameraName);
         cleanup();
+        reject(new Error(`Stream ended during read for minimum ${length} bytes`));
       };
 
       const cleanup = () => {
@@ -293,6 +309,7 @@ class RecordingDelegate {
     while (true) {
       const port = 10000 + Math.round(Math.random() * 30000);
       server.listen(port);
+
       try {
         await once(server, 'listening');
         return server.address().port;

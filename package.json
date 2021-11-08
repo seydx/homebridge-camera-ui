@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "5.0.0-alpha.50",
+  "version": "5.0.0-alpha.66",
   "description": "User Interface for RTSP capable cameras with HSV support.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -9,7 +9,7 @@
     "lint:homebridge-ui": "npm run lint --prefix homebridge-ui/ui",
     "lint:plugin": "eslint --fix .",
     "watch": "npm run watch:homebridge-ui",
-    "prepublishOnly": "npm i --package-lock-only && npm audit fix && npm run lint && npm run build"
+    "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
   },
   "main": "index.js",
   "dependencies": {
@@ -17,7 +17,7 @@
     "ffmpeg-for-homebridge": "^0.0.9",
     "fs-extra": "10.0.0",
     "pick-port": "^1.0.0",
-    "camera.ui": "^1.0.0-alpha.50"
+    "camera.ui": "^1.0.0-alpha.66"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",

@@ -108,7 +108,7 @@ class Camera {
       recording: this.hsv
         ? {
             options: {
-              prebufferLength: 6000,
+              prebufferLength: 4000,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {
