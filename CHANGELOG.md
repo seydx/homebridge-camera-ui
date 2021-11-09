@@ -48,6 +48,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout if socket disconnected/unauthenticated
   - Auto restart stream on reconnect to socket
+  - Limitted notifications size in database
 - **Plugin**
   - Refactored config.schema.json
   - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `thread_queue_size`, `-rtsp_transport` and `-re`
