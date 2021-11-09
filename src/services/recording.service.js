@@ -59,7 +59,7 @@ class RecordingDelegate {
       ffmpegInput.push('-f', 'lavfi', '-thread_queue_size', '1024', '-i', 'anullsrc=cl=1', '-shortest');
     }
 
-    if (!audioSourceFound || (audioEnabled && (acodec === 'libfdk_aac' || incompatibleAudio))) {
+    if (!audioSourceFound || !audioEnabled || (audioEnabled && (acodec === 'libfdk_aac' || incompatibleAudio))) {
       if (incompatibleAudio) {
         vcodec = 'libx264';
       }
