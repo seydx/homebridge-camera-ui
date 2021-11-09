@@ -52,6 +52,7 @@ class RecordingDelegate {
     let audioSourceFound = controller?.media.codecs.audio.length;
     let probeAudio = controller?.media.codecs.audio;
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
+    //let probeTimedOut = controller?.media.codecs.timedout;
 
     if (!audioSourceFound || !audioEnabled) {
       ffmpegInput.unshift('-thread_queue_size', '1024');
@@ -224,9 +225,7 @@ class RecordingDelegate {
       });
 
       const serverPort = await this.listenServer(server);
-      const arguments_ = [];
-
-      arguments_.push(
+      const arguments_ = [
         '-hide_banner',
         '-fflags',
         '+genpts+igndts',
@@ -239,8 +238,8 @@ class RecordingDelegate {
         'frag_keyframe+empty_moov+default_base_moof',
         '-max_muxing_queue_size',
         '9999',
-        'tcp://127.0.0.1:' + serverPort
-      );
+        'tcp://127.0.0.1:' + serverPort,
+      ];
 
       logger.debug(`Recording command: ${ffmpegPath} ${arguments_.join(' ')}`, this.cameraName);
 

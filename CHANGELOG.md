@@ -38,7 +38,6 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added a new page to settings: `"configuration"`
   - Added 16:9 aspect ratio to `camera` view
   - Added form validation for settings
-  - Auto logout is session timed out
   - Changed `removeAfter` duration for notifications/recordings
   - The quality of the streams was increased (`-q 1`)
   - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
@@ -46,6 +45,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Minor UI Improvements
 - **Server**
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
+  - Auto logout is session time out
   - Auto logout if socket disconnected/unauthenticated
   - Auto restart stream on reconnect to socket
   - Limitted notifications size in database
