@@ -51,7 +51,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Limitted notifications size in database
 - **Plugin**
   - Refactored config.schema.json
-  - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `thread_queue_size`, `-rtsp_transport` and `-re`
+  - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `-rtsp_transport` and `-re`
 - Bump dependencies
 
 ## Bugfixes

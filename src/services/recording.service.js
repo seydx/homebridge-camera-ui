@@ -45,16 +45,17 @@ class RecordingDelegate {
     const videoArguments = [];
     const audioArguments = [];
 
+    let acodec = this.videoConfig.acodec || 'libfdk_aac';
     let vcodec = this.videoConfig.vcodec || 'libx264';
 
     let audioEnabled = this.videoConfig.audio;
-    let acodec = this.videoConfig.acodec || 'libfdk_aac';
     let audioSourceFound = controller?.media.codecs.audio.length;
     let probeAudio = controller?.media.codecs.audio;
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
 
     if (!audioSourceFound || !audioEnabled) {
-      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+      ffmpegInput.unshift('-thread_queue_size', '1024');
+      ffmpegInput.push('-f', 'lavfi', '-thread_queue_size', '1024', '-i', 'anullsrc=cl=1', '-shortest');
     }
 
     if (!audioSourceFound || (audioEnabled && (acodec === 'libfdk_aac' || incompatibleAudio))) {
