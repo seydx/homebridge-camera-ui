@@ -38,6 +38,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added a new page to settings: `"configuration"`
   - Added 16:9 aspect ratio to `camera` view
   - Added form validation for settings
+  - Auto logout is session timed out
   - Changed `removeAfter` duration for notifications/recordings
   - The quality of the streams was increased (`-q 1`)
   - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
@@ -49,7 +50,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Auto restart stream on reconnect to socket
 - **Plugin**
   - Refactored config.schema.json
-  - Added more ffmpeg options
+  - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `thread_queue_size`, `-rtsp_transport` and `-re`
 - Bump dependencies
 
 ## Bugfixes
