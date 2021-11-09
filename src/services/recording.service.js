@@ -7,6 +7,8 @@ const { spawn } = require('child_process');
 
 const logger = require('../../services/logger/logger.service');
 
+const compatibleAudio = /(aac)/;
+
 class RecordingDelegate {
   constructor(cameraName, videoConfig, api, hap, videoProcessor, prebuffering, cameraUi) {
     this.api = api;
@@ -40,36 +42,29 @@ class RecordingDelegate {
       }
     }
 
-    let pcmAudio = controller?.media.codecs.audio.some((parameter) => parameter?.includes('pcm'));
-    let aacAudio = controller?.media.codecs.audio.some((parameter) => parameter?.includes('aac'));
-    let acodec = this.videoConfig.acodec || 'libfdk_aac';
-
+    const videoArguments = [];
     const audioArguments = [];
 
-    if (pcmAudio) {
-      logger.warn('PCM audio detected, skip transcoding...', this.cameraName);
-    } else if (aacAudio) {
-      logger.debug('Audio already AAC, no need to transcode...', this.cameraName);
-      acodec = 'copy';
+    let vcodec = this.videoConfig.vcodec || 'libx264';
+
+    let audioEnabled = this.videoConfig.audio;
+    let acodec = this.videoConfig.acodec || 'libfdk_aac';
+    let audioSourceFound = controller?.media.codecs.audio.length;
+    let probeAudio = controller?.media.codecs.audio;
+    let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
+
+    if (!audioSourceFound || !audioEnabled) {
+      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
     }
 
-    if (!this.videoConfig.audio || pcmAudio) {
-      audioArguments.push('-an');
-    } else if (this.videoConfig.acodec !== 'copy') {
-      if (acodec !== 'libfdk_aac') {
-        logger.warn(
-          'Recording audio codec is not explicitly "libfdk_aac", forcing transcoding. Setting audio codec to "libfdk_aac" is recommended.',
-          this.cameraName
-        );
-
-        acodec = 'libfdk_aac';
+    if (!audioSourceFound || (audioEnabled && (acodec === 'libfdk_aac' || incompatibleAudio))) {
+      if (incompatibleAudio) {
+        vcodec = 'libx264';
       }
 
       audioArguments.push(
-        '-bsf:a',
-        'aac_adtstoasc',
         '-acodec',
-        `${acodec}`,
+        'libfdk_aac',
         ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
           ? ['-profile:a', 'aac_low']
           : ['-profile:a', 'aac_eld']),
@@ -81,7 +76,7 @@ class RecordingDelegate {
         `${configuration.audioCodec.audioChannels}`
       );
     } else {
-      audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
+      audioArguments.push('-acodec', 'copy');
     }
 
     const profile =
@@ -121,9 +116,6 @@ class RecordingDelegate {
       (this.videoConfig.forceMax || configuration.videoCodec.bitrate > this.videoConfig.maxBitrate)
         ? this.videoConfig.maxBitrate
         : configuration.videoCodec.bitrate;
-
-    const vcodec = this.videoConfig.vcodec || 'libx264';
-    const videoArguments = [];
 
     if (vcodec === 'copy') {
       videoArguments.push('-vcodec', 'copy');
@@ -235,17 +227,17 @@ class RecordingDelegate {
 
       arguments_.push(
         '-hide_banner',
+        '-fflags',
+        '+genpts+igndts',
         ...ffmpegInput,
-        ...audioOutputArguments,
         '-f',
         'mp4',
         ...videoOutputArguments,
-        '-fflags',
-        '+genpts',
-        '-reset_timestamps',
-        '1',
+        ...audioOutputArguments,
         '-movflags',
         'frag_keyframe+empty_moov+default_base_moof',
+        '-max_muxing_queue_size',
+        '9999',
         'tcp://127.0.0.1:' + serverPort
       );
 

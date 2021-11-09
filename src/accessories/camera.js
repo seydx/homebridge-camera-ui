@@ -108,7 +108,7 @@ class Camera {
       recording: this.hsv
         ? {
             options: {
-              prebufferLength: 4000,
+              prebufferLength: 6000,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {
@@ -138,8 +138,8 @@ class Camera {
               audio: {
                 codecs: recordingCodecs,
               },
-              motionService: true,
-              doorbellService: true,
+              motionService: this.accessory.context.config.motion,
+              doorbellService: this.accessory.context.config.doorbell,
             },
             delegate: this.recordingDelegate,
           }
