@@ -29,7 +29,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Notifications**
   - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
 - **Settings**
-  - **System:** Added new endpoints to control (update/reboot/configure) the system. To control these endpoints, a new "System" page has been added under "Settings". So it is now possible to update camera.ui, reboot the instance or configure your config.json with an built in editor. Also a built in shell to view the log was added.
+  - **System:** Added new endpoints to control (update/reboot/configure) the system. To control these endpoints, a new "System" page has been added under "Settings". So it is now possible to update camera.ui, reboot the instance or configure your config.json with an built in editor. Also a built in log shell to view, download or share the log was added.
 
 ## Other changes
 - **Interface**
