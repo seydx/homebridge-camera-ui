@@ -1,12 +1,13 @@
 'use strict';
 
-const logger = require('homebridge-camera-ui/services/logger/logger.service');
+const { Logger } = require('homebridge-camera-ui/services/logger/logger.service');
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
 class SwitchAccessory {
   constructor(api, accessory, subtype, type, cameraUi) {
     this.api = api;
+    this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
 
@@ -31,7 +32,7 @@ class SwitchAccessory {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
 
     if (!service) {
-      logger.debug(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
+      this.log.debug(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
       service = this.accessory.addService(this.api.hap.Service.Switch, this.name, this.subtype);
     }
 
@@ -57,7 +58,7 @@ class SwitchAccessory {
           });
         break;
       default:
-        logger.warn(
+        this.log.warn(
           `Can not find accessor subtype (${this.accessory.subtype}) to handle get/set events!`,
           this.accessory.displayName
         );
@@ -68,7 +69,7 @@ class SwitchAccessory {
   removeService() {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
     if (service) {
-      logger.debug(`Removing switch service (${this.subtype})`, this.accessory.displayName);
+      this.log.debug(`Removing switch service (${this.subtype})`, this.accessory.displayName);
       this.accessory.removeService(service);
     }
   }
@@ -82,8 +83,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      logger.error('An error occured during getting atHome state!', false, true);
-      logger.error(error);
+      this.log.error('An error occured during getting atHome state!', false, true);
+      this.log.error(error);
     }
   }
 
@@ -97,10 +98,10 @@ class SwitchAccessory {
         })
         .write();
 
-      logger.info(`At Home: ${state}`, false, true);
+      this.log.info(`At Home: ${state}`, false, true);
     } catch (error) {
-      logger.error('An error occured during setting atHome state!', false, true);
-      logger.error(error);
+      this.log.error('An error occured during setting atHome state!', false, true);
+      this.log.error(error);
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
@@ -118,8 +119,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      logger.error('An error occured during getting exclude state!', false, true);
-      logger.error(error);
+      this.log.error('An error occured during getting exclude state!', false, true);
+      this.log.error(error);
     }
   }
 
@@ -142,14 +143,14 @@ class SwitchAccessory {
         })
         .write();
 
-      logger.info(
+      this.log.info(
         `Exclude: ${this.accessory.displayName} ${state ? 'added to exclude list' : 'removed from exclude list'}`,
         false,
         true
       );
     } catch (error) {
-      logger.error('An error occured during setting atHome state!', false, true);
-      logger.error(error);
+      this.log.error('An error occured during setting atHome state!', false, true);
+      this.log.error(error);
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);

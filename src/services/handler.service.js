@@ -1,6 +1,6 @@
 'use-strict';
 
-const logger = require('../../services/logger/logger.service');
+const { Logger } = require('../../services/logger/logger.service');
 
 const cameras = new Map();
 const motionTimers = new Map();
@@ -9,6 +9,7 @@ const doorbellTimers = new Map();
 class Handler {
   constructor(hap, cameraUi) {
     this.hap = hap;
+    this.log = Logger.log;
     this.cameraUi = cameraUi;
 
     this.cameraUi.on('motion', (cameraName, trigger, state) => {
@@ -38,19 +39,19 @@ class Handler {
 
         switch (target) {
           case 'motion':
-            logger.debug(`Motion event triggered. State: ${active}`, accessory.displayName);
+            this.log.debug(`Motion event triggered. State: ${active}`, accessory.displayName);
             data = await this.motionHandler(accessory, active);
 
             break;
 
           case 'doorbell':
-            logger.debug(`Doorbell event triggered. State: ${active}`, accessory.displayName);
+            this.log.debug(`Doorbell event triggered. State: ${active}`, accessory.displayName);
             data = await this.doorbellHandler(accessory, active);
 
             break;
 
           default:
-            logger.debug(`Can not handle event (${target})`, accessory.displayName);
+            this.log.debug(`Can not handle event (${target})`, accessory.displayName);
 
             data = {
               error: true,
@@ -93,7 +94,7 @@ class Handler {
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
         if (atHome && !cameraExcluded) {
-          logger.debug(
+          this.log.debug(
             `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
             accessory.displayName
           );
@@ -106,7 +107,7 @@ class Handler {
         }
       }
 
-      logger.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
+      this.log.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
       if (active) {
         if (manual && !cameraConfig.hsv) {
@@ -127,7 +128,7 @@ class Handler {
 
         if (timeoutConfig > 0) {
           const timer = setTimeout(() => {
-            logger.info('Motion handler timeout.', accessory.displayName);
+            this.log.info('Motion handler timeout.', accessory.displayName);
 
             motionTimers.delete(accessory.UUID);
             motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, false);
@@ -189,7 +190,7 @@ class Handler {
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
         if (atHome && !cameraExcluded) {
-          logger.debug(
+          this.log.debug(
             `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
             accessory.displayName
           );
@@ -202,7 +203,7 @@ class Handler {
         }
       }
 
-      logger.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
+      this.log.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
 
       if (active) {
         if (!fromMotion && manual && !cameraConfig.hsv) {
@@ -223,7 +224,7 @@ class Handler {
 
           if (timeoutConfig > 0) {
             const timer = setTimeout(() => {
-              logger.debug('Doorbell handler timeout.', accessory.displayName);
+              this.log.debug('Doorbell handler timeout.', accessory.displayName);
 
               doorbellTimers.delete(accessory.UUID);
               doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false);

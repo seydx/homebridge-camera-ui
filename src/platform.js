@@ -4,7 +4,7 @@ const CameraUI = require('camera.ui');
 const fs = require('fs-extra');
 const { version } = require('../package.json');
 
-const logger = require('../services/logger/logger.service');
+const { Logger } = require('../services/logger/logger.service');
 
 const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
@@ -30,7 +30,7 @@ function HomebridgeCameraUi(log, config, api) {
     return;
   }
 
-  logger.init(log, config.debug);
+  Logger.createLogger(log, config.debug);
 
   this.api = api;
   this.accessories = [];
@@ -39,13 +39,14 @@ function HomebridgeCameraUi(log, config, api) {
   // eslint-disable-next-line unicorn/no-array-for-each
   config.cameras?.forEach((camera) => (camera.recordOnMovement = camera?.hsv ? false : true));
 
-  this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, logger, {
+  this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, Logger, {
     moduleName: 'homebridge-camera-ui',
     moduleVersion: version,
     global: true,
     sudo: true,
   });
 
+  this.log = Logger.log;
   this.config = new Config(config);
   this.devices = new Map();
 
@@ -55,7 +56,7 @@ function HomebridgeCameraUi(log, config, api) {
     const uuid = UUIDGen.generate(device.name);
 
     if (this.devices.has(uuid)) {
-      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
+      this.log.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
     } else {
       device.subtype = 'camera';
       this.devices.set(uuid, device);
@@ -67,7 +68,7 @@ function HomebridgeCameraUi(log, config, api) {
     const uuid = UUIDGen.generate(name);
 
     if (this.devices.has(uuid)) {
-      logger.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', name);
+      this.log.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', name);
     } else {
       const device = {
         name: name,
@@ -96,7 +97,7 @@ HomebridgeCameraUi.prototype = {
   },
 
   restartProcess: function () {
-    logger.info('Shutting down...');
+    this.log.info('Shutting down...');
     this.cameraUi.close();
 
     setTimeout(() => {
@@ -107,7 +108,7 @@ HomebridgeCameraUi.prototype = {
 
   changeConfig: async function (configJson) {
     try {
-      logger.info('Config changed through interface, saving...');
+      this.log.info('Config changed through interface, saving...');
 
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
@@ -123,17 +124,17 @@ HomebridgeCameraUi.prototype = {
 
       fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
 
-      logger.info('config.json saved!');
+      this.log.info('config.json saved!');
     } catch (error) {
-      logger.warn('An error occured during changing config.json');
-      logger.error(error);
+      this.log.warn('An error occured during changing config.json');
+      this.log.error(error);
     }
   },
 
   configure: function () {
     for (const [uuid, device] of this.devices) {
       if (device.unbridge) {
-        logger.info('Configuring unbridged accessory...', device.name);
+        this.log.info('Configuring unbridged accessory...', device.name);
 
         const accessory = new Accessory(device.name, uuid);
         this.setupAccessory(accessory, device);
@@ -148,7 +149,7 @@ HomebridgeCameraUi.prototype = {
         const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
         if (!cachedAccessory) {
-          logger.info('Configuring bridged accessory...', device.name);
+          this.log.info('Configuring bridged accessory...', device.name);
 
           const accessory = new Accessory(device.name, uuid);
           this.setupAccessory(accessory, device);
@@ -171,17 +172,17 @@ HomebridgeCameraUi.prototype = {
           this.removeAccessory(accessory);
         }
       } catch (error) {
-        logger.debug('It looks like the device has already been removed. Skip removing.', accessory.displayName);
-        logger.error(error);
+        this.log.debug('It looks like the device has already been removed. Skip removing.', accessory.displayName);
+        this.log.error(error);
       }
     }
   },
 
   setupAccessory: function (accessory, device) {
-    logger.info('Setting up accessory...', accessory.displayName);
+    this.log.info('Setting up accessory...', accessory.displayName);
 
     accessory.on('identify', () => {
-      logger.info('Identify requested.', accessory.displayName);
+      this.log.info('Identify requested.', accessory.displayName);
     });
 
     const AccessoryInformation = accessory.getService(this.api.hap.Service.AccessoryInformation);
@@ -218,7 +219,7 @@ HomebridgeCameraUi.prototype = {
   },
 
   configureAccessory: function (accessory) {
-    logger.info('Configuring cached bridged accessory...', accessory.displayName);
+    this.log.info('Configuring cached bridged accessory...', accessory.displayName);
 
     const device = this.devices.get(accessory.UUID);
 
@@ -230,7 +231,7 @@ HomebridgeCameraUi.prototype = {
   },
 
   removeAccessory: function (accessory) {
-    logger.info('Removing bridged accessory...', accessory.displayName);
+    this.log.info('Removing bridged accessory...', accessory.displayName);
 
     this.accessories = this.accessories.filter(
       (cachedAccessory) => cachedAccessory.displayName !== accessory.displayName

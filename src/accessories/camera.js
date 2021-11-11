@@ -1,6 +1,6 @@
 'use-strict';
 
-const logger = require('../../services/logger/logger.service');
+const { Logger } = require('../../services/logger/logger.service');
 
 const createSocket = require('dgram').createSocket;
 const pickPort = require('pick-port');
@@ -14,6 +14,7 @@ class Camera {
     this.api = api;
     this.hap = api.hap;
     this.accessory = accessory;
+    this.log = Logger.log;
 
     this.videoProcessor = videoProcessor;
     this.unbridge = accessory.context.config.unbridge;
@@ -22,7 +23,7 @@ class Camera {
     this.prebuffering = accessory.context.config.prebuffering;
 
     if (this.hsv && !this.unbridge) {
-      logger.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
+      this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
       this.hsv = false;
     }
 
@@ -56,7 +57,7 @@ class Camera {
     }
 
     if (this.hsv) {
-      logger.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
+      this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
 
       this.recordingDelegate = new RecordingDelegate(
         this.accessory.displayName,
@@ -257,7 +258,7 @@ class Camera {
         ' -hide_banner' +
         ' -loglevel error';
 
-      logger.debug(`Snapshot command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
+      this.log.debug(`Snapshot command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
 
       const ffmpeg = spawn(this.videoProcessor, ffmpegArguments.split(/\s+/), {
         env: process.env,
@@ -274,7 +275,7 @@ class Camera {
       });
 
       ffmpeg.stderr.on('data', (data) =>
-        logger.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName)
+        this.log.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName)
       );
 
       ffmpeg.on('close', () => {
@@ -293,17 +294,17 @@ class Camera {
         let message = `Fetching snapshot took ${runtime} seconds.`;
 
         if (runtime < 5) {
-          logger.debug(message, this.accessory.displayName);
+          this.log.debug(message, this.accessory.displayName);
         } else {
           if (!this.unbridge) {
             message += ' It is highly recommended you switch to unbridge mode.';
           }
 
           if (runtime < 22) {
-            logger.warn(message, this.accessory.displayName);
+            this.log.warn(message, this.accessory.displayName);
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
-            logger.error(message, this.accessory.displayName);
+            this.log.error(message, this.accessory.displayName);
           }
         }
       });
@@ -320,7 +321,7 @@ class Camera {
         (resizeFilter ? ' -filter:v ' + resizeFilter : '') +
         ' -f image2 -';
 
-      logger.debug(`Resize command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
+      this.log.debug(`Resize command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
 
       const ffmpeg = spawn(this.videoProcessor, ffmpegArguments.split(/\s+/), {
         env: process.env,
@@ -350,11 +351,11 @@ class Camera {
     try {
       const cachedSnapshot = !!this.snapshotPromise;
 
-      logger.debug(`Snapshot requested: ${request.width} x ${request.height}`, this.accessory.displayName);
+      this.log.debug(`Snapshot requested: ${request.width} x ${request.height}`, this.accessory.displayName);
 
       const snapshot = await (this.snapshotPromise || this.fetchSnapshot(resolution.snapFilter));
 
-      logger.debug(
+      this.log.debug(
         'Sending snapshot: ' +
           (resolution.width > 0 ? resolution.width : 'native') +
           'x' +
@@ -367,7 +368,7 @@ class Camera {
 
       callback(undefined, resized);
     } catch (error) {
-      logger.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
 
       callback(error);
     }
@@ -452,7 +453,7 @@ class Camera {
         videoBitrate = 0;
       }
 
-      logger.debug(
+      this.log.debug(
         'Video stream requested: ' +
           request.video.width +
           'x' +
@@ -465,7 +466,7 @@ class Camera {
         this.accessory.displayName
       );
 
-      logger.info(
+      this.log.info(
         'Starting video stream: ' +
           (resolution.width > 0 ? resolution.width : 'native') +
           'x' +
@@ -549,7 +550,7 @@ class Camera {
             sessionInfo.audioPort +
             '&pkt_size=188';
         } else {
-          logger.error(`Unsupported audio codec requested: ${request.audio.codec}`, this.accessory.displayName);
+          this.log.error(`Unsupported audio codec requested: ${request.audio.codec}`, this.accessory.displayName);
         }
       }
 
@@ -560,7 +561,7 @@ class Camera {
       activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
 
       activeSession.socket.on('error', (error) => {
-        logger.error(`Socket error: ${error.message}`, this.accessory.displayName);
+        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName);
         this.stopStream(request.sessionID);
       });
 
@@ -570,7 +571,7 @@ class Camera {
         }
 
         activeSession.timeout = setTimeout(() => {
-          logger.info('Device appears to be inactive. Stopping stream.', this.accessory.displayName);
+          this.log.info('Device appears to be inactive. Stopping stream.', this.accessory.displayName);
           this.controller.forceStopStreamingSession(request.sessionID);
           this.stopStream(request.sessionID);
         }, request.video.rtcp_interval * 5 * 1000);
@@ -644,7 +645,7 @@ class Camera {
       this.ongoingSessions.set(request.sessionID, activeSession);
       this.pendingSessions.delete(request.sessionID);
     } else {
-      logger.error('Error finding session information.', this.accessory.displayName);
+      this.log.error('Error finding session information.', this.accessory.displayName);
 
       callback(new Error('Error finding session information'));
     }
@@ -670,7 +671,7 @@ class Camera {
       }
 
       case 'reconfigure': {
-        logger.debug(
+        this.log.debug(
           'Received request to reconfigure: ' +
             request.video.width +
             'x' +
@@ -705,19 +706,19 @@ class Camera {
       try {
         if (session.socket) session.socket.close();
       } catch (error) {
-        logger.error(`Error occurred closing socket: ${error}`, this.accessory.displayName);
+        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName);
       }
 
       try {
         if (session.mainProcess) session.mainProcess.stop();
       } catch (error) {
-        logger.error(`Error occurred terminating main FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(`Error occurred terminating main FFmpeg process: ${error}`, this.accessory.displayName);
       }
 
       try {
         if (session.returnProcess) session.returnProcess.stop();
       } catch (error) {
-        logger.error(`Error occurred terminating two-way FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(`Error occurred terminating two-way FFmpeg process: ${error}`, this.accessory.displayName);
       }
 
       this.ongoingSessions.delete(sessionId);
@@ -728,7 +729,7 @@ class Camera {
         controller.session.closeSession();
       }
 
-      logger.info('Stopped video stream.', this.accessory.displayName);
+      this.log.info('Stopped video stream.', this.accessory.displayName);
     }
   }
 }

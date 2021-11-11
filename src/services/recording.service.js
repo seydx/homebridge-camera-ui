@@ -5,7 +5,7 @@ const { createServer } = require('net');
 const { once } = require('events');
 const { spawn } = require('child_process');
 
-const logger = require('../../services/logger/logger.service');
+const { Logger } = require('../../services/logger/logger.service');
 
 const compatibleAudio = /(aac)/;
 
@@ -13,6 +13,7 @@ class RecordingDelegate {
   constructor(cameraName, videoConfig, api, hap, videoProcessor, prebuffering, cameraUi) {
     this.api = api;
     this.hap = hap;
+    this.log = Logger.log;
     this.cameraName = cameraName;
     this.videoConfig = videoConfig;
     this.videoProcessor = videoProcessor;
@@ -23,7 +24,7 @@ class RecordingDelegate {
   }
 
   async *handleFragmentsRequests(configuration) {
-    logger.debug('Video fragments requested from HSV', this.cameraName);
+    this.log.debug('Video fragments requested from HSV', this.cameraName);
 
     const controller = this.cameraUi.cameraController.get(this.cameraName);
     const iframeIntervalSeconds = 4;
@@ -32,13 +33,13 @@ class RecordingDelegate {
 
     if (this.prebuffering && controller?.prebuffer) {
       try {
-        logger.debug('Setting prebuffer stream as input', this.cameraName);
+        this.log.debug('Setting prebuffer stream as input', this.cameraName);
 
         const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
 
         ffmpegInput = [...input];
       } catch (error) {
-        logger.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
+        this.log.warn(`Can not access prebuffered video, skipping: ${error}`, this.cameraName);
       }
     }
 
@@ -149,7 +150,7 @@ class RecordingDelegate {
       videoArguments
     );
 
-    logger.debug('Recording started', this.cameraName);
+    this.log.debug('Recording started', this.cameraName);
 
     const { socket, cp, generator } = session;
     let pending = [];
@@ -171,18 +172,18 @@ class RecordingDelegate {
         }
 
         /*if (this.debug) {
-          logger.debug(`mp4 box type ${type} and lenght: ${length}`, this.cameraName);
+          this.log.debug(`mp4 box type ${type} and lenght: ${length}`, this.cameraName);
         }*/
       }
     } catch (error) {
       if (error === 'connection closed') {
-        logger.warn('HSV connection closed!', this.cameraName);
+        this.log.warn('HSV connection closed!', this.cameraName);
       } else if (error === 'dataSend close') {
-        logger.debug('Recording completed. (dataSend close (hsv))', this.cameraName);
+        this.log.debug('Recording completed. (dataSend close (hsv))', this.cameraName);
         this.cameraUi.eventController.triggerEvent('custom', this.cameraName, true, filebuffer, 'Video');
       } else {
-        logger.warn('An error occured during recording hsv video!', this.cameraName);
-        logger.error(error, this.cameraName);
+        this.log.warn('An error occured during recording hsv video!', this.cameraName);
+        this.log.error(error, this.cameraName);
       }
     } finally {
       socket.destroy();
@@ -191,7 +192,7 @@ class RecordingDelegate {
   }
 
   async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
-    logger.debug('Start recording...', this.cameraName);
+    this.log.debug('Start recording...', this.cameraName);
 
     // eslint-disable-next-line unicorn/no-this-assignment
     const self = this;
@@ -241,21 +242,21 @@ class RecordingDelegate {
         'tcp://127.0.0.1:' + serverPort,
       ];
 
-      logger.debug(`Recording command: ${ffmpegPath} ${arguments_.join(' ')}`, this.cameraName);
+      this.log.debug(`Recording command: ${ffmpegPath} ${arguments_.join(' ')}`, this.cameraName);
 
       const cp = spawn(ffmpegPath, arguments_, { env: process.env });
 
       cp.on('exit', (code, signal) => {
         if (code === 1) {
-          logger.error(`FFmpeg recording process exited with error! (${signal})`, this.cameraName);
+          this.log.error(`FFmpeg recording process exited with error! (${signal})`, this.cameraName);
         } else {
-          logger.debug('FFmpeg recording process exit (expected)', this.cameraName);
+          this.log.debug('FFmpeg recording process exit (expected)', this.cameraName);
         }
       });
 
       if (this.debug) {
-        cp.stdout.on('data', (data) => logger.debug(data.toString(), this.cameraName));
-        cp.stderr.on('data', (data) => logger.debug(data.toString(), this.cameraName));
+        cp.stdout.on('data', (data) => this.log.debug(data.toString(), this.cameraName));
+        cp.stderr.on('data', (data) => this.log.debug(data.toString(), this.cameraName));
       }
     });
   }

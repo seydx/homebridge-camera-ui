@@ -3,11 +3,13 @@
 const { spawn } = require('child_process');
 const readline = require('readline');
 
-const logger = require('../../services/logger/logger.service');
+const { Logger } = require('../../services/logger/logger.service');
 
 class FfmpegProcess {
   constructor(cameraName, videoDebug, sessionId, videoProcessor, command, delegate, callback) {
-    logger.debug('Stream command: ' + videoProcessor + ' ' + command, cameraName);
+    this.log = Logger.log;
+
+    this.log.debug('Stream command: ' + videoProcessor + ' ' + command, cameraName);
 
     let started = false;
     const startTime = Date.now();
@@ -26,11 +28,11 @@ class FfmpegProcess {
         const message = `Getting the first frames took ${runtime} seconds.`;
 
         if (runtime < 5) {
-          logger.debug(message, cameraName);
+          this.log.debug(message, cameraName);
         } else if (runtime < 22) {
-          logger.warn(message, cameraName);
+          this.log.warn(message, cameraName);
         } else {
-          logger.error(message, cameraName);
+          this.log.error(message, cameraName);
         }
       }
     });
@@ -47,14 +49,14 @@ class FfmpegProcess {
       }
 
       if (/\[(panic|fatal|error)]/.test(line)) {
-        logger.error(line, cameraName);
+        this.log.error(line, cameraName);
       } else if (videoDebug) {
-        logger.debug(line, cameraName);
+        this.log.debug(line, cameraName);
       }
     });
 
     this.process.on('error', (error) => {
-      logger.error(`FFmpeg process creation failed: ${error.message}`, cameraName);
+      this.log.error(`FFmpeg process creation failed: ${error.message}`, cameraName);
 
       if (callback) {
         callback(new Error('FFmpeg process creation failed'));
@@ -68,12 +70,12 @@ class FfmpegProcess {
 
       if (code == undefined || code === 255) {
         if (this.process.killed) {
-          logger.debug(`${message} (Expected)`, cameraName);
+          this.log.debug(`${message} (Expected)`, cameraName);
         } else {
-          logger.warn(`${message} (Unexpected)`, cameraName);
+          this.log.warn(`${message} (Unexpected)`, cameraName);
         }
       } else {
-        logger.error(`${message} (Error)`, cameraName);
+        this.log.error(`${message} (Error)`, cameraName);
 
         delegate.stopStream(sessionId);
 

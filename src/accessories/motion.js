@@ -1,10 +1,11 @@
 'use-strict';
 
-const logger = require('../../services/logger/logger.service');
+const { Logger } = require('../../services/logger/logger.service');
 
 class motionService {
   constructor(api, accessory, handler) {
     this.api = api;
+    this.log = Logger.log;
     this.accessory = accessory;
     this.handler = handler;
 
@@ -21,7 +22,7 @@ class motionService {
 
     if (this.accessory.context.config.motion) {
       if (!service) {
-        logger.debug('Adding motion sensor service', this.accessory.displayName);
+        this.log.debug('Adding motion sensor service', this.accessory.displayName);
         service = this.accessory.addService(
           this.api.hap.Service.MotionSensor,
           this.accessory.displayName + ' Motion',
@@ -31,18 +32,18 @@ class motionService {
 
       service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).on('change', (value) => {
         this.accessory.context.motionOldvalue = value.oldValue;
-        //logger.info('Motion ' + (value.newValue ? 'detected!' : 'not detected anymore!'), this.accessory.displayName);
+        //this.log.info('Motion ' + (value.newValue ? 'detected!' : 'not detected anymore!'), this.accessory.displayName);
       });
     } else {
       if (service) {
-        logger.debug('Removing motion sensor service', this.accessory.displayName);
+        this.log.debug('Removing motion sensor service', this.accessory.displayName);
         this.accessory.removeService(service);
       }
     }
 
     if (this.accessory.context.config.switches) {
       if (!switchService) {
-        logger.debug('Adding switch service (motion)', this.accessory.displayName);
+        this.log.debug('Adding switch service (motion)', this.accessory.displayName);
         switchService = this.accessory.addService(
           this.api.hap.Service.Switch,
           this.accessory.displayName + ' Motion Trigger',
@@ -51,12 +52,12 @@ class motionService {
       }
 
       switchService.getCharacteristic(this.api.hap.Characteristic.On).onSet(async (state) => {
-        logger.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
+        this.log.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
         await this.handler.motionHandler(this.accessory, state, true);
       });
     } else {
       if (switchService) {
-        logger.debug('Removing switch service (motion)', this.accessory.displayName);
+        this.log.debug('Removing switch service (motion)', this.accessory.displayName);
         this.accessory.removeService(switchService);
       }
     }
