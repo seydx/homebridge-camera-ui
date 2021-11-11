@@ -35,7 +35,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Interface**
   - Added a new `onboard page` for first start
   - Added new `automation` section to general settings page
-  - Added a new page to settings: `"configuration"`
+  - Added a new page to settings: `"system"`
   - Added 16:9 aspect ratio to `camera` view
   - Added form validation for settings
   - Changed `removeAfter` duration for notifications/recordings
@@ -62,6 +62,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - Fixed an issue where camera streams that took a longer to start were stopped on homebridge-config-ui-x
 - Fixed an issue where sending multiple telegram messages could cause an error
 - Fixed an issue where `resetting` the motion detection caused the interface to treat it as normal motion detection
+- Fixed an issue where the cache not reloaded automatically after restart
 - Fixed test cases
 - Minor bugfixes
 
