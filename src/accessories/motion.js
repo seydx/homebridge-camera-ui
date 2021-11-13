@@ -30,10 +30,13 @@ class motionService {
         );
       }
 
-      service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).on('change', (value) => {
-        this.accessory.context.motionOldvalue = value.oldValue;
-        //this.log.info('Motion ' + (value.newValue ? 'detected!' : 'not detected anymore!'), this.accessory.displayName);
-      });
+      service
+        .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
+        .on('change', (value) => {
+          this.accessory.context.motionOldvalue = value.oldValue;
+          //this.log.info('Motion ' + (value.newValue ? 'detected!' : 'not detected anymore!'), this.accessory.displayName);
+        })
+        .updateValue(false);
     } else {
       if (service) {
         this.log.debug('Removing motion sensor service', this.accessory.displayName);
@@ -52,8 +55,9 @@ class motionService {
       }
 
       switchService.getCharacteristic(this.api.hap.Characteristic.On).onSet(async (state) => {
-        this.log.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
-        await this.handler.motionHandler(this.accessory, state, true);
+        //this.log.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
+        const result = await this.handler.motionHandler(this.accessory, state, true);
+        this.log.debug(JSON.stringify(result), this.accessory.displayName);
       });
     } else {
       if (switchService) {

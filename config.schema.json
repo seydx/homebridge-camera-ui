@@ -579,7 +579,6 @@
                 "cameras[].videoConfig.analyzeDuration",
                 "cameras[].videoConfig.probeSize",
                 "cameras[].videoConfig.reorderQueueSize",
-                "cameras[].videoConfig.threadQueueSize",
                 "cameras[].videoConfig.maxDelay",
                 "cameras[].videoConfig.stimeout",
                 "cameras[].videoConfig.packetSize",

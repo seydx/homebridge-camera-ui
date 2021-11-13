@@ -2,15 +2,15 @@
 
 const { Logger } = require('../../services/logger/logger.service');
 
-const cameras = new Map();
-const motionTimers = new Map();
-const doorbellTimers = new Map();
-
 class Handler {
   constructor(hap, cameraUi) {
     this.hap = hap;
     this.log = Logger.log;
     this.cameraUi = cameraUi;
+
+    this.cameraConfigs = new Map();
+    this.motionTimers = new Map();
+    this.doorbellTimers = new Map();
 
     this.cameraUi.on('motion', (cameraName, trigger, state) => {
       //handle motion from mqtt/http/smtp (passed through camera.ui)
@@ -24,145 +24,120 @@ class Handler {
     this.accessories = accessories;
 
     for (const accessory of accessories) {
-      cameras.set(accessory.UUID, accessory.context.config);
+      this.cameraConfigs.set(accessory.UUID, accessory.context.config);
     }
 
     this.initialized = true;
   }
 
   async handle(target, name, active) {
+    let result = {
+      error: true,
+      message: 'Homebridge not initialized.',
+    };
+
     if (this.initialized) {
       const accessory = this.accessories.find((accessory) => accessory.displayName == name);
 
       if (accessory) {
-        let data;
-
         switch (target) {
           case 'motion':
-            this.log.debug(`Motion event triggered. State: ${active}`, accessory.displayName);
-            data = await this.motionHandler(accessory, active);
-
+            result = await this.motionHandler(accessory, active);
             break;
-
           case 'doorbell':
-            this.log.debug(`Doorbell event triggered. State: ${active}`, accessory.displayName);
-            data = await this.doorbellHandler(accessory, active);
-
+            result = await this.doorbellHandler(accessory, active);
             break;
-
           default:
-            this.log.debug(`Can not handle event (${target})`, accessory.displayName);
-
-            data = {
+            result = {
               error: true,
               message: `First directory level must be "motion" or "doorbell", got "${target}".`,
             };
         }
-
-        return data;
       } else {
-        return {
+        result = {
           error: true,
           message: `Camera "${name}" not found.`,
         };
       }
     }
 
-    return {
-      error: true,
-      message: 'Homebridge not initialized.',
-    };
+    if (result.error) {
+      return this.log.error(`Handling event: ${result.message}`, name);
+    }
+
+    this.log.debug(`Handling event: ${result.message}`, name);
   }
 
   async motionHandler(accessory, active, manual) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
+    const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
+    const cameraConfig = this.cameraConfigs.get(accessory.UUID);
+    const timeout = this.motionTimers.get(accessory.UUID);
+    const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
+
+    if (timeout) {
+      clearTimeout(timeout);
+      this.motionTimers.delete(accessory.UUID);
+    }
 
     if (motionSensor) {
-      const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
-
-      const cameraConfig = cameras.get(accessory.UUID);
-      const timeout = motionTimers.get(accessory.UUID);
-
-      if (timeout) {
-        clearTimeout(timeout);
-        motionTimers.delete(accessory.UUID);
-      }
+      this.log.info(`Motion ${active ? 'ON' : 'OFF'}`, accessory.displayName);
 
       if (manual) {
         const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
         const atHome = generalSettings?.atHome || false;
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
-        if (atHome && !cameraExcluded) {
-          this.log.debug(
-            `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
-            accessory.displayName
-          );
-
+        if (active && atHome && !cameraExcluded) {
           if (motionTrigger) {
             setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
           }
 
-          return;
+          return {
+            error: false,
+            message: `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
+          };
         }
-      }
 
-      this.log.debug(`Switch motion detect ${active ? 'on.' : 'off.'}`, accessory.displayName);
-
-      if (active) {
-        if (manual && !cameraConfig.hsv) {
+        if (!cameraConfig.hsv && !timeout) {
           this.cameraUi.eventController.triggerEvent('motion', accessory.displayName, active);
         }
-
-        motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, true);
-
-        if (motionTrigger) {
-          motionTrigger.updateCharacteristic(this.hap.Characteristic.On, true);
-        }
-
-        if (cameraConfig.motionDoorbell) {
-          this.doorbellHandler(accessory, true, false, true);
-        }
-
-        let timeoutConfig = !Number.isNaN(Number.parseInt(cameraConfig.motionTimeout)) ? cameraConfig.motionTimeout : 1;
-
-        if (timeoutConfig > 0) {
-          const timer = setTimeout(() => {
-            this.log.info('Motion handler timeout.', accessory.displayName);
-
-            motionTimers.delete(accessory.UUID);
-            motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, false);
-
-            if (motionTrigger) {
-              motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
-            }
-          }, timeoutConfig * 1000);
-
-          motionTimers.set(accessory.UUID, timer);
-        }
-
-        return {
-          error: false,
-          message: 'Motion switched on.',
-          cooldownActive: !!timeout,
-        };
-      } else {
-        motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, false);
-
-        if (motionTrigger) {
-          motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
-        }
-
-        if (cameraConfig.motionDoorbell) {
-          this.doorbellHandler(accessory, false, false, true);
-        }
-
-        return {
-          error: false,
-          message: 'Motion switched off.',
-        };
       }
+
+      motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, active ? true : false);
+
+      if (motionTrigger) {
+        motionTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
+      }
+
+      if (cameraConfig.motionDoorbell) {
+        this.doorbellHandler(accessory, active, false, true);
+      }
+
+      if (active && timeoutConfig > 0) {
+        const timer = setTimeout(() => {
+          this.log.info('Motion handler timeout.', accessory.displayName);
+
+          this.motionTimers.delete(accessory.UUID);
+          motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, false);
+
+          if (motionTrigger) {
+            motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
+          }
+        }, timeoutConfig * 1000);
+
+        this.motionTimers.set(accessory.UUID, timer);
+      }
+
+      return {
+        error: false,
+        message: timeout && active ? 'Skip motion event, timeout active!' : `Motion switched ${active ? 'on' : 'off'}`,
+      };
     } else {
+      if (motionTrigger) {
+        setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+      }
+
       return {
         error: true,
         message: 'Motion is not enabled for this camera.',
@@ -172,83 +147,75 @@ class Handler {
 
   async doorbellHandler(accessory, active, manual, fromMotion) {
     const doorbell = accessory.getService(this.hap.Service.Doorbell);
+    const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
+    const cameraConfig = this.cameraConfigs.get(accessory.UUID);
+    const timeout = this.doorbellTimers.get(accessory.UUID);
+    const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
+
+    if (timeout) {
+      clearTimeout(timeout);
+      this.motionTimers.delete(accessory.UUID);
+    }
 
     if (doorbell) {
-      const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
-
-      const cameraConfig = cameras.get(accessory.UUID);
-      const timeout = doorbellTimers.get(accessory.UUID);
-
-      if (timeout) {
-        clearTimeout(timeout);
-        doorbellTimers.delete(accessory.UUID);
-      }
+      this.log.info(`Dorbell ${active ? 'ON' : 'OFF'}`, accessory.displayName);
 
       if (manual) {
         const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
         const atHome = generalSettings?.atHome || false;
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
-        if (atHome && !cameraExcluded) {
-          this.log.debug(
-            `Skip motion trigger. At Home is active and ${accessory.displayName} is not excluded!`,
-            accessory.displayName
-          );
-
+        if (active && atHome && !cameraExcluded) {
           if (doorbellTrigger) {
             setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
           }
 
-          return;
+          return {
+            error: false,
+            message: `Skip doorbell trigger. At Home is active and ${accessory.displayName} is not excluded!`,
+          };
+        }
+
+        if (!fromMotion && manual && !cameraConfig.hsv && !timeout) {
+          this.cameraUi.eventController.triggerEvent('doorbell', accessory.displayName, active);
         }
       }
 
-      this.log.debug(`Switch doorbell ${active ? 'on.' : 'off.'}`, accessory.displayName);
+      if (doorbellTrigger) {
+        doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
+      }
 
       if (active) {
-        if (!fromMotion && manual && !cameraConfig.hsv) {
-          this.cameraUi.eventController.triggerEvent('doorbell', accessory.displayName, active);
-        }
-
         doorbell.updateCharacteristic(
           this.hap.Characteristic.ProgrammableSwitchEvent,
           this.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
         );
 
-        if (doorbellTrigger) {
-          doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, true);
+        if (timeoutConfig > 0) {
+          const timer = setTimeout(() => {
+            this.log.debug('Doorbell handler timeout.', accessory.displayName);
 
-          let timeoutConfig = !Number.isNaN(Number.parseInt(cameraConfig.motionTimeout))
-            ? cameraConfig.motionTimeout
-            : 1;
+            this.doorbellTimers.delete(accessory.UUID);
 
-          if (timeoutConfig > 0) {
-            const timer = setTimeout(() => {
-              this.log.debug('Doorbell handler timeout.', accessory.displayName);
-
-              doorbellTimers.delete(accessory.UUID);
+            if (doorbellTrigger) {
               doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
-            }, timeoutConfig * 1000);
+            }
+          }, timeoutConfig * 1000);
 
-            doorbellTimers.set(accessory.UUID, timer);
-          }
+          this.doorbellTimers.set(accessory.UUID, timer);
         }
-
-        return {
-          error: false,
-          message: 'Doorbell switched on.',
-        };
-      } else {
-        if (doorbellTrigger) {
-          doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
-        }
-
-        return {
-          error: false,
-          message: 'Doorbell switched off.',
-        };
       }
+
+      return {
+        error: false,
+        message:
+          timeout && active ? 'Skip doorbell event, timeout active!' : `Doorbell switched ${active ? 'on' : 'off'}`,
+      };
     } else {
+      if (doorbellTrigger) {
+        setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+      }
+
       return {
         error: true,
         message: 'Doorbell is not enabled for this camera.',

@@ -250,7 +250,7 @@ class RecordingDelegate {
         if (code === 1) {
           this.log.error(`FFmpeg recording process exited with error! (${signal})`, this.cameraName);
         } else {
-          this.log.debug('FFmpeg recording process exit (expected)', this.cameraName);
+          this.log.debug('FFmpeg recording process exited (expected)', this.cameraName);
         }
       });
 
