@@ -2,7 +2,7 @@
 'use-strict';
 
 const { createServer } = require('net');
-const { once } = require('events');
+const { listenServer, readLength } = require('camera.ui/src/controller/camera/utils/camera.utils');
 const { spawn } = require('child_process');
 
 const { Logger } = require('../../services/logger/logger.service');
@@ -55,31 +55,49 @@ class RecordingDelegate {
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
     //let probeTimedOut = controller?.media.codecs.timedout;
 
-    if (!audioSourceFound || !audioEnabled) {
-      ffmpegInput.unshift('-thread_queue_size', '1024');
-      ffmpegInput.push('-f', 'lavfi', '-thread_queue_size', '1024', '-i', 'anullsrc=cl=1', '-shortest');
+    if (!audioSourceFound && audioEnabled) {
+      this.log.warn('Disabling audio, audio source not found or timed out during probe stream', this.cameraName);
+      audioEnabled = false;
     }
 
-    if (!audioSourceFound || !audioEnabled || (audioEnabled && (acodec === 'libfdk_aac' || incompatibleAudio))) {
-      if (incompatibleAudio) {
-        vcodec = 'libx264';
+    if (audioEnabled) {
+      if (incompatibleAudio && acodec !== 'libfdk_aac') {
+        this.log.warn(
+          `Incompatible audio stream detected ${probeAudio}, transcoding with "libfdk_aac"..`,
+          this.cameraName
+        );
+        acodec = 'libfdk_aac';
+        //vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
+      } else if (!incompatibleAudio && acodec !== 'copy') {
+        this.log.info('Compatible audio stream detected, copying..');
+        acodec = 'copy';
+        //vcodec = 'copy';
       }
 
-      audioArguments.push(
-        '-acodec',
-        'libfdk_aac',
-        ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
-          ? ['-profile:a', 'aac_low']
-          : ['-profile:a', 'aac_eld']),
-        '-ar',
-        `${this.hap.AudioRecordingSamplerateValues[configuration.audioCodec.samplerate]}k`,
-        '-b:a',
-        `${configuration.audioCodec.bitrate}k`,
-        '-ac',
-        `${configuration.audioCodec.audioChannels}`
-      );
+      if (acodec !== 'copy') {
+        vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
+
+        audioArguments.push(
+          '-acodec',
+          'libfdk_aac',
+          ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
+            ? ['-profile:a', 'aac_low']
+            : ['-profile:a', 'aac_eld']),
+          '-ar',
+          `${this.hap.AudioRecordingSamplerateValues[configuration.audioCodec.samplerate]}k`,
+          '-b:a',
+          `${configuration.audioCodec.bitrate}k`,
+          '-ac',
+          `${configuration.audioCodec.audioChannels}`
+        );
+      } else {
+        vcodec = 'copy';
+        audioArguments.push('-acodec', 'copy');
+      }
     } else {
-      audioArguments.push('-acodec', 'copy');
+      //ffmpegInput.unshift('-thread_queue_size', '1024');
+      //ffmpegInput.push('-f', 'lavfi', '-thread_queue_size', '1024', '-i', 'anullsrc=cl=1', '-shortest');
+      audioArguments.push('-an');
     }
 
     const profile =
@@ -194,9 +212,6 @@ class RecordingDelegate {
   async startFFMPegFragmetedMP4Session(ffmpegPath, ffmpegInput, audioOutputArguments, videoOutputArguments) {
     this.log.debug('Start recording...', this.cameraName);
 
-    // eslint-disable-next-line unicorn/no-this-assignment
-    const self = this;
-
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const server = createServer((socket) => {
@@ -204,10 +219,10 @@ class RecordingDelegate {
 
         async function* generator() {
           while (true) {
-            const header = await self.readLength(socket, 8);
+            const header = await readLength(socket, 8);
             const length = header.readInt32BE(0) - 8;
             const type = header.slice(4).toString();
-            const data = await self.readLength(socket, length);
+            const data = await readLength(socket, length);
 
             yield {
               header,
@@ -225,7 +240,7 @@ class RecordingDelegate {
         });
       });
 
-      const serverPort = await this.listenServer(server);
+      const serverPort = await listenServer(server);
       const arguments_ = [
         '-hide_banner',
         '-fflags',
@@ -238,7 +253,7 @@ class RecordingDelegate {
         '-movflags',
         'frag_keyframe+empty_moov+default_base_moof',
         '-max_muxing_queue_size',
-        '9999',
+        '1024',
         'tcp://127.0.0.1:' + serverPort,
       ];
 
@@ -259,57 +274,6 @@ class RecordingDelegate {
         cp.stderr.on('data', (data) => this.log.debug(data.toString(), this.cameraName));
       }
     });
-  }
-
-  async readLength(readable, length) {
-    if (!length) {
-      return Buffer.alloc(0);
-    }
-
-    {
-      const returnValue = readable.read(length);
-      if (returnValue) {
-        return returnValue;
-      }
-    }
-
-    return new Promise((resolve, reject) => {
-      const r = () => {
-        const returnValue = readable.read(length);
-        if (returnValue) {
-          cleanup();
-          resolve(returnValue);
-        }
-      };
-
-      const e = () => {
-        cleanup();
-        reject(new Error(`Stream ended during read for minimum ${length} bytes`));
-      };
-
-      const cleanup = () => {
-        readable.removeListener('readable', r);
-        readable.removeListener('end', e);
-      };
-
-      readable.on('readable', r);
-      readable.on('end', e);
-    });
-  }
-
-  async listenServer(server) {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const port = 10000 + Math.round(Math.random() * 30000);
-      server.listen(port);
-
-      try {
-        await once(server, 'listening');
-        return server.address().port;
-      } catch {
-        //ignore
-      }
-    }
   }
 }
 
