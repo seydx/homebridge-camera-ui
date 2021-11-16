@@ -42,6 +42,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - The quality of the streams was increased (`-q 1`)
   - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
   - Added `motionTimeout` also to ui-only events
+  - Improved page loading
   - Minor UI Improvements
 - **Server**
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
