@@ -9,7 +9,7 @@ const { Logger } = require('../services/logger/logger.service');
 const Camera = require('./accessories/camera');
 const DoorbellSensor = require('./accessories/doorbell');
 const MotionSensor = require('./accessories/motion');
-const InterfaceSwitch = require('./accessories/interface-switch');
+const InterfaceSwitch = require('./accessories/switch');
 
 const Config = require('../services/config/config.service');
 const Handler = require('./services/handler.service');
@@ -96,6 +96,7 @@ HomebridgeCameraUi.prototype = {
     this.handler.finishLoading(this.accessories, this.cameraUi);
   },
 
+  // emitted from camera.ui
   restartProcess: function () {
     this.log.info('Shutting down...');
     this.cameraUi.close();
@@ -106,6 +107,7 @@ HomebridgeCameraUi.prototype = {
     }, 5000);
   },
 
+  // emitted from camera.ui
   changeConfig: async function (configJson) {
     try {
       this.log.info('Config changed through interface, saving...');
@@ -209,6 +211,8 @@ HomebridgeCameraUi.prototype = {
       new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory', this.cameraUi);
       return;
     }
+
+    accessory.category = this.api.hap.Categories.IP_CAMERA;
 
     const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor, this.cameraUi);
     accessory.configureController(cameraAccessory.controller);
