@@ -94,7 +94,7 @@ class RecordingDelegate {
         );
       } else {
         vcodec = 'copy';
-        audioArguments.push('-acodec', 'copy');
+        audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
       }
     } else {
       //ffmpegInput.unshift('-thread_queue_size', '1024');
