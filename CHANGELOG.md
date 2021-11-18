@@ -37,6 +37,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 
 ## Other changes
 - **Interface**
+  - Added play/pause and mute/unmute buttons to stream cards
   - Added a new `onboard page` for first start
   - Added new `automation` section to general settings page
   - Added a new page to settings: `"system"`

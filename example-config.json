@@ -9,95 +9,143 @@
   "accessories": [],
   "platforms": [
     {
+      "platform": "CameraUI",
       "name": "CameraUI",
       "port": 3333,
       "theme": "auto",
       "language": "auto",
-      "atHomeSwitch": true,
       "debug": true,
+      "atHomeSwitch": false,
       "mqtt": {
-        "active": true,
-        "host": "192.168.178.111",
+        "active": false,
+        "tls": false,
+        "host": "192.168.111.121",
         "port": 1883
       },
       "http": {
-        "active": true,
-        "port": 2525,
+        "active": false,
+        "port": 7777,
         "localhttp": false
       },
+      "smtp": {
+        "active": false,
+        "port": 2525,
+        "space_replace": "+"
+      },
       "ssl": {
-        "active": true,
-        "key": "/var/lib/homebridge/mysite.key",
-        "cert": "/var/lib/homebridge/mysite.crt"
+        "active": false,
+        "key": "/path/to/key/server.key",
+        "cert": "/path/to/cert/server.crt"
       },
       "options": {
         "videoProcessor": "ffmpeg"
       },
       "cameras": [
         {
-          "name": "Sricam",
-          "manufacturer": "Sricam",
+          "name": "Living Room Camera",
+          "manufacturer": "IP",
           "model": "IP Camera",
-          "serialNumber": "873190",
+          "serialNumber": "000000",
           "firmwareRevision": "1.0",
+          "excludeSwitch": false,
           "motion": true,
-          "doorbell": false,
+          "doorbell": true,
           "switches": false,
-          "motionTimeout": 1,
+          "motionTimeout": 15,
           "motionDoorbell": false,
-          "excludeSwitch": true,
           "unbridge": true,
           "hsv": true,
           "prebuffering": true,
           "videoConfig": {
-            "source": "-rtsp_transport udp -i rtsp://192.168.111.1/onvif1",
-            "stillImageSource": "-i rtsp://192.168.111.11/onvif1",
+            "source": "-i rtsp://192.168.123.1/stream",
+            "stillImageSource": "-i rtsp://192.168.123.1/stream",
+            "readRate": false,
+            "rtspTransport": "udp",
             "maxStreams": 4,
             "maxWidth": 1280,
             "maxHeight": 720,
-            "maxFPS": 30,
-            "audio": true
+            "maxFPS": 20,
+            "maxBitrate": 199,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "libfdk_aac",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
           },
           "mqtt": {
-            "motionTopic": "sricam/motion",
+            "motionTopic": "livingroom/motion",
             "motionMessage": "ON",
-            "motionResetTopic": "sricam/motion",
+            "motionResetTopic": "livingroom/motion",
             "motionResetMessage": "OFF"
           }
         },
         {
-          "name": "Yi Dome",
+          "name": "Office Camera",
           "manufacturer": "Yi",
           "model": "IP Camera",
-          "serialNumber": "873190",
+          "serialNumber": "000000",
           "firmwareRevision": "1.0",
+          "excludeSwitch": true,
           "motion": true,
-          "doorbell": false,
-          "switches": false,
-          "motionTimeout": 1,
+          "doorbell": true,
+          "switches": true,
+          "motionTimeout": 15,
           "unbridge": true,
-          "hsv": false,
+          "hsv": true,
           "prebuffering": true,
-          "excludeSwitch": false,
           "videoConfig": {
-            "source": "-rtsp_transport tcp -i rtsp://192.168.111.22/ch0_0.h264",
-            "stillImageSource": "-i rtsp://192.168.111178.22/ch0_0.h264",
+            "source": "-i rtsp://192.168.123.2/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.123.2/ch0_0.h264",
+            "readRate": false,
+            "rtspTransport": "tcp",
             "maxStreams": 4,
             "maxWidth": 1920,
             "maxHeight": 1080,
-            "maxFPS": 25,
-            "maxBitrate": 1000,
-            "audio": false
-          },
-          "mqtt": {
-            "motionTopic": "yicam_dome_keller/motion",
-            "motionMessage": "ON",
-            "motionResetTopic": "yicam_dome_keller/motion",
-            "motionResetMessage": "OFF"
+            "maxFPS": 20,
+            "maxBitrate": 100,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "copy",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
+          }
+        },
+        {
+          "name": "Camera",
+          "manufacturer": "unitoptek",
+          "model": "IP Camera",
+          "serialNumber": "000000",
+          "excludeSwitch": true,
+          "motion": true,
+          "doorbell": true,
+          "switches": true,
+          "motionTimeout": 15,
+          "unbridge": true,
+          "hsv": true,
+          "prebuffering": true,
+          "videoConfig": {
+            "source": "-i rtsp://test:test@192.168.123.456:554/11",
+            "stillImageSource": "-i http://test:test@192.168.123.456/snap.jpg",
+            "rtspTransport": "tcp",
+            "maxStreams": 4,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 20,
+            "maxBitrate": 299,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "libfdk_aac",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
           }
         }
-      ],
-      "platform": "CameraUI"
+      ]
     }
   ]
 }
