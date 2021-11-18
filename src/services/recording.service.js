@@ -78,6 +78,8 @@ class RecordingDelegate {
         vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
 
         audioArguments.push(
+          '-bsf:a',
+          'aac_adtstoasc',
           '-acodec',
           'libfdk_aac',
           ...(configuration.audioCodec.type === this.hap.AudioRecordingCodecType.AAC_LC
