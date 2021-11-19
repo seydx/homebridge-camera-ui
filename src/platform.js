@@ -112,6 +112,12 @@ HomebridgeCameraUi.prototype = {
     try {
       this.log.info('Config changed through interface, saving...');
 
+      configJson.cameras = configJson.cameras.map((camera) => {
+        camera.hsv = camera.recordOnMovement || false;
+        delete camera.recordOnMovement;
+        return camera;
+      });
+
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
       for (const index in config.platforms) {
