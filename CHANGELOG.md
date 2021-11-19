@@ -4,7 +4,7 @@
 
 Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui
 
-[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project. It has been completely decoupled from Homebridge and can also be used as a standalone app.
+[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project (currently in alpha/private repo). It has been completely decoupled from Homebridge and can also be used as a standalone app.
 
 **homebridge-camera-ui** is the connection between camera.ui and homebridge and should give users a beautiful interface and HomeKit support.
 
@@ -29,7 +29,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Notifications**
   - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
 - **Settings**
-  - **System:** Added new endpoints to control (update/reboot) the system. To control these endpoints, a new "System" page has been added under "Settings". So it is now possible to update camera.ui or reboot the instance.
+  - **System:** A new subpage called "System" has been added to Settings. Via this subpage it is possible to configure, restart or update camera.ui
 - **Log**
   - Added a new endpoint to view the camera.ui log in realtime over the browser
 - **Config**
@@ -37,19 +37,21 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 
 ## Other changes
 - **Interface**
-  - Added play/pause and mute/unmute buttons to stream cards
+  - Added `play`, `pause` and `audio` buttons to stream
   - Added a new `onboard page` for first start
   - Added new `automation` section to general settings page
   - Added a new page to settings: `"system"`
   - Added 16:9 aspect ratio to `camera` view
   - Added form validation for settings
-  - Changed `removeAfter` duration for notifications/recordings
+  - Added 1080p resolution for stream resolution to UI
+  - Changed `removeAfter` duration for notifications/recordings (now, it is also possible to stop removing)
   - The quality of the streams was increased (`-q 1`)
   - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
   - Added `motionTimeout` also to ui-only events
   - Improved page loading
   - Minor UI Improvements
 - **Server**
+  - Built-in SMTP server
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout is session time out
   - Auto logout if socket disconnected/unauthenticated
@@ -61,6 +63,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - Bump dependencies
 
 ## Bugfixes
+- Fixed an issue where changing the `removeAfter` timer for notifications/recordings did not restarted the cleartimer
 - Fixed an issue where the service worker did not update the user interface correctly
 - Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
 - Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
