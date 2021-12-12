@@ -54,6 +54,7 @@ class Logger {
   debug(message, accessoryName) {
     Logger.#logging(LogLevel.DEBUG, message, accessoryName);
   }
+
   static #hookStream(stream, callback) {
     var old_write = stream.write;
 

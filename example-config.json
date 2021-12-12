@@ -12,8 +12,6 @@
       "platform": "CameraUI",
       "name": "CameraUI",
       "port": 3333,
-      "theme": "auto",
-      "language": "auto",
       "debug": true,
       "atHomeSwitch": false,
       "mqtt": {

@@ -10,24 +10,13 @@ const FfmpegProcess = require('../services/ffmpeg.service');
 const RecordingDelegate = require('../services/recording.service');
 
 class Camera {
-  constructor(api, accessory, videoProcessor, cameraUi) {
+  constructor(api, accessory, cameraUi) {
     this.api = api;
-    this.hap = api.hap;
-    this.accessory = accessory;
     this.log = Logger.log;
-
-    this.videoProcessor = videoProcessor;
-    this.unbridge = accessory.context.config.unbridge;
-    this.videoConfig = accessory.context.config.videoConfig;
-    this.hsv = accessory.context.config.hsv;
-    this.prebuffering = accessory.context.config.prebuffering;
-
-    if (this.hsv && !this.unbridge) {
-      this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
-      this.hsv = false;
-    }
-
+    this.accessory = accessory;
     this.cameraUi = cameraUi;
+
+    this.hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
 
     this.services = [];
     this.streamControllers = [];
@@ -41,40 +30,44 @@ class Camera {
 
     this.recordingDelegate = null;
 
-    for (const sr of [this.hap.AudioRecordingSamplerate.KHZ_32]) {
-      samplerate.push(sr);
+    if (this.accessory.context.config.hsv) {
+      if (!this.hsvSupported) {
+        this.log.warn(
+          'Can not start HSV. Not compatible Homebridge version detected!',
+          this.accessory.displayName,
+          'plugin'
+        );
+        this.accessory.context.config.hsv = false;
+      } else if (!this.accessory.context.config.unbridge) {
+        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName, 'plugin');
+        this.accessory.context.config.hsv = false;
+      } else {
+        for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
+          samplerate.push(sr);
+        }
+
+        for (const type of [this.api.hap.AudioRecordingCodecType.AAC_LC]) {
+          const entry = {
+            type,
+            bitrateMode: 0,
+            samplerate,
+            audioChannels: 1,
+          };
+
+          recordingCodecs.push(entry);
+        }
+
+        this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
+
+        this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi);
+      }
     }
 
-    for (const type of [this.hap.AudioRecordingCodecType.AAC_LC]) {
-      const entry = {
-        type,
-        bitrateMode: 0,
-        samplerate,
-        audioChannels: 1,
-      };
-
-      recordingCodecs.push(entry);
-    }
-
-    if (this.hsv) {
-      this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
-
-      this.recordingDelegate = new RecordingDelegate(
-        this.accessory.displayName,
-        this.videoConfig,
-        this.api,
-        this.hap,
-        this.videoProcessor,
-        this.prebuffering,
-        cameraUi
-      );
-    }
-
-    this.controller = new this.hap.CameraController({
-      cameraStreamCount: this.videoConfig.maxStreams || 2, // HomeKit requires at least 2 streams, but 1 is also just fine
+    this.controller = new this.api.hap.CameraController({
+      cameraStreamCount: this.accessory.context.config.videoConfig.maxStreams || 2, // HomeKit requires at least 2 streams, but 1 is also just fine
       delegate: this,
       streamingOptions: {
-        supportedCryptoSuites: [this.hap.SRTPCryptoSuites.AES_CM_128_HMAC_SHA1_80],
+        supportedCryptoSuites: [this.api.hap.SRTPCryptoSuites.AES_CM_128_HMAC_SHA1_80],
         video: {
           resolutions: [
             [320, 180, 30],
@@ -90,23 +83,23 @@ class Camera {
             [1600, 1200, 30],
           ],
           codec: {
-            profiles: [this.hap.H264Profile.BASELINE, this.hap.H264Profile.MAIN, this.hap.H264Profile.HIGH],
-            levels: [this.hap.H264Level.LEVEL3_1, this.hap.H264Level.LEVEL3_2, this.hap.H264Level.LEVEL4_0],
+            profiles: [this.api.hap.H264Profile.BASELINE, this.api.hap.H264Profile.MAIN, this.api.hap.H264Profile.HIGH],
+            levels: [this.api.hap.H264Level.LEVEL3_1, this.api.hap.H264Level.LEVEL3_2, this.api.hap.H264Level.LEVEL4_0],
           },
         },
         audio: {
-          twoWayAudio: !!this.videoConfig.returnAudioTarget,
+          twoWayAudio: !!this.accessory.context.config.videoConfig.returnAudioTarget,
           codecs: [
             {
-              type: this.hap.AudioStreamingCodecType.AAC_ELD, //'AAC-eld'
-              samplerate: this.hap.AudioStreamingSamplerate.KHZ_16, //16
+              type: this.api.hap.AudioStreamingCodecType.AAC_ELD, //'AAC-eld'
+              samplerate: this.api.hap.AudioStreamingSamplerate.KHZ_16, //16
               /*type: AudioStreamingCodecType.OPUS,
               samplerate: AudioStreamingSamplerate.KHZ_24*/
             },
           ],
         },
       },
-      recording: this.hsv
+      recording: this.accessory.context.config.hsv
         ? {
             options: {
               prebufferLength: 6000,
@@ -119,8 +112,16 @@ class Camera {
               ],
               video: {
                 codec: {
-                  profiles: [this.hap.H264Profile.BASELINE, this.hap.H264Profile.MAIN, this.hap.H264Profile.HIGH],
-                  levels: [this.hap.H264Level.LEVEL3_1, this.hap.H264Level.LEVEL3_2, this.hap.H264Level.LEVEL4_0],
+                  profiles: [
+                    this.api.hap.H264Profile.BASELINE,
+                    this.api.hap.H264Profile.MAIN,
+                    this.api.hap.H264Profile.HIGH,
+                  ],
+                  levels: [
+                    this.api.hap.H264Level.LEVEL3_1,
+                    this.api.hap.H264Level.LEVEL3_2,
+                    this.api.hap.H264Level.LEVEL4_0,
+                  ],
                 },
                 resolutions: [
                   [320, 180, 30],
@@ -202,21 +203,25 @@ class Camera {
 
     if (!isSnapshot) {
       if (
-        this.videoConfig.maxWidth !== undefined &&
-        (this.videoConfig.forceMax || request.width > this.videoConfig.maxWidth)
+        this.accessory.context.config.videoConfig.maxWidth !== undefined &&
+        (this.accessory.context.config.videoConfig.forceMax ||
+          request.width > this.accessory.context.config.videoConfig.maxWidth)
       ) {
-        resultInfo.width = this.videoConfig.maxWidth;
+        resultInfo.width = this.accessory.context.config.videoConfig.maxWidth;
       }
 
       if (
-        this.videoConfig.maxHeight !== undefined &&
-        (this.videoConfig.forceMax || request.height > this.videoConfig.maxHeight)
+        this.accessory.context.config.videoConfig.maxHeight !== undefined &&
+        (this.accessory.context.config.videoConfig.forceMax ||
+          request.height > this.accessory.context.config.videoConfig.maxHeight)
       ) {
-        resultInfo.height = this.videoConfig.maxHeight;
+        resultInfo.height = this.accessory.context.config.videoConfig.maxHeight;
       }
     }
 
-    let filters = this.videoConfig.videoFilter ? this.videoConfig.videoFilter.split(',') : [];
+    let filters = this.accessory.context.config.videoConfig.videoFilter
+      ? this.accessory.context.config.videoConfig.videoFilter.split(',')
+      : [];
 
     const noneFilter = filters.indexOf('none');
 
@@ -251,16 +256,20 @@ class Camera {
       const startTime = Date.now();
 
       const ffmpegArguments =
-        (this.videoConfig.stillImageSource || this.videoConfig.source) + // Still
+        (this.accessory.context.config.videoConfig.stillImageSource ||
+          this.accessory.context.config.videoConfig.source) + // Still
         ' -frames:v 1' +
         (snapFilter ? ' -filter:v ' + snapFilter : '') +
         ' -f image2 -' +
         ' -hide_banner' +
         ' -loglevel error';
 
-      this.log.debug(`Snapshot command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
+      this.log.debug(
+        `Snapshot command: ${this.accessory.context.config.videoProcessor} ${ffmpegArguments}`,
+        this.accessory.displayName
+      );
 
-      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments.split(/\s+/), {
+      const ffmpeg = spawn(this.accessory.context.config.videoProcessor, ffmpegArguments.split(/\s+/), {
         env: process.env,
       });
 
@@ -275,7 +284,7 @@ class Camera {
       });
 
       ffmpeg.stderr.on('data', (data) =>
-        this.log.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName)
+        this.log.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName, 'plugin')
       );
 
       ffmpeg.on('close', () => {
@@ -296,15 +305,15 @@ class Camera {
         if (runtime < 5) {
           this.log.debug(message, this.accessory.displayName);
         } else {
-          if (!this.unbridge) {
+          if (!this.accessory.context.config.unbridge) {
             message += ' It is highly recommended you switch to unbridge mode.';
           }
 
           if (runtime < 22) {
-            this.log.warn(message, this.accessory.displayName);
+            this.log.warn(message, this.accessory.displayName, 'plugin');
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
-            this.log.error(message, this.accessory.displayName);
+            this.log.error(message, this.accessory.displayName, 'plugin');
           }
         }
       });
@@ -321,9 +330,12 @@ class Camera {
         (resizeFilter ? ' -filter:v ' + resizeFilter : '') +
         ' -f image2 -';
 
-      this.log.debug(`Resize command: ${this.videoProcessor} ${ffmpegArguments}`, this.accessory.displayName);
+      this.log.debug(
+        `Resize command: ${this.accessory.context.config.videoProcessor} ${ffmpegArguments}`,
+        this.accessory.displayName
+      );
 
-      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments.split(/\s+/), {
+      const ffmpeg = spawn(this.accessory.context.config.videoProcessor, ffmpegArguments.split(/\s+/), {
         env: process.env,
       });
 
@@ -368,7 +380,7 @@ class Camera {
 
       callback(undefined, resized);
     } catch (error) {
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'plugin');
 
       callback(error);
     }
@@ -376,10 +388,10 @@ class Camera {
 
   async prepareStream(request, callback) {
     const videoReturnPort = await this.reservePorts(1);
-    const videoSSRC = this.hap.CameraController.generateSynchronisationSource();
+    const videoSSRC = this.api.hap.CameraController.generateSynchronisationSource();
 
     const audioReturnPort = await this.reservePorts(1);
-    const audioSSRC = this.hap.CameraController.generateSynchronisationSource();
+    const audioSSRC = this.api.hap.CameraController.generateSynchronisationSource();
 
     const ipv6 = request.addressVersion === 'ipv6';
 
@@ -422,10 +434,10 @@ class Camera {
     const sessionInfo = this.pendingSessions.get(request.sessionID);
 
     if (sessionInfo) {
-      const vcodec = this.videoConfig.vcodec || 'libx264';
-      const mtu = this.videoConfig.packetSize || 1316; // request.video.mtu is not used
+      const vcodec = this.accessory.context.config.videoConfig.vcodec || 'libx264';
+      const mtu = this.accessory.context.config.videoConfig.packetSize || 1316; // request.video.mtu is not used
 
-      let encoderOptions = this.videoConfig.encoderOptions;
+      let encoderOptions = this.accessory.context.config.videoConfig.encoderOptions;
 
       if (!encoderOptions && vcodec === 'libx264') {
         encoderOptions = '-preset ultrafast -tune zerolatency';
@@ -434,15 +446,17 @@ class Camera {
       const resolution = this.determineResolution(request.video, false);
 
       let fps =
-        this.videoConfig.maxFPS !== undefined &&
-        (this.videoConfig.forceMax || request.video.fps > this.videoConfig.maxFPS)
-          ? this.videoConfig.maxFPS
+        this.accessory.context.config.videoConfig.maxFPS !== undefined &&
+        (this.accessory.context.config.videoConfig.forceMax ||
+          request.video.fps > this.accessory.context.config.videoConfig.maxFPS)
+          ? this.accessory.context.config.videoConfig.maxFPS
           : request.video.fps;
 
       let videoBitrate =
-        this.videoConfig.maxBitrate !== undefined &&
-        (this.videoConfig.forceMax || request.video.max_bit_rate > this.videoConfig.maxBitrate)
-          ? this.videoConfig.maxBitrate
+        this.accessory.context.config.videoConfig.maxBitrate !== undefined &&
+        (this.accessory.context.config.videoConfig.forceMax ||
+          request.video.max_bit_rate > this.accessory.context.config.videoConfig.maxBitrate)
+          ? this.accessory.context.config.videoConfig.maxBitrate
           : request.video.max_bit_rate;
 
       if (vcodec === 'copy') {
@@ -476,14 +490,16 @@ class Camera {
           ' fps, ' +
           (videoBitrate > 0 ? videoBitrate : '???') +
           ' kbps' +
-          (this.videoConfig.audio ? ' (' + request.audio.codec + ')' : ''),
+          (this.accessory.context.config.videoConfig.audio ? ' (' + request.audio.codec + ')' : ''),
         this.accessory.displayName
       );
 
-      let ffmpegArguments = '-hide_banner ' + this.videoConfig.source;
+      let ffmpegArguments = '-hide_banner ' + this.accessory.context.config.videoConfig.source;
 
       ffmpegArguments += // Video
-        (this.videoConfig.mapvideo ? ' -map ' + this.videoConfig.mapvideo : ' -an -sn -dn') +
+        (this.accessory.context.config.videoConfig.mapvideo
+          ? ' -map ' + this.accessory.context.config.videoConfig.mapvideo
+          : ' -an -sn -dn') +
         ' -codec:v ' +
         vcodec +
         ' -pix_fmt yuv420p' +
@@ -512,14 +528,16 @@ class Camera {
         '&pkt_size=' +
         mtu;
 
-      if (this.videoConfig.audio) {
+      if (this.accessory.context.config.videoConfig.audio) {
         if (
-          request.audio.codec === this.hap.AudioStreamingCodecType.OPUS ||
-          request.audio.codec === this.hap.AudioStreamingCodecType.AAC_ELD
+          request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS ||
+          request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
         ) {
           ffmpegArguments += // Audio
-            (this.videoConfig.mapaudio ? ' -map ' + this.videoConfig.mapaudio : ' -vn -sn -dn') +
-            (request.audio.codec === this.hap.AudioStreamingCodecType.OPUS
+            (this.accessory.context.config.videoConfig.mapaudio
+              ? ' -map ' + this.accessory.context.config.videoConfig.mapaudio
+              : ' -vn -sn -dn') +
+            (request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS
               ? ' -codec:a libopus' + ' -application lowdelay'
               : ' -codec:a libfdk_aac' + ' -profile:a aac_eld') +
             ' -flags +global_header' +
@@ -550,18 +568,23 @@ class Camera {
             sessionInfo.audioPort +
             '&pkt_size=188';
         } else {
-          this.log.error(`Unsupported audio codec requested: ${request.audio.codec}`, this.accessory.displayName);
+          this.log.error(
+            `Unsupported audio codec requested: ${request.audio.codec}`,
+            this.accessory.displayName,
+            'plugin'
+          );
         }
       }
 
-      ffmpegArguments += ' -loglevel level' + (this.videoConfig.debug ? '+verbose' : '') + ' -progress pipe:1';
+      ffmpegArguments +=
+        ' -loglevel level' + (this.accessory.context.config.videoConfig.debug ? '+verbose' : '') + ' -progress pipe:1';
 
       const activeSession = {};
 
       activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
 
       activeSession.socket.on('error', (error) => {
-        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName);
+        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName, 'plugin');
         this.stopStream(request.sessionID);
       });
 
@@ -581,15 +604,15 @@ class Camera {
 
       activeSession.mainProcess = new FfmpegProcess(
         this.accessory.displayName,
-        this.videoConfig.debug,
+        this.accessory.context.config.videoConfig.debug,
         request.sessionID,
-        this.videoProcessor,
+        this.accessory.context.config.videoProcessor,
         ffmpegArguments,
         this,
         callback
       );
 
-      if (this.videoConfig.returnAudioTarget) {
+      if (this.accessory.context.config.videoConfig.returnAudioTarget) {
         const ffmpegReturnArguments =
           '-hide_banner' +
           ' -protocol_whitelist pipe,udp,rtp,file,crypto' +
@@ -597,9 +620,9 @@ class Camera {
           ' -c:a libfdk_aac' +
           ' -i pipe:' +
           ' ' +
-          this.videoConfig.returnAudioTarget +
+          this.accessory.context.config.videoConfig.returnAudioTarget +
           ' -loglevel level' +
-          (this.videoConfig.debug ? '+verbose' : '');
+          (this.accessory.context.config.videoConfig.debug ? '+verbose' : '');
 
         const ipVersion = sessionInfo.ipv6 ? 'IP6' : 'IP4';
 
@@ -632,9 +655,9 @@ class Camera {
 
         activeSession.returnProcess = new FfmpegProcess(
           this.accessory.displayName + '] [Two-way',
-          this.videoConfig.debug,
+          this.accessory.context.config.videoConfig.debug,
           request.sessionID,
-          this.videoProcessor,
+          this.accessory.context.config.videoProcessor,
           ffmpegReturnArguments,
           this
         );
@@ -645,7 +668,7 @@ class Camera {
       this.ongoingSessions.set(request.sessionID, activeSession);
       this.pendingSessions.delete(request.sessionID);
     } else {
-      this.log.error('Error finding session information.', this.accessory.displayName);
+      this.log.error('Error finding session information.', this.accessory.displayName, 'plugin');
 
       callback(new Error('Error finding session information'));
     }
@@ -706,19 +729,27 @@ class Camera {
       try {
         if (session.socket) session.socket.close();
       } catch (error) {
-        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName);
+        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName, 'plugin');
       }
 
       try {
         if (session.mainProcess) session.mainProcess.stop();
       } catch (error) {
-        this.log.error(`Error occurred terminating main FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(
+          `Error occurred terminating main FFmpeg process: ${error}`,
+          this.accessory.displayName,
+          'plugin'
+        );
       }
 
       try {
         if (session.returnProcess) session.returnProcess.stop();
       } catch (error) {
-        this.log.error(`Error occurred terminating two-way FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(
+          `Error occurred terminating two-way FFmpeg process: ${error}`,
+          this.accessory.displayName,
+          'plugin'
+        );
       }
 
       this.ongoingSessions.delete(sessionId);

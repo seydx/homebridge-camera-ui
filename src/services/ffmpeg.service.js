@@ -32,7 +32,7 @@ class FfmpegProcess {
         } else if (runtime < 22) {
           this.log.warn(message, cameraName);
         } else {
-          this.log.error(message, cameraName);
+          this.log.error(message, cameraName, 'plugin');
         }
       }
     });
@@ -49,14 +49,14 @@ class FfmpegProcess {
       }
 
       if (/\[(panic|fatal|error)]/.test(line)) {
-        this.log.error(line, cameraName);
+        this.log.error(line, cameraName, 'plugin');
       } else if (videoDebug) {
         this.log.debug(line, cameraName);
       }
     });
 
     this.process.on('error', (error) => {
-      this.log.error(`FFmpeg process creation failed: ${error.message}`, cameraName);
+      this.log.error(`FFmpeg process creation failed: ${error.message}`, cameraName, 'plugin');
 
       if (callback) {
         callback(new Error('FFmpeg process creation failed'));
@@ -75,7 +75,7 @@ class FfmpegProcess {
           this.log.warn(`${message} (Unexpected)`, cameraName);
         }
       } else {
-        this.log.error(`${message} (Error)`, cameraName);
+        this.log.error(`${message} (Error)`, cameraName, 'plugin');
 
         delegate.stopStream(sessionId);
 

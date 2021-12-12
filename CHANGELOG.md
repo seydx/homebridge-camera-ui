@@ -2,9 +2,9 @@
 
 # NEXT
 
-Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui
+Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui including a completely redesigned user interface
 
-[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project (currently in alpha/private repo). It has been completely decoupled from Homebridge and can also be used as a standalone app.
+[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project (currently in beta/private repo). It has been completely decoupled from Homebridge and can also be used as a standalone app.
 
 **homebridge-camera-ui** is the connection between camera.ui and homebridge and should give users a beautiful interface and HomeKit support.
 
@@ -18,7 +18,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 
 ## Breaking Changes
 - **Database**
-  - Due to the extensive restructuring of **camera.ui**, the old database is no longer compatible and will be recreated after updating and rebooting. Thereby already set configuration will be lost, and must be reconfigured after the first start!
+  - Due to the extensive restructuring of **camera.ui** and the new design, the old database is no longer compatible and will be recreated after updating and rebooting. Thereby already set configuration will be lost, and must be reconfigured after the first start!
 
 ## Notable Changes
 - **HomeKit Secure Video (HSV)**
@@ -42,10 +42,10 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added interface settings to system
   - Added `play`, `pause` and `audio` buttons to stream
   - Added a new `onboard page` for first start
-  - Added new `automation` section to general settings page
+  - Added new `automation` section to interface settings page
   - Added a new page to settings: `"system"`
   - Added 16:9 aspect ratio to `camera` view
-  - Added form validation for settings
+  - Added form validation
   - Added 1080p resolution for stream resolution to UI
   - Changed `removeAfter` duration for notifications/recordings (now, it is also possible to stop removing)
   - The quality of the streams was increased (`-q 1`)

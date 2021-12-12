@@ -83,8 +83,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.error('An error occured during getting atHome state!', false, true);
-      this.log.error(error);
+      this.log.warn('An error occured during getting atHome state!', this.accessory.displayName, 'plugin');
+      this.log.error(error, this.accessory.displayName, 'plugin');
     }
   }
 
@@ -98,10 +98,10 @@ class SwitchAccessory {
         })
         .write();
 
-      this.log.info(`At Home: ${state}`, false, true);
+      this.log.info(`At Home: ${state}`, this.accessory.displayName);
     } catch (error) {
-      this.log.error('An error occured during setting atHome state!', false, true);
-      this.log.error(error);
+      this.log.warn('An error occured during setting atHome state!', this.accessory.displayName, 'plugin');
+      this.log.error(error, this.accessory.displayName, 'plugin');
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
@@ -119,8 +119,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.error('An error occured during getting exclude state!', false, true);
-      this.log.error(error);
+      this.log.warn('An error occured during getting exclude state!', this.accessory.displayName, 'plugin');
+      this.log.error(error, this.accessory.displayName, 'plugin');
     }
   }
 
@@ -145,12 +145,11 @@ class SwitchAccessory {
 
       this.log.info(
         `Exclude: ${this.accessory.displayName} ${state ? 'added to exclude list' : 'removed from exclude list'}`,
-        false,
-        true
+        this.accessory.displayName
       );
     } catch (error) {
-      this.log.error('An error occured during setting atHome state!', false, true);
-      this.log.error(error);
+      this.log.warn('An error occured during setting atHome state!', this.accessory.displayName, 'plugin');
+      this.log.error(error, this.accessory.displayName, 'plugin');
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);

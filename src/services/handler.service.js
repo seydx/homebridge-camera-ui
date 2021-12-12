@@ -62,7 +62,7 @@ class Handler {
     }
 
     if (result.error) {
-      return this.log.error(`Handling event: ${result.message}`, name);
+      return this.log.error(`Handling event: ${result.message}`, name, 'plugin');
     }
 
     this.log.debug(`Handling event: ${result.message}`, name);

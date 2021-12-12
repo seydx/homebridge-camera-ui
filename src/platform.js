@@ -35,9 +35,10 @@ function HomebridgeCameraUi(log, config, api) {
   this.api = api;
   this.accessories = [];
   this.cameraAccessories = [];
+  this.hsvSupported = Boolean(api.hap.AudioRecordingSamplerate && api.hap.AudioRecordingCodecType);
 
   // eslint-disable-next-line unicorn/no-array-for-each
-  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera?.hsv ? false : true));
+  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera?.hsv && this.hsvSupported ? false : true));
 
   this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, Logger, {
     moduleName: 'homebridge-camera-ui',
@@ -49,7 +50,6 @@ function HomebridgeCameraUi(log, config, api) {
   this.log = Logger.log;
   this.config = new Config(config);
   this.devices = new Map();
-
   this.handler = new Handler(this.api.hap, this.cameraUi);
 
   for (const device of this.config.cameras) {
@@ -131,11 +131,25 @@ HomebridgeCameraUi.prototype = {
       }
 
       fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+      this.config = new Config(config);
+
+      for (const device of this.config.cameras) {
+        const camera = this.cameraAccessories.find((camera) => camera?.accessory?.displayName === device?.name);
+
+        if (camera) {
+          camera.accessory.context.config = device;
+          camera.accessory.context.config.videoProcessor = this.config.options.videoProcessor;
+
+          for (const session in camera.ongoingSessions) {
+            camera.stopStream(session);
+          }
+        }
+      }
 
       this.log.info('config.json saved!');
     } catch (error) {
       this.log.warn('An error occured during changing config.json');
-      this.log.error(error);
+      this.log.error(error, 'Config', 'plugin');
     }
   },
 
@@ -150,9 +164,9 @@ HomebridgeCameraUi.prototype = {
 
         this.accessories.push(accessory);
 
-        if (device.subtype.includes('camera')) {
+        /*if (device.subtype.includes('camera')) {
           this.cameraAccessories.push(accessory);
-        }
+        }*/
       } else {
         const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
@@ -165,9 +179,9 @@ HomebridgeCameraUi.prototype = {
 
           this.accessories.push(accessory);
 
-          if (device.subtype.includes('camera')) {
+          /*if (device.subtype.includes('camera')) {
             this.cameraAccessories.push(accessory);
-          }
+          }*/
         }
       }
     }
@@ -181,7 +195,7 @@ HomebridgeCameraUi.prototype = {
         }
       } catch (error) {
         this.log.debug('It looks like the device has already been removed. Skip removing.', accessory.displayName);
-        this.log.error(error);
+        this.log.error(error, 'Homebridge', 'plugin');
       }
     }
   },
@@ -212,6 +226,7 @@ HomebridgeCameraUi.prototype = {
     }
 
     accessory.context.config = device;
+    accessory.context.config.videoProcessor = this.config.options.videoProcessor;
 
     if (device.subtype.includes('switch')) {
       new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory', this.cameraUi);
@@ -220,8 +235,12 @@ HomebridgeCameraUi.prototype = {
 
     accessory.category = this.api.hap.Categories.IP_CAMERA;
 
-    const cameraAccessory = new Camera(this.api, accessory, this.config.options.videoProcessor, this.cameraUi);
+    const cameraAccessory = new Camera(this.api, accessory, this.cameraUi);
     accessory.configureController(cameraAccessory.controller);
+
+    if (device.subtype.includes('camera')) {
+      this.cameraAccessories.push(cameraAccessory);
+    }
 
     new MotionSensor(this.api, accessory, this.handler);
     new DoorbellSensor(this.api, accessory, this.handler);

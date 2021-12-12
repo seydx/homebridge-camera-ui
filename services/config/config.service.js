@@ -32,8 +32,6 @@ class ConfigSetup {
     return {
       debug: this.config.debug || false,
       port: this.config.port || 8181,
-      language: this.config.language || 'auto',
-      theme: this.config.theme || 'auto',
       atHomeSwitch: this.config.atHomeSwitch || false,
     };
   }
