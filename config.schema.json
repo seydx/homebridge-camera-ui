@@ -176,11 +176,6 @@
             "placeholder": "SerialNumber",
             "description": "Set the serial number for display in the Home app."
           },
-          "firmwareRevision": {
-            "name": "Firmware Revision",
-            "type": "string",
-            "description": "Set the firmware revision for display in the Home app."
-          },
           "excludeSwitch": {
             "title": "Exclude Switch",
             "type": "boolean",
@@ -498,12 +493,7 @@
               "title": "Branding",
               "expandable": true,
               "expanded": false,
-              "items": [
-                "cameras[].manufacturer",
-                "cameras[].model",
-                "cameras[].serialNumber",
-                "cameras[].firmwareRevision"
-              ]
+              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
             },
             {
               "key": "cameras[]",

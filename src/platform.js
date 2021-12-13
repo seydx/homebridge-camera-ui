@@ -131,7 +131,7 @@ HomebridgeCameraUi.prototype = {
       }
 
       fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
-      this.config = new Config(config);
+      /*this.config = new Config(config);
 
       for (const device of this.config.cameras) {
         const camera = this.cameraAccessories.find((camera) => camera?.accessory?.displayName === device?.name);
@@ -144,7 +144,7 @@ HomebridgeCameraUi.prototype = {
             camera.stopStream(session);
           }
         }
-      }
+      }*/
 
       this.log.info('config.json saved!');
     } catch (error) {
@@ -219,10 +219,7 @@ HomebridgeCameraUi.prototype = {
         this.api.hap.Characteristic.SerialNumber,
         device.serialNumber || 'SerialNumber'
       );
-      AccessoryInformation.setCharacteristic(
-        this.api.hap.Characteristic.FirmwareRevision,
-        device.firmwareRevision || version
-      );
+      AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, version);
     }
 
     accessory.context.config = device;
