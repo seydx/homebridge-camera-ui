@@ -3,11 +3,14 @@
 const { Logger } = require('../../services/logger/logger.service');
 
 const createSocket = require('dgram').createSocket;
+const path = require('path');
 const pickPort = require('pick-port');
 const spawn = require('child_process').spawn;
 
 const FfmpegProcess = require('../services/ffmpeg.service');
 const RecordingDelegate = require('../services/recording.service');
+
+const privacyFile = path.resolve(__dirname, '..', 'utils', 'privacy_cameraui.png.png');
 
 class Camera {
   constructor(api, accessory, cameraUi) {
@@ -248,12 +251,21 @@ class Camera {
   }
 
   fetchSnapshot(snapFilter) {
-    this.snapshotPromise = new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    this.snapshotPromise = new Promise(async (resolve, reject) => {
       const startTime = Date.now();
 
+      let input =
+        this.accessory.context.config.videoConfig.stillImageSource || this.accessory.context.config.videoConfig.source;
+
+      const atHome = await this.getPrivacyState();
+
+      if (atHome) {
+        input = `-i ${privacyFile}`;
+      }
+
       const ffmpegArguments =
-        (this.accessory.context.config.videoConfig.stillImageSource ||
-          this.accessory.context.config.videoConfig.source) + // Still
+        input + // Still
         ' -frames:v 1' +
         (snapFilter ? ' -filter:v ' + snapFilter : '') +
         ' -f image2 -' +
@@ -430,7 +442,7 @@ class Camera {
     callback(undefined, response);
   }
 
-  startStream(request, callback) {
+  async startStream(request, callback) {
     const sessionInfo = this.pendingSessions.get(request.sessionID);
 
     if (sessionInfo) {
@@ -494,14 +506,22 @@ class Camera {
         this.accessory.displayName
       );
 
-      let ffmpegArguments = '-hide_banner ' + this.accessory.context.config.videoConfig.source;
+      let input = this.accessory.context.config.videoConfig.source;
+
+      const atHome = await this.getPrivacyState();
+
+      if (atHome) {
+        input = `-re -loop 1 -i ${privacyFile}`;
+      }
+
+      let ffmpegArguments = '-hide_banner ' + input;
 
       ffmpegArguments += // Video
         (this.accessory.context.config.videoConfig.mapvideo
           ? ' -map ' + this.accessory.context.config.videoConfig.mapvideo
           : ' -an -sn -dn') +
         ' -codec:v ' +
-        vcodec +
+        (atHome ? (vcodec === 'copy' ? 'libx264' : vcodec) : vcodec) +
         ' -pix_fmt yuv420p' +
         ' -color_range mpeg' +
         (fps > 0 ? ' -r ' + fps : '') +
@@ -528,7 +548,7 @@ class Camera {
         '&pkt_size=' +
         mtu;
 
-      if (this.accessory.context.config.videoConfig.audio) {
+      if (this.accessory.context.config.videoConfig.audio && !atHome) {
         if (
           request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS ||
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
@@ -749,6 +769,33 @@ class Camera {
 
       this.log.info('Stopped video stream.', this.accessory.displayName);
     }
+  }
+
+  async getPrivacyState() {
+    let privacy = false;
+
+    try {
+      const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+      const atHome = generalSettings?.atHome || false;
+
+      if (atHome) {
+        const camerasSettings = await this.cameraUi?.database?.interface
+          ?.get('settings')
+          .get('cameras')
+          .find({ name: this.accessory.displayName })
+          .value();
+
+        privacy = camerasSettings?.privacyMode || false;
+      }
+    } catch (error) {
+      this.log.info(
+        'An error occured during getting atHome state for fetching snapshot, skipping..',
+        this.accessory.displayName
+      );
+      this.log.error(error, this.accessory.displayName);
+    }
+
+    return privacy;
   }
 }
 

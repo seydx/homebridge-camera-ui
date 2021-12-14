@@ -242,6 +242,7 @@ HomebridgeCameraUi.prototype = {
     new MotionSensor(this.api, accessory, this.handler);
     new DoorbellSensor(this.api, accessory, this.handler);
     new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
+    new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
   },
 
   configureAccessory: function (accessory) {

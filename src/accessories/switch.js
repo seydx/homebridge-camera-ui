@@ -17,7 +17,11 @@ class SwitchAccessory {
     this.subname = `${capitalize(subtype.split('-')[0])} ${capitalize(subtype.split('-')[1])}`;
     this.name = type === 'accessory' ? accessory.displayName : `${accessory.displayName} ${this.subname}`;
 
-    if (accessory.context.config.excludeSwitch || accessory.context.config.subtype.includes('switch')) {
+    if (
+      accessory.context.config.excludeSwitch ||
+      accessory.context.config.privacySwitch ||
+      accessory.context.config.subtype.includes('switch')
+    ) {
       this.getService();
     } else {
       this.removeService();
@@ -55,6 +59,16 @@ class SwitchAccessory {
           })
           .onSet(async (state) => {
             await this.setExcludeState(service, state);
+          });
+        break;
+      case 'privacy-switch':
+        service
+          .getCharacteristic(this.api.hap.Characteristic.On)
+          .onGet(async () => {
+            return await this.getPrivacyState();
+          })
+          .onSet(async (state) => {
+            await this.setPrivacyState(service, state);
           });
         break;
       default:
@@ -149,6 +163,47 @@ class SwitchAccessory {
       );
     } catch (error) {
       this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
+
+      setTimeout(() => {
+        service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
+      }, 500);
+    }
+  }
+
+  async getPrivacyState() {
+    try {
+      let state = false;
+
+      const camerasSettings = await this.cameraUi?.database?.interface
+        ?.get('settings')
+        .get('cameras')
+        .find({ name: this.accessory.displayName })
+        .value();
+
+      state = camerasSettings?.privacyMode || false;
+
+      return state;
+    } catch (error) {
+      this.log.info('An error occured during getting privacy mode state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
+    }
+  }
+
+  async setPrivacyState(service, state) {
+    try {
+      await this.cameraUi?.database?.interface
+        ?.get('settings')
+        .get('cameras')
+        .find({ name: this.accessory.displayName })
+        .assign({
+          privacyMode: state ? true : false,
+        })
+        .write();
+
+      this.log.info(`Privacy Mode: ${state}`, this.accessory.displayName);
+    } catch (error) {
+      this.log.info('An error occured during setting privacy mode state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName);
 
       setTimeout(() => {

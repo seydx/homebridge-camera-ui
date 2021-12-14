@@ -21,6 +21,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Due to the extensive restructuring of **camera.ui** and the new design, the old database is no longer compatible and will be recreated after updating and rebooting. Thereby already set configuration will be lost, and must be reconfigured after the first start!
 
 ## Notable Changes
+- **Design**
+  - The design of camera.ui has been redesigned from scratch and offers many new features for users.
 - **HomeKit Secure Video (HSV)**
   - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
@@ -31,10 +33,14 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - The notifications have been completely reworked, now also system internal errors/warnings are displayed in the notifications page
 - **Settings**
   - **System:** A new subpage called "System" has been added to Settings. Via this subpage it is possible to configure, restart or update camera.ui
+- **Charts**
+  - coming soon..
 - **Log**
   - Added a new endpoint to view the camera.ui log in realtime over the browser
 - **Config**
   - Added a new endpoint to view/change the camera.ui config.json over the browser
+- **Privacy Mode**
+  - Added a new option to enable privacy mode for the cameras
 
 ## Other changes
 - **Interface**

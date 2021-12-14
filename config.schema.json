@@ -181,6 +181,11 @@
             "type": "boolean",
             "description": "Exposes a 'exclude' switch to HomeKit to exclude/include the camera from the interface settings within HomeKit."
           },
+          "privacySwitch": {
+            "title": "Privacy Switch",
+            "type": "boolean",
+            "description": "Exposes a 'privacyMode' switch to replace the camera feed with a privacy image in HomeKit."
+          },
           "motion": {
             "title": "Enable Motion Sensor",
             "type": "boolean",
@@ -551,7 +556,8 @@
                 "cameras[].switches",
                 "cameras[].motionTimeout",
                 "cameras[].motionDoorbell",
-                "cameras[].excludeSwitch"
+                "cameras[].excludeSwitch",
+                "cameras[].privacySwitch"
               ]
             },
             {
