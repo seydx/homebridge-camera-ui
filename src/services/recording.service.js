@@ -198,8 +198,8 @@ class RecordingDelegate {
         this.log.debug('Recording completed. (dataSend close (hsv))', this.accessory.displayName);
         this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
       } else {
-        this.log.warn('An error occured during recording hsv video!', this.accessory.displayName);
-        this.log.error(error, this.accessory.displayName), 'plugin';
+        this.log.info('An error occured during recording hsv video!', this.accessory.displayName);
+        this.log.error(error, this.accessory.displayName);
       }
     } finally {
       socket.destroy();
@@ -264,11 +264,7 @@ class RecordingDelegate {
 
       cp.on('exit', (code, signal) => {
         if (code === 1) {
-          this.log.error(
-            `FFmpeg recording process exited with error! (${signal})`,
-            this.accessory.displayName,
-            'plugin'
-          );
+          this.log.error(`FFmpeg recording process exited with error! (${signal})`, this.accessory.displayName);
         } else {
           this.log.debug('FFmpeg recording process exited (expected)', this.accessory.displayName);
         }

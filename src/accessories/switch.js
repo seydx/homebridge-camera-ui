@@ -83,8 +83,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.warn('An error occured during getting atHome state!', this.accessory.displayName, 'plugin');
-      this.log.error(error, this.accessory.displayName, 'plugin');
+      this.log.info('An error occured during getting atHome state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
     }
   }
 
@@ -100,8 +100,8 @@ class SwitchAccessory {
 
       this.log.info(`At Home: ${state}`, this.accessory.displayName);
     } catch (error) {
-      this.log.warn('An error occured during setting atHome state!', this.accessory.displayName, 'plugin');
-      this.log.error(error, this.accessory.displayName, 'plugin');
+      this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
@@ -119,8 +119,8 @@ class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.warn('An error occured during getting exclude state!', this.accessory.displayName, 'plugin');
-      this.log.error(error, this.accessory.displayName, 'plugin');
+      this.log.info('An error occured during getting exclude state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
     }
   }
 
@@ -148,8 +148,8 @@ class SwitchAccessory {
         this.accessory.displayName
       );
     } catch (error) {
-      this.log.warn('An error occured during setting atHome state!', this.accessory.displayName, 'plugin');
-      this.log.error(error, this.accessory.displayName, 'plugin');
+      this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);

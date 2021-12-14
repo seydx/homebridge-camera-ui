@@ -45,10 +45,12 @@ class Logger {
 
   warn(message, accessoryName) {
     Logger.#logging(LogLevel.WARN, message, accessoryName);
+    Logger.#loggerUi.db(LogLevel.WARN, message, accessoryName, 'Homebridge');
   }
 
   error(message, accessoryName) {
     Logger.#logging(LogLevel.ERROR, message, accessoryName);
+    Logger.#loggerUi.db(LogLevel.ERROR, message, accessoryName, 'Homebridge');
   }
 
   debug(message, accessoryName) {

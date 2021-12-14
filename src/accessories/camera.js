@@ -32,14 +32,10 @@ class Camera {
 
     if (this.accessory.context.config.hsv) {
       if (!this.hsvSupported) {
-        this.log.warn(
-          'Can not start HSV. Not compatible Homebridge version detected!',
-          this.accessory.displayName,
-          'plugin'
-        );
+        this.log.warn('Can not start HSV. Not compatible Homebridge version detected!', this.accessory.displayName);
         this.accessory.context.config.hsv = false;
       } else if (!this.accessory.context.config.unbridge) {
-        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName, 'plugin');
+        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
         this.accessory.context.config.hsv = false;
       } else {
         for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
@@ -273,6 +269,8 @@ class Camera {
         env: process.env,
       });
 
+      const errors = [];
+
       let snapshotBuffer = Buffer.alloc(0);
 
       ffmpeg.stdout.on('data', (data) => {
@@ -283,11 +281,13 @@ class Camera {
         reject(`FFmpeg process creation failed: ${error.message}`);
       });
 
-      ffmpeg.stderr.on('data', (data) =>
-        this.log.error(data.toString().replace(/(\r\n|\n|\r)/gm, ''), this.accessory.displayName, 'plugin')
-      );
+      ffmpeg.stderr.on('data', (data) => errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, '')));
 
       ffmpeg.on('close', () => {
+        if (errors.length > 0) {
+          this.log.error(errors.join(' - '), this.accessory.displayName);
+        }
+
         if (snapshotBuffer.length > 0) {
           resolve(snapshotBuffer);
         } else {
@@ -310,10 +310,10 @@ class Camera {
           }
 
           if (runtime < 22) {
-            this.log.warn(message, this.accessory.displayName, 'plugin');
+            this.log.warn(message, this.accessory.displayName);
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
-            this.log.error(message, this.accessory.displayName, 'plugin');
+            this.log.error(message, this.accessory.displayName);
           }
         }
       });
@@ -380,7 +380,7 @@ class Camera {
 
       callback(undefined, resized);
     } catch (error) {
-      this.log.error(error, this.accessory.displayName, 'plugin');
+      this.log.error(error, this.accessory.displayName);
 
       callback(error);
     }
@@ -568,11 +568,7 @@ class Camera {
             sessionInfo.audioPort +
             '&pkt_size=188';
         } else {
-          this.log.error(
-            `Unsupported audio codec requested: ${request.audio.codec}`,
-            this.accessory.displayName,
-            'plugin'
-          );
+          this.log.error(`Unsupported audio codec requested: ${request.audio.codec}`, this.accessory.displayName);
         }
       }
 
@@ -584,7 +580,7 @@ class Camera {
       activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
 
       activeSession.socket.on('error', (error) => {
-        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName, 'plugin');
+        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName);
         this.stopStream(request.sessionID);
       });
 
@@ -668,8 +664,7 @@ class Camera {
       this.ongoingSessions.set(request.sessionID, activeSession);
       this.pendingSessions.delete(request.sessionID);
     } else {
-      this.log.error('Error finding session information.', this.accessory.displayName, 'plugin');
-
+      this.log.error('Error finding session information.', this.accessory.displayName);
       callback(new Error('Error finding session information'));
     }
   }
@@ -729,27 +724,19 @@ class Camera {
       try {
         if (session.socket) session.socket.close();
       } catch (error) {
-        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName, 'plugin');
+        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName);
       }
 
       try {
         if (session.mainProcess) session.mainProcess.stop();
       } catch (error) {
-        this.log.error(
-          `Error occurred terminating main FFmpeg process: ${error}`,
-          this.accessory.displayName,
-          'plugin'
-        );
+        this.log.error(`Error occurred terminating main FFmpeg process: ${error}`, this.accessory.displayName);
       }
 
       try {
         if (session.returnProcess) session.returnProcess.stop();
       } catch (error) {
-        this.log.error(
-          `Error occurred terminating two-way FFmpeg process: ${error}`,
-          this.accessory.displayName,
-          'plugin'
-        );
+        this.log.error(`Error occurred terminating two-way FFmpeg process: ${error}`, this.accessory.displayName);
       }
 
       this.ongoingSessions.delete(sessionId);

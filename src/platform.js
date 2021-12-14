@@ -38,7 +38,7 @@ function HomebridgeCameraUi(log, config, api) {
   this.hsvSupported = Boolean(api.hap.AudioRecordingSamplerate && api.hap.AudioRecordingCodecType);
 
   // eslint-disable-next-line unicorn/no-array-for-each
-  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera?.hsv && this.hsvSupported ? false : true));
+  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera.hsv && this.hsvSupported ? false : true));
 
   this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, Logger, {
     moduleName: 'homebridge-camera-ui',
@@ -113,7 +113,7 @@ HomebridgeCameraUi.prototype = {
       this.log.info('Config changed through interface, saving...');
 
       configJson.cameras = configJson.cameras.map((camera) => {
-        camera.hsv = camera.recordOnMovement || false;
+        camera.hsv = !camera.recordOnMovement;
         delete camera.recordOnMovement;
         return camera;
       });
@@ -148,8 +148,8 @@ HomebridgeCameraUi.prototype = {
 
       this.log.info('config.json saved!');
     } catch (error) {
-      this.log.warn('An error occured during changing config.json');
-      this.log.error(error, 'Config', 'plugin');
+      this.log.info('An error occured during changing config.json');
+      this.log.error(error, 'Config');
     }
   },
 
