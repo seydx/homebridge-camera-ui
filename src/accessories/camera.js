@@ -10,7 +10,11 @@ const spawn = require('child_process').spawn;
 const FfmpegProcess = require('../services/ffmpeg.service');
 const RecordingDelegate = require('../services/recording.service');
 
-const privacyFile = path.resolve(__dirname, '..', 'utils', 'privacy_cameraui.png');
+const { Ping } = require('../utils/ping');
+
+const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'images', 'maxstreams_cameraui.png');
+const offlineImage = path.resolve(__dirname, '..', 'utils', 'images', 'offline_cameraui.png');
+const privacyImage = path.resolve(__dirname, '..', 'utils', 'images', 'privacy_cameraui.png');
 
 class Camera {
   constructor(api, accessory, cameraUi) {
@@ -258,10 +262,13 @@ class Camera {
       let input =
         this.accessory.context.config.videoConfig.stillImageSource || this.accessory.context.config.videoConfig.source;
 
+      //const cameraStatus = await this.pingCamera();
       const atHome = await this.getPrivacyState();
 
-      if (atHome) {
-        input = `-i ${privacyFile}`;
+      /*if (!cameraStatus) {
+        input = `-i ${offlineImage}`;
+      } else */ if (atHome) {
+        input = `-i ${privacyImage}`;
       }
 
       const ffmpegArguments =
@@ -442,7 +449,7 @@ class Camera {
     callback(undefined, response);
   }
 
-  async startStream(request, callback) {
+  async startStream(request, callback, allowStream) {
     const sessionInfo = this.pendingSessions.get(request.sessionID);
 
     if (sessionInfo) {
@@ -508,20 +515,28 @@ class Camera {
 
       let input = this.accessory.context.config.videoConfig.source;
 
-      const atHome = await this.getPrivacyState();
+      if (!allowStream) {
+        input = `-re -loop 1 -i ${maxstreamsImage}`;
+      } else {
+        const cameraStatus = await this.pingCamera();
+        const atHome = await this.getPrivacyState();
 
-      if (atHome) {
-        input = `-re -loop 1 -i ${privacyFile}`;
+        if (!cameraStatus) {
+          input = `-re -loop 1 -i ${offlineImage}`;
+        } else if (atHome) {
+          input = `-re -loop 1 -i ${privacyImage}`;
+        }
       }
 
       let ffmpegArguments = '-hide_banner ' + input;
+      const inputChanged = Boolean(input !== this.accessory.context.config.videoConfig.source);
 
       ffmpegArguments += // Video
         (this.accessory.context.config.videoConfig.mapvideo
           ? ' -map ' + this.accessory.context.config.videoConfig.mapvideo
           : ' -an -sn -dn') +
         ' -codec:v ' +
-        (atHome ? (vcodec === 'copy' ? 'libx264' : vcodec) : vcodec) +
+        (inputChanged ? (vcodec === 'copy' ? 'libx264' : vcodec) : vcodec) +
         ' -pix_fmt yuv420p' +
         ' -color_range mpeg' +
         (fps > 0 ? ' -r ' + fps : '') +
@@ -548,7 +563,7 @@ class Camera {
         '&pkt_size=' +
         mtu;
 
-      if (this.accessory.context.config.videoConfig.audio && !atHome) {
+      if (this.accessory.context.config.videoConfig.audio && !inputChanged) {
         if (
           request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS ||
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
@@ -700,11 +715,11 @@ class Camera {
           allowStream = controller.session.requestSession();
         }
 
-        if (!allowStream) {
+        /*if (!allowStream) {
           return callback(new Error('Stream not allowed!'));
-        }
+        }*/
 
-        this.startStream(request, callback);
+        this.startStream(request, callback, allowStream);
         break;
       }
 
@@ -777,8 +792,9 @@ class Camera {
     try {
       const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
       const atHome = generalSettings?.atHome || false;
+      const excluded = generalSettings?.exclude || [];
 
-      if (atHome) {
+      if (atHome && !excluded.includes(this.accessory.displayName)) {
         const camerasSettings = await this.cameraUi?.database?.interface
           ?.get('settings')
           .get('cameras')
@@ -788,14 +804,24 @@ class Camera {
         privacy = camerasSettings?.privacyMode || false;
       }
     } catch (error) {
-      this.log.info(
-        'An error occured during getting atHome state for fetching snapshot, skipping..',
-        this.accessory.displayName
-      );
+      this.log.info('An error occured during getting atHome state, skipping..', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName);
     }
 
     return privacy;
+  }
+
+  async pingCamera() {
+    let state = true;
+
+    try {
+      state = await Ping.status(this.accessory.context.config, 1);
+    } catch (error) {
+      this.log.info('An error occured during pinging camera, skipping..', this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName);
+    }
+
+    return state;
   }
 }
 
