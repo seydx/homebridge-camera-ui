@@ -36,7 +36,7 @@ class SwitchAccessory {
     let service = this.accessory.getServiceById(this.api.hap.Service.Switch, this.subtype);
 
     if (!service) {
-      this.log.debug(`Adding Switch service (${this.subtype})`, this.accessory.displayName);
+      this.log.debug(`Adding switch service (${this.subtype})`, this.accessory.displayName);
       service = this.accessory.addService(this.api.hap.Service.Switch, this.name, this.subtype);
     }
 
