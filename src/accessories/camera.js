@@ -10,7 +10,7 @@ const spawn = require('child_process').spawn;
 const FfmpegProcess = require('../services/ffmpeg.service');
 const RecordingDelegate = require('../services/recording.service');
 
-const privacyFile = path.resolve(__dirname, '..', 'utils', 'privacy_cameraui.png.png');
+const privacyFile = path.resolve(__dirname, '..', 'utils', 'privacy_cameraui.png');
 
 class Camera {
   constructor(api, accessory, cameraUi) {
