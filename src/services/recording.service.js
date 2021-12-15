@@ -18,6 +18,8 @@ class RecordingDelegate {
   }
 
   async *handleFragmentsRequests(configuration) {
+    this.accessory.context.hsvBusy = true;
+
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
@@ -204,6 +206,8 @@ class RecordingDelegate {
     } finally {
       socket.destroy();
       cp.kill();
+
+      this.accessory.context.hsvBusy = false;
     }
   }
 

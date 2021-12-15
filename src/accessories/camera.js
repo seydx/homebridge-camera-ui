@@ -12,9 +12,9 @@ const RecordingDelegate = require('../services/recording.service');
 
 const { Ping } = require('../utils/ping');
 
-const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'images', 'maxstreams_cameraui.png');
-const offlineImage = path.resolve(__dirname, '..', 'utils', 'images', 'offline_cameraui.png');
-const privacyImage = path.resolve(__dirname, '..', 'utils', 'images', 'privacy_cameraui.png');
+const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'views', 'maxstreams_cameraui.png');
+const offlineImage = path.resolve(__dirname, '..', 'utils', 'views', 'offline_cameraui.png');
+const privacyImage = path.resolve(__dirname, '..', 'utils', 'views', 'privacy_cameraui.png');
 
 class Camera {
   constructor(api, accessory, cameraUi) {

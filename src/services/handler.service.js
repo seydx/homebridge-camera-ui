@@ -75,6 +75,17 @@ class Handler {
     const timeout = this.motionTimers.get(accessory.UUID);
     const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
 
+    if (active && this.accessory.context.config.hsv && this.accessory.context.hsvBusy) {
+      //Dont trigger motion sensor accessory, HSV not finished yet
+      this.log.warn('Skip motion event, HSV process not finished', this.accessory.displayName);
+
+      if (motionTrigger) {
+        setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+      }
+
+      return;
+    }
+
     if (timeout) {
       clearTimeout(timeout);
       this.motionTimers.delete(accessory.UUID);
@@ -151,6 +162,17 @@ class Handler {
     const cameraConfig = this.cameraConfigs.get(accessory.UUID);
     const timeout = this.doorbellTimers.get(accessory.UUID);
     const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
+
+    if (active && this.accessory.context.config.hsv && this.accessory.context.hsvBusy) {
+      //Dont trigger motion sensor accessory, HSV not finished yet
+      this.log.warn('Skip doorbell event, HSV process not finished', this.accessory.displayName);
+
+      if (doorbellTrigger) {
+        setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+      }
+
+      return;
+    }
 
     if (timeout) {
       clearTimeout(timeout);
