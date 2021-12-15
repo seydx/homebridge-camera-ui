@@ -83,12 +83,13 @@ export default {
         audio: true,
         disableWebAssembly: true,
         pauseWhenHidden: false,
+        videoBufferSize: 1024 * 1024,
         onSourceEstablished: () => {
           window.homebridge.toast.success(`${cameraName}: Connection established!`);
         },
       });
 
-      this.player.volume = 1;
+      this.player.volume = 0;
       this.player.name = cameraName;
     },
   },
