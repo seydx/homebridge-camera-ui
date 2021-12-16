@@ -105,7 +105,7 @@ class Camera {
       recording: this.accessory.context.config.hsv
         ? {
             options: {
-              prebufferLength: 6000,
+              prebufferLength: 4000,
               eventTriggerOptions: 0x01 | 0x02,
               mediaContainerConfigurations: [
                 {

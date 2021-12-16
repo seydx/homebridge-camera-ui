@@ -8,12 +8,11 @@ class Handler {
     this.log = Logger.log;
     this.cameraUi = cameraUi;
 
-    this.cameraConfigs = new Map();
     this.motionTimers = new Map();
     this.doorbellTimers = new Map();
 
+    //handle motion from mqtt/http/smtp (passed through camera.ui)
     this.cameraUi.on('motion', (cameraName, trigger, state) => {
-      //handle motion from mqtt/http/smtp (passed through camera.ui)
       this.handle(trigger, cameraName, state);
     });
 
@@ -22,11 +21,6 @@ class Handler {
 
   finishLoading(accessories) {
     this.accessories = accessories;
-
-    for (const accessory of accessories) {
-      this.cameraConfigs.set(accessory.UUID, accessory.context.config);
-    }
-
     this.initialized = true;
   }
 
@@ -71,19 +65,19 @@ class Handler {
   async motionHandler(accessory, active, manual) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
     const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
-    const cameraConfig = this.cameraConfigs.get(accessory.UUID);
+    const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
     const timeout = this.motionTimers.get(accessory.UUID);
-    const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
 
-    if (active && this.accessory.context.config.hsv && this.accessory.context.hsvBusy) {
+    if (active && accessory.context.config.hsv && accessory.context.hsvBusy) {
       //Dont trigger motion sensor accessory, HSV not finished yet
-      this.log.warn('Skip motion event, HSV process not finished', this.accessory.displayName);
-
       if (motionTrigger) {
         setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
       }
 
-      return;
+      return {
+        error: false,
+        message: 'Skip motion event, HSV process not finished',
+      };
     }
 
     if (timeout) {
@@ -110,7 +104,7 @@ class Handler {
           };
         }
 
-        if (!cameraConfig.hsv && !timeout) {
+        if (!accessory.context.config.hsv && !timeout) {
           this.cameraUi.eventController.triggerEvent('motion', accessory.displayName, active);
         }
       }
@@ -121,7 +115,7 @@ class Handler {
         motionTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
       }
 
-      if (cameraConfig.motionDoorbell) {
+      if (accessory.context.config.motionDoorbell) {
         this.doorbellHandler(accessory, active, false, true);
       }
 
@@ -159,19 +153,19 @@ class Handler {
   async doorbellHandler(accessory, active, manual, fromMotion) {
     const doorbell = accessory.getService(this.hap.Service.Doorbell);
     const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
-    const cameraConfig = this.cameraConfigs.get(accessory.UUID);
+    const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
     const timeout = this.doorbellTimers.get(accessory.UUID);
-    const timeoutConfig = cameraConfig.motionTimeout >= 0 ? cameraConfig.motionTimeout : 1;
 
-    if (active && this.accessory.context.config.hsv && this.accessory.context.hsvBusy) {
+    if (active && accessory.context.config.hsv && accessory.context.hsvBusy) {
       //Dont trigger motion sensor accessory, HSV not finished yet
-      this.log.warn('Skip doorbell event, HSV process not finished', this.accessory.displayName);
-
       if (doorbellTrigger) {
         setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
       }
 
-      return;
+      return {
+        error: false,
+        message: 'Skip doorbell event, HSV process not finished',
+      };
     }
 
     if (timeout) {
@@ -198,7 +192,7 @@ class Handler {
           };
         }
 
-        if (!fromMotion && manual && !cameraConfig.hsv && !timeout) {
+        if (!fromMotion && manual && !accessory.context.config.hsv && !timeout) {
           this.cameraUi.eventController.triggerEvent('doorbell', accessory.displayName, active);
         }
       }
