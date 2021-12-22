@@ -33,8 +33,10 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - The notifications have been completely reworked, now also system internal errors/warnings are displayed in the notifications page
 - **Settings**
   - **System:** A new subpage called "System" has been added to Settings. Via this subpage it is possible to configure, restart or update camera.ui
+- **Dashboard**
+  - The dashboard has been redesigned from the ground up and now offers the ability to add numerous widgets of your own choosing to make your dashboard unique
 - **Charts**
-  - coming soon..
+  - Added a new page to show the system load (CPU, memory) in graphs
 - **Log**
   - Added a new endpoint to view the camera.ui log in realtime over the browser
 - **Config**

@@ -18,7 +18,7 @@ class RecordingDelegate {
   }
 
   async *handleFragmentsRequests(configuration) {
-    this.accessory.context.hsvBusy = true;
+    //this.accessory.context.hsvBusy = true;
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
@@ -207,7 +207,7 @@ class RecordingDelegate {
       socket.destroy();
       cp.kill();
 
-      this.accessory.context.hsvBusy = false;
+      //this.accessory.context.hsvBusy = false;
     }
   }
 
