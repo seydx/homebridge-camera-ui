@@ -10,7 +10,7 @@
   "dependencies": {
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
-    "core-js": "^3.19.1",
+    "core-js": "^3.20.0",
     "jsmpeg-fast-player": "^0.2.0",
     "vue": "^2.6.14",
     "vue-router": "^3.5.3"
@@ -22,10 +22,10 @@
     "@vue/cli-service": "^4.5.15",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.19.1",
-    "prettier": "^2.4.1",
+    "eslint": "6.8.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-vue": "7.19.1",
+    "prettier": "^2.5.1",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0",
     "vue-template-compiler": "^2.6.14"

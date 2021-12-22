@@ -3,7 +3,7 @@ import App from './App.vue';
 import router from './router';
 
 import '@/assets/css/main.css';
-import '../../../node_modules/camera.ui/ui/src/assets/css/theme.css';
+import '@/assets/css/theme.css';
 
 import { ButtonPlugin, CardPlugin, CollapsePlugin, LinkPlugin } from 'bootstrap-vue';
 
