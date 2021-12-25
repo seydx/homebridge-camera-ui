@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  transpileDependencies: ['vuetify'],
   devServer: {
     port: 8082,
   },
@@ -14,5 +15,13 @@ module.exports = {
       payload[0].title = 'camera.ui - homebridge-ui';
       return payload;
     });
+  },
+  css: {
+    extract:
+      process.env.NODE_ENV === 'production'
+        ? {
+            ignoreOrder: true,
+          }
+        : false,
   },
 };

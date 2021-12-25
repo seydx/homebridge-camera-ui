@@ -28,12 +28,7 @@ class UiServer extends HomebridgePluginUiServer {
       const cameraUI = config.platforms.find((plugin) => plugin && plugin.platform === 'CameraUI');
 
       if (cameraUI && cameraUI.cameras) {
-        cameras = cameraUI.cameras
-          .filter((camera) => camera && camera.videoConfig && camera.videoConfig.source)
-          .map((camera) => {
-            camera.id = camera.name.replace(/\s+/g, '');
-            return camera;
-          });
+        cameras = cameraUI.cameras.filter((camera) => camera && camera.videoConfig && camera.videoConfig.source);
 
         for (const camera of cameras) {
           let cameraHeight = camera.videoConfig.maxHeight || 720;
@@ -84,6 +79,9 @@ class UiServer extends HomebridgePluginUiServer {
       }
 
       const spawnOptions = [
+        '-hide_banner',
+        '-loglevel',
+        'error',
         ...streams[cameraName].source.split(' '),
         '-f',
         'mpegts',
@@ -93,9 +91,6 @@ class UiServer extends HomebridgePluginUiServer {
         '-an',
         '-q',
         '1',
-        '-hide_banner',
-        '-loglevel',
-        'error',
         '-max_muxing_queue_size',
         '1024',
         '-',

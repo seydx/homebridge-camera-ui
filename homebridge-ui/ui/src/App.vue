@@ -1,29 +1,34 @@
 <template lang="pug">
-  div.app-bg.h-100.w-100.p-4
-    #app.h-100.w-100
-      div
-        img(src="@/assets/img/logo.png" alt="camera.ui" width="100px")
-        h5 Welcome to 
-        h1.subtitle camera.ui
-        .mt-3.mb-2.text-muted User Interface for RTSP capable cameras.
-        b-link.github-link(href="https://github.com/SeydX/homebridge-camera-ui" target="_blank")
-          b-icon(icon="github")
-          |  Github
-      #nav.mt-3
-        router-link(to="/cameras") Cameras
-        |  | 
-        router-link(to="/config") Config
-      router-view
+v-app.app.tw-p-4
+  .tw-flex.tw-items-center.tw-justify-center.tw-flex-col
+    v-img(src="@/assets/img/logo.png" alt="camera.ui" width="100px")
+    h5 Welcome to 
+    h1.subtitle camera.ui
+    .tw-my-3.text-muted User Interface for RTSP capable cameras.
+    a.github-link(href="https://github.com/SeydX/homebridge-camera-ui" target="_blank")
+      v-icon.text-default.tw-mr-1(style="margin-top: -3px;") {{ icons['mdiGithub'] }} 
+      | Github
+    .tw-mt-3
+      router-link(to="/cameras") Cameras
+      |  | 
+      router-link(to="/config") Config
+    router-view
 </template>
 
 <script>
-import { BIcon, BIconGithub } from 'bootstrap-vue';
+import { mdiGithub } from '@mdi/js';
 
 export default {
-  components: {
-    BIcon,
-    BIconGithub,
+  name: 'App',
+
+  data() {
+    return {
+      icons: {
+        mdiGithub,
+      },
+    };
   },
+
   mounted() {
     window.homebridge.showSpinner();
 
@@ -42,21 +47,26 @@ export default {
 </script>
 
 <style>
-.app-bg {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
+.v-application--wrap {
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: var(--primary-font-color);
+.app {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-align: center !important;
+  color: var(--cui-text-default) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 10px !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
 }
 
-a.router-link-exact-active {
-  color: var(--primary-color) !important;
+.router-link-exact-active {
+  color: var(--cui-primary) !important;
   text-decoration: none !important;
 }
 
