@@ -188,7 +188,8 @@ class ConfigSetup {
           }
         }
 
-        camera.recordOnMovement = camera.hsv ? false : true;
+        // min motionTimeout
+        camera.motionTimeout = camera.motionTimeout >= 15 ? camera.motionTimeout : 15;
 
         return camera;
       })

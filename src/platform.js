@@ -163,10 +163,6 @@ HomebridgeCameraUi.prototype = {
         this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 
         this.accessories.push(accessory);
-
-        /*if (device.subtype.includes('camera')) {
-          this.cameraAccessories.push(accessory);
-        }*/
       } else {
         const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
@@ -178,10 +174,6 @@ HomebridgeCameraUi.prototype = {
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 
           this.accessories.push(accessory);
-
-          /*if (device.subtype.includes('camera')) {
-            this.cameraAccessories.push(accessory);
-          }*/
         }
       }
     }
