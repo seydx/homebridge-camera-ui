@@ -34,7 +34,17 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Settings**
   - **System:** A new subpage called "System" has been added to Settings. Via this subpage it is possible to configure, restart or update camera.ui
 - **Dashboard**
-  - The dashboard has been redesigned from the ground up and now offers the ability to add numerous widgets of your own choosing to make your dashboard unique
+  - The dashboard has been redesigned from the ground up and now offers the ability to add numerous widgets of your own choosing to make your dashboard unique. Available Widgets:
+    - Camera Feed
+    - Clock
+    - Weather
+    - CPU Load, Temperature & Memory Usage
+    - Notifications
+    - RSS Feed
+    - Log
+    - Status
+    - Uptime
+    - Shortcuts
 - **Charts**
   - Added a new page to show the system load (CPU, memory) in graphs
 - **Log**
