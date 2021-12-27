@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-number-properties */
 'use-strict';
 
 const ffmpegPath = require('ffmpeg-for-homebridge');
@@ -57,7 +58,7 @@ class ConfigSetup {
       active: Boolean(this.config.mqtt?.active && this.config.mqtt?.host),
       tls: this.config.mqtt?.tls || false,
       host: this.config.mqtt?.host || '',
-      port: !Number.isNaN(this.config.mqtt?.port) ? this.config.mqtt.port : 1883,
+      port: !isNaN(this.config.mqtt?.port) ? this.config.mqtt.port : 1883,
       username: this.config.mqtt?.username || '',
       password: this.config.mqtt?.password || '',
     };
@@ -117,7 +118,7 @@ class ConfigSetup {
   _http() {
     const http = {
       active: this.config.http?.active || false,
-      port: !Number.isNaN(this.config.http?.port) ? this.config.http.port : 7777,
+      port: !isNaN(this.config.http?.port) ? this.config.http.port : 7777,
       localhttp: this.config.http?.localhttp || false,
     };
 
@@ -127,7 +128,7 @@ class ConfigSetup {
   _smtp() {
     const smtp = {
       active: this.config.smtp?.active || false,
-      port: !Number.isNaN(this.config.smtp?.port) ? this.config.smtp.port : 2525,
+      port: !isNaN(this.config.smtp?.port) ? this.config.smtp.port : 2525,
       space_replace: this.config.smtp?.space_replace || '+',
     };
 
@@ -137,7 +138,7 @@ class ConfigSetup {
   _ftp() {
     const ftp = {
       active: this.config.ftp?.active || false,
-      port: !Number.isNaN(this.config.ftp?.port) ? this.config.ftp.port : 5050,
+      port: !isNaN(this.config.ftp?.port) ? this.config.ftp.port : 5050,
     };
 
     return ftp;
