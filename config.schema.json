@@ -100,7 +100,7 @@
           "default": false
         },
         "port": {
-          "title": "SMtP Port",
+          "title": "SMTP Port",
           "type": "integer",
           "placeholder": "2525",
           "description": "The port to run the SMTP server on."
@@ -109,6 +109,24 @@
           "title": "Space replace",
           "type": "string",
           "description": "The character to replace a space with in the camera name portion of the email address."
+        }
+      }
+    },
+    "ftp": {
+      "titel": "FTP Server",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "Active",
+          "description": "Activates FTP Server for FTP-based automation. If not set, FTP support is not started.",
+          "type": "boolean",
+          "default": false
+        },
+        "port": {
+          "title": "FTP Port",
+          "type": "integer",
+          "placeholder": "5050",
+          "description": "The port to run the FTP server on."
         }
       }
     },
@@ -606,13 +624,22 @@
       "items": ["http.active", "http.port", "http.localhttp"]
     },
     {
-      "key": "http",
+      "key": "smtp",
       "name": "SMTP Server",
       "type": "object",
       "orderable": false,
       "expandable": true,
       "expanded": false,
       "items": ["smtp.active", "smtp.port", "smtp.space_replace"]
+    },
+    {
+      "key": "ftp",
+      "name": "FTP Server",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": ["ftp.active", "ftp.port"]
     }
   ]
 }

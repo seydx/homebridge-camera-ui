@@ -30,6 +30,10 @@
         "port": 2525,
         "space_replace": "+"
       },
+      "ftp": {
+        "active": false,
+        "port": 5000
+      },
       "ssl": {
         "active": false,
         "key": "/path/to/key/server.key",
@@ -45,6 +49,7 @@
           "model": "IP Camera",
           "serialNumber": "000000",
           "excludeSwitch": false,
+          "privacySwitch": true,
           "motion": true,
           "doorbell": true,
           "switches": false,
@@ -84,6 +89,7 @@
           "model": "IP Camera",
           "serialNumber": "000000",
           "excludeSwitch": true,
+          "privacySwitch": true,
           "motion": true,
           "doorbell": true,
           "switches": true,
@@ -116,6 +122,7 @@
           "model": "IP Camera",
           "serialNumber": "000000",
           "excludeSwitch": true,
+          "privacySwitch": true,
           "motion": true,
           "doorbell": true,
           "switches": true,

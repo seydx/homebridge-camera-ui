@@ -15,6 +15,7 @@ class ConfigSetup {
     this.mqttConfigs = this._mqttConfigs();
     this.http = this._http();
     this.smtp = this._smtp();
+    this.ftp = this._ftp();
 
     return {
       ...this.ui,
@@ -22,6 +23,7 @@ class ConfigSetup {
       ssl: this.ssl,
       http: this.http,
       smtp: this.smtp,
+      ftp: this.ftp,
       mqtt: this.mqtt,
       mqttConfigs: this.mqttConfigs,
       cameras: this.cameras,
@@ -130,6 +132,15 @@ class ConfigSetup {
     };
 
     return smtp;
+  }
+
+  _ftp() {
+    const ftp = {
+      active: this.config.ftp?.active || false,
+      port: !Number.isNaN(this.config.ftp?.port) ? this.config.ftp.port : 5050,
+    };
+
+    return ftp;
   }
 
   _cameras() {

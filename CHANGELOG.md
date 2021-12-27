@@ -62,7 +62,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Improved page loading
   - Minor UI Improvements
 - **Server**
-  - Built-in SMTP server
+  - Built-in SMTP server for motion detection
+  - Built-in FTP server for motion detection
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout is session time out
   - Auto logout if socket disconnected/unauthenticated
