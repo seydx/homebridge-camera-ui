@@ -11,7 +11,7 @@
     "@mdi/js": "^6.5.95",
     "jsmpeg-fast-player": "^0.2.0",
     "vue": "^2.6.14",
-    "vuetify": "^2.6.1",
+    "vuetify": "^2.6.2",
     "vue-router": "^3.5.3"
   },
   "devDependencies": {
@@ -19,10 +19,10 @@
     "@vue/cli-plugin-eslint": "^4.5.15",
     "@vue/cli-plugin-router": "^4.5.15",
     "@vue/cli-service": "^4.5.15",
-    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-prettier": "6.0.0",
     "autoprefixer": "9.8.8",
     "babel-eslint": "^10.1.0",
-    "core-js": "^3.20.0",
+    "core-js": "^3.20.1",
     "eslint": "6.8.0",
     "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-vue": "7.19.1",

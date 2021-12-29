@@ -80,12 +80,25 @@ class Handler {
       };
     }*/
 
-    if (timeout) {
-      clearTimeout(timeout);
-      this.motionTimers.delete(accessory.UUID);
-    }
-
     if (motionSensor) {
+      if (timeout) {
+        if (active) {
+          this.log.info('Motion ON (Skip motion event, timeout active)', accessory.displayName);
+
+          if (motionTrigger && manual) {
+            setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+          }
+
+          return {
+            error: false,
+            message: 'Skip motion event, timeout active!',
+          };
+        } else {
+          clearTimeout(timeout);
+          this.motionTimers.delete(accessory.UUID);
+        }
+      }
+
       this.log.info(`Motion ${active ? 'ON' : 'OFF'}`, accessory.displayName);
 
       if (manual) {
@@ -104,7 +117,7 @@ class Handler {
           };
         }
 
-        if (!accessory.context.config.hsv && !timeout) {
+        if (!accessory.context.config.hsv) {
           this.cameraUi.eventController.triggerEvent('motion', accessory.displayName, active);
         }
       }
@@ -136,7 +149,7 @@ class Handler {
 
       return {
         error: false,
-        message: timeout && active ? 'Skip motion event, timeout active!' : `Motion switched ${active ? 'on' : 'off'}`,
+        message: `Motion switched ${active ? 'on' : 'off'}`,
       };
     } else {
       if (motionTrigger) {
@@ -168,13 +181,26 @@ class Handler {
       };
     }*/
 
-    if (timeout) {
-      clearTimeout(timeout);
-      this.motionTimers.delete(accessory.UUID);
-    }
-
     if (doorbell) {
-      this.log.info(`Dorbell ${active ? 'ON' : 'OFF'}`, accessory.displayName);
+      if (timeout && !fromMotion) {
+        if (active) {
+          this.log.info('Doorbell ON (Skip doorbell event, timeout active)', accessory.displayName);
+
+          if (doorbellTrigger && manual) {
+            setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
+          }
+
+          return {
+            error: false,
+            message: 'Skip doorbell event, timeout active!',
+          };
+        } else {
+          clearTimeout(timeout);
+          this.doorbellTimers.delete(accessory.UUID);
+        }
+      }
+
+      this.log.info(`Doorbell ${active ? 'ON' : 'OFF'}${fromMotion ? ' (fromMotion)' : ''}`, accessory.displayName);
 
       if (manual) {
         const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
@@ -192,12 +218,12 @@ class Handler {
           };
         }
 
-        if (!fromMotion && manual && !accessory.context.config.hsv && !timeout) {
+        if (!fromMotion && manual && !accessory.context.config.hsv) {
           this.cameraUi.eventController.triggerEvent('doorbell', accessory.displayName, active);
         }
       }
 
-      if (doorbellTrigger) {
+      if (doorbellTrigger && !fromMotion) {
         doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
       }
 
@@ -207,7 +233,7 @@ class Handler {
           this.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
         );
 
-        if (timeoutConfig > 0) {
+        if (timeoutConfig > 0 && !fromMotion) {
           const timer = setTimeout(() => {
             this.log.debug('Doorbell handler timeout.', accessory.displayName);
 
@@ -224,8 +250,7 @@ class Handler {
 
       return {
         error: false,
-        message:
-          timeout && active ? 'Skip doorbell event, timeout active!' : `Doorbell switched ${active ? 'on' : 'off'}`,
+        message: `Doorbell switched ${active ? 'on' : 'off'}`,
       };
     } else {
       if (doorbellTrigger) {

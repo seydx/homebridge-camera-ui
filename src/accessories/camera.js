@@ -519,6 +519,7 @@ class Camera {
 
           const containerInput = await controller.prebuffer.getVideo({
             container: 'mpegts',
+            ffmpegInputArgs: ['-analyzeduration', '0', '-probesize', '500000'],
           });
 
           input = prebufferInput = containerInput.join(' ');
