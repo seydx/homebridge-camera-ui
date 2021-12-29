@@ -82,7 +82,7 @@ class UiServer extends HomebridgePluginUiServer {
         '-hide_banner',
         '-loglevel',
         'error',
-        ...streams[cameraName].source.split(' '),
+        ...streams[cameraName].source.split(/\s+/),
         '-f',
         'mpegts',
         '-vcodec',

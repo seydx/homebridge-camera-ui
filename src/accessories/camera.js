@@ -269,10 +269,10 @@ class Camera {
         input = `-i ${privacyImage}`;
       }
 
-      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error', ...input.split(' '), '-frames:v', '1'];
+      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error', ...input.split(/\s+/), '-frames:v', '1'];
 
       if (snapFilter) {
-        ffmpegArguments.push('-filter:v', ...snapFilter.split(' '));
+        ffmpegArguments.push('-filter:v', ...snapFilter.split(/\s+/));
       }
 
       ffmpegArguments.push('-f', 'image2', '-');
@@ -344,7 +344,7 @@ class Camera {
       const ffmpegArguments = ['-i', 'pipe:', '-frames:v', '1'];
 
       if (resizeFilter) {
-        ffmpegArguments.push('-filter:v', ...resizeFilter.split(' '));
+        ffmpegArguments.push('-filter:v', ...resizeFilter.split(/\s+/));
       }
 
       ffmpegArguments.push('-f', 'image2', '-');
@@ -549,11 +549,11 @@ class Camera {
         '-hide_banner',
         '-loglevel',
         `level${this.accessory.context.config.videoConfig.debug ? '+verbose' : ''}`,
-        ...input.split(' '),
+        ...input.split(/\s+/),
       ];
 
       if (this.accessory.context.config.videoConfig.mapvideo) {
-        ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapvideo.split(' '));
+        ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapvideo.split(/\s+/));
       } else {
         ffmpegArguments.push('-an', '-sn', '-dn');
       }
@@ -574,11 +574,11 @@ class Camera {
       );
 
       if (encoderOptions) {
-        ffmpegArguments.push(...encoderOptions.split(' '));
+        ffmpegArguments.push(...encoderOptions.split(/\s+/));
       }
 
       if (resolution.videoFilter) {
-        ffmpegArguments.push('-filter:v', ...resolution.videoFilter.split(' '));
+        ffmpegArguments.push('-filter:v', ...resolution.videoFilter.split(/\s+/));
       }
 
       if (videoBitrate > 0) {
@@ -605,7 +605,7 @@ class Camera {
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
         ) {
           if (this.accessory.context.config.videoConfig.mapaudio && input !== prebufferInput) {
-            ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapaudio.split(' '));
+            ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapaudio.split(/\s+/));
           } else {
             ffmpegArguments.push('-vn', '-sn', '-dn');
           }
@@ -691,7 +691,7 @@ class Camera {
           'libfdk_aac',
           '-i',
           'pipe:',
-          ...this.accessory.context.config.videoConfig.returnAudioTarget.split(' '),
+          ...this.accessory.context.config.videoConfig.returnAudioTarget.split(/\s+/),
         ];
 
         const ipVersion = sessionInfo.ipv6 ? 'IP6' : 'IP4';

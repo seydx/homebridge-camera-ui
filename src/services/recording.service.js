@@ -25,7 +25,7 @@ class RecordingDelegate {
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     const iframeIntervalSeconds = 4;
 
-    let ffmpegInput = [...this.accessory.context.config.videoConfig.source.split(' ')];
+    let ffmpegInput = [...this.accessory.context.config.videoConfig.source.split(/\s+/)];
 
     if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
       try {
