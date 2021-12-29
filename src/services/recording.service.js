@@ -31,7 +31,10 @@ class RecordingDelegate {
       try {
         this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
 
-        const input = await controller.prebuffer.getVideo(configuration.mediaContainerConfiguration.prebufferLength);
+        const input = await controller.prebuffer.getVideo({
+          container: 'mp4',
+          prebuffer: configuration.mediaContainerConfiguration.prebufferLength,
+        });
 
         ffmpegInput = [...input];
       } catch (error) {
@@ -147,7 +150,7 @@ class RecordingDelegate {
       videoArguments.push('-vcodec', 'copy');
     } else {
       videoArguments.push(
-        '-codec:v',
+        '-vcodec',
         vcodec,
         '-pix_fmt',
         'yuv420p',

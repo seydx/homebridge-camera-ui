@@ -9,13 +9,12 @@ class FfmpegProcess {
   constructor(cameraName, videoDebug, sessionId, videoProcessor, command, delegate, callback) {
     this.log = Logger.log;
 
-    this.log.debug('Stream command: ' + videoProcessor + ' ' + command, cameraName);
+    this.log.debug(`Stream command: ${videoProcessor} ${command.join(' ')}`, cameraName);
 
     let started = false;
     const startTime = Date.now();
-    const commands = command.split(/\s+/);
 
-    this.process = spawn(videoProcessor, commands, {
+    this.process = spawn(videoProcessor, command, {
       env: process.env,
     });
 

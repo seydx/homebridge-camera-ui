@@ -79,7 +79,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Auto logout if socket disconnected/unauthenticated
   - Auto restart stream on reconnect to socket
   - Limitted notifications size in database
-- **Plugin**
+- **Plugin
+  - Improved camera loading time in HomeKit
   - Refactored config.schema.json
   - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `-rtsp_transport` and `-re`
 - Bump dependencies

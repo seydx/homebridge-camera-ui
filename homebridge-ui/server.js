@@ -85,7 +85,7 @@ class UiServer extends HomebridgePluginUiServer {
         ...streams[cameraName].source.split(' '),
         '-f',
         'mpegts',
-        '-codec:v',
+        '-vcodec',
         'mpeg1video',
         ...additionalFlags,
         '-an',
