@@ -29,9 +29,9 @@ class FfmpegProcess {
         if (runtime < 5) {
           this.log.debug(message, cameraName);
         } else if (runtime < 22) {
-          this.log.warn(message, cameraName);
+          this.log.warn(message, cameraName, 'Homebridge');
         } else {
-          this.log.error(message, cameraName);
+          this.log.error(message, cameraName, 'Homebridge');
         }
       }
     });
@@ -48,14 +48,14 @@ class FfmpegProcess {
       }
 
       if (/\[(panic|fatal|error)]/.test(line)) {
-        this.log.error(line, cameraName);
+        this.log.error(line, cameraName, 'Homebridge');
       } else if (videoDebug) {
         this.log.debug(line, cameraName);
       }
     });
 
     this.process.on('error', (error) => {
-      this.log.error(`FFmpeg process creation failed: ${error.message}`, cameraName);
+      this.log.error(`FFmpeg process creation failed: ${error.message}`, cameraName, 'Homebridge');
 
       if (callback) {
         callback(new Error('FFmpeg process creation failed'));
@@ -71,10 +71,10 @@ class FfmpegProcess {
         if (this.process.killed) {
           this.log.debug(`${message} (Expected)`, cameraName);
         } else {
-          this.log.warn(`${message} (Unexpected)`, cameraName);
+          this.log.warn(`${message} (Unexpected)`, cameraName, 'Homebridge');
         }
       } else {
-        this.log.error(`${message} (Error)`, cameraName);
+        this.log.error(`${message} (Error)`, cameraName, 'Homebridge');
 
         delegate.stopStream(sessionId);
 

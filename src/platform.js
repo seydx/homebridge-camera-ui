@@ -56,7 +56,11 @@ function HomebridgeCameraUi(log, config, api) {
     const uuid = UUIDGen.generate(device.name);
 
     if (this.devices.has(uuid)) {
-      this.log.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', device.name);
+      this.log.warn(
+        'Multiple devices are configured with this name. Duplicate device will be skipped.',
+        device.name,
+        'Homebridge'
+      );
     } else {
       device.subtype = 'camera';
       this.devices.set(uuid, device);
@@ -68,7 +72,11 @@ function HomebridgeCameraUi(log, config, api) {
     const uuid = UUIDGen.generate(name);
 
     if (this.devices.has(uuid)) {
-      this.log.warn('Multiple devices are configured with this name. Duplicate device will be skipped.', name);
+      this.log.warn(
+        'Multiple devices are configured with this name. Duplicate device will be skipped.',
+        name,
+        'Homebridge'
+      );
     } else {
       const device = {
         name: name,
@@ -84,7 +92,9 @@ function HomebridgeCameraUi(log, config, api) {
   this.api.on('didFinishLaunching', this.init.bind(this));
   this.api.on('shutdown', () => this.cameraUi.close());
 
-  this.cameraUi.on('config', (configJson) => this.changeConfig(configJson));
+  this.cameraUi.on('config', (config) => this.changeConfig(config));
+  this.cameraUi.on('addCamera', (camera) => this.addCamera(camera));
+  this.cameraUi.on('removeCamera', (camera) => this.removeCamera(camera));
   this.cameraUi.on('restart', () => this.restartProcess());
 }
 
@@ -96,85 +106,23 @@ HomebridgeCameraUi.prototype = {
     this.handler.finishLoading(this.accessories, this.cameraUi);
   },
 
-  // emitted from camera.ui
-  restartProcess: function () {
-    this.log.info('Shutting down...');
-    this.cameraUi.close();
-
-    setTimeout(() => {
-      // eslint-disable-next-line unicorn/no-process-exit
-      process.exit(1);
-    }, 5000);
-  },
-
-  // emitted from camera.ui
-  changeConfig: async function (configJson) {
-    try {
-      this.log.info('Config changed through interface, saving...');
-
-      configJson.cameras = configJson.cameras.map((camera) => {
-        camera.hsv = !camera.recordOnMovement;
-        delete camera.recordOnMovement;
-        return camera;
-      });
-
-      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
-
-      for (const index in config.platforms) {
-        if (config.platforms[index].platform === 'CameraUI') {
-          for (const [key, value] of Object.entries(configJson)) {
-            if (config.platforms[index][key] !== undefined) {
-              config.platforms[index][key] = value;
-            }
-          }
-        }
-      }
-
-      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
-      /*this.config = new Config(config);
-
-      for (const device of this.config.cameras) {
-        const camera = this.cameraAccessories.find((camera) => camera?.accessory?.displayName === device?.name);
-
-        if (camera) {
-          camera.accessory.context.config = device;
-          camera.accessory.context.config.videoProcessor = this.config.options.videoProcessor;
-
-          for (const session in camera.ongoingSessions) {
-            camera.stopStream(session);
-          }
-        }
-      }*/
-
-      this.log.info('config.json saved!');
-    } catch (error) {
-      this.log.info('An error occured during changing config.json');
-      this.log.error(error, 'Config');
-    }
-  },
-
   configure: function () {
     for (const [uuid, device] of this.devices) {
-      if (device.unbridge) {
-        this.log.info('Configuring unbridged accessory...', device.name);
+      const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
+
+      if (!cachedAccessory) {
+        this.log.info(`Configuring ${device.unbridge ? 'unbridged' : 'bridged'} accessory...`, device.name);
 
         const accessory = new Accessory(device.name, uuid);
         this.setupAccessory(accessory, device);
-        this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+
+        if (device.unbridge) {
+          this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+        } else {
+          this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        }
 
         this.accessories.push(accessory);
-      } else {
-        const cachedAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
-
-        if (!cachedAccessory) {
-          this.log.info('Configuring bridged accessory...', device.name);
-
-          const accessory = new Accessory(device.name, uuid);
-          this.setupAccessory(accessory, device);
-          this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-
-          this.accessories.push(accessory);
-        }
       }
     }
 
@@ -182,12 +130,12 @@ HomebridgeCameraUi.prototype = {
       const device = this.devices.get(accessory.UUID);
 
       try {
-        if (!device && !accessory.context.config.unbridge) {
+        if (!device /* && !accessory.context.config.unbridge*/) {
           this.removeAccessory(accessory);
         }
       } catch (error) {
         this.log.debug('It looks like the device has already been removed. Skip removing.', accessory.displayName);
-        this.log.error(error, 'Homebridge', 'plugin');
+        this.log.error(error, 'System', 'Homebridge');
       }
     }
   },
@@ -257,5 +205,155 @@ HomebridgeCameraUi.prototype = {
     );
 
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+  },
+
+  // emitted from camera.ui
+  restartProcess: function () {
+    this.log.info('Shutting down...');
+    this.cameraUi.close();
+
+    setTimeout(() => {
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(1);
+    }, 5000);
+  },
+
+  // emitted from camera.ui
+  changeConfig: async function (configJson) {
+    try {
+      this.log.info('Config changed through interface, saving...');
+
+      configJson.cameras = configJson.cameras.map((camera) => {
+        camera.hsv = !camera.recordOnMovement;
+        delete camera.recordOnMovement;
+        return camera;
+      });
+
+      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
+
+      for (const index in config.platforms) {
+        if (config.platforms[index].platform === 'CameraUI') {
+          for (const [key, value] of Object.entries(configJson)) {
+            if (config.platforms[index][key] !== undefined) {
+              config.platforms[index][key] = value;
+            }
+          }
+        }
+      }
+
+      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+
+      const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
+      this.config = new Config(configPlatform);
+
+      for (const device of this.config.cameras) {
+        const camera = this.cameraAccessories.find((camera) => camera?.accessory?.displayName === device?.name);
+
+        if (camera) {
+          camera.accessory.context.config = device;
+          camera.accessory.context.config.videoProcessor = this.config.options.videoProcessor;
+
+          for (const session in camera.ongoingSessions) {
+            camera.stopStream(session);
+          }
+        }
+      }
+
+      if (this.config.atHomeSwitch) {
+        const name = 'At Home Switch';
+        const uuid = UUIDGen.generate(name);
+
+        if (!this.devices.has(uuid)) {
+          const device = {
+            name: name,
+            subtype: 'athome-switch',
+            manufacturer: 'camera.ui',
+            model: 'Switch',
+          };
+
+          this.devices.set(uuid, device);
+        }
+      } else {
+        const name = 'At Home Switch';
+        const uuid = UUIDGen.generate(name);
+
+        this.devices.delete(uuid);
+      }
+
+      this.configure();
+
+      this.log.info('Accessories refreshed and config.json saved!');
+    } catch (error) {
+      this.log.info('An error occured during changing config.json');
+      this.log.error(error, 'Config', 'Homebridge');
+    }
+  },
+
+  // emitted from camera.ui
+  addCamera: async function (camera) {
+    try {
+      this.log.info('Added new camera through interface, saving..,');
+
+      camera.hsv = !camera.recordOnMovement;
+      delete camera.recordOnMovement;
+
+      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
+
+      for (const index in config.platforms) {
+        if (config.platforms[index].platform === 'CameraUI') {
+          config.platforms[index].cameras?.push(camera);
+        }
+      }
+
+      const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
+      this.config = new Config(configPlatform);
+
+      for (const device of this.config.cameras) {
+        const uuid = UUIDGen.generate(device.name);
+
+        if (!this.devices.has(uuid)) {
+          device.subtype = 'camera';
+          this.devices.set(uuid, device);
+        }
+      }
+
+      this.configure();
+
+      this.log.info('Camera added to HomeKit and config.json saved!');
+    } catch (error) {
+      this.log.info('An error occured during adding new camera');
+      this.log.error(error, 'Config', 'Homebridge');
+    }
+  },
+
+  // emitted from camera.ui
+  removeCamera: async function (camera) {
+    try {
+      this.log.info('Removed camera through interface, saving..,');
+
+      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
+
+      for (const index in config.platforms) {
+        if (config.platforms[index].platform === 'CameraUI') {
+          config.platforms[index].cameras = config.platforms[index].cameras?.filter((cam) => cam.name !== camera.name);
+        }
+      }
+
+      const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
+      this.config = new Config(configPlatform);
+
+      const uuid = UUIDGen.generate(camera.name);
+
+      if (!this.devices.has(uuid)) {
+        this.devices.delete(uuid);
+      }
+
+      this.configure();
+
+      this.log.info('Camera removed from HomeKit and config.json saved!');
+    } catch (error) {
+      this.log.info('An error occured during adding new camera');
+      this.log.error(error, 'Config', 'Homebridge');
+    }
   },
 };

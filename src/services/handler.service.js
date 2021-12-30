@@ -56,7 +56,8 @@ class Handler {
     }
 
     if (result.error) {
-      return this.log.error(`Handling event: ${result.message}`, name);
+      this.log.error(`Handling event: ${result.message}`, name, 'Homebridge');
+      return;
     }
 
     this.log.debug(`Handling event: ${result.message}`, name);

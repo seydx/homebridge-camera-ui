@@ -39,10 +39,14 @@ class Camera {
 
     if (this.accessory.context.config.hsv) {
       if (!this.hsvSupported) {
-        this.log.warn('Can not start HSV. Not compatible Homebridge version detected!', this.accessory.displayName);
+        this.log.warn(
+          'Can not start HSV. Not compatible Homebridge version detected!',
+          this.accessory.displayName,
+          'Homebridge'
+        );
         this.accessory.context.config.hsv = false;
       } else if (!this.accessory.context.config.unbridge) {
-        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName);
+        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName, 'Homebridge');
         this.accessory.context.config.hsv = false;
       } else {
         for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
@@ -302,7 +306,7 @@ class Camera {
 
       ffmpeg.on('close', () => {
         if (errors.length > 0) {
-          this.log.error(errors.join(' - '), this.accessory.displayName);
+          this.log.error(errors.join(' - '), this.accessory.displayName, 'Homebridge');
         }
 
         if (snapshotBuffer.length > 0) {
@@ -327,10 +331,10 @@ class Camera {
           }
 
           if (runtime < 22) {
-            this.log.warn(message, this.accessory.displayName);
+            this.log.warn(message, this.accessory.displayName, 'Homebridge');
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
-            this.log.error(message, this.accessory.displayName);
+            this.log.error(message, this.accessory.displayName, 'Homebridge');
           }
         }
       });
@@ -397,7 +401,7 @@ class Camera {
 
       callback(undefined, resized);
     } catch (error) {
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       callback(error);
     }
@@ -457,7 +461,8 @@ class Camera {
     if (!audioSourceFound && audioEnabled) {
       this.log.warn(
         'Disabling audio, audio source not found or timed out during probe stream',
-        this.accessory.displayName
+        this.accessory.displayName,
+        'Homebridge'
       );
       audioEnabled = false;
     }
@@ -524,7 +529,11 @@ class Camera {
 
           input = prebufferInput = containerInput.join(' ');
         } catch (error) {
-          this.log.warn(`Can not access rebroadcast stream, skipping: ${error}`, this.accessory.displayName);
+          this.log.warn(
+            `Can not access rebroadcast stream, skipping: ${error}`,
+            this.accessory.displayName,
+            'Homebridge'
+          );
         }
       }
 
@@ -640,7 +649,11 @@ class Camera {
             `srtp://${sessionInfo.address}:${sessionInfo.audioPort}?rtcpport=${sessionInfo.audioPort}&pkt_size=188`
           );
         } else {
-          this.log.error(`Unsupported audio codec requested: ${request.audio.codec}`, this.accessory.displayName);
+          this.log.error(
+            `Unsupported audio codec requested: ${request.audio.codec}`,
+            this.accessory.displayName,
+            'Homebridge'
+          );
         }
       }
 
@@ -650,7 +663,7 @@ class Camera {
       activeSession.socket = createSocket(sessionInfo.ipv6 ? 'udp6' : 'udp4');
 
       activeSession.socket.on('error', (error) => {
-        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName);
+        this.log.error(`Socket error: ${error.message}`, this.accessory.displayName, 'Homebridge');
         this.stopStream(request.sessionID);
       });
 
@@ -738,7 +751,7 @@ class Camera {
       this.ongoingSessions.set(request.sessionID, activeSession);
       this.pendingSessions.delete(request.sessionID);
     } else {
-      this.log.error('Error finding session information.', this.accessory.displayName);
+      this.log.error('Error finding session information.', this.accessory.displayName, 'Homebridge');
       callback(new Error('Error finding session information'));
     }
   }
@@ -790,19 +803,27 @@ class Camera {
       try {
         if (session.socket) session.socket.close();
       } catch (error) {
-        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName);
+        this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName, 'Homebridge');
       }
 
       try {
         if (session.mainProcess) session.mainProcess.stop();
       } catch (error) {
-        this.log.error(`Error occurred terminating main FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(
+          `Error occurred terminating main FFmpeg process: ${error}`,
+          this.accessory.displayName,
+          'Homebridge'
+        );
       }
 
       try {
         if (session.returnProcess) session.returnProcess.stop();
       } catch (error) {
-        this.log.error(`Error occurred terminating two-way FFmpeg process: ${error}`, this.accessory.displayName);
+        this.log.error(
+          `Error occurred terminating two-way FFmpeg process: ${error}`,
+          this.accessory.displayName,
+          'Homebridge'
+        );
       }
 
       this.ongoingSessions.delete(sessionId);
@@ -836,7 +857,7 @@ class Camera {
       }
     } catch (error) {
       this.log.info('An error occured during getting atHome state, skipping..', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
 
     return privacy;
@@ -849,7 +870,7 @@ class Camera {
       state = await Ping.status(this.accessory.context.config, 1);
     } catch (error) {
       this.log.info('An error occured during pinging camera, skipping..', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
 
     return state;

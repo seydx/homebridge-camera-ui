@@ -74,7 +74,8 @@ class SwitchAccessory {
       default:
         this.log.warn(
           `Can not find accessor subtype (${this.accessory.subtype}) to handle get/set events!`,
-          this.accessory.displayName
+          this.accessory.displayName,
+          'Homebridge'
         );
         break;
     }
@@ -98,7 +99,7 @@ class SwitchAccessory {
       return state;
     } catch (error) {
       this.log.info('An error occured during getting atHome state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
 
@@ -115,7 +116,7 @@ class SwitchAccessory {
       this.log.info(`At Home: ${state}`, this.accessory.displayName);
     } catch (error) {
       this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
@@ -134,7 +135,7 @@ class SwitchAccessory {
       return state;
     } catch (error) {
       this.log.info('An error occured during getting exclude state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
 
@@ -163,7 +164,7 @@ class SwitchAccessory {
       );
     } catch (error) {
       this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);
@@ -186,7 +187,7 @@ class SwitchAccessory {
       return state;
     } catch (error) {
       this.log.info('An error occured during getting privacy mode state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
 
@@ -204,7 +205,7 @@ class SwitchAccessory {
       this.log.info(`Privacy Mode: ${state}`, this.accessory.displayName);
     } catch (error) {
       this.log.info('An error occured during setting privacy mode state!', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName);
+      this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {
         service.getCharacteristic(this.api.hap.Characteristic.On).updateValue(!state);

@@ -43,14 +43,20 @@ class Logger {
     Logger.#logging(LogLevel.INFO, message, accessoryName);
   }
 
-  warn(message, accessoryName) {
+  warn(message, accessoryName, logDatabase) {
     Logger.#logging(LogLevel.WARN, message, accessoryName);
-    Logger.#loggerUi.db(LogLevel.WARN, message, accessoryName, 'Homebridge');
+
+    if (logDatabase) {
+      Logger.#loggerUi.db(LogLevel.WARN, message, accessoryName, logDatabase);
+    }
   }
 
-  error(message, accessoryName) {
+  error(message, accessoryName, logDatabase) {
     Logger.#logging(LogLevel.ERROR, message, accessoryName);
-    Logger.#loggerUi.db(LogLevel.ERROR, message, accessoryName, 'Homebridge');
+
+    if (logDatabase) {
+      Logger.#loggerUi.db(LogLevel.ERROR, message, accessoryName, logDatabase);
+    }
   }
 
   debug(message, accessoryName) {

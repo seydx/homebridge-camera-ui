@@ -38,7 +38,7 @@ class RecordingDelegate {
 
         ffmpegInput = [...input];
       } catch (error) {
-        this.log.warn(`Can not access prebuffered video, skipping: ${error}`, this.accessory.displayName);
+        this.log.warn(`Can not access prebuffered video, skipping: ${error}`, this.accessory.displayName, 'Homebridge');
       }
     }
 
@@ -57,7 +57,8 @@ class RecordingDelegate {
     if (!audioSourceFound && audioEnabled) {
       this.log.warn(
         'Disabling audio, audio source not found or timed out during probe stream',
-        this.accessory.displayName
+        this.accessory.displayName,
+        'Homebridge'
       );
       audioEnabled = false;
     }
@@ -66,7 +67,8 @@ class RecordingDelegate {
       if (incompatibleAudio && acodec !== 'libfdk_aac') {
         this.log.warn(
           `Incompatible audio stream detected ${probeAudio}, transcoding with "libfdk_aac"..`,
-          this.accessory.displayName
+          this.accessory.displayName,
+          'Homebridge'
         );
         acodec = 'libfdk_aac';
         //vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
@@ -198,13 +200,13 @@ class RecordingDelegate {
       }
     } catch (error) {
       if (error === 'connection closed') {
-        this.log.warn('HSV connection closed!', this.accessory.displayName);
+        this.log.warn('HSV connection closed!', this.accessory.displayName, 'Homebridge');
       } else if (error === 'dataSend close') {
         this.log.debug('Recording completed. (dataSend close (hsv))', this.accessory.displayName);
         this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
       } else {
         this.log.info('An error occured during recording hsv video!', this.accessory.displayName);
-        this.log.error(error, this.accessory.displayName);
+        this.log.error(error, this.accessory.displayName, 'Homebridge');
       }
     } finally {
       socket.destroy();
@@ -271,7 +273,11 @@ class RecordingDelegate {
 
       cp.on('exit', (code, signal) => {
         if (code === 1) {
-          this.log.error(`FFmpeg recording process exited with error! (${signal})`, this.accessory.displayName);
+          this.log.error(
+            `FFmpeg recording process exited with error! (${signal})`,
+            this.accessory.displayName,
+            'Homebridge'
+          );
         } else {
           this.log.debug('FFmpeg recording process exited (expected)', this.accessory.displayName);
         }
