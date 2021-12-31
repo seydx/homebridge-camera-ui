@@ -22,7 +22,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 
 ## Notable Changes
 - **Design**
-  - The design of camera.ui has been redesigned from scratch and offers many new features for users.
+  - The design of camera.ui has been redesigned from scratch and offers many new features for users. In addition to a dashboard with widgets, the settings page have also been completely overhauled. It is now also possible to add new cameras directly via the interface without having to restart Homebridge. Also most of the settings regarding Homebridge can be done via the interface without restarting Homebridge.
 - **HomeKit Secure Video (HSV)**
   - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
@@ -45,9 +45,9 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
     - Status
     - Uptime
     - Shortcuts
-- **Charts**
+- **Utilization**
   - Added a new page to show the system load (CPU, memory) in graphs
-- **Log**
+- **Console**
   - Added a new endpoint to view the camera.ui log in realtime over the browser
 - **Config**
   - Added a new endpoint to view/change the camera.ui config.json over the browser
@@ -78,8 +78,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Auto logout is session time out
   - Auto logout if socket disconnected/unauthenticated
   - Auto restart stream on reconnect to socket
-  - Limitted notifications size in database
-- **Plugin
+  - Limitted notifications size in database (100)
+- **Plugin**
   - Improved camera loading time in HomeKit
   - Refactored config.schema.json
   - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `-rtsp_transport` and `-re`
