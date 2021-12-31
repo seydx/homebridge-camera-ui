@@ -95,6 +95,7 @@ function HomebridgeCameraUi(log, config, api) {
   this.cameraUi.on('config', (config) => this.changeConfig(config));
   this.cameraUi.on('addCamera', (camera) => this.addCamera(camera));
   this.cameraUi.on('removeCamera', (camera) => this.removeCamera(camera));
+  this.cameraUi.on('removeCameras', () => this.removeCameras());
   this.cameraUi.on('restart', () => this.restartProcess());
 }
 
@@ -305,6 +306,8 @@ HomebridgeCameraUi.prototype = {
         }
       }
 
+      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+
       const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
       this.config = new Config(configPlatform);
 
@@ -339,13 +342,42 @@ HomebridgeCameraUi.prototype = {
         }
       }
 
+      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+
       const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
       this.config = new Config(configPlatform);
 
       const uuid = UUIDGen.generate(camera.name);
+      this.devices.delete(uuid);
 
-      if (!this.devices.has(uuid)) {
-        this.devices.delete(uuid);
+      this.configure();
+
+      this.log.info('Camera removed from HomeKit and config.json saved!');
+    } catch (error) {
+      this.log.info('An error occured during adding new camera');
+      this.log.error(error, 'Config', 'Homebridge');
+    }
+  },
+
+  removeCameras: async function () {
+    try {
+      this.log.info('Removed all cameras through interface, saving..,');
+
+      const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
+
+      for (const index in config.platforms) {
+        if (config.platforms[index].platform === 'CameraUI') {
+          config.platforms[index].cameras = [];
+        }
+      }
+
+      fs.writeJsonSync(`${this.api.user.storagePath()}/config.json`, config, { spaces: 4 });
+
+      const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
+      this.config = new Config(configPlatform);
+
+      for (const accessory of this.cameraAccessories) {
+        this.devices.delete(accessory.UUID);
       }
 
       this.configure();
