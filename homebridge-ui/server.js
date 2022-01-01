@@ -3,6 +3,7 @@ const { HomebridgePluginUiServer, RequestError } = require('@homebridge/plugin-u
 const child_process = require('child_process');
 const ffmpegPath = require('ffmpeg-for-homebridge');
 const fs = require('fs-extra');
+const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 
 let streams = {};
 
@@ -34,7 +35,7 @@ class UiServer extends HomebridgePluginUiServer {
           let cameraHeight = camera.videoConfig.maxHeight || 720;
           let cameraWidth = camera.videoConfig.maxWidth || 1280;
           let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
-          let source = camera.videoConfig.source;
+          let source = cameraUtils.generateInputSource(camera.videoConfig);
           let videoProcessor =
             cameraUI.options && cameraUI.options.videoProcessor
               ? cameraUI.options.videoProcessor

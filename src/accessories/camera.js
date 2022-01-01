@@ -3,6 +3,7 @@
 const { Logger } = require('../../services/logger/logger.service');
 
 const createSocket = require('dgram').createSocket;
+const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 const path = require('path');
 const pickPort = require('pick-port');
 const spawn = require('child_process').spawn;
@@ -266,7 +267,6 @@ class Camera {
       let input =
         this.accessory.context.config.videoConfig.stillImageSource || this.accessory.context.config.videoConfig.source;
 
-      //const cameraStatus = await this.pingCamera();
       const atHome = await this.getPrivacyState();
 
       if (atHome) {
@@ -464,7 +464,7 @@ class Camera {
         this.accessory.displayName,
         'Homebridge'
       );
-      audioEnabled = false;
+      audioEnabled = this.accessory.context.config.videoConfig.audio = false;
     }
 
     if (sessionInfo) {
@@ -515,16 +515,15 @@ class Camera {
         this.accessory.displayName
       );
 
-      let input = this.accessory.context.config.videoConfig.source;
+      let input = cameraUtils.generateInputSource(this.accessory.context.config.videoConfig);
       let prebufferInput = null;
 
-      if (controller?.prebuffer) {
+      if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
         try {
           this.log.debug('Setting rebroadcast stream as input', this.accessory.displayName);
 
           const containerInput = await controller.prebuffer.getVideo({
             container: 'mpegts',
-            ffmpegInputArgs: ['-analyzeduration', '0', '-probesize', '500000'],
           });
 
           input = prebufferInput = containerInput.join(' ');
@@ -766,10 +765,6 @@ class Camera {
         if (controller && controller.session) {
           allowStream = controller.session.requestSession();
         }
-
-        /*if (!allowStream) {
-          return callback(new Error('Stream not allowed!'));
-        }*/
 
         this.startStream(request, callback, allowStream);
         break;

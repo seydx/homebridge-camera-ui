@@ -2,6 +2,7 @@
 'use-strict';
 
 const { createServer } = require('net');
+const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 const { listenServer, readLength } = require('camera.ui/src/controller/camera/utils/camera.utils');
 const { spawn } = require('child_process');
 
@@ -25,7 +26,7 @@ class RecordingDelegate {
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     const iframeIntervalSeconds = 4;
 
-    let ffmpegInput = [...this.accessory.context.config.videoConfig.source.split(/\s+/)];
+    let ffmpegInput = [...cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/)];
 
     if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
       try {
@@ -193,10 +194,6 @@ class RecordingDelegate {
 
           yield fragment;
         }
-
-        /*if (this.accessory.context.config.debug) {
-          this.log.debug(`mp4 box type ${type} and lenght: ${length}`, this.accessory.displayName);
-        }*/
       }
     } catch (error) {
       if (error === 'connection closed') {

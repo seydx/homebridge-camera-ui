@@ -5,6 +5,8 @@ const readline = require('readline');
 
 const { Logger } = require('../../services/logger/logger.service');
 
+const muteErrors = ['no frame!', 'decode_slice_header', 'non-existing PPS 0 referenced'];
+
 class FfmpegProcess {
   constructor(cameraName, videoDebug, sessionId, videoProcessor, command, delegate, callback) {
     this.log = Logger.log;
@@ -47,7 +49,7 @@ class FfmpegProcess {
         callback = undefined;
       }
 
-      if (/\[(panic|fatal|error)]/.test(line)) {
+      if (/\[(panic|fatal|error)]/.test(line) && muteErrors.some((key) => line.includes(key))) {
         this.log.error(line, cameraName, 'Homebridge');
       } else if (videoDebug) {
         this.log.debug(line, cameraName);
@@ -65,7 +67,7 @@ class FfmpegProcess {
     });
 
     this.process.on('exit', (code, signal) => {
-      const message = `ffmpeg exited with code: ${code} and signal: ${signal}`;
+      const message = `FFmpeg exited with code: ${code} and signal: ${signal}`;
 
       if (code == undefined || code === 255) {
         if (this.process.killed) {
@@ -89,6 +91,15 @@ class FfmpegProcess {
 
   getStdin() {
     return this.process.stdin;
+  }
+
+  stop() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.socket.close();
+    }
+
+    this.process?.kill('SIGKILL');
   }
 
   parseProgress(data) {
@@ -122,15 +133,6 @@ class FfmpegProcess {
     } else {
       return;
     }
-  }
-
-  stop() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.socket.close();
-    }
-
-    this.process.kill('SIGKILL');
   }
 }
 

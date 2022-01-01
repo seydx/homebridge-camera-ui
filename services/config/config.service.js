@@ -168,38 +168,6 @@ class ConfigSetup {
           camera.videoConfig.stillImageSource = camera.videoConfig.source;
         }
 
-        if (camera.videoConfig.source) {
-          if (camera.videoConfig.readRate) {
-            camera.videoConfig.source = `-re ${camera.videoConfig.source}`;
-          }
-
-          if (camera.videoConfig.stimeout > 0) {
-            camera.videoConfig.source = `-stimeout ${camera.videoConfig.stimeout * 10000000} ${
-              camera.videoConfig.source
-            }`;
-          }
-
-          if (camera.videoConfig.maxDelay >= 0) {
-            camera.videoConfig.source = `-max_delay ${camera.videoConfig.maxDelay} ${camera.videoConfig.source}`;
-          }
-
-          if (camera.videoConfig.reorderQueueSize >= 0) {
-            camera.videoConfig.source = `-reorder_queue_size ${camera.videoConfig.reorderQueueSize} ${camera.videoConfig.source}`;
-          }
-
-          if (camera.videoConfig.probeSize >= 32) {
-            camera.videoConfig.source = `-probesize ${camera.videoConfig.probeSize} ${camera.videoConfig.source}`;
-          }
-
-          if (camera.videoConfig.analyzeDuration >= 0) {
-            camera.videoConfig.source = `-analyzeduration ${camera.videoConfig.analyzeDuration} ${camera.videoConfig.source}`;
-          }
-
-          if (camera.videoConfig.rtspTransport) {
-            camera.videoConfig.source = `-rtsp_transport ${camera.videoConfig.rtspTransport} ${camera.videoConfig.source}`;
-          }
-        }
-
         // min motionTimeout
         camera.motionTimeout = camera.motionTimeout >= 15 ? camera.motionTimeout : 15;
 
