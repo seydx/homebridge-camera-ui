@@ -4,6 +4,7 @@ const { Logger } = require('../../services/logger/logger.service');
 
 const createSocket = require('dgram').createSocket;
 const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
+const fs = require('fs-extra');
 const path = require('path');
 const pickPort = require('pick-port');
 const spawn = require('child_process').spawn;
@@ -16,6 +17,10 @@ const { Ping } = require('../utils/ping');
 const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'views', 'maxstreams_cameraui.png');
 const offlineImage = path.resolve(__dirname, '..', 'utils', 'views', 'offline_cameraui.png');
 const privacyImage = path.resolve(__dirname, '..', 'utils', 'views', 'privacy_cameraui.png');
+
+//const maxstreamsImageInBytes = fs.readFileSync(maxstreamsImage);
+const offlineImageInBytes = fs.readFileSync(offlineImage);
+const privacyImageInBytes = fs.readFileSync(privacyImage);
 
 class Camera {
   constructor(api, accessory, cameraUi) {
@@ -260,7 +265,7 @@ class Camera {
   }
 
   fetchSnapshot(snapFilter) {
-    // eslint-disable-next-line no-async-promise-executor
+    // eslint-disable-next-line no-async-promise-executor, no-unused-vars
     this.snapshotPromise = new Promise(async (resolve, reject) => {
       const startTime = Date.now();
 
@@ -270,7 +275,7 @@ class Camera {
       const atHome = await this.getPrivacyState();
 
       if (atHome) {
-        input = `-i ${privacyImage}`;
+        return resolve(privacyImageInBytes);
       }
 
       const ffmpegArguments = ['-hide_banner', '-loglevel', 'error', ...input.split(/\s+/), '-frames:v', '1'];
@@ -299,7 +304,12 @@ class Camera {
       });
 
       ffmpeg.on('error', (error) => {
-        reject(`FFmpeg process creation failed: ${error.message}`);
+        this.log.error(
+          `FFmpeg process creation failed: ${error.message} - Showing "offline" image instead.`,
+          this.accessory.displayName
+        );
+        resolve(offlineImageInBytes);
+        //reject(`FFmpeg process creation failed: ${error.message}`);
       });
 
       ffmpeg.stderr.on('data', (data) => errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, '')));
@@ -312,7 +322,9 @@ class Camera {
         if (snapshotBuffer.length > 0) {
           resolve(snapshotBuffer);
         } else {
-          reject('Failed to fetch snapshot.');
+          this.log.error('Failed to fetch snapshot. Showing "offline" image instead.', this.accessory.displayName);
+          resolve(offlineImageInBytes);
+          //reject('Failed to fetch snapshot.');
         }
 
         setTimeout(() => {
@@ -335,6 +347,8 @@ class Camera {
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
             this.log.error(message, this.accessory.displayName, 'Homebridge');
+
+            return offlineImageInBytes;
           }
         }
       });

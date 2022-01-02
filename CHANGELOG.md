@@ -58,6 +58,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Interface**
   - Improved camera settings
   - Added interface settings to system
+  - Trigger motion via UI
   - Added `play`, `pause` and `audio` buttons to stream
   - Added a new `onboard page` for first start
   - Added new `automation` section to interface settings page
