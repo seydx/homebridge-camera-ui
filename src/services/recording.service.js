@@ -39,7 +39,7 @@ class RecordingDelegate {
 
         ffmpegInput = [...input];
       } catch (error) {
-        this.log.warn(`Can not access prebuffered video, skipping: ${error}`, this.accessory.displayName, 'Homebridge');
+        this.log.warn(`Can not access prebuffer stream, skipping: ${error}`, this.accessory.displayName, 'Homebridge');
       }
     }
 

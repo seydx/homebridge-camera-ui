@@ -180,8 +180,16 @@ HomebridgeCameraUi.prototype = {
       this.cameraAccessories.push(cameraAccessory);
     }
 
-    new MotionSensor(this.api, accessory, this.handler);
-    new DoorbellSensor(this.api, accessory, this.handler);
+    if (!this.hsvSupported || !accessory.context.config.hsv) {
+      if (accessory.context.config.motion) {
+        new MotionSensor(this.api, accessory, this.handler);
+      }
+
+      if (accessory.context.config.doorbell) {
+        new DoorbellSensor(this.api, accessory, this.handler);
+      }
+    }
+
     new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
     new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
   },
@@ -293,7 +301,7 @@ HomebridgeCameraUi.prototype = {
   // emitted from camera.ui
   addCamera: async function (camera) {
     try {
-      this.log.info('Added new camera through interface, saving..,');
+      this.log.info('Added a new camera through interface, saving..', camera.name);
 
       camera.hsv = !camera.recordOnMovement;
       delete camera.recordOnMovement;
@@ -322,7 +330,7 @@ HomebridgeCameraUi.prototype = {
 
       this.configure();
 
-      this.log.info('Camera added to HomeKit and config.json saved!');
+      this.log.info('Camera added to HomeKit and config.json saved!', camera.name);
     } catch (error) {
       this.log.info('An error occured during adding new camera');
       this.log.error(error, 'Config', 'Homebridge');
@@ -332,7 +340,7 @@ HomebridgeCameraUi.prototype = {
   // emitted from camera.ui
   removeCamera: async function (camera) {
     try {
-      this.log.info('Removed camera through interface, saving..,');
+      this.log.info('Removing camera...', camera.name);
 
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
@@ -352,7 +360,7 @@ HomebridgeCameraUi.prototype = {
 
       this.configure();
 
-      this.log.info('Camera removed from HomeKit and config.json saved!');
+      this.log.info('Camera removed from HomeKit and config.json saved!', camera.name);
     } catch (error) {
       this.log.info('An error occured during adding new camera');
       this.log.error(error, 'Config', 'Homebridge');
@@ -361,7 +369,7 @@ HomebridgeCameraUi.prototype = {
 
   removeCameras: async function () {
     try {
-      this.log.info('Removed all cameras through interface, saving..,');
+      this.log.info('Removing all cameras...');
 
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
@@ -382,7 +390,7 @@ HomebridgeCameraUi.prototype = {
 
       this.configure();
 
-      this.log.info('Camera removed from HomeKit and config.json saved!');
+      this.log.info('Cameras removed from HomeKit and config.json saved!');
     } catch (error) {
       this.log.info('An error occured during adding new camera');
       this.log.error(error, 'Config', 'Homebridge');

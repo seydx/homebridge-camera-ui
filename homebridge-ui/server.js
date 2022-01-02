@@ -107,20 +107,20 @@ class UiServer extends HomebridgePluginUiServer {
 
       streams[cameraName].stream.stdout.on('data', (data) => {
         this.pushEvent(`stream/${cameraName}`, data);
-        resolve();
       });
 
       streams[cameraName].stream.stderr.on('data', (data) => errors.push(data));
 
       streams[cameraName].stream.on('exit', (code, signal) => {
+        streams[cameraName].stream = false;
+
         if (code === 1) {
           errors.unshift(`RTSP stream exited with error! (${signal})`);
           reject(new RequestError(`${cameraName}: ${errors.join(' - ')}`));
         } else {
           console.log(`${cameraName}: Stream Exit (expected)`);
+          resolve();
         }
-
-        streams[cameraName].stream = false;
       });
     });
   }

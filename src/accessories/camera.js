@@ -41,6 +41,9 @@ class Camera {
     const recordingCodecs = [];
     const samplerate = [];
 
+    const motionService = this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion');
+    const doorbellService = this.accessory.getServiceById(this.api.hap.Service.Doorbell, 'doorbell');
+
     this.recordingDelegate = null;
 
     if (this.accessory.context.config.hsv) {
@@ -51,10 +54,17 @@ class Camera {
           'Homebridge'
         );
         this.accessory.context.config.hsv = false;
-      } else if (!this.accessory.context.config.unbridge) {
-        this.log.warn('Can not start HSV. The camera must be unbridged!', this.accessory.displayName, 'Homebridge');
-        this.accessory.context.config.hsv = false;
       } else {
+        this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
+
+        if (motionService) {
+          this.accessory.removeService(motionService);
+        }
+
+        if (doorbellService) {
+          this.accessory.removeService(doorbellService);
+        }
+
         for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
           samplerate.push(sr);
         }
@@ -69,8 +79,6 @@ class Camera {
 
           recordingCodecs.push(entry);
         }
-
-        this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
 
         this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi);
       }
@@ -323,13 +331,13 @@ class Camera {
           resolve(snapshotBuffer);
         } else {
           this.log.error('Failed to fetch snapshot. Showing "offline" image instead.', this.accessory.displayName);
-          resolve(offlineImageInBytes);
+          return resolve(offlineImageInBytes);
           //reject('Failed to fetch snapshot.');
         }
 
         setTimeout(() => {
           this.snapshotPromise = undefined;
-        }, 3 * 1000); // Expire cached snapshot after 3 seconds
+        }, 5 * 1000); // Expire cached snapshot after 5 seconds
 
         const runtime = (Date.now() - startTime) / 1000;
 
@@ -343,12 +351,10 @@ class Camera {
           }
 
           if (runtime < 22) {
-            this.log.warn(message, this.accessory.displayName, 'Homebridge');
+            this.log.info(message, this.accessory.displayName, 'Homebridge');
           } else {
             message += ' The request has timed out and the snapshot has not been refreshed in HomeKit.';
             this.log.error(message, this.accessory.displayName, 'Homebridge');
-
-            return offlineImageInBytes;
           }
         }
       });
@@ -534,7 +540,7 @@ class Camera {
 
       if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
         try {
-          this.log.debug('Setting rebroadcast stream as input', this.accessory.displayName);
+          this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
 
           const containerInput = await controller.prebuffer.getVideo({
             container: 'mpegts',
@@ -543,7 +549,7 @@ class Camera {
           input = prebufferInput = containerInput.join(' ');
         } catch (error) {
           this.log.warn(
-            `Can not access rebroadcast stream, skipping: ${error}`,
+            `Can not access prebuffer stream, skipping: ${error}`,
             this.accessory.displayName,
             'Homebridge'
           );

@@ -20,7 +20,9 @@ class motionService {
     let service = this.accessory.getService(this.api.hap.Service.MotionSensor);
     let switchService = this.accessory.getServiceById(this.api.hap.Service.Switch, 'MotionTrigger');
 
-    if (this.accessory.context.config.motion) {
+    const hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
+
+    if (this.accessory.context.config.motion && (!hsvSupported || !this.accessory.context.config.hsv)) {
       if (!service) {
         this.log.debug('Adding motion sensor service', this.accessory.displayName);
         service = this.accessory.addService(

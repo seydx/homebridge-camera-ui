@@ -75,6 +75,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Server**
   - Built-in SMTP server for motion detection
   - Built-in FTP server for motion detection
+  - Support JSON Object as MQTT motion/reset messages
   - Added jwt authentication to socket.io to prevent starting stream if not logged in
   - Auto logout is session time out
   - Auto logout if socket disconnected/unauthenticated

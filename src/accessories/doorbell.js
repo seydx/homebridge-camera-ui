@@ -20,7 +20,9 @@ class doorbellService {
     let service = this.accessory.getService(this.api.hap.Service.Doorbell);
     let switchService = this.accessory.getServiceById(this.api.hap.Service.Switch, 'DoorbellTrigger');
 
-    if (this.accessory.context.config.doorbell) {
+    const hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
+
+    if (this.accessory.context.config.doorbell && (!hsvSupported || !this.accessory.context.config.hsv)) {
       if (!service) {
         this.log.debug('Adding doorbell service', this.accessory.displayName);
         service = this.accessory.addService(
