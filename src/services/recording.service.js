@@ -1,10 +1,7 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 'use-strict';
 
-const { createServer } = require('net');
 const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
-const { listenServer, readLength } = require('camera.ui/src/controller/camera/utils/camera.utils');
-const { spawn } = require('child_process');
 
 const { Logger } = require('../../services/logger/logger.service');
 
@@ -172,7 +169,14 @@ class RecordingDelegate {
       );
     }
 
-    const session = await this.startFFMPegFragmetedMP4Session(ffmpegInput, audioArguments, videoArguments);
+    const session = await cameraUtils.startFFMPegFragmetedMP4Session(
+      this.accessory.displayName,
+      this.accessory.context.config.videoConfig.debug,
+      this.accessory.context.config.videoProcessor,
+      ffmpegInput,
+      audioArguments,
+      videoArguments
+    );
 
     this.log.debug('Recording started', this.accessory.displayName);
 
@@ -211,80 +215,6 @@ class RecordingDelegate {
 
       //this.accessory.context.hsvBusy = false;
     }
-  }
-
-  async startFFMPegFragmetedMP4Session(ffmpegInput, audioOutputArguments, videoOutputArguments) {
-    this.log.debug('Start recording...', this.accessory.displayName);
-
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const server = createServer((socket) => {
-        server.close();
-
-        async function* generator() {
-          while (true) {
-            const header = await readLength(socket, 8);
-            const length = header.readInt32BE(0) - 8;
-            const type = header.slice(4).toString();
-            const data = await readLength(socket, length);
-
-            yield {
-              header,
-              length,
-              type,
-              data,
-            };
-          }
-        }
-
-        resolve({
-          socket,
-          cp,
-          generator: generator(),
-        });
-      });
-
-      const serverPort = await listenServer(server);
-      const arguments_ = [
-        '-hide_banner',
-        '-fflags',
-        '+genpts+igndts',
-        ...ffmpegInput,
-        '-f',
-        'mp4',
-        ...videoOutputArguments,
-        ...audioOutputArguments,
-        '-movflags',
-        'frag_keyframe+empty_moov+default_base_moof',
-        '-max_muxing_queue_size',
-        '1024',
-        'tcp://127.0.0.1:' + serverPort,
-      ];
-
-      this.log.debug(
-        `Recording command: ${this.accessory.context.config.videoProcessor} ${arguments_.join(' ')}`,
-        this.accessory.displayName
-      );
-
-      const cp = spawn(this.accessory.context.config.videoProcessor, arguments_, { env: process.env });
-
-      cp.on('exit', (code, signal) => {
-        if (code === 1) {
-          this.log.error(
-            `FFmpeg recording process exited with error! (${signal})`,
-            this.accessory.displayName,
-            'Homebridge'
-          );
-        } else {
-          this.log.debug('FFmpeg recording process exited (expected)', this.accessory.displayName);
-        }
-      });
-
-      if (this.accessory.context.config.debug) {
-        cp.stdout.on('data', (data) => this.log.debug(data.toString(), this.accessory.displayName));
-        cp.stderr.on('data', (data) => this.log.debug(data.toString(), this.accessory.displayName));
-      }
-    });
   }
 }
 
