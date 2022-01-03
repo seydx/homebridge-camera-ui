@@ -12,11 +12,11 @@ const spawn = require('child_process').spawn;
 const FfmpegProcess = require('../services/ffmpeg.service');
 const RecordingDelegate = require('../services/recording.service');
 
-const { Ping } = require('camera.ui/src/common/ping');
+const { Ping } = require('../utils/ping');
 
-const maxstreamsImage = path.resolve(__dirname, '..', 'placeholder', 'maxstreams_cameraui.png');
-const offlineImage = path.resolve(__dirname, '..', 'placeholder', 'offline_cameraui.png');
-const privacyImage = path.resolve(__dirname, '..', 'placeholder', 'privacy_cameraui.png');
+const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'maxstreams_cameraui.png');
+const offlineImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'offline_cameraui.png');
+const privacyImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'privacy_cameraui.png');
 
 //const maxstreamsImageInBytes = fs.readFileSync(maxstreamsImage);
 const offlineImageInBytes = fs.readFileSync(offlineImage);
