@@ -2,7 +2,7 @@
 
 const { Logger } = require('../../services/logger/logger.service');
 
-class motionService {
+class MotionService {
   constructor(api, accessory, handler) {
     this.api = api;
     this.log = Logger.log;
@@ -17,12 +17,10 @@ class motionService {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
   getService() {
-    let service = this.accessory.getService(this.api.hap.Service.MotionSensor);
+    let service = this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion');
     let switchService = this.accessory.getServiceById(this.api.hap.Service.Switch, 'MotionTrigger');
 
-    const hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
-
-    if (this.accessory.context.config.motion && (!hsvSupported || !this.accessory.context.config.hsv)) {
+    if (this.accessory.context.config.motion) {
       if (!service) {
         this.log.debug('Adding motion sensor service', this.accessory.displayName);
         service = this.accessory.addService(
@@ -32,13 +30,11 @@ class motionService {
         );
       }
 
-      service
-        .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
-        .on('change', (value) => {
-          this.accessory.context.motionOldvalue = value.oldValue;
-          //this.log.info('Motion ' + (value.newValue ? 'detected!' : 'not detected anymore!'), this.accessory.displayName);
-        })
-        .updateValue(false);
+      if (!service.testCharacteristic(this.api.hap.Characteristic.StatusActive)) {
+        service.addCharacteristic(this.api.hap.Characteristic.StatusActive);
+      }
+
+      service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).updateValue(false);
     } else {
       if (service) {
         this.log.debug('Removing motion sensor service', this.accessory.displayName);
@@ -70,4 +66,4 @@ class motionService {
   }
 }
 
-module.exports = motionService;
+module.exports = MotionService;

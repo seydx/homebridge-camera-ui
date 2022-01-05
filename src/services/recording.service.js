@@ -13,15 +13,31 @@ class RecordingDelegate {
     this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
+
+    this.configuration = {};
+    this.handlingStreamingRequest = false;
+    this.session = null;
+
+    this.recordingDelayTimer = null;
+    this.stopAfterMotionStop = false;
+    this.closeReason = null;
   }
 
-  async *handleFragmentsRequests(configuration) {
-    //this.accessory.context.hsvBusy = true;
+  // eslint-disable-next-line no-unused-vars
+  async *handleRecordingStreamRequest(streamId) {
+    this.handlingStreamingRequest = true;
+
+    this.stopAfterMotionStop = false;
+    this.closeReason = null;
+
+    if (this.recordingDelayTimer) {
+      clearTimeout(this.recordingDelayTimer);
+      this.recordingDelayTimer = null;
+    }
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
-    const iframeIntervalSeconds = 4;
 
     let ffmpegInput = [...cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/)];
 
@@ -31,7 +47,7 @@ class RecordingDelegate {
 
         const input = await controller.prebuffer.getVideo({
           container: 'mp4',
-          prebuffer: configuration.mediaContainerConfiguration.prebufferLength,
+          prebuffer: 4000,
         });
 
         ffmpegInput = [...input];
@@ -52,47 +68,75 @@ class RecordingDelegate {
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
     //let probeTimedOut = controller?.media.codecs.timedout;
 
-    if (!audioSourceFound && audioEnabled) {
-      this.log.warn(
-        'Disabling audio, audio source not found or timed out during probe stream',
+    if (!audioSourceFound) {
+      this.log.debug(
+        'Replacing audio with a dummy track, audio source not found or timed out during probe stream (recording)',
         this.accessory.displayName,
         'Homebridge'
       );
-      audioEnabled = false;
+
+      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+      audioEnabled = true;
     }
 
     if (audioEnabled) {
-      if (incompatibleAudio && acodec !== 'libfdk_aac') {
-        this.log.warn(
-          `Incompatible audio stream detected ${probeAudio}, transcoding with "libfdk_aac"..`,
-          this.accessory.displayName,
-          'Homebridge'
-        );
+      if (audioSourceFound) {
+        if (incompatibleAudio && acodec !== 'libfdk_aac') {
+          this.log.debug(
+            `Incompatible audio stream detected ${probeAudio}, transcoding with "libfdk_aac"..`,
+            this.accessory.displayName,
+            'Homebridge'
+          );
+          acodec = 'libfdk_aac';
+          //vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
+        } else if (!incompatibleAudio && acodec !== 'copy') {
+          this.log.debug('Compatible audio stream detected, copying..');
+          acodec = 'copy';
+        }
+      } else {
         acodec = 'libfdk_aac';
-        //vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
-      } else if (!incompatibleAudio && acodec !== 'copy') {
-        this.log.info('Compatible audio stream detected, copying..');
-        acodec = 'copy';
-        //vcodec = 'copy';
       }
 
       if (acodec !== 'copy') {
-        vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
+        let samplerate;
+
+        switch (this.configuration.audioCodec.samplerate) {
+          case this.api.hap.AudioRecordingSamplerate.KHZ_8:
+            samplerate = '8';
+            break;
+          case this.api.hap.AudioRecordingSamplerate.KHZ_16:
+            samplerate = '16';
+            break;
+          case this.api.hap.AudioRecordingSamplerate.KHZ_24:
+            samplerate = '24';
+            break;
+          case this.api.hap.AudioRecordingSamplerate.KHZ_32:
+            samplerate = '32';
+            break;
+          case this.api.hap.AudioRecordingSamplerate.KHZ_44_1:
+            samplerate = '44.1';
+            break;
+          case this.api.hap.AudioRecordingSamplerate.KHZ_48:
+            samplerate = '48';
+            break;
+          default:
+            throw new Error(`Unsupported audio samplerate: ${this.configuration.audioCodec.samplerate}`);
+        }
 
         audioArguments.push(
           '-bsf:a',
           'aac_adtstoasc',
           '-acodec',
           'libfdk_aac',
-          ...(configuration.audioCodec.type === this.api.hap.AudioRecordingCodecType.AAC_LC
+          ...(this.configuration.audioCodec.type === this.api.hap.AudioRecordingCodecType.AAC_LC
             ? ['-profile:a', 'aac_low']
             : ['-profile:a', 'aac_eld']),
           '-ar',
-          `${this.api.hap.AudioRecordingSamplerateValues[configuration.audioCodec.samplerate]}k`,
+          `${samplerate}k`,
           '-b:a',
-          `${configuration.audioCodec.bitrate}k`,
+          `${this.configuration.audioCodec.bitrate}k`,
           '-ac',
-          `${configuration.audioCodec.audioChannels}`
+          `${this.configuration.audioCodec.audioChannels}`
         );
       } else {
         vcodec = 'copy';
@@ -105,51 +149,32 @@ class RecordingDelegate {
     }
 
     const profile =
-      configuration.videoCodec.profile === this.api.hap.H264Profile.HIGH
+      this.configuration.videoCodec.profile === this.api.hap.H264Profile.HIGH
         ? 'high'
-        : configuration.videoCodec.profile === this.api.hap.H264Profile.MAIN
+        : this.configuration.videoCodec.profile === this.api.hap.H264Profile.MAIN
         ? 'main'
         : 'baseline';
 
     const level =
-      configuration.videoCodec.level === this.api.hap.H264Level.LEVEL4_0
+      this.configuration.videoCodec.level === this.api.hap.H264Level.LEVEL4_0
         ? '4.0'
-        : configuration.videoCodec.level === this.api.hap.H264Level.LEVEL3_2
+        : this.configuration.videoCodec.level === this.api.hap.H264Level.LEVEL3_2
         ? '3.2'
         : '3.1';
 
-    let width =
-      this.accessory.context.config.videoConfig.maxWidth &&
-      (this.accessory.context.config.videoConfig.forceMax ||
-        configuration.videoCodec.resolution[0] > this.accessory.context.config.videoConfig.maxWidth)
-        ? this.accessory.context.config.videoConfig.maxWidth
-        : configuration.videoCodec.resolution[0];
-
-    let height =
-      this.accessory.context.config.videoConfig.maxHeight &&
-      (this.accessory.context.config.videoConfig.forceMax ||
-        configuration.videoCodec.resolution[1] > this.accessory.context.config.videoConfig.maxHeight)
-        ? this.accessory.context.config.videoConfig.maxHeight
-        : configuration.videoCodec.resolution[1];
-
-    let fps =
-      this.accessory.context.config.videoConfig.maxFPS &&
-      (this.accessory.context.config.videoConfig.forceMax ||
-        configuration.videoCodec.resolution[2] > this.accessory.context.config.videoConfig.maxFPS)
-        ? this.accessory.context.config.videoConfig.maxFPS
-        : configuration.videoCodec.resolution[2];
-
-    let videoBitrate =
-      this.accessory.context.config.videoConfig.maxBitrate &&
-      (this.accessory.context.config.videoConfig.forceMax ||
-        configuration.videoCodec.bitrate > this.accessory.context.config.videoConfig.maxBitrate)
-        ? this.accessory.context.config.videoConfig.maxBitrate
-        : configuration.videoCodec.bitrate;
+    const width = this.configuration.videoCodec.resolution[0];
+    const height = this.configuration.videoCodec.resolution[1];
+    const fps = this.configuration.videoCodec.resolution[2];
+    const videoBitrate = this.configuration.videoCodec.parameters.bitRate;
+    const iFrameInterval = this.configuration.videoCodec.parameters.iFrameInterval;
 
     if (vcodec === 'copy') {
       videoArguments.push('-vcodec', 'copy');
     } else {
       videoArguments.push(
+        //'-an',
+        '-sn',
+        '-dn',
         '-vcodec',
         vcodec,
         '-pix_fmt',
@@ -161,7 +186,7 @@ class RecordingDelegate {
         '-b:v',
         `${videoBitrate}k`,
         '-force_key_frames',
-        `expr:eq(t,n_forced*${iframeIntervalSeconds})`,
+        `expr:eq(t,n_forced*${iFrameInterval / 1000})`,
         '-r',
         fps.toString(),
         '-vf',
@@ -169,7 +194,7 @@ class RecordingDelegate {
       );
     }
 
-    const session = await cameraUtils.startFFMPegFragmetedMP4Session(
+    this.session = await cameraUtils.startFFMPegFragmetedMP4Session(
       this.accessory.displayName,
       this.accessory.context.config.videoConfig.debug,
       this.accessory.context.config.videoProcessor,
@@ -180,15 +205,18 @@ class RecordingDelegate {
 
     this.log.debug('Recording started', this.accessory.displayName);
 
-    const { socket, cp, generator } = session;
     let pending = [];
     let filebuffer = Buffer.alloc(0);
 
     try {
-      for await (const box of generator) {
+      for await (const box of this.session.generator) {
         const { header, type, data } = box;
 
         pending.push(header, data);
+
+        const motionDetected = this.accessory
+          .getService(this.api.hap.Service.MotionSensor)
+          .getCharacteristic(this.api.hap.Characteristic.MotionDetected).value;
 
         if (type === 'moov' || type === 'mdat') {
           const fragment = Buffer.concat(pending);
@@ -196,26 +224,86 @@ class RecordingDelegate {
           filebuffer = Buffer.concat([filebuffer, Buffer.concat(pending)]);
           pending = [];
 
-          yield fragment;
+          const isLast = this.stopAfterMotionStop;
+
+          if (!motionDetected && !this.recordingDelayTimer) {
+            // motion sensor timed out
+            this.log.debug('Ending recording session in 3s', this.accessory.displayName);
+
+            this.recordingDelayTimer = setTimeout(() => {
+              this.stopAfterMotionStop = true;
+            }, 3000);
+          }
+
+          yield {
+            data: fragment,
+            isLast: isLast,
+          };
+
+          if (isLast) {
+            this.log.debug('Ending recording session due to motion stopped!', this.accessory.displayName);
+            break;
+          }
         }
       }
     } catch (error) {
-      if (error === 'connection closed') {
-        this.log.warn('HSV connection closed!', this.accessory.displayName, 'Homebridge');
-      } else if (error === 'dataSend close') {
-        this.log.debug('Recording completed. (dataSend close (hsv))', this.accessory.displayName);
-        this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
+      if (!error.message?.startsWith('FFMPEG')) {
+        this.log.info('Encountered unexpected error on generator');
+        this.log.error(error);
       } else {
-        this.log.info('An error occured during recording hsv video!', this.accessory.displayName);
-        this.log.error(error, this.accessory.displayName, 'Homebridge');
+        this.log.debug(error.message || error, this.accessory.displayName);
       }
     } finally {
-      socket.destroy();
-      cp.kill();
-
-      //this.accessory.context.hsvBusy = false;
+      // todo: check moov
+      if (this.closeReason) {
+        this.log.warn(
+          'Skip saving the recording, the file might be corrupted because the recording process was cancelled by HSV',
+          this.accessory.displayName,
+          'Homebridge'
+        );
+      } else if (filebuffer.length > 0) {
+        this.log.debug('Recording completed (HSV)', this.accessory.displayName);
+        this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
+      }
     }
   }
-}
 
+  // eslint-disable-next-line no-unused-vars
+  updateRecordingActive(active) {
+    //this.log.debug(`Recording: ${active}`, this.accessory.displayName);
+  }
+
+  updateRecordingConfiguration(configuration) {
+    //this.log.debug(`Updating recording configuration: ${JSON.stringify(configuration)}`, this.accessory.displayName);
+    this.configuration = configuration;
+  }
+
+  closeRecordingStream(streamId, reason) {
+    this.log.info('Closing recording process', this.accessory.displayName);
+
+    if (this.session) {
+      this.session.socket?.destroy();
+      this.session.cp?.kill();
+
+      this.session = undefined;
+    }
+
+    if (reason) {
+      //prevent restarting HSV directly after closing recording stream
+      this.log.debug(`Resetting motion state because HSV closed recording with reason "${reason}"`);
+
+      this.accessory
+        .getService(this.api.hap.Service.MotionSensor)
+        .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
+        .updateValue(false);
+    }
+
+    this.closeReason = reason;
+    this.handlingStreamingRequest = false;
+  }
+
+  acknowledgeStream(streamId) {
+    this.closeRecordingStream(streamId);
+  }
+}
 module.exports = RecordingDelegate;

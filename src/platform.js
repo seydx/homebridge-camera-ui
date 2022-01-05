@@ -35,10 +35,10 @@ function HomebridgeCameraUi(log, config, api) {
   this.api = api;
   this.accessories = [];
   this.cameraAccessories = [];
-  this.hsvSupported = Boolean(api.hap.AudioRecordingSamplerate && api.hap.AudioRecordingCodecType);
+  this.devices = new Map();
 
   // eslint-disable-next-line unicorn/no-array-for-each
-  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera.hsv && this.hsvSupported ? false : true));
+  config.cameras?.forEach((camera) => (camera.recordOnMovement = camera.hsv ? false : true));
 
   this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, Logger, {
     moduleName: 'homebridge-camera-ui',
@@ -49,7 +49,6 @@ function HomebridgeCameraUi(log, config, api) {
 
   this.log = Logger.log;
   this.config = new Config(config);
-  this.devices = new Map();
   this.handler = new Handler(this.api.hap, this.cameraUi);
 
   for (const device of this.config.cameras) {
@@ -81,8 +80,6 @@ function HomebridgeCameraUi(log, config, api) {
       const device = {
         name: name,
         subtype: 'athome-switch',
-        manufacturer: 'camera.ui',
-        model: 'Switch',
       };
 
       this.devices.set(uuid, device);
@@ -92,11 +89,11 @@ function HomebridgeCameraUi(log, config, api) {
   this.api.on('didFinishLaunching', this.init.bind(this));
   this.api.on('shutdown', () => this.cameraUi.close());
 
-  this.cameraUi.on('config', (config) => this.changeConfig(config));
-  this.cameraUi.on('addCamera', (camera) => this.addCamera(camera));
-  this.cameraUi.on('removeCamera', (camera) => this.removeCamera(camera));
-  this.cameraUi.on('removeCameras', () => this.removeCameras());
-  this.cameraUi.on('restart', () => this.restartProcess());
+  this.cameraUi.on('config', this.changeConfig.bind(this));
+  this.cameraUi.on('addCamera', this.addCamera.bind(this));
+  this.cameraUi.on('removeCamera', this.removeCamera.bind(this));
+  this.cameraUi.on('removeCameras', this.removeCameras.bind(this));
+  this.cameraUi.on('restart', this.restartProcess.bind(this));
 }
 
 HomebridgeCameraUi.prototype = {
@@ -131,7 +128,7 @@ HomebridgeCameraUi.prototype = {
       const device = this.devices.get(accessory.UUID);
 
       try {
-        if (!device /* && !accessory.context.config.unbridge*/) {
+        if (!device) {
           this.removeAccessory(accessory);
         }
       } catch (error) {
@@ -144,54 +141,42 @@ HomebridgeCameraUi.prototype = {
   setupAccessory: function (accessory, device) {
     this.log.info('Setting up accessory...', accessory.displayName);
 
-    accessory.on('identify', () => {
-      this.log.info('Identify requested.', accessory.displayName);
-    });
+    accessory.on('identify', () => this.log.info('Identify requested.', accessory.displayName));
 
-    const AccessoryInformation = accessory.getService(this.api.hap.Service.AccessoryInformation);
-
-    if (AccessoryInformation) {
-      AccessoryInformation.setCharacteristic(
-        this.api.hap.Characteristic.Manufacturer,
-        device.manufacturer || 'Homebridge'
-      );
-      AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'camera.ui');
-      AccessoryInformation.setCharacteristic(
-        this.api.hap.Characteristic.SerialNumber,
-        device.serialNumber || 'SerialNumber'
-      );
-      AccessoryInformation.setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, version);
-    }
+    accessory
+      .getService(this.api.hap.Service.AccessoryInformation)
+      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, device.manufacturer || 'Homebridge')
+      .setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'camera.ui')
+      .setCharacteristic(this.api.hap.Characteristic.SerialNumber, device.serialNumber || '000000')
+      .setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, version);
 
     accessory.context.config = device;
-    accessory.context.config.videoProcessor = this.config.options.videoProcessor;
 
-    if (device.subtype.includes('switch')) {
-      new InterfaceSwitch(this.api, accessory, device.subtype, 'accessory', this.cameraUi);
-      return;
-    }
+    switch (device.subtype) {
+      case 'camera': {
+        accessory.category = this.api.hap.Categories.IP_CAMERA;
+        accessory.context.config.videoProcessor = this.config.options.videoProcessor;
 
-    accessory.category = this.api.hap.Categories.IP_CAMERA;
-
-    const cameraAccessory = new Camera(this.api, accessory, this.cameraUi);
-    accessory.configureController(cameraAccessory.controller);
-
-    if (device.subtype.includes('camera')) {
-      this.cameraAccessories.push(cameraAccessory);
-    }
-
-    if (!this.hsvSupported || !accessory.context.config.hsv) {
-      if (accessory.context.config.motion) {
         new MotionSensor(this.api, accessory, this.handler);
-      }
-
-      if (accessory.context.config.doorbell) {
         new DoorbellSensor(this.api, accessory, this.handler);
-      }
-    }
+        new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
+        new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
 
-    new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
-    new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
+        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi);
+        accessory.configureController(cameraAccessory.controller);
+
+        this.cameraAccessories.push(cameraAccessory);
+        break;
+      }
+      case 'athome-switch': {
+        accessory.category = this.api.hap.Categories.SWITCH;
+
+        new InterfaceSwitch(this.api, accessory, 'athome-switch', 'accessory', this.cameraUi);
+        break;
+      }
+      default:
+        this.log.warn(`Unknown accessory subtype: ${device.subtype}`, 'System', 'Homebridge');
+    }
   },
 
   configureAccessory: function (accessory) {

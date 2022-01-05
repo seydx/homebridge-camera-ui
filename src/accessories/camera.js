@@ -29,59 +29,37 @@ class Camera {
     this.accessory = accessory;
     this.cameraUi = cameraUi;
 
-    this.hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
-
     this.services = [];
     this.streamControllers = [];
+    this.recordingDelegate = null;
 
     this.pendingSessions = new Map();
     this.ongoingSessions = new Map();
     this.timeouts = new Map();
 
     const recordingCodecs = [];
-    const samplerate = [];
-
-    const motionService = this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion');
-    const doorbellService = this.accessory.getServiceById(this.api.hap.Service.Doorbell, 'doorbell');
-
-    this.recordingDelegate = null;
 
     if (this.accessory.context.config.hsv) {
-      if (!this.hsvSupported) {
-        this.log.warn(
-          'Can not start HSV. Not compatible Homebridge version detected!',
-          this.accessory.displayName,
-          'Homebridge'
-        );
-        this.accessory.context.config.hsv = false;
-      } else {
-        this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
+      this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
 
-        if (motionService) {
-          this.accessory.removeService(motionService);
-        }
+      const samplerate = [];
 
-        if (doorbellService) {
-          this.accessory.removeService(doorbellService);
-        }
-
-        for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
-          samplerate.push(sr);
-        }
-
-        for (const type of [this.api.hap.AudioRecordingCodecType.AAC_LC]) {
-          const entry = {
-            type,
-            bitrateMode: 0,
-            samplerate,
-            audioChannels: 1,
-          };
-
-          recordingCodecs.push(entry);
-        }
-
-        this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi);
+      for (const sr of [this.api.hap.AudioRecordingSamplerate.KHZ_32]) {
+        samplerate.push(sr);
       }
+
+      for (const type of [this.api.hap.AudioRecordingCodecType.AAC_LC]) {
+        const entry = {
+          type,
+          bitrateMode: 0,
+          samplerate,
+          audioChannels: 1,
+        };
+
+        recordingCodecs.push(entry);
+      }
+
+      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi);
     }
 
     this.controller = new this.api.hap.CameraController({
@@ -124,15 +102,15 @@ class Camera {
         ? {
             options: {
               prebufferLength: 4000,
-              eventTriggerOptions: 0x01 | 0x02,
-              mediaContainerConfigurations: [
+              mediaContainerConfiguration: [
                 {
-                  type: 0,
+                  type: this.api.hap.MediaContainerType.FRAGMENTED_MP4, // H264
                   fragmentLength: 4000,
                 },
               ],
               video: {
-                codec: {
+                type: this.api.hap.VideoCodecType.H264,
+                parameters: {
                   profiles: [
                     this.api.hap.H264Profile.BASELINE,
                     this.api.hap.H264Profile.MAIN,
@@ -161,10 +139,14 @@ class Camera {
               audio: {
                 codecs: recordingCodecs,
               },
-              motionService: this.accessory.context.config.motion,
-              doorbellService: this.accessory.context.config.doorbell,
             },
             delegate: this.recordingDelegate,
+          }
+        : undefined,
+      sensors: this.accessory.context.config.hsv
+        ? {
+            motion: this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion') || true,
+            occupancy: this.accessory.getServiceById(this.api.hap.Service.OccupancySensor, 'occupancy') || false,
           }
         : undefined,
     });
@@ -317,7 +299,6 @@ class Camera {
           this.accessory.displayName
         );
         resolve(offlineImageInBytes);
-        //reject(`FFmpeg process creation failed: ${error.message}`);
       });
 
       ffmpeg.stderr.on('data', (data) => errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, '')));
@@ -333,7 +314,6 @@ class Camera {
           this.log.error('Failed to fetch snapshot. Showing "offline" image instead.', this.accessory.displayName);
           this.snapshotPromise = undefined;
           return resolve(offlineImageInBytes);
-          //reject('Failed to fetch snapshot.');
         }
 
         setTimeout(() => {
@@ -476,18 +456,6 @@ class Camera {
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     const sessionInfo = this.pendingSessions.get(request.sessionID);
 
-    let audioEnabled = this.accessory.context.config.videoConfig.audio;
-    let audioSourceFound = controller?.media.codecs.audio.length;
-
-    if (!audioSourceFound && audioEnabled) {
-      this.log.warn(
-        'Disabling audio, audio source not found or timed out during probe stream',
-        this.accessory.displayName,
-        'Homebridge'
-      );
-      audioEnabled = this.accessory.context.config.videoConfig.audio = false;
-    }
-
     if (sessionInfo) {
       const vcodec = this.accessory.context.config.videoConfig.vcodec || 'libx264';
       const mtu = this.accessory.context.config.videoConfig.packetSize || 1316; // request.video.mtu is not used
@@ -536,7 +504,7 @@ class Camera {
         this.accessory.displayName
       );
 
-      let input = cameraUtils.generateInputSource(this.accessory.context.config.videoConfig);
+      let ffmpegInput = cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/);
       let prebufferInput = null;
 
       if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
@@ -547,7 +515,7 @@ class Camera {
             container: 'mpegts',
           });
 
-          input = prebufferInput = containerInput.join(' ');
+          ffmpegInput = prebufferInput = containerInput;
         } catch (error) {
           this.log.warn(
             `Can not access prebuffer stream, skipping: ${error}`,
@@ -557,28 +525,42 @@ class Camera {
         }
       }
 
+      let audioSourceFound = controller?.media.codecs.audio.length;
+
+      if (!audioSourceFound) {
+        this.log.warn(
+          'Replacing audio with a dummy track, audio source not found or timed out during probe stream (stream)',
+          this.accessory.displayName,
+          'Homebridge'
+        );
+
+        ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+        this.accessory.context.config.videoConfig.audio = true;
+      }
+
       if (!allowStream) {
-        input = `-re -loop 1 -i ${maxstreamsImage}`;
+        ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
       } else {
         const cameraStatus = await this.pingCamera();
         const atHome = await this.getPrivacyState();
 
         if (!cameraStatus) {
-          input = `-re -loop 1 -i ${offlineImage}`;
+          ffmpegInput = ['-re', '-loop', '1', '-i', offlineImage];
         } else if (atHome) {
-          input = `-re -loop 1 -i ${privacyImage}`;
+          ffmpegInput = ['-re', '-loop', '1', '-i', privacyImage];
         }
       }
 
       const inputChanged = Boolean(
-        input !== this.accessory.context.config.videoConfig.source && input !== prebufferInput
+        ffmpegInput.join(' ') !== this.accessory.context.config.videoConfig.source &&
+          ffmpegInput.join(' ') !== prebufferInput.join(' ')
       );
 
       const ffmpegArguments = [
         '-hide_banner',
         '-loglevel',
         `level${this.accessory.context.config.videoConfig.debug ? '+verbose' : ''}`,
-        ...input.split(/\s+/),
+        ...ffmpegInput,
       ];
 
       if (this.accessory.context.config.videoConfig.mapvideo) {
@@ -628,12 +610,15 @@ class Camera {
         `srtp://${sessionInfo.address}:${sessionInfo.videoPort}?rtcpport=${sessionInfo.videoPort}&pkt_size=${mtu}`
       );
 
-      if (audioEnabled && !inputChanged) {
+      if (this.accessory.context.config.videoConfig.audio && !inputChanged) {
         if (
           request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS ||
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
         ) {
-          if (this.accessory.context.config.videoConfig.mapaudio && input !== prebufferInput) {
+          if (
+            this.accessory.context.config.videoConfig.mapaudio &&
+            ffmpegInput.join(' ') !== prebufferInput.join(' ')
+          ) {
             ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapaudio.split(/\s+/));
           } else {
             ffmpegArguments.push('-vn', '-sn', '-dn');
@@ -711,7 +696,11 @@ class Camera {
         callback
       );
 
-      if (audioEnabled && this.accessory.context.config.videoConfig.returnAudioTarget && !inputChanged) {
+      if (
+        this.accessory.context.config.videoConfig.audio &&
+        this.accessory.context.config.videoConfig.returnAudioTarget &&
+        !inputChanged
+      ) {
         const ffmpegReturnArguments = [
           '-hide_banner',
           '-loglevel',

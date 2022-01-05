@@ -2,7 +2,7 @@
 
 const { Logger } = require('../../services/logger/logger.service');
 
-class doorbellService {
+class DoorbellService {
   constructor(api, accessory, handler) {
     this.api = api;
     this.log = Logger.log;
@@ -17,12 +17,10 @@ class doorbellService {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
   getService() {
-    let service = this.accessory.getService(this.api.hap.Service.Doorbell);
+    let service = this.accessory.getServiceById(this.api.hap.Service.Doorbell, 'doorbell');
     let switchService = this.accessory.getServiceById(this.api.hap.Service.Switch, 'DoorbellTrigger');
 
-    const hsvSupported = Boolean(this.api.hap.AudioRecordingSamplerate && this.api.hap.AudioRecordingCodecType);
-
-    if (this.accessory.context.config.doorbell && (!hsvSupported || !this.accessory.context.config.hsv)) {
+    if (this.accessory.context.config.doorbell) {
       if (!service) {
         this.log.debug('Adding doorbell service', this.accessory.displayName);
         service = this.accessory.addService(
@@ -62,4 +60,4 @@ class doorbellService {
   }
 }
 
-module.exports = doorbellService;
+module.exports = DoorbellService;
