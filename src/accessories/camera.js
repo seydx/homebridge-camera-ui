@@ -63,14 +63,14 @@ class Camera {
     }
 
     this.controller = new this.api.hap.CameraController({
-      cameraStreamCount: this.accessory.context.config.videoConfig.maxStreams || 2, // HomeKit requires at least 2 streams, but 1 is also just fine
+      cameraStreamCount: this.accessory.context.config.videoConfig.maxStreams || 2,
       delegate: this,
       streamingOptions: {
         supportedCryptoSuites: [this.api.hap.SRTPCryptoSuites.AES_CM_128_HMAC_SHA1_80],
         video: {
           resolutions: [
             [320, 180, 30],
-            [320, 240, 15], // Apple Watch requires this configuration
+            [320, 240, 15],
             [320, 240, 30],
             [480, 270, 30],
             [480, 360, 30],
@@ -90,8 +90,8 @@ class Camera {
           twoWayAudio: !!this.accessory.context.config.videoConfig.returnAudioTarget,
           codecs: [
             {
-              type: this.api.hap.AudioStreamingCodecType.AAC_ELD, //'AAC-eld'
-              samplerate: this.api.hap.AudioStreamingSamplerate.KHZ_16, //16
+              type: this.api.hap.AudioStreamingCodecType.AAC_ELD,
+              samplerate: this.api.hap.AudioStreamingSamplerate.KHZ_16,
               /*type: AudioStreamingCodecType.OPUS,
               samplerate: AudioStreamingSamplerate.KHZ_24*/
             },
@@ -104,7 +104,7 @@ class Camera {
               prebufferLength: 4000,
               mediaContainerConfiguration: [
                 {
-                  type: this.api.hap.MediaContainerType.FRAGMENTED_MP4, // H264
+                  type: this.api.hap.MediaContainerType.FRAGMENTED_MP4,
                   fragmentLength: 4000,
                 },
               ],
@@ -124,7 +124,7 @@ class Camera {
                 },
                 resolutions: [
                   [320, 180, 30],
-                  [320, 240, 15], // Apple Watch requires this configuration
+                  [320, 240, 15],
                   [320, 240, 30],
                   [480, 270, 30],
                   [480, 360, 30],
