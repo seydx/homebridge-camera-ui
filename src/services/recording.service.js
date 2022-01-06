@@ -283,7 +283,7 @@ class RecordingDelegate {
 
     if (this.session) {
       this.session.socket?.destroy();
-      this.session.cp?.kill();
+      this.session.cp?.kill('SIGKILL');
 
       this.session = undefined;
     }

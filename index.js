@@ -5,6 +5,7 @@
  * @author SeydX <seydx@outlook.de>
  *
  **/
+'use-strict';
 
 module.exports = (homebridge) => {
   const HomebridgeCameraUi = require('./src/platform')(homebridge);

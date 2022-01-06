@@ -257,18 +257,33 @@ class Camera {
   fetchSnapshot(snapFilter) {
     // eslint-disable-next-line no-async-promise-executor, no-unused-vars
     this.snapshotPromise = new Promise(async (resolve, reject) => {
-      const startTime = Date.now();
-
-      let input =
-        this.accessory.context.config.videoConfig.stillImageSource || this.accessory.context.config.videoConfig.source;
-
       const atHome = await this.getPrivacyState();
 
       if (atHome) {
         return resolve(privacyImageInBytes);
       }
 
-      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error', ...input.split(/\s+/), '-frames:v', '1'];
+      let cachedSnapshot;
+      let input = this.accessory.context.config.videoConfig.source.split(/\s+/);
+
+      const startTime = Date.now();
+      const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
+
+      if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
+        try {
+          input = await controller.prebuffer.getVideo();
+        } catch {
+          // ignore
+        }
+      }
+
+      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error'];
+
+      if (cachedSnapshot) {
+        ffmpegArguments.push('-f', '-mpegts');
+      }
+
+      ffmpegArguments.push(...input, '-frames:v', '1');
 
       if (snapFilter) {
         ffmpegArguments.push('-filter:v', ...snapFilter.split(/\s+/));
@@ -304,14 +319,15 @@ class Camera {
       ffmpeg.stderr.on('data', (data) => errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, '')));
 
       ffmpeg.on('close', () => {
-        if (errors.length > 0) {
-          this.log.error(errors.join(' - '), this.accessory.displayName, 'Homebridge');
-        }
-
         if (snapshotBuffer.length > 0) {
           resolve(snapshotBuffer);
         } else {
           this.log.error('Failed to fetch snapshot. Showing "offline" image instead.', this.accessory.displayName);
+
+          if (errors.length > 0) {
+            this.log.error(errors.join(' - '), this.accessory.displayName, 'Homebridge');
+          }
+
           this.snapshotPromise = undefined;
           return resolve(offlineImageInBytes);
         }
@@ -806,13 +822,17 @@ class Camera {
       }
 
       try {
-        if (session.socket) session.socket.close();
+        if (session.socket) {
+          session.socket.close();
+        }
       } catch (error) {
         this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName, 'Homebridge');
       }
 
       try {
-        if (session.mainProcess) session.mainProcess.stop();
+        if (session.mainProcess) {
+          session.mainProcess.stop();
+        }
       } catch (error) {
         this.log.error(
           `Error occurred terminating main FFmpeg process: ${error}`,
@@ -822,7 +842,9 @@ class Camera {
       }
 
       try {
-        if (session.returnProcess) session.returnProcess.stop();
+        if (session.returnProcess) {
+          session.returnProcess.stop();
+        }
       } catch (error) {
         this.log.error(
           `Error occurred terminating two-way FFmpeg process: ${error}`,

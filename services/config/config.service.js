@@ -162,7 +162,7 @@ class ConfigSetup {
               'The stillImageSource for this camera is missing "-i", it is likely misconfigured.',
               camera.name
             );
-            camera.videoConfig.stillImageSource = false;
+            camera.videoConfig.stillImageSource = camera.videoConfig.source;
           }
         } else {
           camera.videoConfig.stillImageSource = camera.videoConfig.source;
