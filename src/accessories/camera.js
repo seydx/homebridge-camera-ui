@@ -263,9 +263,7 @@ class Camera {
         return resolve(privacyImageInBytes);
       }
 
-      let cachedSnapshot;
       let input = this.accessory.context.config.videoConfig.source.split(/\s+/);
-
       const startTime = Date.now();
       const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
 
@@ -277,13 +275,7 @@ class Camera {
         }
       }
 
-      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error'];
-
-      if (cachedSnapshot) {
-        ffmpegArguments.push('-f', '-mpegts');
-      }
-
-      ffmpegArguments.push(...input, '-frames:v', '1');
+      const ffmpegArguments = ['-hide_banner', '-loglevel', 'error', ...input, '-frames:v', '1'];
 
       if (snapFilter) {
         ffmpegArguments.push('-filter:v', ...snapFilter.split(/\s+/));
