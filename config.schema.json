@@ -222,8 +222,8 @@
           "motionTimeout": {
             "title": "Automatic Motion Reset (Seconds)",
             "type": "integer",
-            "placeholder": 1,
-            "minimum": 0,
+            "placeholder": 15,
+            "minimum": 15,
             "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP. This will also affect the interface timeout."
           },
           "motionDoorbell": {
@@ -256,6 +256,11 @@
                 "placeholder": "-i rtsp://username:password@example.com:554",
                 "required": true,
                 "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL."
+              },
+              "subSource": {
+                "title": "Video Substream Source (WIP)",
+                "type": "string",
+                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis."
               },
               "stillImageSource": {
                 "title": "Still Image Source",
@@ -468,6 +473,18 @@
                 "description": "The message to watch for to trigger doorbell alerts. Will use the name of the camera if blank."
               }
             }
+          },
+          "videoanalysis": {
+            "title": "Video Analysis (WIP)",
+            "type": "object",
+            "properties": {
+              "active": {
+                "title": "Active",
+                "description": "Activates Video Analysis for motion detection. (Prebuffer needs to be enabled for video analysis to work)",
+                "type": "boolean",
+                "default": false
+              }
+            }
           }
         }
       }
@@ -526,6 +543,7 @@
               "expanded": false,
               "items": [
                 "cameras[].videoConfig.source",
+                "cameras[].videoConfig.subSource",
                 "cameras[].videoConfig.stillImageSource",
                 "cameras[].videoConfig.maxStreams",
                 "cameras[].videoConfig.maxWidth",
@@ -592,6 +610,14 @@
                 "cameras[].mqtt.doorbellTopic",
                 "cameras[].mqtt.doorbellMessage"
               ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Video Analysis",
+              "expandable": true,
+              "expanded": false,
+              "items": ["cameras[].videoanalysis.active"]
             }
           ]
         }

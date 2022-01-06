@@ -60,6 +60,7 @@
           "prebuffering": true,
           "videoConfig": {
             "source": "-i rtsp://192.168.123.1/stream",
+            "subSource": "-i rtsp://192.168.123.1/lowres/stream",
             "stillImageSource": "-i rtsp://192.168.123.1/stream",
             "readRate": false,
             "rtspTransport": "udp",
@@ -81,6 +82,9 @@
             "motionMessage": "ON",
             "motionResetTopic": "livingroom/motion",
             "motionResetMessage": "OFF"
+          },
+          "videoanalysis": {
+            "active": true
           }
         },
         {

@@ -146,7 +146,7 @@ class ConfigSetup {
 
   _cameras() {
     const cameras = (this.config.cameras || [])
-      .filter((camera) => camera.name && camera.videoConfig && camera.videoConfig.source)
+      .filter((camera) => camera.name && camera.videoConfig?.source)
       .map((camera) => {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
 
@@ -166,6 +166,16 @@ class ConfigSetup {
           }
         } else {
           camera.videoConfig.stillImageSource = camera.videoConfig.source;
+        }
+
+        if (camera.videoConfig.subSource) {
+          const stillArguments = camera.videoConfig.subSource.split(/\s+/);
+          if (!stillArguments.includes('-i')) {
+            logger.warn('The subSource for this camera is missing "-i", it is likely misconfigured.', camera.name);
+            camera.videoConfig.subSource = camera.videoConfig.source;
+          }
+        } else {
+          camera.videoConfig.subSource = camera.videoConfig.source;
         }
 
         // min motionTimeout
