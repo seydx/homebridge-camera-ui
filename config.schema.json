@@ -249,9 +249,9 @@
           "prebufferLength": {
             "title": "Prebuffer Length",
             "type": "integer",
-            "placeholder": 4,
+            "default": 4,
             "minimum": 4,
-            "maximum": 10,
+            "maximum": 8,
             "description": "The length of the requested prebuffered video (s)"
           },
           "videoConfig": {
