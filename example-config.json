@@ -58,6 +58,7 @@
           "unbridge": true,
           "hsv": true,
           "prebuffering": true,
+          "prebufferLength": 8,
           "videoConfig": {
             "source": "-i rtsp://192.168.123.1/stream",
             "subSource": "-i rtsp://192.168.123.1/lowres/stream",
