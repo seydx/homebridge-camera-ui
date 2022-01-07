@@ -246,6 +246,14 @@
             "type": "boolean",
             "description": "Enables camera video prebuffering."
           },
+          "prebufferLength": {
+            "title": "Prebuffer Length",
+            "type": "integer",
+            "placeholder": 4,
+            "minimum": 4,
+            "maximum": 10,
+            "description": "The length of the requested prebuffered video (s)"
+          },
           "videoConfig": {
             "title": "Video Configuration",
             "type": "object",
@@ -527,6 +535,7 @@
             "cameras[].unbridge",
             "cameras[].hsv",
             "cameras[].prebuffering",
+            "cameras[].prebufferLength",
             {
               "key": "cameras[]",
               "type": "section",

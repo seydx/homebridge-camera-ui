@@ -101,7 +101,7 @@ class Camera {
       recording: this.accessory.context.config.hsv
         ? {
             options: {
-              prebufferLength: 4000,
+              prebufferLength: this.accessory.context.config.prebufferLength, // prebufferLength always remains 4s ?
               mediaContainerConfiguration: [
                 {
                   type: this.api.hap.MediaContainerType.FRAGMENTED_MP4,
@@ -460,21 +460,68 @@ class Camera {
     callback(undefined, response);
   }
 
-  async startStream(request, callback, allowStream) {
+  async startStream(request, callback) {
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     const sessionInfo = this.pendingSessions.get(request.sessionID);
 
     if (sessionInfo) {
-      const vcodec = this.accessory.context.config.videoConfig.vcodec || 'libx264';
-      const mtu = this.accessory.context.config.videoConfig.packetSize || 1316; // request.video.mtu is not used
+      let inputChanged = false;
+      let prebufferInput = false;
 
-      let encoderOptions = this.accessory.context.config.videoConfig.encoderOptions;
+      let ffmpegInput = cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/);
 
-      if (!encoderOptions && vcodec === 'libx264') {
-        encoderOptions = '-preset ultrafast -tune zerolatency';
+      const allowStream = controller ? controller.session.requestSession() : true;
+
+      if (!allowStream) {
+        // maxStream reached
+        ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
+        inputChanged = true;
+      } else if (!(await this.pingCamera())) {
+        // camera offline
+        ffmpegInput = ['-re', '-loop', '1', '-i', offlineImage];
+        inputChanged = true;
+      } else if (await this.getPrivacyState()) {
+        // privacy mode enabled
+        ffmpegInput = ['-re', '-loop', '1', '-i', privacyImage];
+        inputChanged = true;
+      } else {
+        // prebuffer
+        if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
+          try {
+            this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
+
+            ffmpegInput = await controller.prebuffer.getVideo({
+              container: 'mpegts',
+            });
+
+            prebufferInput = true;
+          } catch (error) {
+            this.log.warn(
+              `Can not access prebuffer stream, skipping: ${error}`,
+              this.accessory.displayName,
+              'Homebridge'
+            );
+          }
+        }
+      }
+
+      let audioSourceFound = controller?.media.codecs.audio.length;
+
+      if (!audioSourceFound) {
+        if (this.accessory.context.config.videoConfig.audio) {
+          this.log.debug(
+            'Replacing audio with a dummy track, audio source not found or timed out during probe stream (stream)',
+            this.accessory.displayName,
+            'Homebridge'
+          );
+        }
+
+        ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
       }
 
       const resolution = this.determineResolution(request.video, false);
+      const vcodec = this.accessory.context.config.videoConfig.vcodec || 'libx264';
+      const mtu = this.accessory.context.config.videoConfig.packetSize || 1316; // request.video.mtu is not used
 
       let fps =
         this.accessory.context.config.videoConfig.maxFPS !== undefined &&
@@ -490,18 +537,17 @@ class Camera {
           ? this.accessory.context.config.videoConfig.maxBitrate
           : request.video.max_bit_rate;
 
+      let encoderOptions =
+        this.accessory.context.config.videoConfig.encoderOptions || '-preset ultrafast -tune zerolatency';
+
       if (vcodec === 'copy') {
         resolution.width = 0;
         resolution.height = 0;
         resolution.videoFilter = undefined;
         fps = 0;
         videoBitrate = 0;
+        encoderOptions = undefined;
       }
-
-      this.log.debug(
-        `Video stream requested: ${request.video.width}x${request.video.height}, ${request.video.fps} fps, ${request.video.max_bit_rate} kbps`,
-        this.accessory.displayName
-      );
 
       this.log.info(
         `Starting video stream: ${resolution.width > 0 ? resolution.width : 'native'}x${
@@ -512,58 +558,6 @@ class Camera {
         this.accessory.displayName
       );
 
-      let ffmpegInput = cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/);
-      let prebufferInput = null;
-
-      if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
-        try {
-          this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
-
-          const containerInput = await controller.prebuffer.getVideo({
-            container: 'mpegts',
-          });
-
-          ffmpegInput = prebufferInput = containerInput;
-        } catch (error) {
-          this.log.warn(
-            `Can not access prebuffer stream, skipping: ${error}`,
-            this.accessory.displayName,
-            'Homebridge'
-          );
-        }
-      }
-
-      let audioSourceFound = controller?.media.codecs.audio.length;
-
-      if (!audioSourceFound) {
-        this.log.warn(
-          'Replacing audio with a dummy track, audio source not found or timed out during probe stream (stream)',
-          this.accessory.displayName,
-          'Homebridge'
-        );
-
-        ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
-        this.accessory.context.config.videoConfig.audio = true;
-      }
-
-      if (!allowStream) {
-        ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
-      } else {
-        const cameraStatus = await this.pingCamera();
-        const atHome = await this.getPrivacyState();
-
-        if (!cameraStatus) {
-          ffmpegInput = ['-re', '-loop', '1', '-i', offlineImage];
-        } else if (atHome) {
-          ffmpegInput = ['-re', '-loop', '1', '-i', privacyImage];
-        }
-      }
-
-      const inputChanged = Boolean(
-        ffmpegInput.join(' ') !== this.accessory.context.config.videoConfig.source &&
-          ffmpegInput.join(' ') !== prebufferInput.join(' ')
-      );
-
       const ffmpegArguments = [
         '-hide_banner',
         '-loglevel',
@@ -571,7 +565,7 @@ class Camera {
         ...ffmpegInput,
       ];
 
-      if (this.accessory.context.config.videoConfig.mapvideo) {
+      if (!inputChanged && !prebufferInput && this.accessory.context.config.videoConfig.mapvideo) {
         ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapvideo.split(/\s+/));
       } else {
         ffmpegArguments.push('-an', '-sn', '-dn');
@@ -623,10 +617,7 @@ class Camera {
           request.audio.codec === this.api.hap.AudioStreamingCodecType.OPUS ||
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
         ) {
-          if (
-            this.accessory.context.config.videoConfig.mapaudio &&
-            ffmpegInput.join(' ') !== prebufferInput.join(' ')
-          ) {
+          if (this.accessory.context.config.videoConfig.mapaudio && !prebufferInput) {
             ffmpegArguments.push('-map', ...this.accessory.context.config.videoConfig.mapaudio.split(/\s+/));
           } else {
             ffmpegArguments.push('-vn', '-sn', '-dn');
@@ -773,39 +764,7 @@ class Camera {
     }
   }
 
-  handleStreamRequest(request, callback) {
-    switch (request.type) {
-      case 'start': {
-        let allowStream = true;
-
-        const controller = this.cameraUi.cameraController.get(this.cameraName);
-
-        if (controller && controller.session) {
-          allowStream = controller.session.requestSession();
-        }
-
-        this.startStream(request, callback, allowStream);
-        break;
-      }
-
-      case 'reconfigure': {
-        this.log.debug(
-          `Received request to reconfigure: ${request.video.width}x${request.video.height}, ${request.video.fps} fps, ${request.video.max_bit_rate} kbps (Ignored)`,
-          this.accessory.displayName
-        );
-        callback();
-        break;
-      }
-
-      case 'stop': {
-        this.stopStream(request.sessionID);
-        callback();
-        break;
-      }
-    }
-  }
-
-  stopStream(sessionId) {
+  stopStream(sessionId, callback) {
     const session = this.ongoingSessions.get(sessionId);
 
     if (session) {
@@ -814,17 +773,13 @@ class Camera {
       }
 
       try {
-        if (session.socket) {
-          session.socket.close();
-        }
+        session.socket?.close();
       } catch (error) {
         this.log.error(`Error occurred closing socket: ${error}`, this.accessory.displayName, 'Homebridge');
       }
 
       try {
-        if (session.mainProcess) {
-          session.mainProcess.stop();
-        }
+        session.mainProcess?.stop();
       } catch (error) {
         this.log.error(
           `Error occurred terminating main FFmpeg process: ${error}`,
@@ -834,9 +789,7 @@ class Camera {
       }
 
       try {
-        if (session.returnProcess) {
-          session.returnProcess.stop();
-        }
+        session.returnProcess?.stop();
       } catch (error) {
         this.log.error(
           `Error occurred terminating two-way FFmpeg process: ${error}`,
@@ -847,13 +800,43 @@ class Camera {
 
       this.ongoingSessions.delete(sessionId);
 
-      const controller = this.cameraUi.cameraController.get(this.cameraName);
-
-      if (controller && controller.session) {
-        controller.session.closeSession();
-      }
+      const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
+      controller?.session.closeSession();
 
       this.log.info('Stopped video stream.', this.accessory.displayName);
+    }
+
+    callback();
+  }
+
+  handleStreamRequest(request, callback) {
+    switch (request.type) {
+      case 'start': {
+        this.log.debug(
+          `Start stream requested: ${request.video.width}x${request.video.height}, ${request.video.fps} fps, ${request.video.max_bit_rate} kbps`,
+          this.accessory.displayName
+        );
+
+        this.startStream(request, callback);
+        break;
+      }
+
+      case 'reconfigure': {
+        this.log.debug(
+          `Reconfigure stream requested: ${request.video.width}x${request.video.height}, ${request.video.fps} fps, ${request.video.max_bit_rate} kbps (Ignored)`,
+          this.accessory.displayName
+        );
+
+        callback();
+        break;
+      }
+
+      case 'stop': {
+        this.log.debug('Stop stream requested', this.accessory.displayName);
+
+        this.stopStream(request.sessionID, callback);
+        break;
+      }
     }
   }
 
@@ -887,9 +870,8 @@ class Camera {
 
     try {
       state = await Ping.status(this.accessory.context.config, 1);
-    } catch (error) {
-      this.log.info('An error occured during pinging camera, skipping..', this.accessory.displayName);
-      this.log.error(error, this.accessory.displayName, 'Homebridge');
+    } catch {
+      // ignore
     }
 
     return state;

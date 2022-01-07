@@ -28,6 +28,8 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
   - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
 - **Prebuffering**
   - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 4 seconds to see the event BEFORE the movement. When HSV is enabled, the duration of the recording is completely determined by Apple Home.
+- **Videoanalysis**
+  - Motion detection system through camera.ui. Finally you can include cameras that can not detect motion, or simply was not compatible with camera.ui. The system is very resource efficient, accurate and very fast.
 - **Notifications**
   - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
   - The notifications have been completely reworked, now also system internal errors/warnings are displayed in the notifications page

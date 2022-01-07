@@ -181,6 +181,10 @@ class ConfigSetup {
         // min motionTimeout
         camera.motionTimeout = camera.motionTimeout >= 15 ? camera.motionTimeout : 15;
 
+        // validate prebufferLength
+        camera.prebufferLength =
+          (camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4) * 1000;
+
         return camera;
       })
       .filter((camera) => camera.videoConfig && camera.videoConfig.source);

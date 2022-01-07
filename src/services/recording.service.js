@@ -37,17 +37,16 @@ class RecordingDelegate {
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
-    const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
-
     let ffmpegInput = [...cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/)];
 
+    const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
       try {
         this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
 
         const input = await controller.prebuffer.getVideo({
           container: 'mp4',
-          prebuffer: 4000,
+          prebuffer: this.accessory.context.config.prebufferLength,
         });
 
         ffmpegInput = [...input];
@@ -143,8 +142,6 @@ class RecordingDelegate {
         audioArguments.push('-bsf:a', 'aac_adtstoasc', '-acodec', 'copy');
       }
     } else {
-      //ffmpegInput.unshift('-thread_queue_size', '1024');
-      //ffmpegInput.push('-f', 'lavfi', '-thread_queue_size', '1024', '-i', 'anullsrc=cl=1', '-shortest');
       audioArguments.push('-an');
     }
 
