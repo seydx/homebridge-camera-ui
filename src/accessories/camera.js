@@ -764,7 +764,7 @@ class Camera {
     }
   }
 
-  stopStream(sessionId, callback) {
+  stopStream(sessionId) {
     const session = this.ongoingSessions.get(sessionId);
 
     if (session) {
@@ -805,8 +805,6 @@ class Camera {
 
       this.log.info('Stopped video stream.', this.accessory.displayName);
     }
-
-    callback();
   }
 
   handleStreamRequest(request, callback) {
@@ -834,7 +832,8 @@ class Camera {
       case 'stop': {
         this.log.debug('Stop stream requested', this.accessory.displayName);
 
-        this.stopStream(request.sessionID, callback);
+        this.stopStream(request.sessionID);
+        callback();
         break;
       }
     }

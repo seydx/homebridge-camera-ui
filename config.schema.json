@@ -246,6 +246,11 @@
             "type": "boolean",
             "description": "Enables camera video prebuffering."
           },
+          "forcePrebuffering": {
+            "title": "Force Prebuffering",
+            "type": "boolean",
+            "description": "For cameras without a H264 stream. If set, camera.ui will start prebuffering with reencoding the stream. Caution: This will lead to a higher CPU load!"
+          },
           "prebufferLength": {
             "title": "Prebuffer Length",
             "type": "integer",
@@ -523,18 +528,17 @@
       "title": "Cameras",
       "expandable": true,
       "expanded": false,
-      "orderable": false,
       "items": [
         {
           "key": "cameras",
-          "type": "array",
-          "orderable": false,
-          "buttonText": "Add Camera",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new Camera' }}",
           "items": [
             "cameras[].name",
             "cameras[].unbridge",
             "cameras[].hsv",
             "cameras[].prebuffering",
+            "cameras[].forcePrebuffering",
             "cameras[].prebufferLength",
             {
               "key": "cameras[]",
