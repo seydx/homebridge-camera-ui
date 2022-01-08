@@ -99,6 +99,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - Fixed an issue where sending multiple telegram messages could cause an error
 - Fixed an issue where `resetting` the motion detection caused the interface to treat it as normal motion detection
 - Fixed an issue where the cache not reloaded automatically after restart
+- Fixed an issue where pinging camera source failed
 - Fixed test cases
 - Minor bugfixes
 
