@@ -436,13 +436,11 @@
       "title": "Cameras",
       "expandable": true,
       "expanded": false,
-      "orderable": false,
       "items": [
         {
           "key": "cameras",
-          "type": "array",
-          "orderable": false,
-          "buttonText": "Add Camera",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new camera' }}",
           "items": [
             "cameras[].name",
             "cameras[].videoConfig.source",
