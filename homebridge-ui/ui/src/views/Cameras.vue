@@ -2,7 +2,7 @@
 .tw-mt-5.tw-w-full
   v-progress-circular(indeterminate color="var(--cui-primary)" v-if="loading")
   div(v-else-if="cameras.length")
-    v-expansion-panels(v-model="cameraPanel" multiple accordion)
+    v-expansion-panels(v-model="cameraPanel" accordion)
       v-expansion-panel(v-for="(camera, index) in cameras" :key="camera.name" @click="showCamera($event, camera.name)")
         v-expansion-panel-header {{ camera.name }}
         v-expansion-panel-content
@@ -74,8 +74,6 @@ export default {
     },
 
     preparePlayer(cameraName) {
-      console.log(this.$refs);
-
       this.player = new JSMpeg.Player(null, {
         source: JSMpegWritableSource,
         canvas: this.$refs[cameraName][0],

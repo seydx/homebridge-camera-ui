@@ -271,7 +271,7 @@
                 "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL."
               },
               "subSource": {
-                "title": "Video Substream Source (WIP)",
+                "title": "Video Substream Source",
                 "type": "string",
                 "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis."
               },
@@ -330,7 +330,7 @@
                 "description": "When receiving data over UDP, the demuxer tries to reorder received packets (since they may arrive out of order, or packets may get lost totally). This can be disabled by setting the maximum demuxing delay to zero (-max_delay)."
               },
               "returnAudioTarget": {
-                "title": "Two-way Audio Target (EXPERIMENTAL - WIP)",
+                "title": "Two-way Audio Target (EXPERIMENTAL)",
                 "type": "string",
                 "description": "The FFmpeg output command for directing audio back to a two-way capable camera. This feature is still in development and a configuration that works today may not work in the future."
               },
@@ -488,7 +488,7 @@
             }
           },
           "videoanalysis": {
-            "title": "Video Analysis (WIP)",
+            "title": "Video Analysis",
             "type": "object",
             "properties": {
               "active": {
