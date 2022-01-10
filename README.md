@@ -56,7 +56,14 @@ sudo npm install -g homebridge-camera-ui@latest
     - [Notifications](#notifications)
     - [Settings](#settings)
   - [HomeKit Secure Video (HSV)](#homekit-secure-video-hsv)
+  - [Motion detection](#motion-detection)
+    - [Videoanalysis](#videoanalysis)
+    - [HTTP](#http)
+    - [MQTT](#mqtt)
+    - [SMTP](#smtp)
+    - [FTP](#ftp)
   - [Image Rekognition](#image-rekognition)
+  - [Notifications](#notifications-1)
   - [Supported clients](#supported-clients)
     - [What you need for HomeKit Secure Video](#what-you-need-for-homekit-secure-video)
     - [Browser](#browser)
@@ -132,6 +139,71 @@ When the plugin is used with HSV, all recordings from HomeKit Secure Video are a
 
 [How to configure cameras for HSV](https://support.apple.com/guide/iphone/configure-cameras-iph7bc5df9d9/ios)
 
+## Motion detection
+
+camera.ui offers a variety of options to detect and process motion.
+
+### Videoanalysis
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/videoanalysis.png" align="center" alt="camera.ui">
+
+With this option camera.ui connects to the stream and compares frame by frame if there are changes. The zones and sensitivity can be set in the interface.
+
+### HTTP
+
+If the HTTP server is enabled for motion detection, calling the link can easily trigger motion.
+
+Example:
+
+`http://localhost:8123/motion?My+Camera`
+
+
+### MQTT
+
+If you have set up the MQTT client (Settings > System > MQTT), you can set the required parameters such as "Motion Topic", "Message" etc. via the interface (Settings > Cameras > MQTT).
+
+**Motion Topic**: The MQTT topic to watch for motion alerts. The topic (prefix/suffix) should be unique, it will be used to assign the motion detected message to the desired camera.
+
+**Motion Message**: The message to watch for to trigger motion alerts.
+
+The message can be a simple "string" (e.g. "ON"/"OFF) or a JSON object. If the MQTT message is a JSON object like:
+
+```json
+{
+  "id": "test",
+  "event": {
+    "time": 1234567890,
+    "state": true,
+  }
+}
+```
+
+Then define the exact parameter under "Motion Message" so that camera.ui can read from it, eg:
+
+```json
+"motionMessage": {
+  "event": {
+    "state": true
+  }
+}
+```
+
+### SMTP
+
+If the SMTP server is turned on and your camera is able to send an email when motion is detected, you can easily trigger motion through it, eg:
+
+`From: My+Camera@camera.ui`
+`To: My+Camera@camera.ui`
+
+Please note that the camera.ui SMTP server is set in the camera settings (ip/port).
+
+### FTP
+
+If your camera is able to upload an image when motion is detected, then you can select the camera.ui FTP server as the destination. Very important here is. The path you enter via the camera's own settings page must be the camera name as defined in config.
+
+Every time the camera tries to connect to the server, the camera.ui detects and takes the entered path to determine the camera.
+
+
 ## Image Rekognition
 
 If HomeKit Secure Video (HSV) is disabled, camera.ui also uses image rekognition with Amazon Web Services to analyse, detect, remember and recognize objects, scenes, and faces in images. You can enable for each camera the image rekogniton and you can even set labels for each camera. For each object, scene, and concept the API returns one or more labels. Each label provides the object name. For example, suppose the input image has a lighthouse, the sea, and a rock. The response includes all three labels, one for each object.
@@ -139,6 +211,21 @@ If HomeKit Secure Video (HSV) is disabled, camera.ui also uses image rekognition
 This makes it possible to analyze every movement before this is stored or sent as a notification.
 
 To use image rekognition, you need to set up a AWS account with an IAM user. More Infos: [AWS Image Rekognition](https://aws.amazon.com/rekognition/?nc1=h_ls&blog-cards.sort-by=item.additionalFields.createdDate&blog-cards.sort-order=desc)
+
+## Notifications
+
+camera.ui supports numerous notification options. Each of them can be conveniently set via the interface.
+
+Since push notifications only work conditionally for websites (see PWA), you can easily work around this via third-party providers.
+
+These would be e.g.
+
+- Telegram
+- Webhook
+- Alexa
+- Third party providers that support Alexa
+
+Via Telegram, you even have the option to send picture or video along with text messages.
 
 ## Supported clients
 
@@ -170,7 +257,6 @@ The following browsers are supported by this plugin:
 - iOS - 2 most recent major versions
 
 _MS Internet Explorer (any version) is not supported!_
-
 
 ## Supported Cameras
 
