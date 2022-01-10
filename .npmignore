@@ -68,4 +68,7 @@ yarn.lock
 # dotenv environment variables file
 .envtest/
 homebridge-ui/ui
+test.js
 hsv_videos
+diverses
+alexa
