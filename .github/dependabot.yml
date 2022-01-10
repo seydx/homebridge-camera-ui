@@ -12,4 +12,4 @@ updates:
 - package-ecosystem: npm
   directory: "/homebridge-ui/ui"
   ignore:
-    - dependency-name: 'post-css'
+    - dependency-name: 'postcss'
