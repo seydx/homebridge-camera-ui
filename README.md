@@ -175,6 +175,8 @@ On the settings page you can make ALL settings regarding your config.json and da
 
 ## HomeKit Secure Video (HSV)
 
+> HSV requires a Homebridge version of at least 1.4.0-beta.4 or higher. Otherwise HSV will not be enabled.
+
 When the plugin is used with HSV, all recordings from HomeKit Secure Video are automatically transferred to camera.ui as well and stored for them. All camera.ui features like WebPush, Telegram notifications etc. will still work with HSV.
 
 [How to configure cameras for HSV](https://support.apple.com/guide/iphone/configure-cameras-iph7bc5df9d9/ios)
