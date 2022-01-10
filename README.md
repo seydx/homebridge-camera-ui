@@ -49,11 +49,15 @@ sudo npm install -g homebridge-camera-ui@latest
   - [Defaults](#defaults)
   - [Example Config (minimal)](#example-config-minimal)
   - [Usage](#usage)
-    - [Login](#login)
     - [Dashboard](#dashboard)
-    - [Camview](#camview)
+    - [Cameras](#cameras)
+    - [Camera](#camera)
     - [Recordings](#recordings)
     - [Notifications](#notifications)
+    - [Camview](#camview)
+    - [Log](#log)
+    - [Config](#config)
+    - [Utilization](#utilization)
     - [Settings](#settings)
   - [HomeKit Secure Video (HSV)](#homekit-secure-video-hsv)
   - [Motion detection](#motion-detection)
@@ -109,29 +113,65 @@ For a full config.json, please look at [Example Config](https://github.com/SeydX
 
 ## Usage
 
- ### Login
+### Dashboard
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/login_white.png" align="center" alt="camera.ui">
+The Dashboard is the main page of the interface and offers a variety of widgets to customize it as you like. The widgets will expand over time. At the moment the following widgets are available for the dashboard:  Time, Weather, Uptime, Camera, Notifications, RSS Feed, Status, Charts (CPU Load, CPU Temperature, Memory Load), Shortcuts and Log
 
- ### Dashboard
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/dashboard.png" align="center" alt="camera.ui">
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/dashboard_white.png" align="center" alt="camera.ui">
+### Cameras
 
- ### Camview
+Here are all cameras listed by room and show the current snapshot as a cover sheet
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/camviews.gif" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/cameras.png" align="center" alt="camera.ui">
 
- ### Recordings
+### Camera
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/recordings_white.png" align="center" alt="camera.ui">
+If you select a camera you can watch the livestream directly in the browser. With the camera.ui player you can pause the stream, turn audio on/off or reload the stream.
 
- ### Notifications
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/camera.png" align="center" alt="camera.ui">
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/nots_white.png" align="center" alt="camera.ui">
+### Recordings
 
- ### Settings
+All images or videos recorded by motion are listed here. If AWS Rekognition is used, the label for the recording is also displayed, as well as the date and time. Using the filter function, the recordings can be filtered as desired
 
-<img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/browser/settings_white.png" align="center" alt="camera.ui">
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/recordings.png" align="center" alt="camera.ui">
+
+### Notifications
+
+All motion events as well as system messages can be viewed here. Each notification has one or more labels to better catagorize them. The filter function can also be used to filter the notifications as desired.
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/notifications.png" align="center" alt="camera.ui">
+
+### Camview
+
+Camview displays all camera streams in tiles, hiding everything unnecessary. Camview is great for giving a direct insight into the cameras. Also here the streams can be paused by the camera.ui video player, audio can be switched on/off, streams can be reloaded or viewed in full mode.
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/camview.png" align="center" alt="camera.ui">
+
+### Log
+
+All events that occur in the backend can be monitored via the built-in log. In addition, the log can be also be cleared or downloaded here.
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/console.png" align="center" alt="camera.ui">
+
+### Config
+
+Using the built-in editor you can easily edit your config.json. In addition, any errors are immediately displayed and thus avoided to save a faulty config.json
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/config.png" align="center" alt="camera.ui">
+
+### Utilization
+
+"Utilization" shows you a graphical overview of the system utilization.  Here you can see in real time how high the CPU utilization is, how high the CPU temperature is and how much memory is still free.
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/utilization.png" align="center" alt="camera.ui">
+
+### Settings
+
+On the settings page you can make ALL settings regarding your config.json and database. All parameters defined in config.json are directly configurable from this page. If camera.ui runs via "Homebridge" you can also set Homebridge relevant parameters here.
+
+<img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/settings.png" align="center" alt="camera.ui">
 
 ## HomeKit Secure Video (HSV)
 
