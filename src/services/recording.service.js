@@ -89,7 +89,7 @@ class RecordingDelegate {
           );
           acodec = 'libfdk_aac';
           //vcodec = vcodec === 'copy' ? 'libx264' : vcodec;
-        } else if (!incompatibleAudio && acodec !== 'copy') {
+        } else if (!incompatibleAudio && !acodec) {
           this.log.debug('Compatible audio stream detected, copying..');
           acodec = 'copy';
         }
