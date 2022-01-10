@@ -1,5 +1,10 @@
 # Changelog
 
+# v5.0.1 - 2022-01-10
+
+## Other changes
+- Bump dependencies
+
 # v5.0.0 - 2022-01-10
 
 Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui including a completely redesigned user interface
