@@ -472,13 +472,7 @@ class Camera {
       const videoConfig = cameraUtils.generateVideoConfig(this.accessory.context.config.videoConfig);
       let ffmpegInput = cameraUtils.generateInputSource(videoConfig).split(/\s+/);
 
-      const allowStream = controller ? controller.session.requestSession() : true;
-
-      if (!allowStream) {
-        // maxStream reached
-        ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
-        inputChanged = true;
-      } else if (!(await this.pingCamera())) {
+      if (!(await this.pingCamera())) {
         // camera offline
         ffmpegInput = ['-re', '-loop', '1', '-i', offlineImage];
         inputChanged = true;
@@ -504,6 +498,16 @@ class Camera {
               'Homebridge'
             );
           }
+        }
+      }
+
+      if (!prebufferInput) {
+        const allowStream = controller ? controller.session.requestSession() : true;
+
+        if (!allowStream) {
+          // maxStream reached
+          ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
+          inputChanged = true;
         }
       }
 
