@@ -11,7 +11,7 @@
 [![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/kqNCe2D)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
-**homebridge-camera-iu** is allows you to expose cameras from camera.ui to HomeKit via Homebridge.
+**homebridge-camera-iu** is allows you to expose cameras from [camera.ui](https://github.com/seydx/camera.ui) to HomeKit via Homebridge. camera.ui does not need to be installed separately. It is installed right away with homebridge-camera-ui
 
 **camera.ui** is a NVR like PWA to control your RTSP capable cameras with:
 
