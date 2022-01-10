@@ -440,7 +440,7 @@
         {
           "key": "cameras",
           "type": "tabarray",
-          "title": "{{ value.name || 'new camera' }}",
+          "title": "{{ value.name || 'new Camera' }}",
           "items": [
             "cameras[].name",
             "cameras[].videoConfig.source",
