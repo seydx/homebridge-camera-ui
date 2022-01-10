@@ -2,10 +2,9 @@
 
 const { spawn } = require('child_process');
 const readline = require('readline');
+const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 
 const { Logger } = require('../../services/logger/logger.service');
-
-const muteErrors = ['no frame!', 'decode_slice_header', 'non-existing PPS 0 referenced'];
 
 class FfmpegProcess {
   constructor(cameraName, videoDebug, sessionId, videoProcessor, command, delegate, callback) {
@@ -43,14 +42,22 @@ class FfmpegProcess {
       terminal: false,
     });
 
+    const errors = [];
+
     stderr.on('line', (line) => {
       if (callback) {
         callback();
         callback = undefined;
       }
 
-      if (/\[(panic|fatal|error)]/.test(line) && muteErrors.some((key) => line.includes(key))) {
-        this.log.error(line, cameraName, 'Homebridge');
+      if (/\[(panic|fatal|error)]/.test(line)) {
+        errors.push(line);
+
+        if (!cameraUtils.ignoredFfmpegError(line)) {
+          this.log.error(line, cameraName, 'Homebridge');
+        } else {
+          this.log.debug(line, cameraName);
+        }
       } else if (videoDebug) {
         this.log.debug(line, cameraName);
       }
@@ -68,15 +75,16 @@ class FfmpegProcess {
 
     this.process.on('exit', (code, signal) => {
       const message = `FFmpeg exited with code: ${code} and signal: ${signal}`;
+      errors.unshift(`${message}`);
 
       if (code == undefined || code === 255) {
         if (this.process.killed) {
           this.log.debug(`${message} (Expected)`, cameraName);
         } else {
-          this.log.warn(`${message} (Unexpected)`, cameraName, 'Homebridge');
+          this.log.warn(errors.join(' - '), cameraName, 'Homebridge');
         }
       } else {
-        this.log.error(`${message} (Error)`, cameraName, 'Homebridge');
+        this.log.error(errors.join(' - '), cameraName, 'Homebridge');
 
         delegate.stopStream(sessionId);
 

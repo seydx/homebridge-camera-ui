@@ -4,7 +4,7 @@
 
 Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui including a completely redesigned user interface
 
-[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project (currently in beta/private repo). It has been completely decoupled from Homebridge and can also be used as a standalone app.
+[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project. It has been completely decoupled from Homebridge and can also be used as a standalone app.
 
 **homebridge-camera-ui** is the connection between camera.ui and homebridge and should give users a beautiful interface and HomeKit support.
 
@@ -29,7 +29,7 @@ If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_bla
 - **Prebuffering**
   - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 4 seconds to see the event BEFORE the movement. When HSV is enabled, the duration of the recording is completely determined by Apple Home.
 - **Videoanalysis**
-  - Motion detection system through camera.ui. Finally you can include cameras that can not detect motion, or simply was not compatible with camera.ui. The system is very resource efficient, accurate and very fast.
+  - Motion detection system through camera.ui. Finally you can include cameras that can not detect motion, or simply was not compatible with camera.ui. The system is very resource efficient, accurate and very fast. You can also configure zones and adjust the sensivity within camera.ui interface
 - **Notifications**
   - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
   - The notifications have been completely reworked, now also system internal errors/warnings are displayed in the notifications page

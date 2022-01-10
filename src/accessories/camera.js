@@ -39,6 +39,15 @@ class Camera {
 
     const recordingCodecs = [];
 
+    if (this.accessory.context.config.hsv && !this.api.versionGreaterOrEqual('1.4.0-beta.4')) {
+      this.log.warn(
+        'HSV cannot be activated. Not compatible Homebridge version detected! You must have at least v1.4.0-beta.4 installed!',
+        this.accessory.displayName,
+        'Homebridge'
+      );
+      this.accessory.context.config.hsv = false;
+    }
+
     if (this.accessory.context.config.hsv) {
       this.log.debug('Initializing HomeKit Secure Video', this.accessory.displayName);
 
@@ -525,17 +534,18 @@ class Camera {
 
       let fps =
         this.accessory.context.config.videoConfig.maxFPS !== undefined &&
-        (this.accessory.context.config.videoConfig.forceMax ||
-          request.video.fps > this.accessory.context.config.videoConfig.maxFPS)
+        this.accessory.context.config.videoConfig.forceMax
           ? this.accessory.context.config.videoConfig.maxFPS
           : request.video.fps;
 
       let videoBitrate =
         this.accessory.context.config.videoConfig.maxBitrate !== undefined &&
-        (this.accessory.context.config.videoConfig.forceMax ||
-          request.video.max_bit_rate > this.accessory.context.config.videoConfig.maxBitrate)
+        this.accessory.context.config.videoConfig.forceMax
           ? this.accessory.context.config.videoConfig.maxBitrate
           : request.video.max_bit_rate;
+
+      let bufsize = request.video.max_bit_rate * 2;
+      let maxrate = request.video.max_bit_rate;
 
       let encoderOptions =
         this.accessory.context.config.videoConfig.encoderOptions || '-preset ultrafast -tune zerolatency';
@@ -546,6 +556,8 @@ class Camera {
         resolution.videoFilter = undefined;
         fps = 0;
         videoBitrate = 0;
+        bufsize = 0;
+        maxrate = 0;
         encoderOptions = undefined;
       }
 
@@ -596,6 +608,14 @@ class Camera {
 
       if (videoBitrate > 0) {
         ffmpegArguments.push('-b:v', `${videoBitrate}k`);
+      }
+
+      if (bufsize > 0) {
+        ffmpegArguments.push('-bufsize', `${bufsize}k`);
+      }
+
+      if (maxrate > 0) {
+        ffmpegArguments.push('-maxrate', `${maxrate}k`);
       }
 
       ffmpegArguments.push(
