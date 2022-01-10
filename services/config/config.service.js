@@ -187,7 +187,7 @@ class ConfigSetup {
 
         return camera;
       })
-      .filter((camera) => camera.videoConfig && camera.videoConfig.source);
+      .filter((camera) => camera.videoConfig?.source);
 
     return cameras;
   }

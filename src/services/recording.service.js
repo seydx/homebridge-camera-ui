@@ -37,7 +37,8 @@ class RecordingDelegate {
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
-    let ffmpegInput = [...cameraUtils.generateInputSource(this.accessory.context.config.videoConfig).split(/\s+/)];
+    const videoConfig = cameraUtils.generateVideoConfig(this.accessory.context.config.videoConfig);
+    let ffmpegInput = [...cameraUtils.generateInputSource(videoConfig).split(/\s+/)];
 
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
     if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
@@ -58,10 +59,10 @@ class RecordingDelegate {
     const videoArguments = [];
     const audioArguments = [];
 
-    let acodec = this.accessory.context.config.videoConfig.acodec || 'libfdk_aac';
-    let vcodec = this.accessory.context.config.videoConfig.vcodec || 'libx264';
+    let acodec = videoConfig.acodec;
+    let vcodec = videoConfig.vcodec;
 
-    let audioEnabled = this.accessory.context.config.videoConfig.audio;
+    let audioEnabled = videoConfig.audio;
     let audioSourceFound = controller?.media.codecs.audio.length;
     let probeAudio = controller?.media.codecs.audio;
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
@@ -193,7 +194,7 @@ class RecordingDelegate {
 
     this.session = await cameraUtils.startFFMPegFragmetedMP4Session(
       this.accessory.displayName,
-      this.accessory.context.config.videoConfig.debug,
+      videoConfig.debug,
       this.accessory.context.config.videoProcessor,
       ffmpegInput,
       audioArguments,

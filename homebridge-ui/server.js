@@ -32,10 +32,12 @@ class UiServer extends HomebridgePluginUiServer {
         cameras = cameraUI.cameras.filter((camera) => camera && camera.videoConfig && camera.videoConfig.source);
 
         for (const camera of cameras) {
-          let cameraHeight = camera.videoConfig.maxHeight || 720;
-          let cameraWidth = camera.videoConfig.maxWidth || 1280;
-          let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
-          let source = cameraUtils.generateInputSource(camera.videoConfig);
+          const videoConfig = cameraUtils.generateVideoConfig(camera.videoConfig);
+
+          let cameraHeight = videoConfig.maxHeight;
+          let cameraWidth = videoConfig.maxWidth;
+          let rate = videoConfig.maxFPS >= 20 ? videoConfig.maxFPS : 20;
+          let source = cameraUtils.generateInputSource(videoConfig);
           let videoProcessor =
             cameraUI.options && cameraUI.options.videoProcessor
               ? cameraUI.options.videoProcessor
