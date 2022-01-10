@@ -1,36 +1,33 @@
 <template lang="pug">
-  .mt-5
-    .lds-ring(v-if="loading")
-      div
-      div
-      div
-      div
-    div(v-else)
-      .accordion(role="tablist", v-if="cameras.length")
-        b-card.mb-1(no-body v-for="(camera, index) in cameras" :key="camera.name")
-          b-card-header.p-1(header-tag="header" role="tab")
-            b-button(block v-b-toggle="camera.id" variant="primary") {{ camera.name }}
-          b-collapse(:id="camera.id" accordion="my-accordion" role="tabpanel")
-            b-card-body
-              canvas.canvas(:data-stream-box="camera.name")
-      div.text-muted(v-else) No Cameras
+.tw-mt-5.tw-w-full
+  v-progress-circular(indeterminate color="var(--cui-primary)" v-if="loading")
+  div(v-else-if="cameras.length")
+    v-expansion-panels(v-model="cameraPanel" accordion)
+      v-expansion-panel(v-for="(camera, index) in cameras" :key="camera.name" @click="showCamera($event, camera.name)")
+        v-expansion-panel-header {{ camera.name }}
+        v-expansion-panel-content
+          canvas.canvas(:ref="camera.name" width="1280" height="720")
+  .text-muted(v-else) No Cameras :(
 </template>
 
 <script>
 import JSMpeg from 'jsmpeg-fast-player';
-import JSMpegWritableSource from '../../../../ui/src/common/jsmpeg-source';
+import JSMpegWritableSource from '@/common/jsmpeg-source';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
   name: 'Cameras',
-  data: function () {
+
+  data() {
     return {
+      cameraPanel: [],
       cameras: [],
       loading: true,
       player: null,
     };
   },
+
   async mounted() {
     this.cameras = await window.homebridge.request('/cameras');
 
@@ -42,32 +39,10 @@ export default {
       });
     });
 
-    this.$root.$on('bv::collapse::state', async (cameraId, shown) => {
-      const camera = this.cameras.find((camera) => camera && camera.id === cameraId);
-
-      if (camera && !this.loading) {
-        if (shown) {
-          this.preparePlayer(camera.name);
-
-          window.homebridge.toast.info(`${camera.name}: Loading stream...`);
-
-          try {
-            await window.homebridge.request('/startStream', camera.name);
-            console.log('DONE');
-          } catch (err) {
-            console.log(err);
-            window.homebridge.toast.error(err.message);
-            window.homebridge.request('/stopStream', camera.name);
-          }
-        } else {
-          window.homebridge.request('/stopStream', camera.name);
-        }
-      }
-    });
-
     await timeout(1000);
     this.loading = false;
   },
+
   beforeDestroy() {
     if (this.player) {
       this.player = null;
@@ -75,25 +50,43 @@ export default {
       window.homebridge.toast.info('Streams were stopped!');
     }
   },
-  methods: {
-    preparePlayer(cameraName) {
-      const timeoutPlayer = setTimeout(() => {
-        window.homebridge.request('/stopStream', cameraName);
-      }, 5000);
 
+  methods: {
+    async showCamera(event, cameraName) {
+      if (event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
+        window.homebridge.request('/stopStream', cameraName);
+      } else {
+        await timeout(250);
+
+        this.preparePlayer(cameraName);
+
+        window.homebridge.toast.info(`${cameraName}: Loading stream...`);
+
+        try {
+          await window.homebridge.request('/startStream', cameraName);
+          console.log('DONE');
+        } catch (err) {
+          console.log(err);
+          window.homebridge.toast.error(err.message);
+          window.homebridge.request('/stopStream', cameraName);
+        }
+      }
+    },
+
+    preparePlayer(cameraName) {
       this.player = new JSMpeg.Player(null, {
         source: JSMpegWritableSource,
-        canvas: document.querySelector(`[data-stream-box="${cameraName}"]`),
-        audio: true,
+        canvas: this.$refs[cameraName][0],
+        audio: false,
         disableWebAssembly: true,
         pauseWhenHidden: false,
+        videoBufferSize: 1024 * 1024,
         onSourceEstablished: () => {
-          clearTimeout(timeoutPlayer);
           window.homebridge.toast.success(`${cameraName}: Connection established!`);
         },
       });
 
-      this.player.volume = 1;
+      this.player.volume = 0;
       this.player.name = cameraName;
     },
   },
@@ -107,28 +100,15 @@ export default {
   padding: 0;
   display: block;
   width: 100%;
+  border: 1px solid var(--cui-bg-app-bar-border);
 }
 
-.btn {
-  font-size: 14px !important;
-  border: none !important;
-  box-shadow: none !important;
+.theme--light.v-expansion-panels .v-expansion-panel {
+  background-color: var(--cui-bg-dialog) !important;
+  color: var(--cui-text-default) !important;
 }
 
-.btn-primary {
-  background-color: var(--primary-color) !important;
-  font-size: 14px !important;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background-color: var(--secondary-color) !important;
-  color: #fff;
-}
-
-.btn-primary:focus,
-.btn-primary:active,
-.btn-primary:active:focus {
-  background-color: var(--secondary-color) !important;
+div >>> .theme--light.v-expansion-panels .v-expansion-panel-header .v-expansion-panel-header__icon .v-icon {
+  color: var(--cui-text-default) !important;
 }
 </style>

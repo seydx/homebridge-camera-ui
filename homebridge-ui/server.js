@@ -3,7 +3,7 @@ const { HomebridgePluginUiServer, RequestError } = require('@homebridge/plugin-u
 const child_process = require('child_process');
 const ffmpegPath = require('ffmpeg-for-homebridge');
 const fs = require('fs-extra');
-const readline = require('readline');
+const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 
 let streams = {};
 
@@ -29,18 +29,15 @@ class UiServer extends HomebridgePluginUiServer {
       const cameraUI = config.platforms.find((plugin) => plugin && plugin.platform === 'CameraUI');
 
       if (cameraUI && cameraUI.cameras) {
-        cameras = cameraUI.cameras
-          .filter((camera) => camera && camera.videoConfig && camera.videoConfig.source)
-          .map((camera) => {
-            camera.id = camera.name.replace(/\s+/g, '');
-            return camera;
-          });
+        cameras = cameraUI.cameras.filter((camera) => camera && camera.videoConfig && camera.videoConfig.source);
 
         for (const camera of cameras) {
-          let cameraHeight = camera.videoConfig.maxHeight || 720;
-          let cameraWidth = camera.videoConfig.maxWidth || 1280;
-          let rate = (camera.videoConfig.maxFPS || 20) < 20 ? 20 : camera.videoConfig.maxFPS || 20;
-          let source = camera.videoConfig.source;
+          const videoConfig = cameraUtils.generateVideoConfig(camera.videoConfig);
+
+          let cameraHeight = videoConfig.maxHeight;
+          let cameraWidth = videoConfig.maxWidth;
+          let rate = videoConfig.maxFPS >= 20 ? videoConfig.maxFPS : 20;
+          let source = cameraUtils.generateInputSource(videoConfig);
           let videoProcessor =
             cameraUI.options && cameraUI.options.videoProcessor
               ? cameraUI.options.videoProcessor
@@ -56,10 +53,6 @@ class UiServer extends HomebridgePluginUiServer {
               '-bf': 0,
               '-preset:v': 'ultrafast',
               '-threads': '1',
-              '-codec:a': 'mp2',
-              '-ar': '44100',
-              '-ac': '1',
-              '-b:a': '128k',
             },
             ffmpegPath: videoProcessor,
           };
@@ -89,12 +82,20 @@ class UiServer extends HomebridgePluginUiServer {
       }
 
       const spawnOptions = [
-        ...streams[cameraName].source.split(' '),
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        ...streams[cameraName].source.split(/\s+/),
         '-f',
         'mpegts',
-        '-codec:v',
+        '-vcodec',
         'mpeg1video',
         ...additionalFlags,
+        '-an',
+        '-q',
+        '1',
+        '-max_muxing_queue_size',
+        '1024',
         '-',
       ];
 
@@ -104,30 +105,24 @@ class UiServer extends HomebridgePluginUiServer {
         env: process.env,
       });
 
+      const errors = [];
+
       streams[cameraName].stream.stdout.on('data', (data) => {
         this.pushEvent(`stream/${cameraName}`, data);
-        resolve();
       });
 
-      const stderr = readline.createInterface({
-        input: streams[cameraName].stream.stderr,
-        terminal: false,
-      });
-
-      stderr.on('line', (line) => {
-        if (/\[(panic|fatal|error)]/.test(line)) {
-          throw new RequestError(`${cameraName}: ${line}`);
-        }
-      });
+      streams[cameraName].stream.stderr.on('data', (data) => errors.push(data));
 
       streams[cameraName].stream.on('exit', (code, signal) => {
+        streams[cameraName].stream = false;
+
         if (code === 1) {
-          reject(new RequestError(`${cameraName}: RTSP stream exited with error! (${signal})`));
+          errors.unshift(`RTSP stream exited with error! (${signal})`);
+          reject(new RequestError(`${cameraName}: ${errors.join(' - ')}`));
         } else {
           console.log(`${cameraName}: Stream Exit (expected)`);
+          resolve();
         }
-
-        streams[cameraName].stream = false;
       });
     });
   }

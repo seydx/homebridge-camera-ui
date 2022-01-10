@@ -1,5 +1,108 @@
 # Changelog
 
+# v5.0.0 - 2022-01-10
+
+Thank you for using camera.ui and to all who support this project! This version includes a huge restructuring of camera.ui including a completely redesigned user interface
+
+[**camera.ui**](https://github.com/SeydX/camera.ui) is now available as a standalone project. It has been completely decoupled from Homebridge and can also be used as a standalone app.
+
+**homebridge-camera-ui** is the connection between camera.ui and homebridge and should give users a beautiful interface and HomeKit support.
+
+---
+
+<p align="center">
+If you like <a href="https://github.com/SeydX/homebridge-camera-ui" target="_blank" ><b>hombebride-camera-ui</b></a> please consider starring the project on GitHub or <a href="https://www.paypal.com/seydx" target="_blank" ><b>donating via PayPal</b></a>.
+</p>
+
+---
+
+## Breaking Changes
+- **Database**
+  - Due to the extensive restructuring of **camera.ui** and the new design, the old database is no longer compatible and will be recreated after updating and rebooting. Thereby already set configuration will be lost, and must be reconfigured after the first start!
+
+## Notable Changes
+- **Design**
+  - The design of camera.ui has been redesigned from scratch and offers many new features for users. In addition to a dashboard with widgets, the settings page have also been completely overhauled. It is now also possible to add new cameras directly via the interface without having to restart Homebridge. Also most of the settings regarding Homebridge can be done via the interface without restarting Homebridge.
+- **HomeKit Secure Video (HSV)**
+  - Added HSV support for homebridge: HSV requires a home hub and iCloud plan with at least 200GB of storage.
+  - Added HSV support for camera.ui: camera.ui can edit the recordings of HomeKit created by HSV. Thus, it is no longer possible to start a new recording when a movement is detected. All camera.ui functions are also available for recordings made by HSV.
+- **Prebuffering**
+  - Regardless of whether HSV is enabled or not, this option allows you to go back in time during recording up to 4 seconds to see the event BEFORE the movement. When HSV is enabled, the duration of the recording is completely determined by Apple Home.
+- **Videoanalysis**
+  - Motion detection system through camera.ui. Finally you can include cameras that can not detect motion, or simply was not compatible with camera.ui. The system is very resource efficient, accurate and very fast. You can also configure zones and adjust the sensivity within camera.ui interface
+- **Notifications**
+  - **Alexa:** It is now possible to send a motion notification with directly to Alexa. Thus, when motion is detected, a message with your own text message is sent to Alexa and Alexa plays that text back for you. Also, the speaker statement time can be set to not be disturbed at night. Adjustable in the interface settings.
+  - The notifications have been completely reworked, now also system internal errors/warnings are displayed in the notifications page
+- **Settings**
+  - **System:** A new subpage called "System" has been added to Settings. Via this subpage it is possible to configure, restart or update camera.ui
+- **Dashboard**
+  - The dashboard has been redesigned from the ground up and now offers the ability to add numerous widgets of your own choosing to make your dashboard unique. Available Widgets:
+    - Camera Feed
+    - Clock
+    - Weather
+    - CPU Load, Temperature & Memory Usage
+    - Notifications
+    - RSS Feed
+    - Log
+    - Status
+    - Uptime
+    - Shortcuts
+- **Utilization**
+  - Added a new page to show the system load (CPU, memory) in graphs
+- **Console**
+  - Added a new endpoint to view the camera.ui log in realtime over the browser
+- **Config**
+  - Added a new endpoint to view/change the camera.ui config.json over the browser
+- **Privacy Mode**
+  - Added a new option to enable privacy mode for the cameras
+
+## Other changes
+- **Interface**
+  - Improved camera settings
+  - Added interface settings to system
+  - Trigger motion via UI
+  - Added `play`, `pause` and `audio` buttons to stream
+  - Added a new `onboard page` for first start
+  - Added new `automation` section to interface settings page
+  - Added a new page to settings: `"system"`
+  - Added 16:9 aspect ratio to `camera` view
+  - Added form validation
+  - Added 1080p resolution for stream resolution to UI
+  - Changed `removeAfter` duration for notifications/recordings (now, it is also possible to stop removing)
+  - The quality of the streams was increased (`-q 1`)
+  - Removed camera pinging on movement detection to avoid `Image Buffer is empty` errors
+  - Added `motionTimeout` also to ui-only events
+  - Improved page loading
+  - Minor UI Improvements
+- **Server**
+  - Built-in SMTP server for motion detection
+  - Built-in FTP server for motion detection
+  - Support JSON Object as MQTT motion/reset messages
+  - Added jwt authentication to socket.io to prevent starting stream if not logged in
+  - Auto logout is session time out
+  - Auto logout if socket disconnected/unauthenticated
+  - Auto restart stream on reconnect to socket
+  - Limitted notifications size in database (100)
+- **Plugin**
+  - Improved camera loading time in HomeKit
+  - Refactored config.schema.json
+  - Added more ffmpeg options to config: `-max_delay`, `-analyzeduration`, `-probesize`, `-reorder_queue_size`, `-acodec`, `-rtsp_transport` and `-re`
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where changing the `removeAfter` timer for notifications/recordings did not restarted the cleartimer
+- Fixed an issue where the service worker did not update the user interface correctly
+- Fixed an issue where the "Fullscreen" button in CamView were not displayed correctly on non-mobile devices.
+- Fixed an issue where downloading a recording with Safari did not allow the user to return to the user interface
+- Fixed an issue where the restored socket.io connection (on mobile devices) did not restore the live stream on `Dashboard` and `Camview`.
+- Fixed an issue where camera streams that took a longer to start were stopped on homebridge-config-ui-x
+- Fixed an issue where sending multiple telegram messages could cause an error
+- Fixed an issue where `resetting` the motion detection caused the interface to treat it as normal motion detection
+- Fixed an issue where the cache not reloaded automatically after restart
+- Fixed an issue where pinging camera source failed
+- Fixed test cases
+- Minor bugfixes
+
 # v4.2.10 - 2021-10-04
 
 ## Other changes

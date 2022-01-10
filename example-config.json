@@ -1,0 +1,160 @@
+{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "0E:15:CC:8A:E9:1E",
+    "port": 51609,
+    "pin": "983-44-986"
+  },
+  "plugins": ["homebridge-camera-ui"],
+  "accessories": [],
+  "platforms": [
+    {
+      "platform": "CameraUI",
+      "name": "CameraUI",
+      "port": 3333,
+      "debug": true,
+      "atHomeSwitch": false,
+      "mqtt": {
+        "active": false,
+        "tls": false,
+        "host": "192.168.111.121",
+        "port": 1883
+      },
+      "http": {
+        "active": false,
+        "port": 7777,
+        "localhttp": false
+      },
+      "smtp": {
+        "active": false,
+        "port": 2525,
+        "space_replace": "+"
+      },
+      "ftp": {
+        "active": false,
+        "port": 5000
+      },
+      "ssl": {
+        "active": false,
+        "key": "/path/to/key/server.key",
+        "cert": "/path/to/cert/server.crt"
+      },
+      "options": {
+        "videoProcessor": "ffmpeg"
+      },
+      "cameras": [
+        {
+          "name": "Living Room Camera",
+          "manufacturer": "IP",
+          "model": "IP Camera",
+          "serialNumber": "000000",
+          "excludeSwitch": false,
+          "privacySwitch": true,
+          "motion": true,
+          "doorbell": true,
+          "switches": false,
+          "motionTimeout": 15,
+          "motionDoorbell": false,
+          "unbridge": true,
+          "hsv": true,
+          "prebuffering": true,
+          "forcePrebuffering": false,
+          "prebufferLength": 8,
+          "videoConfig": {
+            "source": "-i rtsp://192.168.123.1/stream",
+            "subSource": "-i rtsp://192.168.123.1/lowres/stream",
+            "stillImageSource": "-i rtsp://192.168.123.1/stream",
+            "readRate": false,
+            "rtspTransport": "udp",
+            "maxStreams": 4,
+            "maxWidth": 1280,
+            "maxHeight": 720,
+            "maxFPS": 20,
+            "maxBitrate": 199,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "libfdk_aac",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
+          },
+          "mqtt": {
+            "motionTopic": "livingroom/motion",
+            "motionMessage": "ON",
+            "motionResetTopic": "livingroom/motion",
+            "motionResetMessage": "OFF"
+          },
+          "videoanalysis": {
+            "active": true
+          }
+        },
+        {
+          "name": "Office Camera",
+          "manufacturer": "Yi",
+          "model": "IP Camera",
+          "serialNumber": "000000",
+          "excludeSwitch": true,
+          "privacySwitch": true,
+          "motion": true,
+          "doorbell": true,
+          "switches": true,
+          "motionTimeout": 15,
+          "unbridge": true,
+          "hsv": true,
+          "prebuffering": true,
+          "videoConfig": {
+            "source": "-i rtsp://192.168.123.2/ch0_0.h264",
+            "stillImageSource": "-i rtsp://192.168.123.2/ch0_0.h264",
+            "readRate": false,
+            "rtspTransport": "tcp",
+            "maxStreams": 4,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 20,
+            "maxBitrate": 100,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "copy",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
+          }
+        },
+        {
+          "name": "Camera",
+          "manufacturer": "unitoptek",
+          "model": "IP Camera",
+          "serialNumber": "000000",
+          "excludeSwitch": true,
+          "privacySwitch": true,
+          "motion": true,
+          "doorbell": true,
+          "switches": true,
+          "motionTimeout": 15,
+          "unbridge": true,
+          "hsv": true,
+          "prebuffering": true,
+          "videoConfig": {
+            "source": "-i rtsp://test:test@192.168.123.456:554/11",
+            "stillImageSource": "-i http://test:test@192.168.123.456/snap.jpg",
+            "rtspTransport": "tcp",
+            "maxStreams": 4,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 20,
+            "maxBitrate": 299,
+            "forceMax": true,
+            "vcodec": "copy",
+            "acodec": "libfdk_aac",
+            "stimeout": 10,
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true,
+            "debug": true
+          }
+        }
+      ]
+    }
+  ]
+}

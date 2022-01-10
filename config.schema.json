@@ -20,45 +20,6 @@
       "type": "boolean",
       "description": "Exposes a 'at home' switch to HomeKit to enable/disable at home for the interface settings within HomeKit."
     },
-    "theme": {
-      "title": "Theme",
-      "description": "UI Theme",
-      "type": "string",
-      "default": "auto",
-      "oneOf": [
-        { "title": "Auto", "enum": ["auto"] },
-        { "title": "Light Blue", "enum": ["light-blue"] },
-        { "title": "Light Blue Gray", "enum": ["light-blgray"] },
-        { "title": "Light Brown", "enum": ["light-brown"] },
-        { "title": "Light Gray", "enum": ["light-gray"] },
-        { "title": "Light Green", "enum": ["light-green"] },
-        { "title": "Light Orange", "enum": ["light-orange"] },
-        { "title": "Light Pink", "enum": ["light-pink"] },
-        { "title": "Light Purple", "enum": ["light-purple"] },
-        { "title": "Dark Blue", "enum": ["dark-blue"] },
-        { "title": "Dark Blue Gray", "enum": ["dark-blgray"] },
-        { "title": "Dark Brown", "enum": ["dark-brown"] },
-        { "title": "Dark Gray", "enum": ["dark-gray"] },
-        { "title": "Dark Green", "enum": ["dark-green"] },
-        { "title": "Dark Orange", "enum": ["dark-orange"] },
-        { "title": "Dark Pink", "enum": ["dark-pink"] },
-        { "title": "Dark Purple", "enum": ["dark-purple"] }
-      ],
-      "required": true
-    },
-    "language": {
-      "title": "Language",
-      "type": "string",
-      "description": "Standard language for the UI.",
-      "default": "Auto",
-      "oneOf": [
-        { "title": "Auto", "enum": ["auto"] },
-        { "title": "DE", "enum": ["de"] },
-        { "title": "EN", "enum": ["en"] },
-        { "title": "NL", "enum": ["nl"] }
-      ],
-      "required": true
-    },
     "debug": {
       "title": "Debug",
       "type": "boolean",
@@ -128,6 +89,47 @@
         }
       }
     },
+    "smtp": {
+      "titel": "SMTP Server",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "Active",
+          "description": "Activates STMP Server for Email-based automation. If not set, SMTP support is not started.",
+          "type": "boolean",
+          "default": false
+        },
+        "port": {
+          "title": "SMTP Port",
+          "type": "integer",
+          "placeholder": "2525",
+          "description": "The port to run the SMTP server on."
+        },
+        "space_replace": {
+          "title": "Space replace",
+          "type": "string",
+          "description": "The character to replace a space with in the camera name portion of the email address."
+        }
+      }
+    },
+    "ftp": {
+      "titel": "FTP Server",
+      "type": "object",
+      "properties": {
+        "active": {
+          "title": "Active",
+          "description": "Activates FTP Server for FTP-based automation. If not set, FTP support is not started.",
+          "type": "boolean",
+          "default": false
+        },
+        "port": {
+          "title": "FTP Port",
+          "type": "integer",
+          "placeholder": "5050",
+          "description": "The port to run the FTP server on."
+        }
+      }
+    },
     "ssl": {
       "titel": "SSL Setup",
       "type": "object",
@@ -192,15 +194,15 @@
             "placeholder": "SerialNumber",
             "description": "Set the serial number for display in the Home app."
           },
-          "firmwareRevision": {
-            "name": "Firmware Revision",
-            "type": "string",
-            "description": "Set the firmware revision for display in the Home app."
-          },
           "excludeSwitch": {
             "title": "Exclude Switch",
             "type": "boolean",
             "description": "Exposes a 'exclude' switch to HomeKit to exclude/include the camera from the interface settings within HomeKit."
+          },
+          "privacySwitch": {
+            "title": "Privacy Switch",
+            "type": "boolean",
+            "description": "Exposes a 'privacyMode' switch to replace the camera feed with a privacy image in HomeKit."
           },
           "motion": {
             "title": "Enable Motion Sensor",
@@ -220,9 +222,9 @@
           "motionTimeout": {
             "title": "Automatic Motion Reset (Seconds)",
             "type": "integer",
-            "placeholder": 1,
-            "minimum": 0,
-            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP."
+            "placeholder": 15,
+            "minimum": 15,
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP. This will also affect the interface timeout."
           },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",
@@ -233,6 +235,29 @@
             "title": "Unbridge Camera (Recommended)",
             "type": "boolean",
             "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
+          },
+          "hsv": {
+            "title": "HomeKit Secure Video (HSV)",
+            "type": "boolean",
+            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
+          },
+          "prebuffering": {
+            "title": "Prebuffering",
+            "type": "boolean",
+            "description": "Enables camera video prebuffering."
+          },
+          "forcePrebuffering": {
+            "title": "Force Prebuffering",
+            "type": "boolean",
+            "description": "For cameras without a H264 stream. If set, camera.ui will start prebuffering with reencoding the stream. Caution: This will lead to a higher CPU load!"
+          },
+          "prebufferLength": {
+            "title": "Prebuffer Length",
+            "type": "integer",
+            "default": 4,
+            "minimum": 4,
+            "maximum": 8,
+            "description": "The length of the requested prebuffered video (s)"
           },
           "videoConfig": {
             "title": "Video Configuration",
@@ -245,13 +270,67 @@
                 "required": true,
                 "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL."
               },
+              "subSource": {
+                "title": "Video Substream Source",
+                "type": "string",
+                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis."
+              },
               "stillImageSource": {
                 "title": "Still Image Source",
                 "type": "string",
                 "description": "If your camera also provides a URL for a still image, that can be defined here with the same syntax as 'source'. If not set, the plugin will grab one frame from 'source'."
               },
+              "readRate": {
+                "title": "Read Rate",
+                "type": "boolean",
+                "description": "Read input at native frame rate (-re)."
+              },
+              "rtspTransport": {
+                "title": "RTSP Transport",
+                "required": true,
+                "type": "string",
+                "oneOf": [
+                  {
+                    "title": "udp",
+                    "enum": ["udp"]
+                  },
+                  {
+                    "title": "tcp",
+                    "enum": ["tcp"]
+                  },
+                  {
+                    "title": "http",
+                    "enum": ["http"]
+                  },
+                  {
+                    "title": "udp_multicast",
+                    "enum": ["udp_multicast"]
+                  }
+                ],
+                "description": "Set RTSP transport protocols (-rtsp_transport)"
+              },
+              "analyzeDuration": {
+                "title": "Analyze Duration",
+                "type": "integer",
+                "description": "Specify how many microseconds are analyzed to probe the input. A higher value will enable detecting more accurate information, but will increase latency. It defaults to 5,000,000 microseconds = 5 seconds (-analyzeduration)."
+              },
+              "probeSize": {
+                "title": "Probe Size",
+                "type": "integer",
+                "description": "Set probing size in bytes, i.e. the size of the data to analyze to get stream information. A higher value will enable detecting more information in case it is dispersed into the stream, but will increase latency. Must be an integer not lesser than 32. It is 5000000 by default (-probesize)."
+              },
+              "reorderQueueSize": {
+                "title": "Reorder Queue Size (Jitter buffer size)",
+                "type": "integer",
+                "description": "Packets may be received out of order, so before they can be passed onwards, they need to be reordered. Default jitter buffer size is 500. This option allows you to specify it manually. Higher values will lead to greater latency. Only applicable for reception over UDP (-reorder_queue_size)."
+              },
+              "maxDelay": {
+                "title": "Max Delay",
+                "type": "integer",
+                "description": "When receiving data over UDP, the demuxer tries to reorder received packets (since they may arrive out of order, or packets may get lost totally). This can be disabled by setting the maximum demuxing delay to zero (-max_delay)."
+              },
               "returnAudioTarget": {
-                "title": "Two-way Audio Target (EXPERIMENTAL - WIP)",
+                "title": "Two-way Audio Target (EXPERIMENTAL)",
                 "type": "string",
                 "description": "The FFmpeg output command for directing audio back to a two-way capable camera. This feature is still in development and a configuration that works today may not work in the future."
               },
@@ -268,7 +347,7 @@
                 "placeholder": 1280,
                 "multipleOf": 2,
                 "minimum": 0,
-                "description": "The maximum width used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+                "description": "The maximum width used for video stream. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests (-s)."
               },
               "maxHeight": {
                 "title": "Maximum Height",
@@ -276,31 +355,26 @@
                 "placeholder": 720,
                 "multipleOf": 2,
                 "minimum": 0,
-                "description": "The maximum height used for video streamed to HomeKit. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests."
+                "description": "The maximum height used for video stream. If set to 0, the resolution of the source is used. If not set, will use any size HomeKit requests (-s)."
               },
               "maxFPS": {
                 "title": "Maximum Framerate",
                 "type": "integer",
-                "placeholder": 30,
+                "placeholder": 20,
                 "minimum": 0,
-                "description": "The maximum frame rate used for video streamed to HomeKit. If set to 0, the framerate of the source is used. If not set, will use any framerate HomeKit requests."
+                "description": "The maximum frame rate used for video streamed to HomeKit. If set to 0, the framerate of the source is used. If not set, will use any framerate HomeKit requests (-r)."
               },
               "maxBitrate": {
                 "title": "Maximum Bitrate",
                 "type": "integer",
                 "placeholder": 299,
                 "minimum": 0,
-                "description": "The maximum bitrate used for video streamed to HomeKit, in kbit/s. If not set, will use any bitrate HomeKit requests."
+                "description": "The maximum bitrate used for video stream, in kbit/s. If not set, will use any bitrate HomeKit requests (-b:v)."
               },
               "forceMax": {
                 "title": "Force Maximums",
                 "type": "boolean",
                 "description": "If set, the settings requested by HomeKit will be overridden with any 'maximum' values defined in this config."
-              },
-              "preserveRatio": {
-                "title": "Preserve Aspect Ratio",
-                "type": "boolean",
-                "description": "Preserves the aspect ratio of the source video."
               },
               "vcodec": {
                 "title": "Video Codec",
@@ -309,7 +383,16 @@
                 "typeahead": {
                   "source": ["libx264", "h264_omx", "h264_videotoolbox", "copy"]
                 },
-                "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available."
+                "description": "Set the codec used for encoding video sent to HomeKit, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available (-vcodec)."
+              },
+              "acodec": {
+                "title": "Audio Codec",
+                "type": "string",
+                "placeholder": "libfdk_aac",
+                "typeahead": {
+                  "source": ["libfdk_aac", "copy"]
+                },
+                "description": "Set the codec used for encoding audio sent to HomeKit for HSV, must be AAC-based (-acodec)."
               },
               "packetSize": {
                 "title": "Packet Size",
@@ -322,8 +405,7 @@
               "stimeout": {
                 "title": "Socket Timeout",
                 "type": "number",
-                "description": "Socket TCP I/O timeout in seconds (-stimeout). If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time (if no response comes).",
-                "default": 0,
+                "description": "Socket TCP I/O timeout in seconds. If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time, if no response comes (-stimeout).",
                 "minimum": 0,
                 "maximum": 60,
                 "placeholder": 10
@@ -331,7 +413,7 @@
               "videoFilter": {
                 "title": "Additional Video Filters",
                 "type": "string",
-                "description": "Comma-delimited list of additional video filters for FFmpeg to run on the video. If 'none' is included, the default video filters are disabled."
+                "description": "Comma-delimited list of additional video filters for FFmpeg to run on the video. If 'none' is included, the default video filters are disabled (-filter:v)."
               },
               "encoderOptions": {
                 "title": "Encoder Options",
@@ -342,12 +424,12 @@
               "mapvideo": {
                 "type": "string",
                 "title": "Video Stream",
-                "description": "Selects the stream used for video."
+                "description": "Selects the stream used for video (-map)."
               },
               "mapaudio": {
                 "type": "string",
                 "title": "Audio Stream",
-                "description": "Selects the stream used for audio."
+                "description": "Selects the stream used for audio (-map)."
               },
               "audio": {
                 "title": "Enable Audio",
@@ -404,6 +486,18 @@
                 "description": "The message to watch for to trigger doorbell alerts. Will use the name of the camera if blank."
               }
             }
+          },
+          "videoanalysis": {
+            "title": "Video Analysis",
+            "type": "object",
+            "properties": {
+              "active": {
+                "title": "Active",
+                "description": "Activates Video Analysis for motion detection. (Prebuffer needs to be enabled for video analysis to work)",
+                "type": "boolean",
+                "default": false
+              }
+            }
           }
         }
       }
@@ -412,14 +506,12 @@
   "layout": [
     {
       "type": "section",
-      "title": "User Interface",
+      "title": "Interface",
       "expandable": true,
       "expanded": false,
       "orderable": false,
       "items": [
         "port",
-        "language",
-        "theme",
         "atHomeSwitch",
         "debug",
         {
@@ -443,61 +535,62 @@
           "title": "{{ value.name || 'new Camera' }}",
           "items": [
             "cameras[].name",
-            "cameras[].videoConfig.source",
-            "cameras[].videoConfig.stillImageSource",
             "cameras[].unbridge",
-            "cameras[].videoConfig.audio",
-            "cameras[].videoConfig.stimeout",
+            "cameras[].hsv",
+            "cameras[].prebuffering",
+            "cameras[].forcePrebuffering",
+            "cameras[].prebufferLength",
             {
               "key": "cameras[]",
               "type": "section",
               "title": "Branding",
               "expandable": true,
               "expanded": false,
-              "items": [
-                "cameras[].manufacturer",
-                "cameras[].model",
-                "cameras[].serialNumber",
-                "cameras[].firmwareRevision"
-              ]
+              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
             },
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Video Output",
+              "title": "Stream Configuration",
               "expandable": true,
               "expanded": false,
               "items": [
+                "cameras[].videoConfig.source",
+                "cameras[].videoConfig.subSource",
+                "cameras[].videoConfig.stillImageSource",
                 "cameras[].videoConfig.maxStreams",
                 "cameras[].videoConfig.maxWidth",
                 "cameras[].videoConfig.maxHeight",
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
-                "cameras[].videoConfig.forceMax"
+                "cameras[].videoConfig.audio",
+                "cameras[].videoConfig.forceMax",
+                "cameras[].videoConfig.debug"
               ]
             },
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Advanced",
+              "title": "Advanced Stream Configuration",
               "expandable": true,
               "expanded": false,
               "items": [
+                "cameras[].videoConfig.readRate",
+                "cameras[].videoConfig.acodec",
                 "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.rtspTransport",
+                "cameras[].videoConfig.analyzeDuration",
+                "cameras[].videoConfig.probeSize",
+                "cameras[].videoConfig.reorderQueueSize",
+                "cameras[].videoConfig.maxDelay",
+                "cameras[].videoConfig.stimeout",
                 "cameras[].videoConfig.packetSize",
                 "cameras[].videoConfig.mapvideo",
                 "cameras[].videoConfig.mapaudio",
                 "cameras[].videoConfig.videoFilter",
                 "cameras[].videoConfig.encoderOptions",
-                "cameras[].videoConfig.debug",
-                {
-                  "key": "cameras[]",
-                  "type": "section",
-                  "title": "EXPERIMENTAL - WIP",
-                  "expandable": true,
-                  "expanded": false,
-                  "items": ["cameras[].videoConfig.returnAudioTarget", "cameras[].videoConfig.debugReturn"]
-                }
+                "cameras[].videoConfig.returnAudioTarget",
+                "cameras[].videoConfig.debugReturn"
               ]
             },
             {
@@ -512,7 +605,8 @@
                 "cameras[].switches",
                 "cameras[].motionTimeout",
                 "cameras[].motionDoorbell",
-                "cameras[].excludeSwitch"
+                "cameras[].excludeSwitch",
+                "cameras[].privacySwitch"
               ]
             },
             {
@@ -529,6 +623,14 @@
                 "cameras[].mqtt.doorbellTopic",
                 "cameras[].mqtt.doorbellMessage"
               ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Video Analysis",
+              "expandable": true,
+              "expanded": false,
+              "items": ["cameras[].videoanalysis.active"]
             }
           ]
         }
@@ -544,7 +646,7 @@
     },
     {
       "key": "mqtt",
-      "name": "MQTT",
+      "name": "MQTT Broker",
       "type": "object",
       "orderable": false,
       "expandable": true,
@@ -559,6 +661,24 @@
       "expandable": true,
       "expanded": false,
       "items": ["http.active", "http.port", "http.localhttp"]
+    },
+    {
+      "key": "smtp",
+      "name": "SMTP Server",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": ["smtp.active", "smtp.port", "smtp.space_replace"]
+    },
+    {
+      "key": "ftp",
+      "name": "FTP Server",
+      "type": "object",
+      "orderable": false,
+      "expandable": true,
+      "expanded": false,
+      "items": ["ftp.active", "ftp.port"]
     }
   ]
 }
