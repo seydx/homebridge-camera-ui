@@ -1,5 +1,11 @@
 # Changelog
 
+# v5.0.3 - 2022-01-11
+
+## Bugfixes
+- Fixed an issue where the sensitivity for video analysis was not applied (camera.ui)
+- Fixed an issue where building the ui failed if no test config.json found (camera.ui)
+
 # v5.0.2 - 2022-01-11
 
 ## Bugfix

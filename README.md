@@ -82,7 +82,7 @@ sudo npm install -g homebridge-camera-ui@latest
 
 camera.ui installs itself in the homebridge directory under `/var/lib/homebridge/camera.ui/`
 
-The database, recordings and a copy of the camera.ui config.json are stored locally in this folder and are never accessible to others. The settings can be changed directly via the interface oder ober homebridge-config-ui-x
+The database, recordings and a copy of the camera.ui config.json are stored locally in this folder and are never accessible to others. The settings can be changed directly via the interface or over homebridge-config-ui-x
 
 ## Defaults
 
