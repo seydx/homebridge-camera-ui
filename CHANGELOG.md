@@ -1,9 +1,15 @@
 # Changelog
 
+# v5.0.2 - 2022-01-11
+
+## Bugfix
+- Fixed an issue where the videoanalysis zones were not taken over (camera.ui)
+- Fixed an issue where the sensitivity for videoanalysis was reset after each reboot (camera.ui)
+
 # v5.0.1 - 2022-01-10
 
 ## Bugfix
-- Bump camera.ui - Fixed an issue where the status widget and the system page could not be displayed due to incorrect version checking
+- Fixed an issue where the status widget and the system page could not be displayed due to incorrect version checking (camera.ui)
 
 # v5.0.0 - 2022-01-10
 
