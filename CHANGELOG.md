@@ -2,8 +2,8 @@
 
 # v5.0.1 - 2022-01-10
 
-## Other changes
-- Bump dependencies
+## Bugfix
+- Bump camera.ui - Fixed an issue where the status widget and the system page could not be displayed due to incorrect version checking
 
 # v5.0.0 - 2022-01-10
 
