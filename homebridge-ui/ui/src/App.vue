@@ -9,9 +9,11 @@ v-app.app.tw-p-4
       v-icon.text-default.tw-mr-1(style="margin-top: -3px;") {{ icons['mdiGithub'] }} 
       | Github
     .tw-mt-3
-      router-link(to="/cameras") Cameras
-      |  | 
-      router-link(to="/config") Config
+      router-link(to="/cameras") Cameras 
+      span | 
+      router-link(to="/config") Config 
+      span(v-if="interfaceLink") |  
+      a(:href="interfaceLink" target="_blank" v-if="interfaceLink") Interface
     router-view
 </template>
 
@@ -26,10 +28,11 @@ export default {
       icons: {
         mdiGithub,
       },
+      interfaceLink: null,
     };
   },
 
-  mounted() {
+  async mounted() {
     window.homebridge.showSpinner();
 
     window.homebridge.addEventListener('ready', async () => {
@@ -39,6 +42,14 @@ export default {
         document.documentElement.setAttribute('data-theme', 'light');
       }
       document.documentElement.setAttribute('data-theme-color', 'pink');
+
+      const interfaceConfig = await window.homebridge.request('/interfaceConfig');
+      if (interfaceConfig) {
+        const { protocol, port } = interfaceConfig;
+        this.interfaceLink = `${protocol}://${window.location.hostname}:${port}`;
+      }
+
+      console.log(this.interfaceLink);
 
       window.homebridge.hideSpinner();
     });

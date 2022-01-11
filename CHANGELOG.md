@@ -1,5 +1,22 @@
 # Changelog
 
+# v5.0.4 - 2022-01-11
+
+## Other Changes
+- Interface:
+  - Limit max page size to 6 (camera.ui)
+  - Refactored Lightbox (camera.ui)
+- Homebridge UI (Config UI X)
+  - Added link to camera.ui interface
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue with pagination middleware, where the nextPage and prevPage attribute showed wrong path (camera.ui)
+- Fixed an isue where opening a recording or a notification (with recording) loaded all recordings in the background and caused the interface to crash (camera.ui)
+- Fixed an issue where the notification banner could not display a video (camera.ui)
+- Fixed an issue where utilization could not show process cpu load / memory usage (camera.ui)
+- Minor bugfixes
+
 # v5.0.3 - 2022-01-11
 
 ## Bugfixes
