@@ -39,29 +39,44 @@
         "tls": {
           "title": "MQTT TLS",
           "type": "boolean",
-          "description": "Use TLS to connect to the MQTT broker."
+          "description": "Use TLS to connect to the MQTT broker.",
+          "condition": {
+            "functionBody": "return model.mqtt.active === true;"
+          }
         },
         "host": {
           "title": "MQTT Server",
           "type": "string",
           "placeholder": "127.0.0.1",
-          "description": "Defines the hostname or IP of the MQTT broker to connect to for MQTT-based automation. If not set, MQTT support is not started."
+          "description": "Defines the hostname or IP of the MQTT broker to connect to for MQTT-based automation. If not set, MQTT support is not started.",
+          "condition": {
+            "functionBody": "return model.mqtt.active === true;"
+          }
         },
         "port": {
           "title": "MQTT Port",
           "type": "integer",
           "placeholder": "1883",
-          "description": "The port of the MQTT broker."
+          "description": "The port of the MQTT broker.",
+          "condition": {
+            "functionBody": "return model.mqtt.active === true;"
+          }
         },
         "username": {
           "title": "MQTT Username",
           "type": "string",
-          "description": "The username used to connect to your MQTT broker. If not set, no authentication is used."
+          "description": "The username used to connect to your MQTT broker. If not set, no authentication is used.",
+          "condition": {
+            "functionBody": "return model.mqtt.active === true;"
+          }
         },
         "password": {
           "title": "MQTT Password",
           "type": "string",
-          "description": "The password used to connect to your MQTT broker. If not set, no authentication is used."
+          "description": "The password used to connect to your MQTT broker. If not set, no authentication is used.",
+          "condition": {
+            "functionBody": "return model.mqtt.active === true;"
+          }
         }
       }
     },
@@ -79,13 +94,19 @@
           "title": "HTTP Port",
           "type": "integer",
           "placeholder": "8080",
-          "description": "The port to listen on for HTTP-based automation. If not set, HTTP support is not started."
+          "description": "The port to listen on for HTTP-based automation. If not set, HTTP support is not started.",
+          "condition": {
+            "functionBody": "return model.http.active === true;"
+          }
         },
         "localhttp": {
           "title": "HTTP Localhost Only",
           "type": "boolean",
           "description": "Only allow HTTP calls from localhost. Useful if using helper plugins that translate to HTTP.",
-          "default": false
+          "default": false,
+          "condition": {
+            "functionBody": "return model.http.active === true;"
+          }
         }
       }
     },
@@ -103,12 +124,18 @@
           "title": "SMTP Port",
           "type": "integer",
           "placeholder": "2525",
-          "description": "The port to run the SMTP server on."
+          "description": "The port to run the SMTP server on.",
+          "condition": {
+            "functionBody": "return model.smtp.active === true;"
+          }
         },
         "space_replace": {
           "title": "Space replace",
           "type": "string",
-          "description": "The character to replace a space with in the camera name portion of the email address."
+          "description": "The character to replace a space with in the camera name portion of the email address.",
+          "condition": {
+            "functionBody": "return model.smtp.active === true;"
+          }
         }
       }
     },
@@ -126,7 +153,10 @@
           "title": "FTP Port",
           "type": "integer",
           "placeholder": "5050",
-          "description": "The port to run the FTP server on."
+          "description": "The port to run the FTP server on.",
+          "condition": {
+            "functionBody": "return model.ftp.active === true;"
+          }
         }
       }
     },
@@ -143,12 +173,18 @@
         "key": {
           "title": "Private key",
           "type": "string",
-          "description": "Path to Private Key"
+          "description": "Path to Private Key",
+          "condition": {
+            "functionBody": "return model.ssl.active === true;"
+          }
         },
         "cert": {
           "title": "Certificate",
           "type": "string",
-          "description": "Path to Certificate"
+          "description": "Path to Certificate",
+          "condition": {
+            "functionBody": "return model.ssl.active === true;"
+          }
         }
       }
     },
@@ -289,8 +325,7 @@
                 "title": "RTSP Transport",
                 "required": true,
                 "type": "string",
-                "oneOf": [
-                  {
+                "oneOf": [{
                     "title": "udp",
                     "enum": ["udp"]
                   },
@@ -503,8 +538,7 @@
       }
     }
   },
-  "layout": [
-    {
+  "layout": [{
       "type": "section",
       "title": "Interface",
       "expandable": true,
@@ -528,113 +562,111 @@
       "title": "Cameras",
       "expandable": true,
       "expanded": false,
-      "items": [
-        {
-          "key": "cameras",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new Camera' }}",
-          "items": [
-            "cameras[].name",
-            "cameras[].unbridge",
-            "cameras[].hsv",
-            "cameras[].prebuffering",
-            "cameras[].forcePrebuffering",
-            "cameras[].prebufferLength",
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Branding",
-              "expandable": true,
-              "expanded": false,
-              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Stream Configuration",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].videoConfig.source",
-                "cameras[].videoConfig.subSource",
-                "cameras[].videoConfig.stillImageSource",
-                "cameras[].videoConfig.maxStreams",
-                "cameras[].videoConfig.maxWidth",
-                "cameras[].videoConfig.maxHeight",
-                "cameras[].videoConfig.maxFPS",
-                "cameras[].videoConfig.maxBitrate",
-                "cameras[].videoConfig.audio",
-                "cameras[].videoConfig.forceMax",
-                "cameras[].videoConfig.debug"
-              ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Advanced Stream Configuration",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].videoConfig.readRate",
-                "cameras[].videoConfig.acodec",
-                "cameras[].videoConfig.vcodec",
-                "cameras[].videoConfig.rtspTransport",
-                "cameras[].videoConfig.analyzeDuration",
-                "cameras[].videoConfig.probeSize",
-                "cameras[].videoConfig.reorderQueueSize",
-                "cameras[].videoConfig.maxDelay",
-                "cameras[].videoConfig.stimeout",
-                "cameras[].videoConfig.packetSize",
-                "cameras[].videoConfig.mapvideo",
-                "cameras[].videoConfig.mapaudio",
-                "cameras[].videoConfig.videoFilter",
-                "cameras[].videoConfig.encoderOptions",
-                "cameras[].videoConfig.returnAudioTarget",
-                "cameras[].videoConfig.debugReturn"
-              ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Sensors and Switches",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].motion",
-                "cameras[].doorbell",
-                "cameras[].switches",
-                "cameras[].motionTimeout",
-                "cameras[].motionDoorbell",
-                "cameras[].excludeSwitch",
-                "cameras[].privacySwitch"
-              ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "MQTT Options",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].mqtt.motionTopic",
-                "cameras[].mqtt.motionMessage",
-                "cameras[].mqtt.motionResetTopic",
-                "cameras[].mqtt.motionResetMessage",
-                "cameras[].mqtt.doorbellTopic",
-                "cameras[].mqtt.doorbellMessage"
-              ]
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Video Analysis",
-              "expandable": true,
-              "expanded": false,
-              "items": ["cameras[].videoanalysis.active"]
-            }
-          ]
-        }
-      ]
+      "items": [{
+        "key": "cameras",
+        "type": "tabarray",
+        "title": "{{ value.name || 'new Camera' }}",
+        "items": [
+          "cameras[].name",
+          "cameras[].unbridge",
+          "cameras[].hsv",
+          "cameras[].prebuffering",
+          "cameras[].forcePrebuffering",
+          "cameras[].prebufferLength",
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "Branding",
+            "expandable": true,
+            "expanded": false,
+            "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
+          },
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "Stream Configuration",
+            "expandable": true,
+            "expanded": false,
+            "items": [
+              "cameras[].videoConfig.source",
+              "cameras[].videoConfig.subSource",
+              "cameras[].videoConfig.stillImageSource",
+              "cameras[].videoConfig.maxStreams",
+              "cameras[].videoConfig.maxWidth",
+              "cameras[].videoConfig.maxHeight",
+              "cameras[].videoConfig.maxFPS",
+              "cameras[].videoConfig.maxBitrate",
+              "cameras[].videoConfig.audio",
+              "cameras[].videoConfig.forceMax",
+              "cameras[].videoConfig.debug"
+            ]
+          },
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "Advanced Stream Configuration",
+            "expandable": true,
+            "expanded": false,
+            "items": [
+              "cameras[].videoConfig.readRate",
+              "cameras[].videoConfig.acodec",
+              "cameras[].videoConfig.vcodec",
+              "cameras[].videoConfig.rtspTransport",
+              "cameras[].videoConfig.analyzeDuration",
+              "cameras[].videoConfig.probeSize",
+              "cameras[].videoConfig.reorderQueueSize",
+              "cameras[].videoConfig.maxDelay",
+              "cameras[].videoConfig.stimeout",
+              "cameras[].videoConfig.packetSize",
+              "cameras[].videoConfig.mapvideo",
+              "cameras[].videoConfig.mapaudio",
+              "cameras[].videoConfig.videoFilter",
+              "cameras[].videoConfig.encoderOptions",
+              "cameras[].videoConfig.returnAudioTarget",
+              "cameras[].videoConfig.debugReturn"
+            ]
+          },
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "Sensors and Switches",
+            "expandable": true,
+            "expanded": false,
+            "items": [
+              "cameras[].motion",
+              "cameras[].doorbell",
+              "cameras[].switches",
+              "cameras[].motionTimeout",
+              "cameras[].motionDoorbell",
+              "cameras[].excludeSwitch",
+              "cameras[].privacySwitch"
+            ]
+          },
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "MQTT Options",
+            "expandable": true,
+            "expanded": false,
+            "items": [
+              "cameras[].mqtt.motionTopic",
+              "cameras[].mqtt.motionMessage",
+              "cameras[].mqtt.motionResetTopic",
+              "cameras[].mqtt.motionResetMessage",
+              "cameras[].mqtt.doorbellTopic",
+              "cameras[].mqtt.doorbellMessage"
+            ]
+          },
+          {
+            "key": "cameras[]",
+            "type": "section",
+            "title": "Video Analysis",
+            "expandable": true,
+            "expanded": false,
+            "items": ["cameras[].videoanalysis.active"]
+          }
+        ]
+      }]
     },
     {
       "key": "options",
