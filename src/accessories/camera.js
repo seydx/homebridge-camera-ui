@@ -14,7 +14,7 @@ const RecordingDelegate = require('../services/recording.service');
 
 const { Ping } = require('../utils/ping');
 
-const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'maxstreams_cameraui.png');
+//const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'maxstreams_cameraui.png');
 const offlineImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'offline_cameraui.png');
 const privacyImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'privacy_cameraui.png');
 
@@ -23,11 +23,13 @@ const offlineImageInBytes = fs.readFileSync(offlineImage);
 const privacyImageInBytes = fs.readFileSync(privacyImage);
 
 class Camera {
-  constructor(api, accessory, cameraUi) {
+  constructor(api, accessory, cameraUi, videoProcessor) {
     this.api = api;
     this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
+
+    this.videoProcessor = videoProcessor;
 
     this.services = [];
     this.streamControllers = [];
@@ -68,7 +70,7 @@ class Camera {
         recordingCodecs.push(entry);
       }
 
-      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi);
+      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi, this.videoProcessor);
     }
 
     this.controller = new this.api.hap.CameraController({
@@ -110,6 +112,10 @@ class Camera {
       recording: this.accessory.context.config.hsv
         ? {
             options: {
+              overrideEventTriggerOptions: [
+                this.api.hap.EventTriggerOption.MOTION,
+                this.api.hap.EventTriggerOption.DOORBELL,
+              ],
               prebufferLength: this.accessory.context.config.prebufferLength, // prebufferLength always remains 4s ?
               mediaContainerConfiguration: [
                 {
@@ -264,7 +270,7 @@ class Camera {
         return resolve(privacyImageInBytes);
       }
 
-      let input = this.accessory.context.config.videoConfig.source.split(/\s+/);
+      let input = this.accessory.context.config.videoConfig.stillImageSource.split(/\s+/);
       const startTime = Date.now();
       const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
 
@@ -285,11 +291,11 @@ class Camera {
       ffmpegArguments.push('-f', 'image2', '-');
 
       this.log.debug(
-        `Snapshot command: ${this.accessory.context.config.videoProcessor} ${ffmpegArguments.join(' ')}`,
+        `Snapshot command: ${this.videoProcessor} ${ffmpegArguments.join(' ')}`,
         this.accessory.displayName
       );
 
-      const ffmpeg = spawn(this.accessory.context.config.videoProcessor, ffmpegArguments, {
+      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments, {
         env: process.env,
       });
 
@@ -363,12 +369,9 @@ class Camera {
 
       ffmpegArguments.push('-f', 'image2', '-');
 
-      this.log.debug(
-        `Resize command: ${this.accessory.context.config.videoProcessor} ${ffmpegArguments.join(' ')}`,
-        this.accessory.displayName
-      );
+      this.log.debug(`Resize command: ${this.videoProcessor} ${ffmpegArguments.join(' ')}`, this.accessory.displayName);
 
-      const ffmpeg = spawn(this.accessory.context.config.videoProcessor, ffmpegArguments, {
+      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments, {
         env: process.env,
       });
 
@@ -400,10 +403,11 @@ class Camera {
 
       const snapshot = await (this.snapshotPromise || this.fetchSnapshot(resolution.snapFilter));
 
+      const resolutionText =
+        resolution.width > 0 && resolution.height > 0 ? `${resolution.width}x${resolution.height}` : 'native';
+
       this.log.debug(
-        `Sending snapshot: ${resolution.width > 0 ? resolution.width : 'native'}x${
-          resolution.height > 0 ? resolution.height : 'native'
-        }${cachedSnapshot ? ' (cached)' : ''}`,
+        `Sending snapshot: ${resolutionText}${cachedSnapshot ? ' (cached)' : ''}`,
         this.accessory.displayName
       );
 
@@ -501,7 +505,7 @@ class Camera {
         }
       }
 
-      if (!prebufferInput) {
+      /*if (!prebufferInput) {
         const allowStream = controller ? controller.session.requestSession() : true;
 
         if (!allowStream) {
@@ -509,7 +513,7 @@ class Camera {
           ffmpegInput = ['-re', '-loop', '1', '-i', maxstreamsImage];
           inputChanged = true;
         }
-      }
+      }*/
 
       let audioSourceFound = controller?.media.codecs.audio.length;
 
@@ -547,14 +551,14 @@ class Camera {
         encoderOptions = undefined;
       }
 
-      this.log.info(
-        `Starting video stream: ${resolution.width > 0 ? resolution.width : 'native'}x${
-          resolution.height > 0 ? resolution.height : 'native'
-        }, ${fps > 0 ? fps : 'native'} fps, ${videoBitrate > 0 ? videoBitrate : '???'} kbps ${
-          videoConfig.audio ? ' (' + request.audio.codec + ')' : ''
-        }`,
-        this.accessory.displayName
-      );
+      const resolutionText =
+        vcodec === 'copy'
+          ? 'native'
+          : `${resolution.width}x${resolution.height}, ${fps} fps, ${videoBitrate} kbps ${
+              videoConfig.audio ? ' (' + request.audio.codec + ')' : ''
+            }`;
+
+      this.log.info(`Starting video stream: ${resolutionText}`, this.accessory.displayName);
 
       const ffmpegArguments = [
         '-hide_banner',
@@ -564,7 +568,7 @@ class Camera {
       ];
 
       if (!inputChanged && !prebufferInput && videoConfig.mapvideo) {
-        ffmpegArguments.push('-map', ...videoConfig.mapvideo.split(/\s+/));
+        ffmpegArguments.push('-map', videoConfig.mapvideo);
       } else {
         ffmpegArguments.push('-an', '-sn', '-dn');
       }
@@ -624,7 +628,7 @@ class Camera {
           request.audio.codec === this.api.hap.AudioStreamingCodecType.AAC_ELD
         ) {
           if (videoConfig.mapaudio && !prebufferInput) {
-            ffmpegArguments.push('-map', ...videoConfig.mapaudio.split(/\s+/));
+            ffmpegArguments.push('-map', videoConfig.mapaudio.split(/\s+/));
           } else {
             ffmpegArguments.push('-vn', '-sn', '-dn');
           }
@@ -695,7 +699,7 @@ class Camera {
         this.accessory.displayName,
         videoConfig.debug,
         request.sessionID,
-        this.accessory.context.config.videoProcessor,
+        this.videoProcessor,
         ffmpegArguments,
         this,
         callback
@@ -750,7 +754,7 @@ class Camera {
           this.accessory.displayName,
           videoConfig.debug,
           request.sessionID,
-          this.accessory.context.config.videoProcessor,
+          this.videoProcessor,
           ffmpegReturnArguments,
           this
         );

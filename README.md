@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/SeydX/camera.ui/blob/master/images/logo.png">
+    <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/logo_hb.png">
 </p>
 
 # homebridge-camera-ui

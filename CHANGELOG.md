@@ -1,5 +1,24 @@
 # Changelog
 
+# NEXT
+
+## Other Changes
+- Reduced default videoanalysis sensitivity to 25 (camera.ui)
+- Removed session control (camera.ui)
+- Videoanalysis improvements (camera.ui)
+- Refactored web stream (camera.ui)
+- Improved camera pinging
+- Moved ENOENT messages to debug (eg. if recording not found) (camera.ui)
+- Minor UI improvements (camera.ui)
+
+## Bugfixes
+- Fixed an issue where resetting motion via MQTT didnt work (camera.ui)
+- Fixed an issue where the video analysis sensitivity does not work as desired (camera.ui)
+- Fixed an issue where camera source were taken instead of stillImageSource during fetching snapshot
+- Fixed an issue where mapping video/audio stream didnt work (ffmpeg)
+- Fixed an issue where starting the recording (HSV) with the doorbell ended immediately
+- Minor bugfixes
+
 # v5.0.4 - 2022-01-11
 
 ## Other Changes

@@ -8,17 +8,18 @@ const { Logger } = require('../../services/logger/logger.service');
 const compatibleAudio = /(aac)/;
 
 class RecordingDelegate {
-  constructor(api, accessory, cameraUi) {
+  constructor(api, accessory, cameraUi, videoProcessor) {
     this.api = api;
     this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
 
+    this.videoProcessor = videoProcessor;
+
     this.configuration = {};
     this.handlingStreamingRequest = false;
     this.session = null;
 
-    this.recordingDelayTimer = null;
     this.stopAfterMotionStop = false;
     this.closeReason = null;
   }
@@ -29,11 +30,6 @@ class RecordingDelegate {
 
     this.stopAfterMotionStop = false;
     this.closeReason = null;
-
-    if (this.recordingDelayTimer) {
-      clearTimeout(this.recordingDelayTimer);
-      this.recordingDelayTimer = null;
-    }
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
@@ -195,7 +191,7 @@ class RecordingDelegate {
     this.session = await cameraUtils.startFFMPegFragmetedMP4Session(
       this.accessory.displayName,
       videoConfig.debug,
-      this.accessory.context.config.videoProcessor,
+      this.videoProcessor,
       ffmpegInput,
       audioArguments,
       videoArguments
@@ -224,13 +220,9 @@ class RecordingDelegate {
 
           const isLast = this.stopAfterMotionStop;
 
-          if (!motionDetected && !this.recordingDelayTimer) {
+          if (!motionDetected && !this.stopAfterMotionStop) {
             // motion sensor timed out
-            this.log.debug('Ending recording session in 3s', this.accessory.displayName);
-
-            this.recordingDelayTimer = setTimeout(() => {
-              this.stopAfterMotionStop = true;
-            }, 3000);
+            this.stopAfterMotionStop = true;
           }
 
           yield {

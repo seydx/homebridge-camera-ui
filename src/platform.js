@@ -38,13 +38,15 @@ class HomebridgeCameraUI {
     this.cameraAccessories = [];
     this.devices = new Map();
 
+    const config_ = { ...config };
+
     // eslint-disable-next-line unicorn/no-array-for-each
-    config.cameras?.forEach(
+    config_.cameras?.forEach(
       (camera) =>
         (camera.recordOnMovement = camera.hsv && this.api.versionGreaterOrEqual('1.4.0-beta.4') ? false : true)
     );
 
-    this.cameraUi = new CameraUI(config, `${this.api.user.storagePath()}/camera.ui`, Logger, {
+    this.cameraUi = new CameraUI(config_, `${this.api.user.storagePath()}/camera.ui`, Logger, {
       moduleName: 'homebridge-camera-ui',
       moduleVersion: version,
       global: true,
@@ -158,14 +160,13 @@ class HomebridgeCameraUI {
     switch (device.subtype) {
       case 'camera': {
         accessory.category = this.api.hap.Categories.IP_CAMERA;
-        accessory.context.config.videoProcessor = this.config.options.videoProcessor;
 
         new MotionSensor(this.api, accessory, this.handler);
         new DoorbellSensor(this.api, accessory, this.handler);
         new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
         new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
 
-        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi);
+        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi, this.config.options.videoProcessor);
         accessory.configureController(cameraAccessory.controller);
 
         this.cameraAccessories.push(cameraAccessory);

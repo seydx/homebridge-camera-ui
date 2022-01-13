@@ -11,7 +11,7 @@ class Handler {
     this.motionTimers = new Map();
     this.doorbellTimers = new Map();
 
-    //handle motion from mqtt/http/smtp (passed through camera.ui)
+    //handle motion from mqtt/http/smtp/videoanalysis (passed through camera.ui)
     this.cameraUi.on('motion', (cameraName, trigger, state) => {
       this.handle(trigger, cameraName, state);
     });
@@ -66,25 +66,15 @@ class Handler {
   async motionHandler(accessory, active, manual) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
     const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
-    const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
-    const timeout = this.motionTimers.get(accessory.UUID);
-
-    /*if (active && accessory.context.config.hsv && accessory.context.hsvBusy) {
-      //Dont trigger motion sensor accessory, HSV not finished yet
-      if (motionTrigger) {
-        setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
-      }
-
-      return {
-        error: false,
-        message: 'Skip motion event, HSV process not finished',
-      };
-    }*/
 
     if (motionSensor) {
+      const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
+      const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
+      const timeout = this.motionTimers.get(accessory.UUID);
+
       if (timeout) {
         if (active) {
-          this.log.info('Motion ON (Skip motion event, timeout active)', accessory.displayName);
+          this.log.info('Motion ON (skip motion event, timeout active)', accessory.displayName);
 
           if (motionTrigger && manual) {
             setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
@@ -100,14 +90,17 @@ class Handler {
         }
       }
 
-      this.log.info(`Motion ${active ? 'ON' : 'OFF'}`, accessory.displayName);
-
       if (manual) {
         const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
         const atHome = generalSettings?.atHome || false;
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
         if (active && atHome && !cameraExcluded) {
+          this.log.info(
+            `Motion ON (skip motion event, at home is active and ${accessory.displayName} is not excluded)`,
+            accessory.displayName
+          );
+
           if (motionTrigger) {
             setTimeout(() => motionTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
           }
@@ -118,22 +111,24 @@ class Handler {
           };
         }
 
+        this.log.info(`Motion ${active ? 'ON' : 'OFF'}`, accessory.displayName);
+
         if (!accessory.context.config.hsv) {
           this.cameraUi.eventController.triggerEvent('motion', accessory.displayName, active);
         }
       }
 
       motionSensor.updateCharacteristic(this.hap.Characteristic.MotionDetected, active ? true : false);
+      motionTrigger?.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
 
-      if (motionTrigger) {
-        motionTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
-      }
+      if (active) {
+        if (accessory.context.config.motionDoorbell) {
+          doorbellSensor?.updateCharacteristic(
+            this.hap.Characteristic.ProgrammableSwitchEvent,
+            this.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
+          );
+        }
 
-      if (accessory.context.config.motionDoorbell) {
-        this.doorbellHandler(accessory, active, false, true);
-      }
-
-      if (active && timeoutConfig > 0) {
         const timer = setTimeout(() => {
           this.log.info('Motion handler timeout.', accessory.displayName);
 
@@ -164,28 +159,17 @@ class Handler {
     }
   }
 
-  async doorbellHandler(accessory, active, manual, fromMotion) {
-    const doorbell = accessory.getService(this.hap.Service.Doorbell);
+  async doorbellHandler(accessory, active, manual) {
+    const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
     const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
-    const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
-    const timeout = this.doorbellTimers.get(accessory.UUID);
 
-    /*if (active && accessory.context.config.hsv && accessory.context.hsvBusy) {
-      //Dont trigger motion sensor accessory, HSV not finished yet
-      if (doorbellTrigger) {
-        setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
-      }
+    if (doorbellSensor) {
+      const timeoutConfig = accessory.context.config.motionTimeout >= 0 ? accessory.context.config.motionTimeout : 1;
+      const timeout = this.doorbellTimers.get(accessory.UUID);
 
-      return {
-        error: false,
-        message: 'Skip doorbell event, HSV process not finished',
-      };
-    }*/
-
-    if (doorbell) {
-      if (timeout && !fromMotion) {
+      if (timeout) {
         if (active) {
-          this.log.info('Doorbell ON (Skip doorbell event, timeout active)', accessory.displayName);
+          this.log.info('Doorbell ON (skip doorbell event, doorbell timeout active)', accessory.displayName);
 
           if (doorbellTrigger && manual) {
             setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
@@ -201,14 +185,17 @@ class Handler {
         }
       }
 
-      this.log.info(`Doorbell ${active ? 'ON' : 'OFF'}${fromMotion ? ' (fromMotion)' : ''}`, accessory.displayName);
-
       if (manual) {
         const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
         const atHome = generalSettings?.atHome || false;
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
         if (active && atHome && !cameraExcluded) {
+          this.log.info(
+            `Doorbell ON (skip doorbell event, at home is active and ${accessory.displayName} is not excluded)`,
+            accessory.displayName
+          );
+
           if (doorbellTrigger) {
             setTimeout(() => doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false), 500);
           }
@@ -219,34 +206,36 @@ class Handler {
           };
         }
 
-        if (!fromMotion && manual && !accessory.context.config.hsv) {
+        if (!accessory.context.config.hsv) {
           this.cameraUi.eventController.triggerEvent('doorbell', accessory.displayName, active);
         }
       }
 
-      if (doorbellTrigger && !fromMotion) {
-        doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
-      }
+      this.log.info(`Doorbell ${active ? 'ON' : 'OFF'}`, accessory.displayName);
+
+      doorbellTrigger?.updateCharacteristic(this.hap.Characteristic.On, active ? true : false);
 
       if (active) {
-        doorbell.updateCharacteristic(
+        if (accessory.context.config.hsv) {
+          this.motionHandler(accessory, active, manual);
+        }
+
+        doorbellSensor.updateCharacteristic(
           this.hap.Characteristic.ProgrammableSwitchEvent,
           this.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
         );
 
-        if (timeoutConfig > 0 && !fromMotion) {
-          const timer = setTimeout(() => {
-            this.log.debug('Doorbell handler timeout.', accessory.displayName);
+        const timer = setTimeout(() => {
+          this.log.debug('Doorbell handler timeout.', accessory.displayName);
 
-            this.doorbellTimers.delete(accessory.UUID);
+          this.doorbellTimers.delete(accessory.UUID);
 
-            if (doorbellTrigger) {
-              doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
-            }
-          }, timeoutConfig * 1000);
+          if (doorbellTrigger) {
+            doorbellTrigger.updateCharacteristic(this.hap.Characteristic.On, false);
+          }
+        }, timeoutConfig * 1000);
 
-          this.doorbellTimers.set(accessory.UUID, timer);
-        }
+        this.doorbellTimers.set(accessory.UUID, timer);
       }
 
       return {
