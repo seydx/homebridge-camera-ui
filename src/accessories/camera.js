@@ -806,8 +806,8 @@ class Camera {
 
       this.ongoingSessions.delete(sessionId);
 
-      const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
-      controller?.session.closeSession();
+      //const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
+      //controller?.session.closeSession();
 
       this.log.info('Stopped video stream.', this.accessory.displayName);
     }

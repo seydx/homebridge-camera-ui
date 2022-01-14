@@ -54,8 +54,7 @@ class MotionService {
 
       switchService.getCharacteristic(this.api.hap.Characteristic.On).onSet(async (state) => {
         //this.log.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
-        const result = await this.handler.motionHandler(this.accessory, state, true);
-        this.log.debug(JSON.stringify(result), this.accessory.displayName);
+        await this.handler.motionHandler(this.accessory, state, true);
       });
     } else {
       if (switchService) {

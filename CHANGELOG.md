@@ -1,6 +1,18 @@
 # Changelog
 
-# NEXT
+# v5.0.6 - 2022-01-14
+
+## Other Changes
+- Videoanalysis: Reduced dwell time from 120s to 90s (camera.ui)
+- Videoanalysis: Minor improvements (camera.ui)
+- Refactored log output for better understanding of the flow of events
+- Refactored config.schema.json (@grzegorz914)
+
+## Bugfixes
+- Fixed an issue where prebuffering/videoanalysis didnt work on cameras with mapped video/audio stream (camera.ui)
+- Minor bugfixes
+
+# v5.0.5 - 2022-01-13
 
 ## Other Changes
 - Reduced default videoanalysis sensitivity to 25 (camera.ui)

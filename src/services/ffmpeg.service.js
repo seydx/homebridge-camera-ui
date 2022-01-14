@@ -2,7 +2,6 @@
 
 const { spawn } = require('child_process');
 const readline = require('readline');
-const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
 
 const { Logger } = require('../../services/logger/logger.service');
 
@@ -53,11 +52,7 @@ class FfmpegProcess {
       if (/\[(panic|fatal|error)]/.test(line)) {
         errors.push(line);
 
-        if (!cameraUtils.ignoredFfmpegError(line)) {
-          this.log.error(line, cameraName, 'Homebridge');
-        } else {
-          this.log.debug(line, cameraName);
-        }
+        this.log.debug(line, cameraName);
       } else if (videoDebug) {
         this.log.debug(line, cameraName);
       }

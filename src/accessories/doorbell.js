@@ -48,8 +48,7 @@ class DoorbellService {
 
       switchService.getCharacteristic(this.api.hap.Characteristic.On).onSet(async (state) => {
         //this.log.info(`Doorbell ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
-        const result = await this.handler.doorbellHandler(this.accessory, state, true, false);
-        this.log.debug(JSON.stringify(result), this.accessory.displayName);
+        await this.handler.doorbellHandler(this.accessory, state, true, false);
       });
     } else {
       if (switchService) {
