@@ -49,8 +49,6 @@ export default {
         this.interfaceLink = `${protocol}://${window.location.hostname}:${port}`;
       }
 
-      console.log(this.interfaceLink);
-
       window.homebridge.hideSpinner();
     });
   },

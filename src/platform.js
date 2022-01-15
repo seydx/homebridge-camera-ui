@@ -39,12 +39,10 @@ class HomebridgeCameraUI {
     this.devices = new Map();
 
     const config_ = { ...config };
+    const hsvSupported = this.api.versionGreaterOrEqual('1.4.0-beta.4');
 
     // eslint-disable-next-line unicorn/no-array-for-each
-    config_.cameras?.forEach(
-      (camera) =>
-        (camera.recordOnMovement = camera.hsv && this.api.versionGreaterOrEqual('1.4.0-beta.4') ? false : true)
-    );
+    config_.cameras?.forEach((camera) => (camera.recordOnMovement = camera.hsv && hsvSupported ? false : true));
 
     this.cameraUi = new CameraUI(config_, `${this.api.user.storagePath()}/camera.ui`, Logger, {
       moduleName: 'homebridge-camera-ui',
@@ -166,7 +164,7 @@ class HomebridgeCameraUI {
         new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
         new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
 
-        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi, this.config.options.videoProcessor);
+        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi, this.config);
         accessory.configureController(cameraAccessory.controller);
 
         this.cameraAccessories.push(cameraAccessory);
@@ -218,6 +216,10 @@ class HomebridgeCameraUI {
 
   // emitted from camera.ui
   async changeConfig(configJson) {
+    if (!configJson) {
+      return;
+    }
+
     try {
       this.log.info('Config changed through interface, saving...');
 
@@ -249,7 +251,6 @@ class HomebridgeCameraUI {
 
         if (camera) {
           camera.accessory.context.config = device;
-          camera.accessory.context.config.videoProcessor = this.config.options.videoProcessor;
 
           for (const session in camera.ongoingSessions) {
             camera.stopStream(session);
@@ -289,8 +290,12 @@ class HomebridgeCameraUI {
 
   // emitted from camera.ui
   async addCamera(camera) {
+    if (!camera) {
+      return;
+    }
+
     try {
-      this.log.info('Added a new camera through interface, saving..', camera.name);
+      this.log.debug('Adding new camera..', camera.name);
 
       camera.hsv = !camera.recordOnMovement;
       delete camera.recordOnMovement;
@@ -319,23 +324,27 @@ class HomebridgeCameraUI {
 
       this.configure();
 
-      this.log.info('Camera added to HomeKit and config.json saved!', camera.name);
+      this.log.debug('Camera added to HomeKit and config.json saved!', camera.name);
     } catch (error) {
-      this.log.info('An error occured during adding new camera');
+      this.log.info('An error occured during adding new camera through camera.ui');
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
 
   // emitted from camera.ui
-  async removeCamera(camera) {
+  async removeCamera(cameraName) {
+    if (!cameraName) {
+      return;
+    }
+
     try {
-      this.log.info('Removing camera...', camera.name);
+      this.log.debug('Removing camera...', cameraName);
 
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
       for (const index in config.platforms) {
         if (config.platforms[index].platform === 'CameraUI') {
-          config.platforms[index].cameras = config.platforms[index].cameras?.filter((cam) => cam.name !== camera.name);
+          config.platforms[index].cameras = config.platforms[index].cameras?.filter((cam) => cam.name !== cameraName);
         }
       }
 
@@ -344,14 +353,14 @@ class HomebridgeCameraUI {
       const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
       this.config = new Config(configPlatform);
 
-      const uuid = UUIDGen.generate(camera.name);
+      const uuid = UUIDGen.generate(cameraName);
       this.devices.delete(uuid);
 
       this.configure();
 
-      this.log.info('Camera removed from HomeKit and config.json saved!', camera.name);
+      this.log.debug('Camera removed from HomeKit and config.json saved!', cameraName);
     } catch (error) {
-      this.log.info('An error occured during adding new camera');
+      this.log.info('An error occured during removing camera through camera.ui', cameraName);
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
@@ -359,7 +368,7 @@ class HomebridgeCameraUI {
   // emitted from camera.ui
   async removeCameras() {
     try {
-      this.log.info('Removing all cameras...');
+      this.log.debug('Removing all cameras...');
 
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
@@ -380,9 +389,9 @@ class HomebridgeCameraUI {
 
       this.configure();
 
-      this.log.info('Cameras removed from HomeKit and config.json saved!');
+      this.log.debug('Cameras removed from HomeKit and config.json saved!');
     } catch (error) {
-      this.log.info('An error occured during adding new camera');
+      this.log.info('An error occured during removing cameras through camera.ui');
       this.log.error(error, 'Config', 'Homebridge');
     }
   }

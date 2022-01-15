@@ -253,19 +253,25 @@
           "switches": {
             "title": "Enable Dummy Switches",
             "type": "boolean",
-            "description": "Enables dummy switches to trigger motion and/or doorbell, if either of those are enabled. When enabled there will be an additional switch that triggers the motion or doorbell event."
+            "description": "Enables dummy switches to trigger motion and/or doorbell, if either of those are enabled. When enabled there will be an additional switch that triggers the motion or doorbell event.",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].motion === true || model.cameras[arrayIndices[0]].doorbell === true;"
+            }
           },
           "motionTimeout": {
             "title": "Automatic Motion Reset (Seconds)",
             "type": "integer",
             "placeholder": 15,
             "minimum": 15,
-            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger for MQTT or HTTP. This will also affect the interface timeout."
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This will also affect the interface timeout."
           },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",
             "type": "boolean",
-            "description": "Rings the doorbell when motion is activated. This allows for motion alerts to appear on Apple TVs."
+            "description": "Rings the doorbell when motion is activated. This allows for motion alerts to appear on Apple TVs.",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].motion === true && model.cameras[arrayIndices[0]].doorbell === true;"
+            }
           },
           "unbridge": {
             "title": "Unbridge Camera (Recommended)",
@@ -285,7 +291,10 @@
           "forcePrebuffering": {
             "title": "Force Prebuffering",
             "type": "boolean",
-            "description": "For cameras without a H264 stream. If set, camera.ui will start prebuffering with reencoding the stream. Caution: This will lead to a higher CPU load!"
+            "description": "For cameras without a H264 stream. If set, camera.ui will start prebuffering with reencoding the stream. Caution: This will lead to a higher CPU load!",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].prebuffering === true;"
+            }
           },
           "prebufferLength": {
             "title": "Prebuffer Length",
@@ -293,7 +302,10 @@
             "default": 4,
             "minimum": 4,
             "maximum": 8,
-            "description": "The length of the requested prebuffered video (s)"
+            "description": "The length of the requested prebuffered video (s)",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].prebuffering === true;"
+            }
           },
           "videoConfig": {
             "title": "Video Configuration",
@@ -325,7 +337,8 @@
                 "title": "RTSP Transport",
                 "required": true,
                 "type": "string",
-                "oneOf": [{
+                "oneOf": [
+                  {
                     "title": "udp",
                     "enum": ["udp"]
                   },
@@ -528,7 +541,7 @@
             "properties": {
               "active": {
                 "title": "Active",
-                "description": "Activates Video Analysis for motion detection. (Prebuffer needs to be enabled for video analysis to work)",
+                "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled)",
                 "type": "boolean",
                 "default": false
               }
@@ -538,7 +551,8 @@
       }
     }
   },
-  "layout": [{
+  "layout": [
+    {
       "type": "section",
       "title": "Interface",
       "expandable": true,
@@ -562,111 +576,113 @@
       "title": "Cameras",
       "expandable": true,
       "expanded": false,
-      "items": [{
-        "key": "cameras",
-        "type": "tabarray",
-        "title": "{{ value.name || 'new Camera' }}",
-        "items": [
-          "cameras[].name",
-          "cameras[].unbridge",
-          "cameras[].hsv",
-          "cameras[].prebuffering",
-          "cameras[].forcePrebuffering",
-          "cameras[].prebufferLength",
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "Branding",
-            "expandable": true,
-            "expanded": false,
-            "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
-          },
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "Stream Configuration",
-            "expandable": true,
-            "expanded": false,
-            "items": [
-              "cameras[].videoConfig.source",
-              "cameras[].videoConfig.subSource",
-              "cameras[].videoConfig.stillImageSource",
-              "cameras[].videoConfig.maxStreams",
-              "cameras[].videoConfig.maxWidth",
-              "cameras[].videoConfig.maxHeight",
-              "cameras[].videoConfig.maxFPS",
-              "cameras[].videoConfig.maxBitrate",
-              "cameras[].videoConfig.audio",
-              "cameras[].videoConfig.forceMax",
-              "cameras[].videoConfig.debug"
-            ]
-          },
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "Advanced Stream Configuration",
-            "expandable": true,
-            "expanded": false,
-            "items": [
-              "cameras[].videoConfig.readRate",
-              "cameras[].videoConfig.acodec",
-              "cameras[].videoConfig.vcodec",
-              "cameras[].videoConfig.rtspTransport",
-              "cameras[].videoConfig.analyzeDuration",
-              "cameras[].videoConfig.probeSize",
-              "cameras[].videoConfig.reorderQueueSize",
-              "cameras[].videoConfig.maxDelay",
-              "cameras[].videoConfig.stimeout",
-              "cameras[].videoConfig.packetSize",
-              "cameras[].videoConfig.mapvideo",
-              "cameras[].videoConfig.mapaudio",
-              "cameras[].videoConfig.videoFilter",
-              "cameras[].videoConfig.encoderOptions",
-              "cameras[].videoConfig.returnAudioTarget",
-              "cameras[].videoConfig.debugReturn"
-            ]
-          },
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "Sensors and Switches",
-            "expandable": true,
-            "expanded": false,
-            "items": [
-              "cameras[].motion",
-              "cameras[].doorbell",
-              "cameras[].switches",
-              "cameras[].motionTimeout",
-              "cameras[].motionDoorbell",
-              "cameras[].excludeSwitch",
-              "cameras[].privacySwitch"
-            ]
-          },
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "MQTT Options",
-            "expandable": true,
-            "expanded": false,
-            "items": [
-              "cameras[].mqtt.motionTopic",
-              "cameras[].mqtt.motionMessage",
-              "cameras[].mqtt.motionResetTopic",
-              "cameras[].mqtt.motionResetMessage",
-              "cameras[].mqtt.doorbellTopic",
-              "cameras[].mqtt.doorbellMessage"
-            ]
-          },
-          {
-            "key": "cameras[]",
-            "type": "section",
-            "title": "Video Analysis",
-            "expandable": true,
-            "expanded": false,
-            "items": ["cameras[].videoanalysis.active"]
-          }
-        ]
-      }]
+      "items": [
+        {
+          "key": "cameras",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new Camera' }}",
+          "items": [
+            "cameras[].name",
+            "cameras[].unbridge",
+            "cameras[].hsv",
+            "cameras[].prebuffering",
+            "cameras[].forcePrebuffering",
+            "cameras[].prebufferLength",
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Branding",
+              "expandable": true,
+              "expanded": false,
+              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Stream Configuration",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].videoConfig.source",
+                "cameras[].videoConfig.subSource",
+                "cameras[].videoConfig.stillImageSource",
+                "cameras[].videoConfig.maxStreams",
+                "cameras[].videoConfig.maxWidth",
+                "cameras[].videoConfig.maxHeight",
+                "cameras[].videoConfig.maxFPS",
+                "cameras[].videoConfig.maxBitrate",
+                "cameras[].videoConfig.audio",
+                "cameras[].videoConfig.forceMax",
+                "cameras[].videoConfig.debug"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Advanced Stream Configuration",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].videoConfig.readRate",
+                "cameras[].videoConfig.acodec",
+                "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.rtspTransport",
+                "cameras[].videoConfig.analyzeDuration",
+                "cameras[].videoConfig.probeSize",
+                "cameras[].videoConfig.reorderQueueSize",
+                "cameras[].videoConfig.maxDelay",
+                "cameras[].videoConfig.stimeout",
+                "cameras[].videoConfig.packetSize",
+                "cameras[].videoConfig.mapvideo",
+                "cameras[].videoConfig.mapaudio",
+                "cameras[].videoConfig.videoFilter",
+                "cameras[].videoConfig.encoderOptions",
+                "cameras[].videoConfig.returnAudioTarget",
+                "cameras[].videoConfig.debugReturn"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Sensors and Switches",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].motion",
+                "cameras[].doorbell",
+                "cameras[].switches",
+                "cameras[].motionTimeout",
+                "cameras[].motionDoorbell",
+                "cameras[].excludeSwitch",
+                "cameras[].privacySwitch"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "MQTT Options",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].mqtt.motionTopic",
+                "cameras[].mqtt.motionMessage",
+                "cameras[].mqtt.motionResetTopic",
+                "cameras[].mqtt.motionResetMessage",
+                "cameras[].mqtt.doorbellTopic",
+                "cameras[].mqtt.doorbellMessage"
+              ]
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Video Analysis",
+              "expandable": true,
+              "expanded": false,
+              "items": ["cameras[].videoanalysis.active"]
+            }
+          ]
+        }
+      ]
     },
     {
       "key": "options",

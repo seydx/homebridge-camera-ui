@@ -1,4 +1,26 @@
 # Changelog
+All notable changes to this project will be documented in this file.
+
+# v5.0.7 - 2022-01-15
+
+## Other Changes
+- Videoanalysis: Reduced the dwell time from 90s to 60s (camera.ui)
+- Videoanalysis: Removed `-hwaccel` from FFMPEG parameters (camera.ui)
+- Videoanalysis: Added `pixel/color difference` slider to be able to adjust the video analysis even more precisely within ui (camera.ui)
+- Prebuffering: Added `-preset:v ultrafast` if `forcePrebuffering` is enabled (camera.ui)
+- Added the possibility to control the motion sensor (OFF state) via the camera instead of via motionTimeout (set `"motionTimeout": 0`, the camera must be able to send a `OFF` message e.g. via MQTT or Videoanalysis)
+- Removed motionTimeout for DOORBELLs
+- More translation added (camera.ui)
+- Config.schema.json improvements
+- Minor improvements (camera.ui)
+
+## Bugfixes
+- Fixed an isue where crashing FFmpeg did not display an error message in the log (camera.ui)
+- Fixed an issue where the dwell time could start before the motion handler was initialized (camera.ui)
+- Fixed an issue where the restart timer for prebuffering and videoanalysis were calculated wrong (camera.ui)
+- Fixed an issue where removing the camera through interface crashed the process
+- Fixed an issue where the interface link was not displayed in homebridge-config-ui-x if no port was set in config.json
+- Minor Bugfixes
 
 # v5.0.6 - 2022-01-14
 

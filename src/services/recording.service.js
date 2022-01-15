@@ -8,13 +8,12 @@ const { Logger } = require('../../services/logger/logger.service');
 const compatibleAudio = /(aac)/;
 
 class RecordingDelegate {
-  constructor(api, accessory, cameraUi, videoProcessor) {
+  constructor(api, accessory, cameraUi, config) {
     this.api = api;
     this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
-
-    this.videoProcessor = videoProcessor;
+    this.config = config;
 
     this.configuration = {};
     this.handlingStreamingRequest = false;
@@ -191,7 +190,7 @@ class RecordingDelegate {
     this.session = await cameraUtils.startFFMPegFragmetedMP4Session(
       this.accessory.displayName,
       videoConfig.debug,
-      this.videoProcessor,
+      this.config.options.videoProcessor,
       ffmpegInput,
       audioArguments,
       videoArguments

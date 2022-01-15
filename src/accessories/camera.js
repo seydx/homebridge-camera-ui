@@ -23,13 +23,12 @@ const offlineImageInBytes = fs.readFileSync(offlineImage);
 const privacyImageInBytes = fs.readFileSync(privacyImage);
 
 class Camera {
-  constructor(api, accessory, cameraUi, videoProcessor) {
+  constructor(api, accessory, cameraUi, config) {
     this.api = api;
     this.log = Logger.log;
     this.accessory = accessory;
     this.cameraUi = cameraUi;
-
-    this.videoProcessor = videoProcessor;
+    this.config = config;
 
     this.services = [];
     this.streamControllers = [];
@@ -70,7 +69,7 @@ class Camera {
         recordingCodecs.push(entry);
       }
 
-      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi, this.videoProcessor);
+      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi, config);
     }
 
     this.controller = new this.api.hap.CameraController({
@@ -161,7 +160,7 @@ class Camera {
       sensors: this.accessory.context.config.hsv
         ? {
             motion: this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion') || true,
-            occupancy: this.accessory.getServiceById(this.api.hap.Service.OccupancySensor, 'occupancy') || false,
+            occupancy: this.accessory.getServiceById(this.api.hap.Service.OccupancySensor, 'occupancy') || false, //not implemented yet
           }
         : undefined,
     });
@@ -291,11 +290,11 @@ class Camera {
       ffmpegArguments.push('-f', 'image2', '-');
 
       this.log.debug(
-        `Snapshot command: ${this.videoProcessor} ${ffmpegArguments.join(' ')}`,
+        `Snapshot command: ${this.config.options.videoProcessor} ${ffmpegArguments.join(' ')}`,
         this.accessory.displayName
       );
 
-      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments, {
+      const ffmpeg = spawn(this.config.options.videoProcessor, ffmpegArguments, {
         env: process.env,
       });
 
@@ -369,9 +368,12 @@ class Camera {
 
       ffmpegArguments.push('-f', 'image2', '-');
 
-      this.log.debug(`Resize command: ${this.videoProcessor} ${ffmpegArguments.join(' ')}`, this.accessory.displayName);
+      this.log.debug(
+        `Resize command: ${this.config.options.videoProcessor} ${ffmpegArguments.join(' ')}`,
+        this.accessory.displayName
+      );
 
-      const ffmpeg = spawn(this.videoProcessor, ffmpegArguments, {
+      const ffmpeg = spawn(this.config.options.videoProcessor, ffmpegArguments, {
         env: process.env,
       });
 
@@ -699,7 +701,7 @@ class Camera {
         this.accessory.displayName,
         videoConfig.debug,
         request.sessionID,
-        this.videoProcessor,
+        this.config.options.videoProcessor,
         ffmpegArguments,
         this,
         callback
@@ -754,7 +756,7 @@ class Camera {
           this.accessory.displayName,
           videoConfig.debug,
           request.sessionID,
-          this.videoProcessor,
+          this.config.options.videoProcessor,
           ffmpegReturnArguments,
           this
         );

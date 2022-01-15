@@ -178,12 +178,20 @@ class ConfigSetup {
           camera.videoConfig.subSource = camera.videoConfig.source;
         }
 
-        // min motionTimeout
-        camera.motionTimeout = camera.motionTimeout >= 15 ? camera.motionTimeout : 15;
+        camera.motionTimeout =
+          camera.motionTimeout === undefined || !(camera.motionTimeout >= 0) ? 15 : camera.motionTimeout;
 
         // validate prebufferLength
         camera.prebufferLength =
           (camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4) * 1000;
+
+        // setup mqtt
+        camera.mqtt = camera.mqtt || {};
+
+        // setup video analysis
+        camera.videoanalysis = {
+          active: camera.videoanalysis?.active || false,
+        };
 
         return camera;
       })
