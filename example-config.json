@@ -53,6 +53,7 @@
           "motion": true,
           "doorbell": true,
           "switches": false,
+          "useInterfaceTimer": true,
           "motionTimeout": 15,
           "motionDoorbell": false,
           "unbridge": true,
