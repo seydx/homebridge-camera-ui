@@ -50,8 +50,18 @@ class Handler {
     const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
 
     if (motionSensor) {
+      const activeState = Boolean(active);
+      const sensorState = Boolean(motionSensor.getCharacteristic(this.hap.Characteristic.MotionDetected).value);
+
+      if (activeState === sensorState) {
+        return;
+      }
+
+      const interfaceSettings = await this.cameraUi?.database?.interface?.get('settings').value();
       const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
-      const timeoutConfig = accessory.context.config.motionTimeout;
+      const timeoutConfig = !accessory.context.config.useInterfaceTimer
+        ? accessory.context.config.motionTimeout
+        : interfaceSettings?.recordings?.timer || 15;
       const timeout = this.motionTimers.get(accessory.UUID);
 
       if (timeout) {
@@ -70,9 +80,8 @@ class Handler {
       }
 
       if (manual) {
-        const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
-        const atHome = generalSettings?.atHome || false;
-        const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
+        const atHome = interfaceSettings?.general?.atHome || false;
+        const cameraExcluded = (interfaceSettings?.general?.exclude || []).includes(accessory.displayName);
 
         if (active && atHome && !cameraExcluded) {
           this.log.info(

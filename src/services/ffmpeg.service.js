@@ -41,7 +41,7 @@ class FfmpegProcess {
       terminal: false,
     });
 
-    const errors = [];
+    let errors = [];
 
     stderr.on('line', (line) => {
       if (callback) {
@@ -50,6 +50,7 @@ class FfmpegProcess {
       }
 
       if (/\[(panic|fatal|error)]/.test(line)) {
+        errors = errors.slice(-5);
         errors.push(line);
 
         this.log.debug(line, cameraName);

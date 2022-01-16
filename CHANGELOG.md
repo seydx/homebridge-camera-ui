@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.8 - 2022-01-16
+
+## Other changes
+- Videoanalysis: Using a default zone if none was created (camera.ui)
+- Videoanalysis: Increases default sensitivity (camera.ui)
+- Telegram: Stop Telegram bot after message is send (camera.ui)
+- Added default values to config.schema.json
+- Added `"useInterfaceTimer"` to config.schema.json
+  - If enabled, the recording timer from camera.ui will be used for `"motionTimeout"`.
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where it was not possible to set the value for "motionTimeout" below 15s via homebridge-config-ui-x
+- Fixed an issue where the max motion detection timer did not reset itself when the motion sensor was turned off.
+- Minor bugfixes
+
 # v5.0.7 - 2022-01-15
 
 ## Other Changes

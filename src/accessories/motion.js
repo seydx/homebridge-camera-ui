@@ -57,9 +57,18 @@ class MotionService {
               }
 
               this.motionTimeout = setTimeout(() => {
-                this.log.debug('Motion OFF (max detection time reached)', this.accessory.displayName);
-                service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).updateValue(false);
+                const newState = service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).value;
+
+                if (newState) {
+                  this.log.debug('Motion OFF - Max detection time reached', this.accessory.displayName);
+                  service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).updateValue(false);
+                }
               }, MAX_MOTION_DETECTED_TIME);
+            } else {
+              if (this.motionTimeout) {
+                clearTimeout(this.motionTimeout);
+                this.motionTimeout = null;
+              }
             }
           }
         })

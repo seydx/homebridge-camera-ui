@@ -13,7 +13,8 @@
     "port": {
       "title": "User Interface Port",
       "type": "integer",
-      "description": "User Interface port"
+      "description": "User Interface port",
+      "default": 8081
     },
     "atHomeSwitch": {
       "title": "At Home Switch",
@@ -103,7 +104,6 @@
           "title": "HTTP Localhost Only",
           "type": "boolean",
           "description": "Only allow HTTP calls from localhost. Useful if using helper plugins that translate to HTTP.",
-          "default": false,
           "condition": {
             "functionBody": "return model.http.active === true;"
           }
@@ -243,7 +243,8 @@
           "motion": {
             "title": "Enable Motion Sensor",
             "type": "boolean",
-            "description": "Exposes the motion sensor for this camera. This can be triggered with the dummy switches, MQTT messages, or via HTTP, depending on what features are enabled in the config."
+            "description": "Exposes the motion sensor for this camera. This can be triggered with the dummy switches, MQTT messages, or via HTTP, depending on what features are enabled in the config.",
+            "default": true
           },
           "doorbell": {
             "title": "Enable Doorbell",
@@ -258,12 +259,18 @@
               "functionBody": "return model.cameras[arrayIndices[0]].motion === true || model.cameras[arrayIndices[0]].doorbell === true;"
             }
           },
+          "useInterfaceTimer": {
+            "title": "Interface Recording Timer",
+            "type": "boolean",
+            "description": "If enabled, the recording timer from camera.ui will be used for \"motionTimeout\"."
+          },
           "motionTimeout": {
             "title": "Automatic Motion Reset (Seconds)",
             "type": "integer",
             "placeholder": 15,
-            "minimum": 15,
-            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This will also affect the interface timeout."
+            "minimum": 0,
+            "maximum": 170,
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This will also affect the interface timeout (when used with HKSV, this reflects the length of the recording)"
           },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",
@@ -281,12 +288,14 @@
           "hsv": {
             "title": "HomeKit Secure Video (HSV)",
             "type": "boolean",
-            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage."
+            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage.",
+            "default": true
           },
           "prebuffering": {
             "title": "Prebuffering",
             "type": "boolean",
-            "description": "Enables camera video prebuffering."
+            "description": "Enables camera video prebuffering.",
+            "default": true
           },
           "forcePrebuffering": {
             "title": "Force Prebuffering",
@@ -336,6 +345,7 @@
               "rtspTransport": {
                 "title": "RTSP Transport",
                 "required": true,
+                "default": "tcp",
                 "type": "string",
                 "oneOf": [
                   {
@@ -385,7 +395,7 @@
               "maxStreams": {
                 "title": "Maximum Concurrent Streams",
                 "type": "integer",
-                "placeholder": 2,
+                "default": 2,
                 "minimum": 1,
                 "description": "The maximum number of streams that will be allowed at once to this camera."
               },
@@ -427,7 +437,7 @@
               "vcodec": {
                 "title": "Video Codec",
                 "type": "string",
-                "placeholder": "libx264",
+                "default": "copy",
                 "typeahead": {
                   "source": ["libx264", "h264_omx", "h264_videotoolbox", "copy"]
                 },
@@ -436,7 +446,7 @@
               "acodec": {
                 "title": "Audio Codec",
                 "type": "string",
-                "placeholder": "libfdk_aac",
+                "default": "libfdk_aac",
                 "typeahead": {
                   "source": ["libfdk_aac", "copy"]
                 },
@@ -456,7 +466,7 @@
                 "description": "Socket TCP I/O timeout in seconds. If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time, if no response comes (-stimeout).",
                 "minimum": 0,
                 "maximum": 60,
-                "placeholder": 10
+                "default": 10
               },
               "videoFilter": {
                 "title": "Additional Video Filters",
@@ -482,7 +492,8 @@
               "audio": {
                 "title": "Enable Audio",
                 "type": "boolean",
-                "description": "Enables audio streaming from camera."
+                "description": "Enables audio streaming from camera.",
+                "default": false
               },
               "debug": {
                 "title": "FFmpeg Debug Logging",
@@ -543,7 +554,7 @@
                 "title": "Active",
                 "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled)",
                 "type": "boolean",
-                "default": false
+                "default": true
               }
             }
           }
@@ -651,6 +662,7 @@
                 "cameras[].motion",
                 "cameras[].doorbell",
                 "cameras[].switches",
+                "cameras[].useInterfaceTimer",
                 "cameras[].motionTimeout",
                 "cameras[].motionDoorbell",
                 "cameras[].excludeSwitch",

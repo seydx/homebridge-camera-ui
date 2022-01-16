@@ -298,7 +298,7 @@ class Camera {
         env: process.env,
       });
 
-      const errors = [];
+      let errors = [];
 
       let snapshotBuffer = Buffer.alloc(0);
 
@@ -314,7 +314,10 @@ class Camera {
         resolve(offlineImageInBytes);
       });
 
-      ffmpeg.stderr.on('data', (data) => errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, '')));
+      ffmpeg.stderr.on('data', (data) => {
+        errors = errors.slice(-5);
+        errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, ''));
+      });
 
       ffmpeg.on('close', () => {
         if (snapshotBuffer.length > 0) {
