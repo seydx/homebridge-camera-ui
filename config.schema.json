@@ -272,7 +272,7 @@
             "maximum": 170,
             "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This will also affect the interface timeout (when used with HKSV, this reflects the length of the recording)",
             "condition": {
-              "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === true"
+              "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === false"
             }
           },
           "motionDoorbell": {
