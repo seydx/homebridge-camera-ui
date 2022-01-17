@@ -88,6 +88,9 @@
           },
           "videoanalysis": {
             "active": true
+          },
+          "smtp": {
+            "email": "Custom Camera Name"
           }
         },
         {

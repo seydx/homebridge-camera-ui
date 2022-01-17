@@ -46,6 +46,7 @@ class MotionService {
 
       service
         .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
+        .updateValue(false)
         .on('change', (context) => {
           if (context.oldValue !== context.newValue) {
             const motionDetected = context.newValue;
@@ -71,8 +72,7 @@ class MotionService {
               }
             }
           }
-        })
-        .updateValue(false);
+        });
     } else {
       if (service) {
         this.log.debug('Removing motion sensor service', this.accessory.displayName);

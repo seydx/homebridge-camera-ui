@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# Next
+
+## Other Changes
+- Videoanalysis: Improved log output (debug level) (camera.ui)
+- Videoanalysis: Dwell time is now configurable within interface (minimum 15s) (camera.ui)
+- SMTP: It is now possible to modify the email adress for a camera (Settings > Cameras > Camera > Alarm > SMTP) (camera.ui)
+- Added `"smtp.email"` to config.schema.json in `cameras` block
+  - The email address (without everything after @) to be assigned to this camera (e.g. "my test camera". If not defined, the camera name will be used)
+- Improved config.schema.json (@grzegorz914)
+- Telegram: Switched to `node-telegram-bot-api` (camera.ui)
+- Minor UI improvements (camera.ui)
+
+## Bugfixes
+- Fixed an issue that sometimes prevented the interface from loading (camera.ui)
+- Fixed an issue where the profile picture did not update immediately after uploaded a new one (camera.ui)
+- Fixed translation issues on `/start` page (camera.ui)
+- Fixed an issue where the MQTT messages could not be mapped correctly (camera.ui)
+- Minor bugfixes
+
+## Supporter
+A big THANK YOU goes to everyone who supports the project. I could fix so many bugs and make it even better for everyone. Also thank you very much for your donations, more features will come in the future once v5.0 is stable enough for everyone. Thank you very much ❤️
+
 # v5.0.8 - 2022-01-16
 
 ## Other changes

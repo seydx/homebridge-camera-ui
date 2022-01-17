@@ -185,6 +185,11 @@ class ConfigSetup {
         camera.prebufferLength =
           (camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4) * 1000;
 
+        // setup smtp
+        camera.smtp = camera.smtp || {
+          email: camera.name,
+        };
+
         // setup mqtt
         camera.mqtt = camera.mqtt || {};
 
