@@ -696,7 +696,10 @@
                 "cameras[].mqtt.motionResetMessage",
                 "cameras[].mqtt.doorbellTopic",
                 "cameras[].mqtt.doorbellMessage"
-              ]
+              ],
+              "condition": {
+                "functionBody": "return model.mqtt.active === true;"
+              }
             },
             {
               "key": "cameras[]",
@@ -704,7 +707,10 @@
               "title": "SMTP Options",
               "expandable": true,
               "expanded": false,
-              "items": ["cameras[].smtp.email"]
+              "items": ["cameras[].smtp.email"],
+              "condition": {
+                "functionBody": "return model.smtp.active === true;"
+              }
             },
             {
               "key": "cameras[]",
