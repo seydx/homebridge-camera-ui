@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-# Next
+# v5.0.9 - 2022-01-17
 
 ## Other Changes
 - Videoanalysis: Improved log output (debug level) (camera.ui)
@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 - Minor bugfixes
 
 ## Supporter
-A big THANK YOU goes to everyone who supports the project. I could fix so many bugs and make it even better for everyone. Also thank you very much for your donations, more features will come in the future once v5.0 is stable enough for everyone. Thank you very much ❤️
+A big THANK YOU goes to everyone who supports this project. I could fix so many bugs and make it even better for everyone. Also thank you very much for your donations, more features will come in the future once v5.0 is stable enough for everyone. Thank you very much ❤️
 
 # v5.0.8 - 2022-01-16
 
