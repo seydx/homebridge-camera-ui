@@ -23,7 +23,7 @@
     "ping": "^0.4.1"
   },
   "devDependencies": {
-    "@babel/core": "7.16.7",
+    "@babel/core": "7.16.10",
     "@babel/eslint-parser": "7.16.5",
     "@babel/eslint-plugin": "7.16.5",
     "concurrently": "6.5.1",
