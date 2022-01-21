@@ -157,6 +157,14 @@
           "condition": {
             "functionBody": "return model.ftp.active === true;"
           }
+        },
+        "useFile": {
+          "title": "Use File Camera Name",
+          "description": "If enabled, the file will be used as a camera name instead of the directory",
+          "type": "boolean",
+          "condition": {
+            "functionBody": "return model.ftp.active === true;"
+          }
         }
       }
     },
@@ -286,7 +294,8 @@
           "unbridge": {
             "title": "Unbridge Camera (Recommended)",
             "type": "boolean",
-            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually."
+            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually.",
+            "default": true
           },
           "hsv": {
             "title": "HomeKit Secure Video (HSV)",
@@ -347,8 +356,7 @@
               },
               "rtspTransport": {
                 "title": "RTSP Transport",
-                "required": true,
-                "default": "tcp",
+                "placeholder": "tcp",
                 "type": "string",
                 "oneOf": [
                   {
@@ -468,8 +476,7 @@
                 "type": "number",
                 "description": "Socket TCP I/O timeout in seconds. If you have problems with hanging FFmpeg processes in the background, you can enter any value here to stop the process automatically after the entered time, if no response comes (-stimeout).",
                 "minimum": 0,
-                "maximum": 60,
-                "default": 10
+                "maximum": 60
               },
               "videoFilter": {
                 "title": "Additional Video Filters",
@@ -554,9 +561,19 @@
             "type": "object",
             "properties": {
               "email": {
-                "title": "Email Address",
+                "title": "Email To Address",
                 "type": "string",
-                "description": "The email address (without everything after @) to be assigned to this camera (e.g. my test camera. If not defined, the camera name will be used)"
+                "description": "The email to address (without everything after @) to be assigned to this camera (e.g. my test camera. If not defined, the camera name will be used)"
+              },
+              "from": {
+                "title": "Email From Address",
+                "type": "string",
+                "description": "The email from address (without everything after @) to be assigned to this camera (e.g. my test camera)"
+              },
+              "body": {
+                "title": "Email Body Lookup",
+                "type": "string",
+                "description": "If camera.ui can't find out the name of the camera by the email address, you can enter a term here so that camera.ui can search the text content of the email for this term and thus assign the camera"
               }
             }
           },
@@ -704,7 +721,7 @@
               "title": "SMTP Options",
               "expandable": true,
               "expanded": false,
-              "items": ["cameras[].smtp.email"]
+              "items": ["cameras[].smtp.email", "cameras[].smtp.from", "cameras[].smtp.body"]
             },
             {
               "key": "cameras[]",
@@ -760,7 +777,7 @@
       "orderable": false,
       "expandable": true,
       "expanded": false,
-      "items": ["ftp.active", "ftp.port"]
+      "items": ["ftp.active", "ftp.port", "ftp.useFile"]
     }
   ]
 }

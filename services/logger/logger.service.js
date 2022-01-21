@@ -1,6 +1,6 @@
 'use-strict';
 
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const LogLevel = {
   INFO: 'info',
@@ -9,7 +9,7 @@ const LogLevel = {
   DEBUG: 'debug',
 };
 
-class Logger {
+export default class Logger {
   static #logger = console;
   static #loggerUi = null;
   static #debugEnabled = process.env.NODE_ENV === 'test';
@@ -132,5 +132,3 @@ class Logger {
     unhookStderr();
   }
 }
-
-exports.Logger = Logger;

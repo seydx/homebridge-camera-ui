@@ -1,13 +1,14 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 'use-strict';
 
-const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
+import * as cameraUtils from 'camera.ui/src/controller/camera/utils/camera.utils.js';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
+const MAX_RECORDING_TIME = 3;
 const compatibleAudio = /(aac)/;
 
-class RecordingDelegate {
+export default class RecordingDelegate {
   constructor(api, accessory, cameraUi, config) {
     this.api = api;
     this.log = Logger.log;
@@ -19,15 +20,13 @@ class RecordingDelegate {
     this.handlingStreamingRequest = false;
     this.session = null;
 
-    this.stopAfterMotionStop = false;
     this.closeReason = null;
+    this.forceCloseTimer = null;
   }
 
   // eslint-disable-next-line no-unused-vars
   async *handleRecordingStreamRequest(streamId) {
     this.handlingStreamingRequest = true;
-
-    this.stopAfterMotionStop = false;
     this.closeReason = null;
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
@@ -198,6 +197,27 @@ class RecordingDelegate {
 
     this.log.debug('Recording started', this.accessory.displayName);
 
+    const timer =
+      (await this.cameraUi?.database?.interface.chain
+        .get('settings')
+        .get('cameras')
+        .find({ name: this.accessory.displayName })
+        .value()) || MAX_RECORDING_TIME;
+
+    if (timer > 0) {
+      this.forceCloseTimer = setTimeout(() => {
+        this.log.warn(
+          `The recording process has been running for ${timer} minutes and is now being forced closed!`,
+          this.accessory.displayName
+        );
+
+        this.accessory
+          .getService(this.api.hap.Service.MotionSensor)
+          .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
+          .updateValue(false);
+      }, timer * 60 * 1000);
+    }
+
     let pending = [];
     let filebuffer = Buffer.alloc(0);
 
@@ -217,19 +237,12 @@ class RecordingDelegate {
           filebuffer = Buffer.concat([filebuffer, Buffer.concat(pending)]);
           pending = [];
 
-          const isLast = this.stopAfterMotionStop;
-
-          if (!motionDetected && !this.stopAfterMotionStop) {
-            // motion sensor timed out
-            this.stopAfterMotionStop = true;
-          }
-
           yield {
             data: fragment,
-            isLast: isLast,
+            isLast: !motionDetected,
           };
 
-          if (isLast) {
+          if (!motionDetected) {
             this.log.debug('Ending recording session due to motion stopped!', this.accessory.displayName);
             break;
           }
@@ -243,16 +256,17 @@ class RecordingDelegate {
         this.log.debug(error.message || error, this.accessory.displayName);
       }
     } finally {
-      // todo: check moov
-      if (this.closeReason) {
+      if (this.closeReason !== this.api.hap.HDSProtocolSpecificErrorReason.NORMAL) {
         this.log.warn(
-          'Skip saving the recording, the file might be corrupted because the recording process was cancelled by HSV',
+          `The recording process was aborted by HSV with reason "${
+            this.api.hap.HDSProtocolSpecificErrorReason[this.closeReason]
+          }"`,
           this.accessory.displayName,
           'Homebridge'
         );
       } else if (filebuffer.length > 0) {
         this.log.debug('Recording completed (HSV)', this.accessory.displayName);
-        this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
+        this.cameraUi.eventController.triggerEvent('hsv', this.accessory.displayName, true, filebuffer, 'Video');
       }
     }
   }
@@ -273,13 +287,24 @@ class RecordingDelegate {
     if (this.session) {
       this.session.socket?.destroy();
       this.session.cp?.kill('SIGKILL');
-
       this.session = undefined;
     }
 
-    if (reason) {
-      //prevent restarting HSV directly after closing recording stream
-      this.log.debug(`Resetting motion state because HSV closed recording with reason "${reason}"`);
+    if (this.forceCloseTimer) {
+      clearTimeout(this.forceCloseTimer);
+      this.forceCloseTimer = null;
+    }
+
+    const motionState = this.accessory
+      .getService(this.api.hap.Service.MotionSensor)
+      .getCharacteristic(this.api.hap.Characteristic.MotionDetected).value;
+
+    if (motionState) {
+      // If HSV interrupts the recording with an error,
+      // the process is restarted because the motion sensor still indicates motion.
+      // Most likely, this is due to an incorrect camera configuration.
+      // To avoid a restart loop, the motion sensor is reset.
+      this.log.debug('Resetting motion sensor, because HSV closed the recording process');
 
       this.accessory
         .getService(this.api.hap.Service.MotionSensor)
@@ -295,4 +320,3 @@ class RecordingDelegate {
     this.closeRecordingStream(streamId);
   }
 }
-module.exports = RecordingDelegate;

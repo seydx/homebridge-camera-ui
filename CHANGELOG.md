@@ -1,6 +1,43 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.10 - 2022-01-21
+
+## Breaking Changes
+- homebridge-camera-ui / camera.ui has been refactored and is now a ESM package.
+  - **ATTENTION**: Windows users MUST update Homebridge to the current v1.4.0, otherwise you cannot use homebridge-camera-ui as it is NOT compatible with Homebridge < v1.4.0 (windows)
+
+## Notable Changes
+- homebridge-config-ui-x (config.schema.json)
+  - `"unbridge"` is now set to `true` by default in config.schema.json ! If no `false` is entered in config for `"unbridge"`, then homebridge-config-ui-x will change it to `true` and on the next restart of Homebridge your **bridged** camera will be passed to Homebridge as **unbridged** (which is also recommended)!
+- The database has been completely updated and will not be read/written again when the data is changed. Instead, any changes are cached and saved when logging out/restarting/closing camera.ui (camera.ui)
+
+## Other Changes
+- Database: Changed to `@seydx/lowdb` (camera.ui)
+- Videoanalysis: It is now possible to set the internal "forceClose" timer for video analysis via the interface (camera.ui)
+- Videoanalysis: A "reset" button has been added (interface) to reset the values for video analytics to default values (camera.ui)
+- SMTP: The SMTP server can now also search the content of an email if no camera could be assigned to the email addresse(s) (camera.ui)
+- HSV: The warning that a recording was canceled by HSV now contains a more understandable reason
+- More translations (camera.ui)
+- Minor UI improvements (camera.ui)
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where triggering the doorbell conflicted with the motion sensor when `motionDoorbell` was enabled
+- Fixed an issue where the "exclude switch" also activated the "privacy switch".
+- Fixed an issue where it sometimes happened that the recording process (hsv) was not closed.
+- Fixed an issue where camera.ui took the user path instead of the homebridge storage path
+- Fixed an issue where some values were set by default for config.json (homebridge-config-ui-x)
+- Fixed an issue where recordings displayed an invalid date (camera.ui)
+- Fixed an issue where mapping mqtt messages failed (camera.ui)
+- Fixed an issue where references were obtained instead of (copied) values when reading from the database (camera.ui)
+- Fixed an issue where the "videoanalysis" image was not displayed (camera.ui)
+- Fixed a bug where a removed camera widget (when Snapshot was set) tried to refresh the image in the background even though the widget no longer existed. (camera.ui)
+- Fixed an issue where notification cleartimer not resetted if notification was removed (camera.ui)
+- When writing or reading from the database, unnecessary actions to the database are prevented (Windows: `EMFILE`) (camera.ui)
+- Pinned `"mqtt"` to v4.2.8 to fix `RangeError: Maximum call stack size exceeded` (camera.ui)
+- Minor bugfixes
+
 # v5.0.9 - 2022-01-17
 
 ## Other Changes

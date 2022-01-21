@@ -1,31 +1,33 @@
 'use-strict';
 
-const CameraUI = require('camera.ui');
-const fs = require('fs-extra');
-const { version } = require('../package.json');
+import CameraUI from 'camera.ui';
+import fs from 'fs-extra';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const { Logger } = require('../services/logger/logger.service');
+import Logger from '../services/logger/logger.service.js';
 
-const Camera = require('./accessories/camera');
-const DoorbellSensor = require('./accessories/doorbell');
-const MotionSensor = require('./accessories/motion');
-const InterfaceSwitch = require('./accessories/switch');
+import Camera from './accessories/camera.js';
+import DoorbellSensor from './accessories/doorbell.js';
+import MotionSensor from './accessories/motion.js';
+import InterfaceSwitch from './accessories/switch.js';
 
-const Config = require('../services/config/config.service');
-const Handler = require('./services/handler.service');
+import Config from '../services/config/config.service.js';
+import Handler from './services/handler.service.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const packageJson = fs.readJsonSync(path.resolve(__dirname, '../package.json'));
 
 const PLUGIN_NAME = 'homebridge-camera-ui';
 const PLATFORM_NAME = 'CameraUI';
-
-var Accessory, UUIDGen;
-
-module.exports = function (homebridge) {
-  Accessory = homebridge.platformAccessory;
-  UUIDGen = homebridge.hap.uuid;
-  return HomebridgeCameraUI;
+const ENV_OPTIONS = {
+  moduleName: 'homebridge-camera-ui',
+  moduleVersion: packageJson.version,
+  global: true,
+  sudo: true,
 };
 
-class HomebridgeCameraUI {
+export class HomebridgeCameraUI {
   constructor(log, config, api) {
     if (!api || !config) {
       return;
@@ -38,25 +40,16 @@ class HomebridgeCameraUI {
     this.cameraAccessories = [];
     this.devices = new Map();
 
-    const config_ = { ...config };
-    const hsvSupported = this.api.versionGreaterOrEqual('1.4.0-beta.4');
-
-    // eslint-disable-next-line unicorn/no-array-for-each
-    config_.cameras?.forEach((camera) => (camera.recordOnMovement = camera.hsv && hsvSupported ? false : true));
-
-    this.cameraUi = new CameraUI(config_, `${this.api.user.storagePath()}/camera.ui`, Logger, {
-      moduleName: 'homebridge-camera-ui',
-      moduleVersion: version,
-      global: true,
-      sudo: true,
-    });
-
     this.log = Logger.log;
     this.config = new Config(config);
+    this.cameraUiPath = `${this.api.user.storagePath()}/camera.ui`;
+
+    this.cameraUi = new CameraUI(this.config, this.cameraUiPath, Logger, ENV_OPTIONS);
     this.handler = new Handler(this.api.hap, this.cameraUi);
 
-    for (const device of this.config.cameras) {
-      const uuid = UUIDGen.generate(device.name);
+    for (const camera of this.config.cameras) {
+      const device = { ...camera };
+      const uuid = this.api.hap.uuid.generate(device.name);
 
       if (this.devices.has(uuid)) {
         this.log.warn(
@@ -72,7 +65,7 @@ class HomebridgeCameraUI {
 
     if (this.config.atHomeSwitch) {
       const name = 'At Home Switch';
-      const uuid = UUIDGen.generate(name);
+      const uuid = this.api.hap.uuid.generate(name);
 
       if (this.devices.has(uuid)) {
         this.log.warn(
@@ -114,7 +107,7 @@ class HomebridgeCameraUI {
       if (!cachedAccessory) {
         this.log.info(`Configuring ${device.unbridge ? 'unbridged' : 'bridged'} accessory...`, device.name);
 
-        const accessory = new Accessory(device.name, uuid);
+        const accessory = new this.api.platformAccessory(device.name, uuid);
         this.setupAccessory(accessory, device);
 
         if (device.unbridge) {
@@ -151,7 +144,7 @@ class HomebridgeCameraUI {
       .setCharacteristic(this.api.hap.Characteristic.Manufacturer, device.manufacturer || 'Homebridge')
       .setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'camera.ui')
       .setCharacteristic(this.api.hap.Characteristic.SerialNumber, device.serialNumber || '000000')
-      .setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, version);
+      .setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, packageJson.version);
 
     accessory.context.config = device;
 
@@ -159,7 +152,7 @@ class HomebridgeCameraUI {
       case 'camera': {
         accessory.category = this.api.hap.Categories.IP_CAMERA;
 
-        new MotionSensor(this.api, accessory, this.handler);
+        new MotionSensor(this.api, accessory, this.cameraUi, this.handler);
         new DoorbellSensor(this.api, accessory, this.handler);
         new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
         new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
@@ -260,7 +253,7 @@ class HomebridgeCameraUI {
 
       if (this.config.atHomeSwitch) {
         const name = 'At Home Switch';
-        const uuid = UUIDGen.generate(name);
+        const uuid = this.api.hap.uuid.generate(name);
 
         if (!this.devices.has(uuid)) {
           const device = {
@@ -274,7 +267,7 @@ class HomebridgeCameraUI {
         }
       } else {
         const name = 'At Home Switch';
-        const uuid = UUIDGen.generate(name);
+        const uuid = this.api.hap.uuid.generate(name);
 
         this.devices.delete(uuid);
       }
@@ -314,7 +307,7 @@ class HomebridgeCameraUI {
       this.config = new Config(configPlatform);
 
       for (const device of this.config.cameras) {
-        const uuid = UUIDGen.generate(device.name);
+        const uuid = this.api.hap.uuid.generate(device.name);
 
         if (!this.devices.has(uuid)) {
           device.subtype = 'camera';
@@ -353,7 +346,7 @@ class HomebridgeCameraUI {
       const configPlatform = config.platforms.find((config_) => config_.platform === 'CameraUI');
       this.config = new Config(configPlatform);
 
-      const uuid = UUIDGen.generate(cameraName);
+      const uuid = this.api.hap.uuid.generate(cameraName);
       this.devices.delete(uuid);
 
       this.configure();

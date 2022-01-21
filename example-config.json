@@ -11,7 +11,7 @@
     {
       "platform": "CameraUI",
       "name": "CameraUI",
-      "port": 3333,
+      "port": 8081,
       "debug": true,
       "atHomeSwitch": false,
       "mqtt": {
@@ -32,7 +32,8 @@
       },
       "ftp": {
         "active": false,
-        "port": 5000
+        "useFile": false,
+        "port": 5050
       },
       "ssl": {
         "active": false,
@@ -90,7 +91,9 @@
             "active": true
           },
           "smtp": {
-            "email": "Custom Camera Name"
+            "email": "Custom Camera Name",
+            "from": "Hello",
+            "body": "Test"
           }
         },
         {

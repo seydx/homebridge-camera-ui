@@ -25,5 +25,7 @@ module.exports = {
     'unicorn/no-null': 'off',
     'unicorn/no-nested-ternary': 'off',
     'unicorn/prefer-module': 'off',
+    'unicorn/prefer-node-protocol': 'off',
+    'unicorn/no-await-expression-member': 'off',
   },
 };

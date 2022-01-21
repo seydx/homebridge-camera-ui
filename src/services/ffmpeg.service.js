@@ -1,11 +1,11 @@
 'use-strict';
 
-const { spawn } = require('child_process');
-const readline = require('readline');
+import readline from 'readline';
+import { spawn } from 'child_process';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
-class FfmpegProcess {
+export default class FfmpegProcess {
   constructor(cameraName, videoDebug, sessionId, videoProcessor, command, delegate, callback) {
     this.log = Logger.log;
 
@@ -139,5 +139,3 @@ class FfmpegProcess {
     }
   }
 }
-
-module.exports = FfmpegProcess;

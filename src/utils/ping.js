@@ -1,13 +1,13 @@
 /* eslint-disable unicorn/no-static-only-class */
 'use-strict';
 
-const nodejsTcpPing = require('nodejs-tcp-ping');
-const ping = require('ping');
-const { URL } = require('url');
+import nodejsTcpPing from 'nodejs-tcp-ping';
+import ping from 'ping';
+import { URL } from 'url';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
-class Ping {
+export default class Ping {
   static async status(camera, timeout = 1) {
     const log = Logger.log;
 
@@ -59,5 +59,3 @@ class Ping {
     return available;
   }
 }
-
-exports.Ping = Ping;

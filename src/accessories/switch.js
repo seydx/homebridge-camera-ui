@@ -1,10 +1,10 @@
 'use strict';
 
-const { Logger } = require('homebridge-camera-ui/services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
-class SwitchAccessory {
+export default class SwitchAccessory {
   constructor(api, accessory, subtype, type, cameraUi) {
     this.api = api;
     this.log = Logger.log;
@@ -17,14 +17,26 @@ class SwitchAccessory {
     this.subname = `${capitalize(subtype.split('-')[0])} ${capitalize(subtype.split('-')[1])}`;
     this.name = type === 'accessory' ? accessory.displayName : `${accessory.displayName} ${this.subname}`;
 
-    if (
-      accessory.context.config.excludeSwitch ||
-      accessory.context.config.privacySwitch ||
-      accessory.context.config.subtype.includes('switch')
-    ) {
-      this.getService();
-    } else {
-      this.removeService();
+    switch (subtype) {
+      case 'athome-switch':
+        this.getService();
+        break;
+      case 'exclude-switch':
+        if (accessory.context.config.excludeSwitch) {
+          this.getService();
+        } else {
+          this.removeService();
+        }
+        break;
+      case 'privacy-switch':
+        if (accessory.context.config.privacySwitch) {
+          this.getService();
+        } else {
+          this.removeService();
+        }
+        break;
+      default:
+      //ignore
     }
   }
 
@@ -93,7 +105,12 @@ class SwitchAccessory {
     try {
       let state = false;
 
-      const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+      const generalSettings = await this.cameraUi?.database?.interface.chain
+        .get('settings')
+        .get('general')
+        .cloneDeep()
+        .value();
+
       state = generalSettings?.atHome || false;
 
       return state;
@@ -105,13 +122,13 @@ class SwitchAccessory {
 
   async setAtHomeState(service, state) {
     try {
-      await this.cameraUi?.database?.interface
-        ?.get('settings')
+      await this.cameraUi?.database?.interface.chain
+        .get('settings')
         .get('general')
         .assign({
           atHome: state ? true : false,
         })
-        .write();
+        .value();
 
       this.log.info(`At Home: ${state}`, this.accessory.displayName);
     } catch (error) {
@@ -128,7 +145,12 @@ class SwitchAccessory {
     try {
       let state = false;
 
-      const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+      const generalSettings = await this.cameraUi?.database?.interface.chain
+        .get('settings')
+        .get('general')
+        .cloneDeep()
+        .value();
+
       const exclude = generalSettings?.exclude || [];
       state = exclude.includes(this.accessory.displayName);
 
@@ -141,7 +163,12 @@ class SwitchAccessory {
 
   async setExcludeState(service, state) {
     try {
-      const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+      const generalSettings = await this.cameraUi?.database?.interface.chain
+        .get('settings')
+        .get('general')
+        .cloneDeep()
+        .value();
+
       let exclude = generalSettings?.exclude || [];
 
       if (state && !exclude.includes(this.accessory.displayName)) {
@@ -150,13 +177,13 @@ class SwitchAccessory {
         exclude = exclude.filter((cameraName) => cameraName && cameraName !== this.accessory.displayName);
       }
 
-      await this.cameraUi?.database?.interface
-        ?.get('settings')
+      await this.cameraUi?.database?.interface.chain
+        .get('settings')
         .get('general')
         .assign({
           exclude: exclude,
         })
-        .write();
+        .value();
 
       this.log.info(
         `Exclude: ${this.accessory.displayName} ${state ? 'added to exclude list' : 'removed from exclude list'}`,
@@ -176,10 +203,11 @@ class SwitchAccessory {
     try {
       let state = false;
 
-      const camerasSettings = await this.cameraUi?.database?.interface
-        ?.get('settings')
+      const camerasSettings = await this.cameraUi?.database?.interface.chain
+        .get('settings')
         .get('cameras')
         .find({ name: this.accessory.displayName })
+        .cloneDeep()
         .value();
 
       state = camerasSettings?.privacyMode || false;
@@ -193,14 +221,14 @@ class SwitchAccessory {
 
   async setPrivacyState(service, state) {
     try {
-      await this.cameraUi?.database?.interface
-        ?.get('settings')
+      await this.cameraUi?.database?.interface.chain
+        .get('settings')
         .get('cameras')
         .find({ name: this.accessory.displayName })
         .assign({
           privacyMode: state ? true : false,
         })
-        .write();
+        .value();
 
       this.log.info(`Privacy Mode: ${state}`, this.accessory.displayName);
     } catch (error) {
@@ -213,5 +241,3 @@ class SwitchAccessory {
     }
   }
 }
-
-module.exports = SwitchAccessory;

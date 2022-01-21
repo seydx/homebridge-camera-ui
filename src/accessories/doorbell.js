@@ -1,8 +1,8 @@
 'use-strict';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
-class DoorbellService {
+export default class DoorbellService {
   constructor(api, accessory, handler) {
     this.api = api;
     this.log = Logger.log;
@@ -58,5 +58,3 @@ class DoorbellService {
     }
   }
 }
-
-module.exports = DoorbellService;

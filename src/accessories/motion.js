@@ -1,14 +1,16 @@
 'use-strict';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
-const MAX_MOTION_DETECTED_TIME = 2 * 60 * 1000;
+const MAX_MOTION_DETECTED_TIME = 3;
 
-class MotionService {
-  constructor(api, accessory, handler) {
+export default class MotionService {
+  constructor(api, accessory, cameraUi, handler) {
     this.api = api;
     this.log = Logger.log;
     this.accessory = accessory;
+
+    this.cameraUi = cameraUi;
     this.handler = handler;
 
     this.motionTimeout = null;
@@ -24,7 +26,7 @@ class MotionService {
     let service = this.accessory.getServiceById(this.api.hap.Service.MotionSensor, 'motion');
     let switchService = this.accessory.getServiceById(this.api.hap.Service.Switch, 'MotionTrigger');
 
-    const hsvSupported = this.api.versionGreaterOrEqual('1.4.0-beta.4');
+    const hsvSupported = this.api.versionGreaterOrEqual('1.4.0');
 
     if (this.accessory.context.config.motion || (this.accessory.context.config.hsv && hsvSupported)) {
       const hsvMotionSensor = Boolean(
@@ -47,7 +49,7 @@ class MotionService {
       service
         .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
         .updateValue(false)
-        .on('change', (context) => {
+        .on('change', async (context) => {
           if (context.oldValue !== context.newValue) {
             const motionDetected = context.newValue;
 
@@ -57,14 +59,23 @@ class MotionService {
                 this.motionTimeout = null;
               }
 
-              this.motionTimeout = setTimeout(() => {
-                const newState = service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).value;
+              const timer =
+                (await this.cameraUi?.database?.interface.chain
+                  .get('settings')
+                  .get('cameras')
+                  .find({ name: this.accessory.displayName })
+                  .value()) || MAX_MOTION_DETECTED_TIME;
 
-                if (newState) {
-                  this.log.debug('Motion OFF - Max detection time reached', this.accessory.displayName);
-                  service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).updateValue(false);
-                }
-              }, MAX_MOTION_DETECTED_TIME);
+              if (timer > 0) {
+                this.motionTimeout = setTimeout(() => {
+                  const newState = service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).value;
+
+                  if (newState) {
+                    this.log.debug('Motion OFF - Max detection time reached', this.accessory.displayName);
+                    service.getCharacteristic(this.api.hap.Characteristic.MotionDetected).updateValue(false);
+                  }
+                }, MAX_MOTION_DETECTED_TIME * 60 * 1000);
+              }
             } else {
               if (this.motionTimeout) {
                 clearTimeout(this.motionTimeout);
@@ -102,5 +113,3 @@ class MotionService {
     }
   }
 }
-
-module.exports = MotionService;

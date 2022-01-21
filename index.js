@@ -7,7 +7,8 @@
  **/
 'use-strict';
 
-module.exports = (homebridge) => {
-  const HomebridgeCameraUi = require('./src/platform')(homebridge);
-  homebridge.registerPlatform('homebridge-camera-ui', 'CameraUI', HomebridgeCameraUi, true);
+import { HomebridgeCameraUI } from './src/platform.js';
+
+export default (api) => {
+  api.registerPlatform('homebridge-camera-ui', 'CameraUI', HomebridgeCameraUI, true);
 };

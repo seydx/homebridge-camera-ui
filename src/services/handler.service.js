@@ -1,8 +1,8 @@
 'use-strict';
 
-const { Logger } = require('../../services/logger/logger.service');
+import Logger from '../../services/logger/logger.service.js';
 
-class Handler {
+export default class Handler {
   constructor(hap, cameraUi) {
     this.hap = hap;
     this.log = Logger.log;
@@ -45,7 +45,7 @@ class Handler {
     }
   }
 
-  async motionHandler(accessory, active, manual) {
+  async motionHandler(accessory, active, manual, muteDoorbell) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
     const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
 
@@ -57,7 +57,8 @@ class Handler {
         return;
       }
 
-      const interfaceSettings = await this.cameraUi?.database?.interface?.get('settings').value();
+      const interfaceSettings = await this.cameraUi?.database?.interface.chain.get('settings').cloneDeep().value();
+
       const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
       const timeoutConfig = !accessory.context.config.useInterfaceTimer
         ? accessory.context.config.motionTimeout
@@ -107,7 +108,7 @@ class Handler {
       }
 
       if (active) {
-        if (accessory.context.config.motionDoorbell) {
+        if (accessory.context.config.motionDoorbell && !muteDoorbell) {
           doorbellSensor?.updateCharacteristic(
             this.hap.Characteristic.ProgrammableSwitchEvent,
             this.hap.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
@@ -144,7 +145,12 @@ class Handler {
 
     if (doorbellSensor) {
       if (manual) {
-        const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+        const generalSettings = await this.cameraUi?.database?.interface.chain
+          .get('settings')
+          .get('general')
+          .cloneDeep()
+          .value();
+
         const atHome = generalSettings?.atHome || false;
         const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
 
@@ -172,7 +178,7 @@ class Handler {
 
       if (active) {
         if (accessory.context.config.hsv) {
-          this.motionHandler(accessory, active, manual);
+          this.motionHandler(accessory, active, manual, true);
         }
 
         doorbellSensor.updateCharacteristic(
@@ -189,5 +195,3 @@ class Handler {
     }
   }
 }
-
-module.exports = Handler;

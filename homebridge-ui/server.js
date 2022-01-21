@@ -1,9 +1,9 @@
-const { HomebridgePluginUiServer, RequestError } = require('@homebridge/plugin-ui-utils');
+import { HomebridgePluginUiServer, RequestError } from '@homebridge/plugin-ui-utils';
 
-const child_process = require('child_process');
-const ffmpegPath = require('ffmpeg-for-homebridge');
-const fs = require('fs-extra');
-const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
+import child_process from 'child_process';
+import ffmpegPath from 'ffmpeg-for-homebridge';
+import fs from 'fs-extra';
+import * as cameraUtils from 'camera.ui/src/controller/camera/utils/camera.utils.js';
 
 let streams = {};
 

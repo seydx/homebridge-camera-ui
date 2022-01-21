@@ -1,18 +1,21 @@
 'use-strict';
 
-const { Logger } = require('../../services/logger/logger.service');
+import { createSocket } from 'dgram';
+import { fileURLToPath } from 'url';
+import fs from 'fs-extra';
+import path from 'path';
+import pickPort from 'pick-port';
+import { spawn } from 'child_process';
+import * as cameraUtils from 'camera.ui/src/controller/camera/utils/camera.utils.js';
 
-const createSocket = require('dgram').createSocket;
-const cameraUtils = require('camera.ui/src/controller/camera/utils/camera.utils');
-const fs = require('fs-extra');
-const path = require('path');
-const pickPort = require('pick-port');
-const spawn = require('child_process').spawn;
+import Logger from '../../services/logger/logger.service.js';
 
-const FfmpegProcess = require('../services/ffmpeg.service');
-const RecordingDelegate = require('../services/recording.service');
+import FfmpegProcess from '../services/ffmpeg.service.js';
+import RecordingDelegate from '../services/recording.service.js';
 
-const { Ping } = require('../utils/ping');
+import Ping from '../utils/ping.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 //const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'maxstreams_cameraui.png');
 const offlineImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'offline_cameraui.png');
@@ -22,7 +25,7 @@ const privacyImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'priv
 const offlineImageInBytes = fs.readFileSync(offlineImage);
 const privacyImageInBytes = fs.readFileSync(privacyImage);
 
-class Camera {
+export default class CameraDelegate {
   constructor(api, accessory, cameraUi, config) {
     this.api = api;
     this.log = Logger.log;
@@ -40,7 +43,7 @@ class Camera {
 
     const recordingCodecs = [];
 
-    if (this.accessory.context.config.hsv && !this.api.versionGreaterOrEqual('1.4.0-beta.4')) {
+    if (this.accessory.context.config.hsv && !this.api.versionGreaterOrEqual('1.4.0')) {
       this.log.warn(
         'HSV cannot be activated. Not compatible Homebridge version detected! You must have at least v1.4.0-beta.4 installed!',
         this.accessory.displayName,
@@ -854,15 +857,21 @@ class Camera {
     let privacy = false;
 
     try {
-      const generalSettings = await this.cameraUi?.database?.interface?.get('settings').get('general').value();
+      const generalSettings = await this.cameraUi?.database?.interface.chain
+        .get('settings')
+        .get('general')
+        .cloneDeep()
+        .value();
+
       const atHome = generalSettings?.atHome || false;
       const excluded = generalSettings?.exclude || [];
 
       if (atHome && !excluded.includes(this.accessory.displayName)) {
-        const camerasSettings = await this.cameraUi?.database?.interface
-          ?.get('settings')
+        const camerasSettings = await this.cameraUi?.database?.interface.chain
+          .get('settings')
           .get('cameras')
           .find({ name: this.accessory.displayName })
+          .cloneDeep()
           .value();
 
         privacy = camerasSettings?.privacyMode || false;
@@ -887,5 +896,3 @@ class Camera {
     return state;
   }
 }
-
-module.exports = Camera;

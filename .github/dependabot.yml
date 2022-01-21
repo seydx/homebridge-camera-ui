@@ -1,15 +1,15 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 10
-  ignore:
-    - dependency-name: 'chalk'
-    - dependency-name: 'concurrently'
-- package-ecosystem: npm
-  directory: "/homebridge-ui/ui"
-  ignore:
-    - dependency-name: 'postcss'
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '04:00'
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: 'chalk'
+      - dependency-name: 'concurrently'
+  - package-ecosystem: npm
+    directory: '/homebridge-ui/ui'
+    ignore:
+      - dependency-name: 'postcss'
