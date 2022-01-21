@@ -724,14 +724,10 @@
               "title": "SMTP Options",
               "expandable": true,
               "expanded": false,
-<<<<<<< HEAD
-              "items": ["cameras[].smtp.email", "cameras[].smtp.from", "cameras[].smtp.body"]
-=======
-              "items": ["cameras[].smtp.email"],
+              "items": ["cameras[].smtp.email", "cameras[].smtp.from", "cameras[].smtp.body"],
               "condition": {
                 "functionBody": "return model.smtp.active === true;"
               }
->>>>>>> 29457c8c476a1f61f1f4be4bb56d176017cb942f
             },
             {
               "key": "cameras[]",
