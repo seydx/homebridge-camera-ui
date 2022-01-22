@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.12 - 2022-01-22
+
+## Bugfixes
+- Fixed issues with logging
+- Minor bugfixes
+
 # v5.0.11 - 2022-01-22
 
 ## Other Changes
