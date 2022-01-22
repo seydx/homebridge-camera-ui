@@ -6,6 +6,8 @@ import Logger from '../logger/logger.service.js';
 
 export default class ConfigSetup {
   constructor(config = {}) {
+    this.log = Logger.log;
+
     config.options = {
       videoProcessor: config.options?.videoProcessor || ffmpegPath || 'ffmpeg',
     };
@@ -16,14 +18,14 @@ export default class ConfigSetup {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
 
         if (!sourceArguments.includes('-i')) {
-          Logger.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
+          this.log.warn('The source for this camera is missing "-i", it is likely misconfigured.', camera.name);
           camera.videoConfig.source = false;
         }
 
         if (camera.videoConfig.stillImageSource) {
           const stillArguments = camera.videoConfig.stillImageSource.split(/\s+/);
           if (!stillArguments.includes('-i')) {
-            Logger.warn(
+            this.log.warn(
               'The stillImageSource for this camera is missing "-i", it is likely misconfigured.',
               camera.name
             );
@@ -36,7 +38,7 @@ export default class ConfigSetup {
         if (camera.videoConfig.subSource) {
           const stillArguments = camera.videoConfig.subSource.split(/\s+/);
           if (!stillArguments.includes('-i')) {
-            Logger.warn('The subSource for this camera is missing "-i", it is likely misconfigured.', camera.name);
+            this.log.warn('The subSource for this camera is missing "-i", it is likely misconfigured.', camera.name);
             camera.videoConfig.subSource = camera.videoConfig.source;
           }
         } else {

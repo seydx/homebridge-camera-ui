@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.11 - 2022-01-22
+
+## Other Changes
+- Refactored logging into file (camera.ui)
+- Minor improvements
+
+## Bugfixes
+- Fixed an issue where the reason for stopping the recording process was always `undefined`.
+- Fixed an issue where the absence of stillImageSource/subSource in config.json could cause the Homebridge to crash
+- Fixed an issue where the log entries were not displayed in color (homebridge-config-ui-x)
+- Minor bugfixes
+
 # v5.0.10 - 2022-01-21
 
 ## Breaking Changes

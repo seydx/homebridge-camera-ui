@@ -177,12 +177,10 @@ export default class RecordingDelegate {
         level,
         '-b:v',
         `${videoBitrate}k`,
-        '-force_key_frames',
-        `expr:eq(t,n_forced*${iFrameInterval / 1000})`,
-        '-r',
-        fps.toString(),
         '-vf',
-        `scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`
+        `fps=${fps},scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        '-force_key_frames',
+        `expr:gte(t,n_forced*${iFrameInterval / 1000})`
       );
     }
 
@@ -256,7 +254,7 @@ export default class RecordingDelegate {
         this.log.debug(error.message || error, this.accessory.displayName);
       }
     } finally {
-      if (this.closeReason !== this.api.hap.HDSProtocolSpecificErrorReason.NORMAL) {
+      if (this.closeReason && this.closeReason !== this.api.hap.HDSProtocolSpecificErrorReason.NORMAL) {
         this.log.warn(
           `The recording process was aborted by HSV with reason "${
             this.api.hap.HDSProtocolSpecificErrorReason[this.closeReason]
@@ -304,7 +302,7 @@ export default class RecordingDelegate {
       // the process is restarted because the motion sensor still indicates motion.
       // Most likely, this is due to an incorrect camera configuration.
       // To avoid a restart loop, the motion sensor is reset.
-      this.log.debug('Resetting motion sensor, because HSV closed the recording process');
+      this.log.debug('Resetting motion sensor, because HSV closed the recording process', this.accessory.displayName);
 
       this.accessory
         .getService(this.api.hap.Service.MotionSensor)
