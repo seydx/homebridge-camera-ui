@@ -1,18 +1,16 @@
 /* eslint-disable unicorn/prefer-number-properties */
 'use-strict';
 
-import ffmpegPath from 'ffmpeg-for-homebridge';
+import { ConfigSetup } from 'camera.ui/src/services/config/config.defaults.js';
+
 import Logger from '../logger/logger.service.js';
 
-export default class ConfigSetup {
+export default class Config {
   constructor(config = {}) {
     this.log = Logger.log;
 
-    config.options = {
-      videoProcessor: config.options?.videoProcessor || ffmpegPath || 'ffmpeg',
-    };
-
-    config.cameras = (config.cameras || [])
+    config = new ConfigSetup(config);
+    config.cameras = config.cameras
       .filter((camera) => camera.name && camera.videoConfig?.source)
       .map((camera) => {
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
@@ -50,7 +48,7 @@ export default class ConfigSetup {
 
         // validate prebufferLength
         camera.prebufferLength =
-          (camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4) * 1000;
+          camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4;
 
         return camera;
       })

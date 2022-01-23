@@ -1,6 +1,6 @@
 'use-strict';
 
-import chalk from 'chalk';
+import LoggerService from 'camera.ui/src/services/logger/logger.service.js';
 
 const LogLevel = {
   INFO: 'info',
@@ -20,8 +20,6 @@ export default class Logger {
   static log;
 
   constructor(logger, debug) {
-    chalk.level = 1;
-
     if (logger) {
       Logger.#logger = logger;
     }
@@ -39,36 +37,6 @@ export default class Logger {
     };
   }
 
-  static #formatMessage(message, accessoryName, level) {
-    let formatted = '';
-
-    if (accessoryName) {
-      formatted += accessoryName + ': ';
-    }
-
-    if (message instanceof Error) {
-      formatted = message;
-    } else if (typeof message === 'object') {
-      formatted += JSON.stringify(message);
-    } else {
-      formatted += message;
-    }
-
-    switch (level) {
-      case LogLevel.WARN:
-        formatted = chalk.yellow(formatted);
-        break;
-      case LogLevel.ERROR:
-        formatted = chalk.red(formatted);
-        break;
-      case LogLevel.DEBUG:
-        formatted = chalk.gray(formatted);
-        break;
-    }
-
-    return formatted;
-  }
-
   // eslint-disable-next-line no-unused-vars
   static #logging(level, message, accessoryName, subprefix, fromUi) {
     if (level === LogLevel.DEBUG && !Logger.#debugEnabled) {
@@ -76,7 +44,7 @@ export default class Logger {
     }
 
     let origMessage = message;
-    let formattedMessage = Logger.#formatMessage(message, accessoryName, level);
+    let formattedMessage = LoggerService.formatMessage(message, accessoryName, level);
 
     if (Logger.#loggerUi && !fromUi) {
       Logger.#loggerUi[level](origMessage, accessoryName, subprefix, true);

@@ -91,7 +91,7 @@ export default class MotionService {
       }
     }
 
-    if (this.accessory.context.config.switches) {
+    if (this.accessory.context.config.motion && this.accessory.context.config.switches) {
       if (!switchService) {
         this.log.debug('Adding switch service (motion)', this.accessory.displayName);
         switchService = this.accessory.addService(

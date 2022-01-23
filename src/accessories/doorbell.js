@@ -36,7 +36,7 @@ export default class DoorbellService {
       }
     }
 
-    if (this.accessory.context.config.switches) {
+    if (this.accessory.context.config.doorbell && this.accessory.context.config.switches) {
       if (!switchService) {
         this.log.debug('Adding switch service (doorbell)', this.accessory.displayName);
         switchService = this.accessory.addService(

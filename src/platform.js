@@ -227,9 +227,7 @@ export class HomebridgeCameraUI {
       for (const index in config.platforms) {
         if (config.platforms[index].platform === 'CameraUI') {
           for (const [key, value] of Object.entries(configJson)) {
-            if (config.platforms[index][key] !== undefined) {
-              config.platforms[index][key] = value;
-            }
+            config.platforms[index][key] = value;
           }
         }
       }

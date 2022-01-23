@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.13 - 2022-01-23
+
+## Other Changes
+- Refactored recordings/notifications filter (camera.ui)
+- Refactored config generator (camera.ui)
+
+## Bugfixes
+- Fixed an issue where camera names were displayed incorrectly in recordings (camera.ui)
+- Fixed an issue where the recordings/notifications could not be filtered properly (camera.ui)
+- Fixed an issue where config.json was not created in standalone mode (camera.ui)
+- Fixed an issue where deleting the camera via the interface caused errors (camera.ui)
+- Fixed an issue where the `prebufferLength` of the camera in config.json was multiplied by 1000
+- Fixed an issue where the doorbell/motion switch was exposed to HomeKit even if motion/doorbell was not turned on
+- Minor bugfixes
+
 # v5.0.12 - 2022-01-22
 
 ## Bugfixes

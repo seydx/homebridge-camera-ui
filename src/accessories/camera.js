@@ -13,13 +13,13 @@ import Logger from '../../services/logger/logger.service.js';
 import FfmpegProcess from '../services/ffmpeg.service.js';
 import RecordingDelegate from '../services/recording.service.js';
 
-import Ping from '../utils/ping.js';
+import Ping from 'camera.ui/src/common/ping.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-//const maxstreamsImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'maxstreams_cameraui.png');
-const offlineImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'offline_cameraui.png');
-const privacyImage = path.resolve(__dirname, '..', 'utils', 'placeholder', 'privacy_cameraui.png');
+//const maxstreamsImage = path.resolve(__dirname, '..', 'thumbs', 'maxstreams_cameraui.png');
+const offlineImage = path.resolve(__dirname, '..', 'thumbs', 'offline_cameraui.png');
+const privacyImage = path.resolve(__dirname, '..', 'thumbs', 'privacy_cameraui.png');
 
 //const maxstreamsImageInBytes = fs.readFileSync(maxstreamsImage);
 const offlineImageInBytes = fs.readFileSync(offlineImage);
@@ -118,7 +118,7 @@ export default class CameraDelegate {
                 this.api.hap.EventTriggerOption.MOTION,
                 this.api.hap.EventTriggerOption.DOORBELL,
               ],
-              prebufferLength: this.accessory.context.config.prebufferLength, // prebufferLength always remains 4s ?
+              prebufferLength: this.accessory.context.config.prebufferLength * 1000, // prebufferLength always remains 4s ?
               mediaContainerConfiguration: [
                 {
                   type: this.api.hap.MediaContainerType.FRAGMENTED_MP4,

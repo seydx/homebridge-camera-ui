@@ -264,7 +264,7 @@ export default class RecordingDelegate {
         );
       } else if (filebuffer.length > 0) {
         this.log.debug('Recording completed (HSV)', this.accessory.displayName);
-        this.cameraUi.eventController.triggerEvent('hsv', this.accessory.displayName, true, filebuffer, 'Video');
+        this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
       }
     }
   }
