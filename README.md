@@ -78,6 +78,7 @@ sudo npm install -g homebridge-camera-ui@latest
   - [FAQ](#faq)
   - [Contributing](#contributing)
   - [Troubleshooting](#troubleshooting)
+  - [Wiki](#wiki)
   - [License](#license)
     - [MIT License](#mit-license)
 
@@ -329,6 +330,9 @@ If you have any issues with the plugin then you can run this plugin in debug mod
 https://github.com/SeydX/homebridge-camera-ui/wiki/Debug
 
 If you have problems with the interface or found bugs, please post it directly at [camera.ui](https://github.com/seydx/camera.ui)
+
+## Wiki
+Before you open a new issue, please read carefully the wiki: https://github.com/seydx/homebridge-camera-ui/wiki
 
 ## License
 
