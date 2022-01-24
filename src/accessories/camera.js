@@ -319,7 +319,7 @@ export default class CameraDelegate {
 
       ffmpeg.stderr.on('data', (data) => {
         errors = errors.slice(-5);
-        errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, ''));
+        errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, ' - '));
       });
 
       ffmpeg.on('close', () => {

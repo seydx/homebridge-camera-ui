@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.14 - 2022-01-24
+
+## Other Changes
+- Improved adding of cameras within the interface (camera.ui)
+- Added a new "Reports" page (atm its only placeholder) (camera.ui)
+- Redesigned the "save" button in camera settings page (camera.ui)
+- Reduced system payload (camera.ui)
+- Added more translations (camera.ui)
+
+## Bugfixes
+- Fixed an issue where filtering of recordings and/or notifications did not work if end date was before start date (camera.ui)
+- Fixed an issue where it was possible to add multiple cameras with the same name through the interface (camera.ui)
+- Fixed an issue where a maximum of only 6 cameras could be displayed on Dashboard and Camview (camera.ui)
+- Fixed an issue where the config generator failed (camera.ui)
+- Minor bugfixes
+
 # v5.0.13 - 2022-01-23
 
 ## Other Changes
