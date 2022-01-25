@@ -26,6 +26,10 @@
     "eslint": "^8.7.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
+<<<<<<< HEAD
+=======
+    "eslint-plugin-jest": "^26.0.0",
+>>>>>>> 3b3ef1dd0355f39244fd41268a8e850fef3f50db
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-unicorn": "^40.1.0",
     "prettier": "^2.5.1"
