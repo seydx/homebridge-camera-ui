@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.15 - 2022-01-25
+
+## Other Changes
+- Improved debug/error logging for recording (camera.ui)
+- Minor ui improvements (camera.ui)
+
+## Bugfixes
+- Fixed an issue where "motion timeout" was not reset when recording was cancelled by HSV
+- Fixed an issue where the custom interface (homebridge-config-ui-x) could not be opened.
+- Minor bugfixes
+
 # v5.0.14 - 2022-01-24
 
 ## Other Changes

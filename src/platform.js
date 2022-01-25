@@ -157,7 +157,7 @@ export class HomebridgeCameraUI {
         new InterfaceSwitch(this.api, accessory, 'exclude-switch', 'service', this.cameraUi);
         new InterfaceSwitch(this.api, accessory, 'privacy-switch', 'service', this.cameraUi);
 
-        const cameraAccessory = new Camera(this.api, accessory, this.cameraUi, this.config);
+        const cameraAccessory = new Camera(this.api, accessory, this.config, this.cameraUi, this.handler);
         accessory.configureController(cameraAccessory.controller);
 
         this.cameraAccessories.push(cameraAccessory);

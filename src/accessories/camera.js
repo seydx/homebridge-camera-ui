@@ -26,12 +26,14 @@ const offlineImageInBytes = fs.readFileSync(offlineImage);
 const privacyImageInBytes = fs.readFileSync(privacyImage);
 
 export default class CameraDelegate {
-  constructor(api, accessory, cameraUi, config) {
+  constructor(api, accessory, config, cameraUi, handler) {
     this.api = api;
     this.log = Logger.log;
-    this.accessory = accessory;
-    this.cameraUi = cameraUi;
     this.config = config;
+    this.accessory = accessory;
+
+    this.handler = handler;
+    this.cameraUi = cameraUi;
 
     this.services = [];
     this.streamControllers = [];
@@ -72,7 +74,7 @@ export default class CameraDelegate {
         recordingCodecs.push(entry);
       }
 
-      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, cameraUi, config);
+      this.recordingDelegate = new RecordingDelegate(this.api, this.accessory, config, cameraUi, handler);
     }
 
     this.controller = new this.api.hap.CameraController({
@@ -319,7 +321,7 @@ export default class CameraDelegate {
 
       ffmpeg.stderr.on('data', (data) => {
         errors = errors.slice(-5);
-        errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, ' - '));
+        errors.push(data.toString().replace(/(\r\n|\n|\r)/gm, ' '));
       });
 
       ffmpeg.on('close', () => {

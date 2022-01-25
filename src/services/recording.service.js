@@ -9,12 +9,14 @@ const MAX_RECORDING_TIME = 3;
 const compatibleAudio = /(aac)/;
 
 export default class RecordingDelegate {
-  constructor(api, accessory, cameraUi, config) {
+  constructor(api, accessory, config, cameraUi, handler) {
     this.api = api;
     this.log = Logger.log;
-    this.accessory = accessory;
-    this.cameraUi = cameraUi;
     this.config = config;
+    this.accessory = accessory;
+
+    this.handler = handler;
+    this.cameraUi = cameraUi;
 
     this.configuration = {};
     this.handlingStreamingRequest = false;
@@ -156,7 +158,7 @@ export default class RecordingDelegate {
 
     const width = this.configuration.videoCodec.resolution[0];
     const height = this.configuration.videoCodec.resolution[1];
-    const fps = this.configuration.videoCodec.resolution[2];
+    //const fps = this.configuration.videoCodec.resolution[2];
     const videoBitrate = this.configuration.videoCodec.parameters.bitRate;
     const iFrameInterval = this.configuration.videoCodec.parameters.iFrameInterval;
 
@@ -177,8 +179,11 @@ export default class RecordingDelegate {
         level,
         '-b:v',
         `${videoBitrate}k`,
+        //'-r',
+        //fps.toString(),
         '-vf',
-        `fps=${fps},scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        //It looks like if FPS is fixed at 25 instead of 30, it reduces the probability of HSV breaking.
+        `framerate=fps=25,scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
         '-force_key_frames',
         `expr:gte(t,n_forced*${iFrameInterval / 1000})`
       );
@@ -279,7 +284,7 @@ export default class RecordingDelegate {
     this.configuration = configuration;
   }
 
-  closeRecordingStream(streamId, reason) {
+  async closeRecordingStream(streamId, reason) {
     this.log.info('Closing recording process', this.accessory.displayName);
 
     if (this.session) {
@@ -303,11 +308,7 @@ export default class RecordingDelegate {
       // Most likely, this is due to an incorrect camera configuration.
       // To avoid a restart loop, the motion sensor is reset.
       this.log.debug('Resetting motion sensor, because HSV closed the recording process', this.accessory.displayName);
-
-      this.accessory
-        .getService(this.api.hap.Service.MotionSensor)
-        .getCharacteristic(this.api.hap.Characteristic.MotionDetected)
-        .updateValue(false);
+      await this.handler.motionHandler(this.accessory, false);
     }
 
     this.closeReason = reason;

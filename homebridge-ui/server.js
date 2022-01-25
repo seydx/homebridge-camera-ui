@@ -24,14 +24,20 @@ class UiServer extends HomebridgePluginUiServer {
   }
 
   async getInterfaceConfig() {
-    const config = await fs.readJSON(this.homebridgeConfigPath, { throws: false });
-    const cameraUI = config?.platforms?.find((plugin) => plugin?.platform === 'CameraUI');
-    const isHttps = Boolean(cameraUI?.ssl?.active && cameraUI?.ssl?.key && cameraUI?.ssl?.cert);
+    const config = (await fs.readJSON(this.homebridgeConfigPath, { throws: false })) || {};
 
-    return {
-      protocol: isHttps ? 'https' : 'http',
-      port: cameraUI?.port || 8081,
-    };
+    if (Array.isArray(config.platforms)) {
+      const cameraUI = config.platforms.find((plugin) => plugin && plugin.platform === 'CameraUI');
+
+      if (cameraUI) {
+        const isHttps = Boolean(cameraUI.ssl && cameraUI.ssl.active && cameraUI.ssl.key && cameraUI.ssl.cert);
+
+        return {
+          protocol: isHttps ? 'https' : 'http',
+          port: cameraUI.port || 8081,
+        };
+      }
+    }
 
     return false;
   }
