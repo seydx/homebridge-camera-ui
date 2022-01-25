@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.16 - 2022-01-25
+
+## Bugfixes
+- Fixed an issue where the interface was not accessible because the browser language could not be determined (camera.ui)
+
 # v5.0.15 - 2022-01-25
 
 ## Other Changes
