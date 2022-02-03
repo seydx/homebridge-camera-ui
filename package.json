@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.16.12",
-    "@babel/eslint-parser": "7.16.5",
+    "@babel/eslint-parser": "7.17.0",
     "@babel/eslint-plugin": "7.16.5",
     "concurrently": "6.5.1",
     "eslint": "^8.7.0",
