@@ -12,7 +12,7 @@
 [![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/wFQYHSeXRt)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=flat-square&maxAge=2592000)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NP4T3KASWQLD8)
 
-**homebridge-camera-iu** allows you to expose cameras from [camera.ui](https://github.com/seydx/camera.ui) to HomeKit via Homebridge. camera.ui does not need to be installed separately. It is installed right away with homebridge-camera-ui
+**homebridge-camera-ui** allows you to expose cameras from [camera.ui](https://github.com/seydx/camera.ui) to HomeKit via Homebridge. camera.ui does not need to be installed separately. It is installed right away with homebridge-camera-ui
 
 **camera.ui** is a NVR like PWA to control your RTSP capable cameras with:
 
@@ -25,11 +25,11 @@
 - **Notifications** via Alexa, Telegram, Webhook and WebPush
 - **Snapshot/Video**: Save recording of snapshots/videos locally when motion is detected
 - **Prebuffering:** See the seconds before the movement event
-- **User Interface**: Beautiful and with love designed interface with 8 different color themes, darkmode and more
+- **User Interface**: Beautiful and with love designed interface with 8 different color themes, dark mode and more
 - **HSV** Support (HomeKit Secure Video)
 - **Config UI X** Support
 
-and much mure...
+and much more...
 
 **Supported Languages:** 
 
@@ -143,7 +143,7 @@ All images or videos recorded by motion are listed here. If AWS Rekognition is u
 
 ### Notifications
 
-All motion events as well as system messages can be viewed here. Each notification has one or more labels to better catagorize them. The filter function can also be used to filter the notifications as desired.
+All motion events as well as system messages can be viewed here. Each notification has one or more labels to better categorize them. The filter function can also be used to filter the notifications as desired.
 
 <img src="https://github.com/SeydX/camera.ui/blob/master/images/browser/notifications.png" align="center" alt="camera.ui">
 

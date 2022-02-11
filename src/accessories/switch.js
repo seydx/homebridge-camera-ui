@@ -115,7 +115,7 @@ export default class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.info('An error occured during getting atHome state!', this.accessory.displayName);
+      this.log.info('An error occurred during getting atHome state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
@@ -132,7 +132,7 @@ export default class SwitchAccessory {
 
       this.log.info(`At Home: ${state}`, this.accessory.displayName);
     } catch (error) {
-      this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
+      this.log.info('An error occurred during setting atHome state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {
@@ -156,7 +156,7 @@ export default class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.info('An error occured during getting exclude state!', this.accessory.displayName);
+      this.log.info('An error occurred during getting exclude state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
@@ -190,7 +190,7 @@ export default class SwitchAccessory {
         this.accessory.displayName
       );
     } catch (error) {
-      this.log.info('An error occured during setting atHome state!', this.accessory.displayName);
+      this.log.info('An error occurred during setting atHome state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {
@@ -214,7 +214,7 @@ export default class SwitchAccessory {
 
       return state;
     } catch (error) {
-      this.log.info('An error occured during getting privacy mode state!', this.accessory.displayName);
+      this.log.info('An error occurred during getting privacy mode state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
   }
@@ -232,7 +232,7 @@ export default class SwitchAccessory {
 
       this.log.info(`Privacy Mode: ${state}`, this.accessory.displayName);
     } catch (error) {
-      this.log.info('An error occured during setting privacy mode state!', this.accessory.displayName);
+      this.log.info('An error occurred during setting privacy mode state!', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
 
       setTimeout(() => {

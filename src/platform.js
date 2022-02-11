@@ -274,7 +274,7 @@ export class HomebridgeCameraUI {
 
       this.log.info('Accessories refreshed and config.json saved!');
     } catch (error) {
-      this.log.info('An error occured during changing config.json');
+      this.log.info('An error occurred during changing config.json');
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
@@ -317,7 +317,7 @@ export class HomebridgeCameraUI {
 
       this.log.debug('Camera added to HomeKit and config.json saved!', camera.name);
     } catch (error) {
-      this.log.info('An error occured during adding new camera through camera.ui');
+      this.log.info('An error occurred during adding new camera through camera.ui');
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
@@ -351,7 +351,7 @@ export class HomebridgeCameraUI {
 
       this.log.debug('Camera removed from HomeKit and config.json saved!', cameraName);
     } catch (error) {
-      this.log.info('An error occured during removing camera through camera.ui', cameraName);
+      this.log.info('An error occurred during removing camera through camera.ui', cameraName);
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
@@ -382,7 +382,7 @@ export class HomebridgeCameraUI {
 
       this.log.debug('Cameras removed from HomeKit and config.json saved!');
     } catch (error) {
-      this.log.info('An error occured during removing cameras through camera.ui');
+      this.log.info('An error occurred during removing cameras through camera.ui');
       this.log.error(error, 'Config', 'Homebridge');
     }
   }
