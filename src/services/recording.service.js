@@ -64,17 +64,6 @@ export default class RecordingDelegate {
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
     //let probeTimedOut = controller?.media.codecs.timedout;
 
-    if (!audioSourceFound) {
-      this.log.debug(
-        'Replacing audio with a dummy track, audio source not found or timed out during probe stream (recording)',
-        this.accessory.displayName,
-        'Homebridge'
-      );
-
-      ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
-      audioEnabled = true;
-    }
-
     if (audioEnabled) {
       if (audioSourceFound) {
         if (incompatibleAudio && acodec !== 'libfdk_aac') {
@@ -90,6 +79,14 @@ export default class RecordingDelegate {
           acodec = 'copy';
         }
       } else {
+        this.log.debug(
+          'Replacing audio with a dummy track, audio source not found or timed out during probe stream (recording)',
+          this.accessory.displayName,
+          'Homebridge'
+        );
+
+        ffmpegInput.push('-f', 'lavfi', '-i', 'anullsrc=cl=1', '-shortest');
+
         acodec = 'libfdk_aac';
       }
 
