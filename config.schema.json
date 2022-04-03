@@ -28,7 +28,7 @@
       "description": "User Interface Debug"
     },
     "mqtt": {
-      "titel": "MQTT Server",
+      "title": "MQTT Server",
       "type": "object",
       "properties": {
         "active": {
@@ -82,7 +82,7 @@
       }
     },
     "http": {
-      "titel": "HTTP Server",
+      "title": "HTTP Server",
       "type": "object",
       "properties": {
         "active": {
@@ -111,12 +111,12 @@
       }
     },
     "smtp": {
-      "titel": "SMTP Server",
+      "title": "SMTP Server",
       "type": "object",
       "properties": {
         "active": {
           "title": "Active",
-          "description": "Activates STMP Server for Email-based automation. If not set, SMTP support is not started.",
+          "description": "Activates SMTP Server for Email-based automation. If not set, SMTP support is not started.",
           "type": "boolean",
           "default": false
         },
@@ -140,7 +140,7 @@
       }
     },
     "ftp": {
-      "titel": "FTP Server",
+      "title": "FTP Server",
       "type": "object",
       "properties": {
         "active": {
@@ -169,7 +169,7 @@
       }
     },
     "ssl": {
-      "titel": "SSL Setup",
+      "title": "SSL Setup",
       "type": "object",
       "properties": {
         "active": {
@@ -197,7 +197,7 @@
       }
     },
     "options": {
-      "titel": "Options",
+      "title": "Options",
       "type": "object",
       "properties": {
         "videoProcessor": {

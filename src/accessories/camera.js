@@ -879,7 +879,7 @@ export default class CameraDelegate {
         privacy = camerasSettings?.privacyMode || false;
       }
     } catch (error) {
-      this.log.info('An error occured during getting atHome state, skipping..', this.accessory.displayName);
+      this.log.info('An error occurred during getting atHome state, skipping..', this.accessory.displayName);
       this.log.error(error, this.accessory.displayName, 'Homebridge');
     }
 
