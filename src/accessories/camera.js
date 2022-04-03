@@ -573,7 +573,7 @@ export default class CameraDelegate {
       const ffmpegArguments = [
         '-hide_banner',
         '-loglevel',
-        `level${videoConfig.debug ? '+verbose' : ''}`,
+        videoConfig.debug ? 'verbose' : 'error',
         ...ffmpegInput,
       ];
 
@@ -719,7 +719,7 @@ export default class CameraDelegate {
         const ffmpegReturnArguments = [
           '-hide_banner',
           '-loglevel',
-          videoConfig.debug ? '+verbose' : '',
+          videoConfig.debug ? 'verbose' : '',
           '-protocol_whitelist',
           'pipe,udp,rtp,file,crypto',
           '-f',
