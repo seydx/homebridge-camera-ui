@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.17 - 2022-04-15
+
+## Other Changes
+- i18n: Thai (th) language added by [@tomzt](https://github.com/tomzt) (camera.ui)
+- i18n: French (fr) language added by [@NebzHB](https://github.com/NebzHB) (camera.ui)
+- i18n: Spanish (es) language added by [@mastefordev](https://github.com/masterfordev) (camera.ui)
+- Improved videoanalysis (camera.ui)
+- Minor UI improvements (camera.ui)
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where pinging camera sources with `non-break spaces` failed (camera.ui)
+- Fixed an issue where Doorbell Topic and Message were not displayed in the interface (camera.ui)
+- Fixed an issue where changing `recordOnMovement` in the ui settings was resetted after restart (camera.ui)
+- Fixed an issue where notifications were saved to the database even if the notifications were disabled in the settings (camera.ui)
+- Fixed an issue where Telegram sometimes could not send videos (camera.ui)
+- Fixed an issue where the privacy image was still displayed even when privacy mode was disabled
+- Minor bugfixes
+
 # v5.0.16 - 2022-01-25
 
 ## Bugfixes

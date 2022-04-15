@@ -271,6 +271,7 @@ export default class CameraDelegate {
       const atHome = await this.getPrivacyState();
 
       if (atHome) {
+        this.snapshotPromise = undefined;
         return resolve(privacyImageInBytes);
       }
 
@@ -317,6 +318,7 @@ export default class CameraDelegate {
           this.accessory.displayName
         );
         resolve(offlineImageInBytes);
+        this.snapshotPromise = undefined;
       });
 
       ffmpeg.stderr.on('data', (data) => {
@@ -570,12 +572,7 @@ export default class CameraDelegate {
 
       this.log.info(`Starting video stream: ${resolutionText}`, this.accessory.displayName);
 
-      const ffmpegArguments = [
-        '-hide_banner',
-        '-loglevel',
-        videoConfig.debug ? 'verbose' : 'error',
-        ...ffmpegInput,
-      ];
+      const ffmpegArguments = ['-hide_banner', '-loglevel', videoConfig.debug ? 'verbose' : 'error', ...ffmpegInput];
 
       if (!inputChanged && !prebufferInput && videoConfig.mapvideo) {
         ffmpegArguments.push('-map', videoConfig.mapvideo);

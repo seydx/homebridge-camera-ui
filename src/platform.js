@@ -216,12 +216,6 @@ export class HomebridgeCameraUI {
     try {
       this.log.info('Config changed through interface, saving...');
 
-      configJson.cameras = configJson.cameras.map((camera) => {
-        camera.hsv = !camera.recordOnMovement;
-        delete camera.recordOnMovement;
-        return camera;
-      });
-
       const config = await fs.readJson(`${this.api.user.storagePath()}/config.json`);
 
       for (const index in config.platforms) {
@@ -229,6 +223,12 @@ export class HomebridgeCameraUI {
           for (const [key, value] of Object.entries(configJson)) {
             config.platforms[index][key] = value;
           }
+
+          config.platforms[index].cameras = config.platforms[index].cameras.map((camera) => {
+            camera.hsv = !camera.recordOnMovement;
+            delete camera.recordOnMovement;
+            return camera;
+          });
         }
       }
 

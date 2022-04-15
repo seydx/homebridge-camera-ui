@@ -33,7 +33,7 @@ and much more...
 
 **Supported Languages:** 
 
-:de: | :gb: | :netherlands:
+:de: | :gb: | :netherlands: | :fr: | :thailand: | :es:
 
 **Demo:** https://streamable.com/3yce42 
 
