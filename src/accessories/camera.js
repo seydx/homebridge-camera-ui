@@ -572,7 +572,13 @@ export default class CameraDelegate {
 
       this.log.info(`Starting video stream: ${resolutionText}`, this.accessory.displayName);
 
-      const ffmpegArguments = ['-hide_banner', '-loglevel', videoConfig.debug ? 'verbose' : 'error', ...ffmpegInput];
+      const ffmpegArguments = ['-hide_banner'];
+
+      if (videoConfig.debug) {
+        ffmpegArguments.push('-loglevel', 'verbose');
+      }
+
+      ffmpegArguments.push(...ffmpegInput);
 
       if (!inputChanged && !prebufferInput && videoConfig.mapvideo) {
         ffmpegArguments.push('-map', videoConfig.mapvideo);
@@ -713,10 +719,13 @@ export default class CameraDelegate {
       );
 
       if (videoConfig.audio && videoConfig.returnAudioTarget && !inputChanged) {
-        const ffmpegReturnArguments = [
-          '-hide_banner',
-          '-loglevel',
-          videoConfig.debug ? 'verbose' : '',
+        const ffmpegReturnArguments = ['-hide_banner'];
+
+        if (videoConfig.debug) {
+          ffmpegReturnArguments.push('-loglevel', 'verbose');
+        }
+
+        ffmpegArguments.push(
           '-protocol_whitelist',
           'pipe,udp,rtp,file,crypto',
           '-f',
@@ -725,8 +734,8 @@ export default class CameraDelegate {
           'libfdk_aac',
           '-i',
           'pipe:',
-          ...videoConfig.returnAudioTarget.split(/\s+/),
-        ];
+          ...videoConfig.returnAudioTarget.split(/\s+/)
+        );
 
         const ipVersion = sessionInfo.ipv6 ? 'IP6' : 'IP4';
 

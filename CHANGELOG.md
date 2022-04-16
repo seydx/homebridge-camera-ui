@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-# NEXT
+# v5.0.19 - 2022-04-16
+
+## Bugfixes
+- Fixed an issue with ffmpeg logging that caused HomeKit Stream to stop responding and display a warning
+- Fixed minor issues with FFmpeg v5
+
+# v5.0.18 - 2022-04-16
 
 ## Other Changes
 - Minor recording improvements
