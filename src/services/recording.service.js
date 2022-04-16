@@ -80,7 +80,7 @@ export default class RecordingDelegate {
         }
       } else {
         this.log.debug(
-          'Replacing audio with a dummy track, audio source not found or timed out during probe stream (recording)',
+          'Replacing audio with a dummy track, audio source not found or timed out during probe stream (recording). Disable "audio" to mute this warning.',
           this.accessory.displayName,
           'Homebridge'
         );
@@ -176,11 +176,19 @@ export default class RecordingDelegate {
         level,
         '-b:v',
         `${videoBitrate}k`,
+        //'-bufsize',
+        //`${2 * videoBitrate}k`,
+        //'-maxrate',
+        //`${videoBitrate}k`,
         //'-r',
         //fps.toString(),
         '-vf',
         //It looks like if FPS is fixed at 25 instead of 30, it reduces the probability of HSV breaking.
         `framerate=fps=25,scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        '-fflags',
+        '+genpts+discardcorrupt',
+        '-reset_timestamps',
+        '1',
         '-force_key_frames',
         `expr:gte(t,n_forced*${iFrameInterval / 1000})`
       );

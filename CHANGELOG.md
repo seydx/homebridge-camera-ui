@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# NEXT
+
+## Other Changes
+- Minor recording improvements
+
+## Bugfixes
+- Fixed an issue where the notification in the interface referred to a saved recording even though recordings were disabled (camera.ui)
+- Fixed an issue where the recorded video could not be sent via Telegram (camera.ui)
+- Fix ffmpeg command `-stimeout`
+- Minor bugfixes
+
 # v5.0.17 - 2022-04-15
 
 ## Other Changes

@@ -114,7 +114,7 @@ class UiServer extends HomebridgePluginUiServer {
         '-q',
         '1',
         '-max_muxing_queue_size',
-        '1024',
+        '9999',
         '-',
       ];
 

@@ -531,8 +531,8 @@ export default class CameraDelegate {
 
       if (!audioSourceFound) {
         if (videoConfig.audio) {
-          this.log.debug(
-            'Replacing audio with a dummy track, audio source not found or timed out during probe stream (stream)',
+          this.log.warn(
+            'Replacing audio with a dummy track, audio source not found or timed out during probe stream (stream). Disable "audio" to mute this warning.',
             this.accessory.displayName,
             'Homebridge'
           );
