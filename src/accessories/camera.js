@@ -725,7 +725,7 @@ export default class CameraDelegate {
           ffmpegReturnArguments.push('-loglevel', 'verbose');
         }
 
-        ffmpegArguments.push(
+        ffmpegReturnArguments.push(
           '-protocol_whitelist',
           'pipe,udp,rtp,file,crypto',
           '-f',

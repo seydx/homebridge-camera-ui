@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.20 - 2022-04-17
+
+## Other Changes
+- Enabled Web Assembly for better streaming performance within web browser (camera.ui)
+- Minor UI improvements (camera.ui)
+- Changed to `@seydx/jsmpeg` (camera.ui)
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where 2-way audio did not work
+
 # v5.0.19 - 2022-04-16
 
 ## Bugfixes

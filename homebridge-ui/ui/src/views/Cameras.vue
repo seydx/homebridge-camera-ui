@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import JSMpeg from 'jsmpeg-fast-player';
+import JSMpeg from '@seydx/jsmpeg';
 import JSMpegWritableSource from '@/common/jsmpeg-source';
 
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
