@@ -15,7 +15,7 @@
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^0.0.19",
     "camera.ui": "^1.1.10",
-    "fs-extra": "10.0.1",
+    "fs-extra": "10.1.0",
     "pick-port": "^1.0.0"
   },
   "devDependencies": {
