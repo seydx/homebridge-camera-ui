@@ -11,8 +11,21 @@ export default class Config {
 
     config = new ConfigSetup(config);
     config.cameras = config.cameras
-      .filter((camera) => camera.name && camera.videoConfig?.source)
       .map((camera) => {
+        if (!camera.name) {
+          this.log.warn('The name for this camera is missing, the camera will be ignored.');
+          return;
+        }
+
+        if (!camera.videoConfig?.source) {
+          this.log.warn('The source for this camera is missing, the camera will be ignored.', camera.name);
+          return;
+        }
+
+        if (camera.disable) {
+          this.log.warn(`${camera.name} is disabled in config.json, the camera will be ignored`, camera.name);
+          return;
+        }
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
 
         if (!sourceArguments.includes('-i')) {
@@ -52,7 +65,7 @@ export default class Config {
 
         return camera;
       })
-      .filter((camera) => camera.videoConfig?.source);
+      .filter(Boolean);
 
     return config;
   }

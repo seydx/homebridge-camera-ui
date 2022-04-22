@@ -550,7 +550,7 @@ export default class CameraDelegate {
         videoConfig.maxBitrate && videoConfig.forceMax ? videoConfig.maxBitrate : request.video.max_bit_rate;
       let bufsize = request.video.max_bit_rate * 2;
       let maxrate = request.video.max_bit_rate;
-      let encoderOptions = videoConfig.encoderOptions;
+      let encoderOptions = videoConfig.encoderOptions || '-preset ultrafast -tune zerolatency';
 
       if (vcodec === 'copy') {
         resolution.width = 0;

@@ -33,7 +33,7 @@ export class HomebridgeCameraUI {
       return;
     }
 
-    Logger.createLogger(log, config.debug);
+    Logger.createLogger(log, config.logLevel || 'info');
 
     this.api = api;
     this.accessories = [];

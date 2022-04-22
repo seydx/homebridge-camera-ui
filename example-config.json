@@ -159,6 +159,17 @@
             "encoderOptions": "-preset ultrafast -tune zerolatency",
             "audio": true,
             "debug": true
+          },
+          "hksvConfig": {
+            "source": "-i rtsp://test:test@192.168.123.456:554/11",
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "maxFPS": 20,
+            "maxBitrate": 1024,
+            "vcodec": "copy",
+            "acodec": "libfdk_aac",
+            "encoderOptions": "-preset ultrafast -tune zerolatency",
+            "audio": true
           }
         }
       ]

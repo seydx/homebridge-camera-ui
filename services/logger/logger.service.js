@@ -12,21 +12,19 @@ const LogLevel = {
 export default class Logger {
   static #logger = console;
   static #loggerUi = null;
-  static #debugEnabled = process.env.NODE_ENV === 'test';
+  static #logLevel = process.env.NODE_ENV === 'test' ? 'debug' : 'info';
 
   static createLogger = (logger, debug) => new Logger(logger, debug);
   static createUiLogger = (logger) => (Logger.#loggerUi = logger);
 
   static log;
 
-  constructor(logger, debug) {
+  constructor(logger, logLevel) {
     if (logger) {
       Logger.#logger = logger;
     }
 
-    if (debug) {
-      Logger.#debugEnabled = debug;
-    }
+    Logger.#logLevel = logLevel || 'info';
 
     Logger.log = {
       prefix: logger.prefix,
@@ -39,7 +37,7 @@ export default class Logger {
 
   // eslint-disable-next-line no-unused-vars
   static #logging(level, message, accessoryName, subprefix, fromUi) {
-    if (level === LogLevel.DEBUG && !Logger.#debugEnabled) {
+    if (!LoggerService.allowLogging(level)) {
       return;
     }
 

@@ -33,32 +33,51 @@ export default class RecordingDelegate {
 
     this.log.debug('Video fragments requested from HSV', this.accessory.displayName);
 
+    const hksvSource = this.accessory.context.config.hksvConfig?.source;
     const videoConfig = cameraUtils.generateVideoConfig(this.accessory.context.config.videoConfig);
-    let ffmpegInput = [...cameraUtils.generateInputSource(videoConfig).split(/\s+/)];
-
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
-    if (this.accessory.context.config.prebuffering && controller?.prebuffer) {
-      try {
-        this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
 
-        const input = await controller.prebuffer.getVideo({
-          container: 'mp4',
-          prebuffer: this.accessory.context.config.prebufferLength,
-        });
+    let prebufferInput = false;
+    let ffmpegInput = [...cameraUtils.generateInputSource(videoConfig, hksvSource).split(/\s+/)];
 
-        ffmpegInput = [...input];
-      } catch (error) {
-        this.log.warn(`Can not access prebuffer stream, skipping: ${error}`, this.accessory.displayName, 'Homebridge');
+    if (this.accessory.context.config.prebuffering && controller?.prebuffer && !hksvSource) {
+      if (hksvSource) {
+        this.log.debug('Skipping prebuffered video due to HKSV source', this.accessory.displayName);
+      } else {
+        try {
+          this.log.debug('Setting prebuffer stream as input', this.accessory.displayName);
+
+          const input = await controller.prebuffer.getVideo({
+            container: 'mp4',
+            prebuffer: this.accessory.context.config.prebufferLength,
+          });
+
+          ffmpegInput = prebufferInput = [...input];
+        } catch (error) {
+          this.log.warn(
+            `Can not access prebuffer stream, skipping: ${error}`,
+            this.accessory.displayName,
+            'Homebridge'
+          );
+        }
       }
     }
 
     const videoArguments = [];
     const audioArguments = [];
 
-    let acodec = videoConfig.acodec;
-    let vcodec = videoConfig.vcodec;
+    if (!prebufferInput && videoConfig.mapvideo) {
+      videoArguments.push('-map', videoConfig.mapvideo);
+    }
 
-    let audioEnabled = videoConfig.audio;
+    if (!prebufferInput && videoConfig.mapaudio) {
+      audioArguments.push('-map', videoConfig.mapaudio);
+    }
+
+    let acodec = this.accessory.context.config.hksvConfig?.acodec || videoConfig.acodec;
+    let vcodec = this.accessory.context.config.hksvConfig?.vcodec || videoConfig.vcodec;
+
+    let audioEnabled = this.accessory.context.config.hksvConfig?.audio || videoConfig.audio;
     let audioSourceFound = controller?.media.codecs.audio.length;
     let probeAudio = controller?.media.codecs.audio;
     let incompatibleAudio = audioSourceFound && !probeAudio.some((codec) => compatibleAudio.test(codec));
@@ -153,10 +172,11 @@ export default class RecordingDelegate {
         ? '3.2'
         : '3.1';
 
-    const width = this.configuration.videoCodec.resolution[0];
-    const height = this.configuration.videoCodec.resolution[1];
-    //const fps = this.configuration.videoCodec.resolution[2];
-    const videoBitrate = this.configuration.videoCodec.parameters.bitRate;
+    const width = this.accessory.context.config.hksvConfig?.maxWidth || this.configuration.videoCodec.resolution[0];
+    const height = this.accessory.context.config.hksvConfig?.maxHeight || this.configuration.videoCodec.resolution[1];
+    const fps = this.accessory.context.config.hksvConfig?.maxFPS || 25; //this.configuration.videoCodec.resolution[2];
+    const videoBitrate =
+      this.accessory.context.config.hksvConfig?.maxBitrate || this.configuration.videoCodec.parameters.bitRate;
     const iFrameInterval = this.configuration.videoCodec.parameters.iFrameInterval;
 
     if (vcodec === 'copy') {
@@ -184,19 +204,23 @@ export default class RecordingDelegate {
         //fps.toString(),
         '-vf',
         //It looks like if FPS is fixed at 25 instead of 30, it reduces the probability of HSV breaking.
-        `framerate=fps=25,scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
-        '-fflags',
-        '+genpts+discardcorrupt',
-        '-reset_timestamps',
-        '1',
+        `framerate=fps=${fps},scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        //'-fflags',
+        //'+genpts+discardcorrupt',
+        //'-reset_timestamps',
+        //'1',
         '-force_key_frames',
         `expr:gte(t,n_forced*${iFrameInterval / 1000})`
       );
+
+      if (this.accessory.context.config.hksvConfig?.encoderOptions) {
+        videoArguments.push(...this.accessory.context.config.hksvConfig.encoderOptions.split(' '));
+      }
     }
 
     this.session = await cameraUtils.startFFMPegFragmetedMP4Session(
       this.accessory.displayName,
-      videoConfig.debug,
+      this.accessory.context.config.videoConfig,
       this.config.options.videoProcessor,
       ffmpegInput,
       audioArguments,
@@ -274,7 +298,7 @@ export default class RecordingDelegate {
         );
       } else if (filebuffer.length > 0) {
         this.log.debug('Recording completed (HSV)', this.accessory.displayName);
-        this.cameraUi.eventController.triggerEvent('custom', this.accessory.displayName, true, filebuffer, 'Video');
+        this.cameraUi.eventController.triggerEvent('HSV', this.accessory.displayName, true, filebuffer, 'Video');
       }
     }
   }
