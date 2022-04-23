@@ -22,10 +22,6 @@ export default class Config {
           return;
         }
 
-        if (camera.disable) {
-          this.log.warn(`${camera.name} is disabled in config.json, the camera will be ignored`, camera.name);
-          return;
-        }
         const sourceArguments = camera.videoConfig.source.split(/\s+/);
 
         if (!sourceArguments.includes('-i')) {

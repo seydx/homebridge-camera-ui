@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.22 - 2022-04-23
+
+## Other Changes
+- Improved probe stream (camera.ui)
+- Improved HKSV recordings process
+- Minor improvements
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where recording information such as motion label was not correctly saved in the image data (camera.ui)
+- Fixed an issue where prebuffering and/or video analysis was started for disabled cameras anyway
+- Fixed an issue where disabling a camera in config.json also removed it from config.json
+- Minor bugfixes
+
 # v5.0.21 - 2022-04-23
 
 ## Notable Changes

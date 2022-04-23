@@ -51,7 +51,9 @@ export class HomebridgeCameraUI {
       const device = { ...camera };
       const uuid = this.api.hap.uuid.generate(device.name);
 
-      if (this.devices.has(uuid)) {
+      if (camera.disable) {
+        this.log.warn(`${camera.name} is disabled in config.json, the camera will be ignored.`, camera.name);
+      } else if (this.devices.has(uuid)) {
         this.log.warn(
           'Multiple devices are configured with this name. Duplicate device will be skipped.',
           device.name,

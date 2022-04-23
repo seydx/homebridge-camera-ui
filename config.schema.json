@@ -241,7 +241,10 @@
             "title": "Name",
             "type": "string",
             "required": true,
-            "description": "Set the camera name for display in the Home app."
+            "description": "Set the camera name for display in the Home app.",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
+            }
           },
           "manufacturer": {
             "name": "Manufacturer",

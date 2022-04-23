@@ -201,16 +201,18 @@ export default class RecordingDelegate {
         //'-maxrate',
         //`${videoBitrate}k`,
         //'-r',
-        //fps.toString(),
+        //`${fps}`,
         '-vf',
-        //It looks like if FPS is fixed at 25 instead of 30, it reduces the probability of HSV breaking.
-        `framerate=fps=${fps},scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        //`scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+        `framerate=fps=${fps}*1000/1001,scale=w=${width}:h=${height}:force_original_aspect_ratio=1,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
         //'-fflags',
         //'+genpts+discardcorrupt',
         //'-reset_timestamps',
         //'1',
         '-force_key_frames',
         `expr:gte(t,n_forced*${iFrameInterval / 1000})`
+        //'-vsync',
+        //'2'
       );
 
       if (this.accessory.context.config.hksvConfig?.encoderOptions) {
