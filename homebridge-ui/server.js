@@ -73,7 +73,7 @@ class UiServer extends HomebridgePluginUiServer {
           let videoProcessor =
             cameraUI.options && cameraUI.options.videoProcessor ? cameraUI.options.videoProcessor : defaultVideoProcess;
 
-          await this.probe();
+          await this.probe(camera.name, videoProcessor, camera.videoConfig.source);
 
           let source = cameraUtils.generateInputSource(videoConfig);
           source = cameraUtils.checkDeprecatedFFmpegArguments(this.codecs.ffmpegVersion, source);
@@ -194,7 +194,7 @@ class UiServer extends HomebridgePluginUiServer {
 
       console.log(`${cameraName}: Probe stream: ${videoProcessor} ${arguments_.join(' ')}`);
 
-      let cp = spawn(videoProcessor, arguments_, {
+      let cp = child_process.spawn(videoProcessor, arguments_, {
         env: process.env,
       });
 
@@ -233,7 +233,7 @@ class UiServer extends HomebridgePluginUiServer {
 
       cp.on('exit', () => {
         this.codecs.probe = true;
-        console.log(`${cameraName}: ${this.codecs.toString()}`);
+        console.log(`${cameraName}: ${JSON.stringify(this.codecs)}`);
 
         cp = null;
 

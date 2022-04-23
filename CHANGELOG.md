@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.24 - 2022-04-23
+
+## Bugfixes
+- Fixed an issue where you could no longer see the camera streams via `homebridge-config-ui-x`
+
 # v5.0.23 - 2022-04-23
 
 ## Other Changes
