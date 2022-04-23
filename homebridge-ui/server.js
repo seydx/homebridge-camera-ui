@@ -1,5 +1,6 @@
 import { HomebridgePluginUiServer, RequestError } from '@homebridge/plugin-ui-utils';
 
+import readline from 'readline';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 
@@ -13,6 +14,17 @@ class UiServer extends HomebridgePluginUiServer {
     super();
 
     streams = {};
+
+    this.codecs = {
+      ffmpegVersion: null,
+      probe: false,
+      timedout: false,
+      audio: [],
+      video: [],
+      bitrate: '? kb/s',
+      mapvideo: '',
+      mapaudio: '',
+    };
 
     this.onRequest('/interfaceConfig', this.getInterfaceConfig.bind(this));
     this.onRequest('/cameras', this.getCameras.bind(this));
@@ -58,13 +70,17 @@ class UiServer extends HomebridgePluginUiServer {
           let cameraHeight = videoConfig.maxHeight;
           let cameraWidth = videoConfig.maxWidth;
           let rate = videoConfig.maxFPS >= 20 ? videoConfig.maxFPS : 20;
-          let source = cameraUtils.generateInputSource(videoConfig);
           let videoProcessor =
             cameraUI.options && cameraUI.options.videoProcessor ? cameraUI.options.videoProcessor : defaultVideoProcess;
 
+          await this.probe();
+
+          let source = cameraUtils.generateInputSource(videoConfig);
+          source = cameraUtils.checkDeprecatedFFmpegArguments(this.codecs.ffmpegVersion, source);
+
           const options = {
             name: camera.name,
-            source: source,
+            source: Array.isArray(source) ? source.join(' ') : source,
             ffmpegOptions: {
               '-s': `${cameraWidth}x${cameraHeight}`,
               '-b:v': '299k',
@@ -118,7 +134,9 @@ class UiServer extends HomebridgePluginUiServer {
         '-',
       ];
 
-      console.log(`Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`);
+      console.log(
+        `${cameraName}: Stream command: ${streams[cameraName].ffmpegPath} ${spawnOptions.toString().replace(/,/g, ' ')}`
+      );
 
       streams[cameraName].stream = child_process.spawn(streams[cameraName].ffmpegPath, spawnOptions, {
         env: process.env,
@@ -165,6 +183,72 @@ class UiServer extends HomebridgePluginUiServer {
     for (const cameraName of Object.keys(streams)) {
       this.stopStream(cameraName);
     }
+  }
+
+  async probe(cameraName, videoProcessor, source) {
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
+      let lines = 0;
+
+      const arguments_ = ['-analyzeduration', '0', '-probesize', '5000', ...source.split(/\s+/)];
+
+      console.log(`${cameraName}: Probe stream: ${videoProcessor} ${arguments_.join(' ')}`);
+
+      let cp = spawn(videoProcessor, arguments_, {
+        env: process.env,
+      });
+
+      const stderr = readline.createInterface({
+        input: cp.stderr,
+        terminal: false,
+      });
+
+      stderr.on('line', (line) => {
+        if (lines === 0) {
+          this.codecs.ffmpegVersion = line.split(' ')[2];
+        }
+
+        const bitrateLine = line.includes('start: ') && line.includes('bitrate: ') ? line.split('bitrate: ')[1] : false;
+
+        if (bitrateLine) {
+          this.codecs.bitrate = bitrateLine;
+        }
+
+        const audioLine = line.includes('Audio: ') ? line.split('Audio: ')[1] : false;
+
+        if (audioLine) {
+          this.codecs.audio = audioLine.split(', ');
+          this.codecs.mapaudio = line.split('Stream #')[1]?.split(': Audio')[0];
+        }
+
+        const videoLine = line.includes('Video: ') ? line.split('Video: ')[1] : false;
+
+        if (videoLine) {
+          this.codecs.video = videoLine.split(', ');
+          this.codecs.mapvideo = line.split('Stream #')[1]?.split(': Video')[0];
+        }
+
+        lines++;
+      });
+
+      cp.on('exit', () => {
+        this.codecs.probe = true;
+        console.log(`${cameraName}: ${this.codecs.toString()}`);
+
+        cp = null;
+
+        resolve(this.codecs);
+      });
+
+      setTimeout(() => {
+        if (cp) {
+          console.warn(`${cameraName}: Can not determine stream codecs, probe timed out`);
+
+          this.codecs.timedout = true;
+          cp.kill('SIGKILL');
+        }
+      }, 10000);
+    });
   }
 }
 

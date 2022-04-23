@@ -38,7 +38,9 @@ export default class RecordingDelegate {
     const controller = this.cameraUi.cameraController.get(this.accessory.displayName);
 
     let prebufferInput = false;
+
     let ffmpegInput = [...cameraUtils.generateInputSource(videoConfig, hksvSource).split(/\s+/)];
+    ffmpegInput = cameraUtils.checkDeprecatedFFmpegArguments(controller?.media?.codecs?.ffmpegVersion, ffmpegInput);
 
     if (this.accessory.context.config.prebuffering && controller?.prebuffer && !hksvSource) {
       if (hksvSource) {
@@ -231,12 +233,13 @@ export default class RecordingDelegate {
 
     this.log.debug('Recording started', this.accessory.displayName);
 
-    const timer =
-      (await this.cameraUi?.database?.interface.chain
-        .get('settings')
-        .get('cameras')
-        .find({ name: this.accessory.displayName })
-        .value()) || MAX_RECORDING_TIME;
+    const cameraSettings = await this.cameraUi?.database?.interface.chain
+      .get('settings')
+      .get('cameras')
+      .find({ name: this.accessory.displayName })
+      .value();
+
+    const timer = cameraSettings?.videoanalysis?.forceCloseTimer || MAX_RECORDING_TIME;
 
     if (timer > 0) {
       this.forceCloseTimer = setTimeout(() => {
@@ -339,7 +342,7 @@ export default class RecordingDelegate {
       // Most likely, this is due to an incorrect camera configuration.
       // To avoid a restart loop, the motion sensor is reset.
       this.log.debug('Resetting motion sensor, because HSV closed the recording process', this.accessory.displayName);
-      await this.handler.motionHandler(this.accessory, false);
+      await this.handler.handle('motion', this.accessory.displayName, false);
     }
 
     this.closeReason = reason;

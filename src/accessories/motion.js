@@ -59,12 +59,13 @@ export default class MotionService {
                 this.motionTimeout = null;
               }
 
-              const timer =
-                (await this.cameraUi?.database?.interface.chain
-                  .get('settings')
-                  .get('cameras')
-                  .find({ name: this.accessory.displayName })
-                  .value()) || MAX_MOTION_DETECTED_TIME;
+              const cameraSettings = await this.cameraUi?.database?.interface.chain
+                .get('settings')
+                .get('cameras')
+                .find({ name: this.accessory.displayName })
+                .value();
+
+              const timer = cameraSettings?.videoanalysis?.forceCloseTimer || MAX_MOTION_DETECTED_TIME;
 
               if (timer > 0) {
                 this.motionTimeout = setTimeout(() => {
@@ -103,7 +104,7 @@ export default class MotionService {
 
       switchService.getCharacteristic(this.api.hap.Characteristic.On).onSet(async (state) => {
         //this.log.info(`Motion Switch ${state ? 'activated!' : 'deactivated!'}`, this.accessory.displayName);
-        await this.handler.motionHandler(this.accessory, state, true);
+        await this.handler.handle('motion', this.accessory.displayName, state, true, false);
       });
     } else {
       if (switchService) {

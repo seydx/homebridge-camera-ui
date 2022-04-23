@@ -10,8 +10,8 @@ export default class Handler {
     this.motionTimers = new Map();
 
     //handle motion from mqtt/http/smtp/videoanalysis (passed through camera.ui)
-    this.cameraUi.on('motion', (cameraName, trigger, state) => {
-      this.handle(trigger, cameraName, state);
+    this.cameraUi.on('motion', (cameraName, trigger, state, event) => {
+      this.handle(trigger, cameraName, state, false, false, event);
     });
 
     this.initialized = false;
@@ -22,17 +22,17 @@ export default class Handler {
     this.initialized = true;
   }
 
-  async handle(target, name, active) {
+  async handle(target, name, active, manual, muteDoorbell, event) {
     if (this.initialized) {
       const accessory = this.accessories.find((accessory) => accessory.displayName == name);
 
       if (accessory) {
         switch (target) {
           case 'motion':
-            await this.motionHandler(accessory, active);
+            await this.motionHandler(accessory, active, manual, muteDoorbell, event);
             break;
           case 'doorbell':
-            await this.doorbellHandler(accessory, active);
+            await this.doorbellHandler(accessory, active, manual, event);
             break;
           default:
             this.log.error(`Unknown target specified for motion handler (${target})!`, name, 'Homebridge');
@@ -41,11 +41,11 @@ export default class Handler {
         this.log.error(`Camera "${name}" not found.`);
       }
     } else {
-      this.log.error('Homebridge not initialized.', name, 'Homebridge');
+      this.log.warn('Ignore motion event, Homebridge not yet fully initialized..', name, 'Homebridge');
     }
   }
 
-  async motionHandler(accessory, active, manual, muteDoorbell) {
+  async motionHandler(accessory, active, manual, muteDoorbell, event) {
     const motionSensor = accessory.getService(this.hap.Service.MotionSensor);
     const motionTrigger = accessory.getServiceById(this.hap.Service.Switch, 'MotionTrigger');
 
@@ -57,12 +57,29 @@ export default class Handler {
         return;
       }
 
-      const interfaceSettings = await this.cameraUi?.database?.interface.chain.get('settings').cloneDeep().value();
+      const settingsDatabase = await this.cameraUi?.database?.interface.chain.get('settings').cloneDeep().value();
+      const cameraSettings = settingsDatabase?.cameras.find((cam) => cam.name === accessory.displayName);
+
+      const mqttClient = this.cameraUi?.motionController?.mqttClient;
+
+      if (mqttClient?.connected && cameraSettings?.mqttTopic) {
+        mqttClient.publish(
+          cameraSettings.mqttTopic,
+          JSON.stringify({
+            camera: accessory.displayName,
+            state: active,
+            type: 'motion',
+            event: event,
+          })
+        );
+      } else {
+        this.log.debug('MQTT client not connected, skip MQTT (notification)..');
+      }
 
       const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
       const timeoutConfig = !accessory.context.config.useInterfaceTimer
         ? accessory.context.config.motionTimeout
-        : interfaceSettings?.recordings?.timer || 15;
+        : settingsDatabase?.recordings?.timer || 15;
       const timeout = this.motionTimers.get(accessory.UUID);
 
       if (timeout) {
@@ -81,8 +98,8 @@ export default class Handler {
       }
 
       if (manual) {
-        const atHome = interfaceSettings?.general?.atHome || false;
-        const cameraExcluded = (interfaceSettings?.general?.exclude || []).includes(accessory.displayName);
+        const atHome = settingsDatabase?.general?.atHome || false;
+        const cameraExcluded = (settingsDatabase?.general?.exclude || []).includes(accessory.displayName);
 
         if (active && atHome && !cameraExcluded) {
           this.log.info(
@@ -139,20 +156,33 @@ export default class Handler {
     }
   }
 
-  async doorbellHandler(accessory, active, manual) {
+  async doorbellHandler(accessory, active, manual, event) {
     const doorbellSensor = accessory.getService(this.hap.Service.Doorbell);
     const doorbellTrigger = accessory.getServiceById(this.hap.Service.Switch, 'DoorbellTrigger');
 
     if (doorbellSensor) {
-      if (manual) {
-        const generalSettings = await this.cameraUi?.database?.interface.chain
-          .get('settings')
-          .get('general')
-          .cloneDeep()
-          .value();
+      const settingsDatabase = await this.cameraUi?.database?.interface.chain.get('settings').cloneDeep().value();
+      const cameraSettings = settingsDatabase.cameras.find((cam) => cam.name === accessory.displayName);
 
-        const atHome = generalSettings?.atHome || false;
-        const cameraExcluded = (generalSettings?.exclude || []).includes(accessory.displayName);
+      const mqttClient = this.cameraUi?.motionController?.mqttClient;
+
+      if (mqttClient?.connected && cameraSettings?.mqttTopic) {
+        mqttClient.publish(
+          cameraSettings.mqttTopic,
+          JSON.stringify({
+            camera: accessory.displayName,
+            state: active,
+            type: 'motion',
+            event: event,
+          })
+        );
+      } else {
+        this.log.debug('MQTT client not connected, skip MQTT (notification)..');
+      }
+
+      if (manual) {
+        const atHome = settingsDatabase?.general?.atHome || false;
+        const cameraExcluded = (settingsDatabase?.general?.exclude || []).includes(accessory.displayName);
 
         if (active && atHome && !cameraExcluded) {
           this.log.info(

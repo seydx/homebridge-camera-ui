@@ -486,7 +486,9 @@ export default class CameraDelegate {
       let prebufferInput = false;
 
       const videoConfig = cameraUtils.generateVideoConfig(this.accessory.context.config.videoConfig);
+
       let ffmpegInput = cameraUtils.generateInputSource(videoConfig).split(/\s+/);
+      ffmpegInput = cameraUtils.checkDeprecatedFFmpegArguments(controller?.media?.codecs?.ffmpegVersion, ffmpegInput);
 
       if (!(await this.pingCamera())) {
         // camera offline

@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.23 - 2022-04-23
+
+## Other Changes
+- **MQTT:** When motion is detected, two MQTT messages are now published on following topics:
+  1. **camera.ui/notifications**: Contains all notifications AFTER motion has been detected AND recorded.
+  2. **camera.ui/motion** _(can be changed in the interface):_ Contains motion event (before something is recorded).
+- Deprecated FFmpeg arguments will be auto replaced now (camera.ui)
+- Minor improvements to probe stream (camera.ui)
+
+## Bugfixes
+- Fixed an issue where the recording process (HSV) was not terminated by the forceCloseTimer when motionTimeout was disabled
+- Fixed an issue where changing camera settings via the interface did not work (camera.ui)
+
 # v5.0.22 - 2022-04-23
 
 ## Other Changes
