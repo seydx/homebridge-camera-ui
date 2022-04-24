@@ -55,6 +55,8 @@ export default class Config {
         camera.motionTimeout =
           camera.motionTimeout === undefined || !(camera.motionTimeout >= 0) ? 15 : camera.motionTimeout;
 
+        camera.motionDelay = camera.motionDelay && camera.motionDelay <= 10 ? camera.motionDelay : undefined;
+
         // validate prebufferLength
         camera.prebufferLength =
           camera.prebufferLength >= 4 && camera.prebufferLength <= 8 ? camera.prebufferLength : 4;

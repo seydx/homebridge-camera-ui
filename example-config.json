@@ -140,6 +140,7 @@
           "doorbell": true,
           "switches": true,
           "motionTimeout": 15,
+          "motionDelay": 5,
           "unbridge": true,
           "hsv": true,
           "prebuffering": true,

@@ -309,6 +309,16 @@
               "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === false"
             }
           },
+          "motionDelay": {
+            "title": "Motion Delay",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "The number of seconds to wait to trigger the motion sensor after a motion event is received from e.g. MQTT, SMTP, FTP or HTTP (this can be useful if you use an external motion sensor and the camera feed lags several seconds behind the event)",
+            "condition": {
+              "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === false"
+            }
+          },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",
             "type": "boolean",
@@ -832,6 +842,7 @@
                 "cameras[].switches",
                 "cameras[].useInterfaceTimer",
                 "cameras[].motionTimeout",
+                "cameras[].motionDelay",
                 "cameras[].motionDoorbell",
                 "cameras[].excludeSwitch",
                 "cameras[].privacySwitch"

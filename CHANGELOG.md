@@ -1,10 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.25 - 2022-04-24
+
+## Notable Changes
+- **Config:** 
+  - Added `"motionDelay"` parameter to the camera block. Motion Delay: The number of seconds to wait to trigger the motion sensor after a motion event is received from e.g. MQTT, SMTP, FTP or HTTP (this can be useful if you use an external motion sensor and the camera feed lags several seconds behind the event).
+
+## Other Changes
+- Minor UI improvements (camera.ui)
+- Bump dependencies
+
+## Bugfixes
+- Fixed an issue where replacing deprecated ffmpeg args failed due to invalid ffmpeg version (camera.ui)
+
 # v5.0.24 - 2022-04-23
 
 ## Bugfixes
-- Fixed an issue where you could no longer see the camera streams via `homebridge-config-ui-x`
+- Fixed an issue where camera streams could no longer be displayed via "homebridge-config-ui-x".
 
 # v5.0.23 - 2022-04-23
 

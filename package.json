@@ -1,6 +1,6 @@
 {
   "name": "homebridge-camera-ui",
-  "version": "5.0.24",
+  "version": "5.0.25",
   "description": "User Interface for RTSP capable cameras with HSV support.",
   "author": "SeydX (https://github.com/SeydX/homebridge-camera-ui)",
   "scripts": {
@@ -14,7 +14,7 @@
   "main": "index.js",
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^0.0.19",
-    "camera.ui": "^1.1.14",
+    "camera.ui": "^1.1.15",
     "ffmpeg-for-homebridge": "0.0.9",
     "fs-extra": "10.1.0",
     "pick-port": "^1.0.0"
@@ -24,7 +24,7 @@
     "@babel/eslint-parser": "7.17.0",
     "@babel/eslint-plugin": "7.17.7",
     "concurrently": "7.1.0",
-    "eslint": "^8.13.0",
+    "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
