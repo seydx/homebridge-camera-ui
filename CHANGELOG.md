@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.26 - 2022-04-24
+
+## Notable Changes
+- **API:**
+  - New endpoint `/api/system/disk`
+- **Charts:** 
+  - Added new chart `disk load`
+- **Widgets:**
+  - Added new widget to view the available and used disk space
+
+## Other Changes
+- Added disk space information to `Settings > Recordings`
+- Added check of storage space for motion events to avoid recording when storage space is low
+- Simplified `Add Camera` through UI
+- Minor UI improvements
+
+## Bugfixes
+- Fixed an issue where removing a camera via the user interface did not destroy the camera controller
+- Minor bugfixes
+
 # v5.0.25 - 2022-04-24
 
 ## Notable Changes
@@ -8,11 +28,11 @@ All notable changes to this project will be documented in this file.
   - Added `"motionDelay"` parameter to the camera block. Motion Delay: The number of seconds to wait to trigger the motion sensor after a motion event is received from e.g. MQTT, SMTP, FTP or HTTP (this can be useful if you use an external motion sensor and the camera feed lags several seconds behind the event).
 
 ## Other Changes
-- Minor UI improvements (camera.ui)
+- Minor UI improvements
 - Bump dependencies
 
 ## Bugfixes
-- Fixed an issue where replacing deprecated ffmpeg args failed due to invalid ffmpeg version (camera.ui)
+- Fixed an issue where replacing deprecated ffmpeg args failed due to invalid ffmpeg version
 
 # v5.0.24 - 2022-04-23
 
@@ -25,23 +45,23 @@ All notable changes to this project will be documented in this file.
 - **MQTT:** When motion is detected, two MQTT messages are now published on following topics:
   1. **camera.ui/notifications**: Contains all notifications AFTER motion has been detected AND recorded.
   2. **camera.ui/motion** _(can be changed in the interface):_ Contains motion event (before something is recorded).
-- Deprecated FFmpeg arguments will be auto replaced now (camera.ui)
-- Minor improvements to probe stream (camera.ui)
+- Deprecated FFmpeg arguments will be auto replaced now
+- Minor improvements to probe stream
 
 ## Bugfixes
 - Fixed an issue where the recording process (HSV) was not terminated by the forceCloseTimer when motionTimeout was disabled
-- Fixed an issue where changing camera settings via the interface did not work (camera.ui)
+- Fixed an issue where changing camera settings via the interface did not work
 
 # v5.0.22 - 2022-04-23
 
 ## Other Changes
-- Improved probe stream (camera.ui)
+- Improved probe stream
 - Improved HKSV recordings process
 - Minor improvements
 - Bump dependencies
 
 ## Bugfixes
-- Fixed an issue where recording information such as motion label was not correctly saved in the image data (camera.ui)
+- Fixed an issue where recording information such as motion label was not correctly saved in the image data
 - Fixed an issue where prebuffering and/or video analysis was started for disabled cameras anyway
 - Fixed an issue where disabling a camera in config.json also removed it from config.json
 - Minor bugfixes
@@ -74,9 +94,9 @@ All notable changes to this project will be documented in this file.
 # v5.0.20 - 2022-04-17
 
 ## Other Changes
-- Enabled Web Assembly for better streaming performance within web browser (camera.ui)
-- Minor UI improvements (camera.ui)
-- Changed to `@seydx/jsmpeg` (camera.ui)
+- Enabled Web Assembly for better streaming performance within web browser
+- Minor UI improvements
+- Changed to `@seydx/jsmpeg`
 - Bump dependencies
 
 ## Bugfixes
@@ -94,40 +114,40 @@ All notable changes to this project will be documented in this file.
 - Minor recording improvements
 
 ## Bugfixes
-- Fixed an issue where the notification in the interface referred to a saved recording even though recordings were disabled (camera.ui)
-- Fixed an issue where the recorded video could not be sent via Telegram (camera.ui)
+- Fixed an issue where the notification in the interface referred to a saved recording even though recordings were disabled
+- Fixed an issue where the recorded video could not be sent via Telegram
 - Fix ffmpeg command `-stimeout`
 - Minor bugfixes
 
 # v5.0.17 - 2022-04-15
 
 ## Other Changes
-- i18n: Thai (th) language added by [@tomzt](https://github.com/tomzt) (camera.ui)
-- i18n: French (fr) language added by [@NebzHB](https://github.com/NebzHB) (camera.ui)
-- i18n: Spanish (es) language added by [@mastefordev](https://github.com/masterfordev) (camera.ui)
-- Improved videoanalysis (camera.ui)
-- Minor UI improvements (camera.ui)
+- i18n: Thai (th) language added by [@tomzt](https://github.com/tomzt)
+- i18n: French (fr) language added by [@NebzHB](https://github.com/NebzHB)
+- i18n: Spanish (es) language added by [@mastefordev](https://github.com/masterfordev)
+- Improved videoanalysis
+- Minor UI improvements
 - Bump dependencies
 
 ## Bugfixes
-- Fixed an issue where pinging camera sources with `non-break spaces` failed (camera.ui)
-- Fixed an issue where Doorbell Topic and Message were not displayed in the interface (camera.ui)
-- Fixed an issue where changing `recordOnMovement` in the ui settings was resetted after restart (camera.ui)
-- Fixed an issue where notifications were saved to the database even if the notifications were disabled in the settings (camera.ui)
-- Fixed an issue where Telegram sometimes could not send videos (camera.ui)
+- Fixed an issue where pinging camera sources with `non-break spaces` failed
+- Fixed an issue where Doorbell Topic and Message were not displayed in the interface
+- Fixed an issue where changing `recordOnMovement` in the ui settings was resetted after restart
+- Fixed an issue where notifications were saved to the database even if the notifications were disabled in the settings
+- Fixed an issue where Telegram sometimes could not send videos
 - Fixed an issue where the privacy image was still displayed even when privacy mode was disabled
 - Minor bugfixes
 
 # v5.0.16 - 2022-01-25
 
 ## Bugfixes
-- Fixed an issue where the interface was not accessible because the browser language could not be determined (camera.ui)
+- Fixed an issue where the interface was not accessible because the browser language could not be determined
 
 # v5.0.15 - 2022-01-25
 
 ## Other Changes
-- Improved debug/error logging for recording (camera.ui)
-- Minor ui improvements (camera.ui)
+- Improved debug/error logging for recording
+- Minor ui improvements
 
 ## Bugfixes
 - Fixed an issue where "motion timeout" was not reset when recording was cancelled by HSV
@@ -137,30 +157,30 @@ All notable changes to this project will be documented in this file.
 # v5.0.14 - 2022-01-24
 
 ## Other Changes
-- Improved adding of cameras within the interface (camera.ui)
-- Added a new "Reports" page (atm its only placeholder) (camera.ui)
-- Redesigned the "save" button in camera settings page (camera.ui)
-- Reduced system payload (camera.ui)
-- Added more translations (camera.ui)
+- Improved adding of cameras within the interface
+- Added a new "Reports" page (atm its only placeholder)
+- Redesigned the "save" button in camera settings page
+- Reduced system payload
+- Added more translations
 
 ## Bugfixes
-- Fixed an issue where filtering of recordings and/or notifications did not work if end date was before start date (camera.ui)
-- Fixed an issue where it was possible to add multiple cameras with the same name through the interface (camera.ui)
-- Fixed an issue where a maximum of only 6 cameras could be displayed on Dashboard and Camview (camera.ui)
-- Fixed an issue where the config generator failed (camera.ui)
+- Fixed an issue where filtering of recordings and/or notifications did not work if end date was before start date
+- Fixed an issue where it was possible to add multiple cameras with the same name through the interface
+- Fixed an issue where a maximum of only 6 cameras could be displayed on Dashboard and Camview
+- Fixed an issue where the config generator failed
 - Minor bugfixes
 
 # v5.0.13 - 2022-01-23
 
 ## Other Changes
-- Refactored recordings/notifications filter (camera.ui)
-- Refactored config generator (camera.ui)
+- Refactored recordings/notifications filter
+- Refactored config generator
 
 ## Bugfixes
-- Fixed an issue where camera names were displayed incorrectly in recordings (camera.ui)
-- Fixed an issue where the recordings/notifications could not be filtered properly (camera.ui)
-- Fixed an issue where config.json was not created in standalone mode (camera.ui)
-- Fixed an issue where deleting the camera via the interface caused errors (camera.ui)
+- Fixed an issue where camera names were displayed incorrectly in recordings
+- Fixed an issue where the recordings/notifications could not be filtered properly
+- Fixed an issue where config.json was not created in standalone mode
+- Fixed an issue where deleting the camera via the interface caused errors
 - Fixed an issue where the `prebufferLength` of the camera in config.json was multiplied by 1000
 - Fixed an issue where the doorbell/motion switch was exposed to HomeKit even if motion/doorbell was not turned on
 - Minor bugfixes
@@ -174,7 +194,7 @@ All notable changes to this project will be documented in this file.
 # v5.0.11 - 2022-01-22
 
 ## Other Changes
-- Refactored logging into file (camera.ui)
+- Refactored logging into file
 - Minor improvements
 
 ## Bugfixes
@@ -192,16 +212,16 @@ All notable changes to this project will be documented in this file.
 ## Notable Changes
 - homebridge-config-ui-x (config.schema.json)
   - `"unbridge"` is now set to `true` by default in config.schema.json ! If no `false` is entered in config for `"unbridge"`, then homebridge-config-ui-x will change it to `true` and on the next restart of Homebridge your **bridged** camera will be passed to Homebridge as **unbridged** (which is also recommended)!
-- The database has been completely updated and will not be read/written again when the data is changed. Instead, any changes are cached and saved when logging out/restarting/closing camera.ui (camera.ui)
+- The database has been completely updated and will not be read/written again when the data is changed. Instead, any changes are cached and saved when logging out/restarting/closing camera.ui
 
 ## Other Changes
-- Database: Changed to `@seydx/lowdb` (camera.ui)
-- Videoanalysis: It is now possible to set the internal "forceClose" timer for video analysis via the interface (camera.ui)
-- Videoanalysis: A "reset" button has been added (interface) to reset the values for video analytics to default values (camera.ui)
-- SMTP: The SMTP server can now also search the content of an email if no camera could be assigned to the email addresse(s) (camera.ui)
+- Database: Changed to `@seydx/lowdb`
+- Videoanalysis: It is now possible to set the internal "forceClose" timer for video analysis via the interface
+- Videoanalysis: A "reset" button has been added (interface) to reset the values for video analytics to default values
+- SMTP: The SMTP server can now also search the content of an email if no camera could be assigned to the email addresse(s)
 - HSV: The warning that a recording was canceled by HSV now contains a more understandable reason
-- More translations (camera.ui)
-- Minor UI improvements (camera.ui)
+- More translations
+- Minor UI improvements
 - Bump dependencies
 
 ## Bugfixes
@@ -210,33 +230,33 @@ All notable changes to this project will be documented in this file.
 - Fixed an issue where it sometimes happened that the recording process (hsv) was not closed.
 - Fixed an issue where camera.ui took the user path instead of the homebridge storage path
 - Fixed an issue where some values were set by default for config.json (homebridge-config-ui-x)
-- Fixed an issue where recordings displayed an invalid date (camera.ui)
-- Fixed an issue where mapping mqtt messages failed (camera.ui)
-- Fixed an issue where references were obtained instead of (copied) values when reading from the database (camera.ui)
-- Fixed an issue where the "videoanalysis" image was not displayed (camera.ui)
-- Fixed a bug where a removed camera widget (when Snapshot was set) tried to refresh the image in the background even though the widget no longer existed. (camera.ui)
-- Fixed an issue where notification cleartimer not resetted if notification was removed (camera.ui)
-- When writing or reading from the database, unnecessary actions to the database are prevented (Windows: `EMFILE`) (camera.ui)
-- Pinned `"mqtt"` to v4.2.8 to fix `RangeError: Maximum call stack size exceeded` (camera.ui)
+- Fixed an issue where recordings displayed an invalid date
+- Fixed an issue where mapping mqtt messages failed
+- Fixed an issue where references were obtained instead of (copied) values when reading from the database
+- Fixed an issue where the "videoanalysis" image was not displayed
+- Fixed a bug where a removed camera widget (when Snapshot was set) tried to refresh the image in the background even though the widget no longer existed.
+- Fixed an issue where notification cleartimer not resetted if notification was removed
+- When writing or reading from the database, unnecessary actions to the database are prevented (Windows: `EMFILE`)
+- Pinned `"mqtt"` to v4.2.8 to fix `RangeError: Maximum call stack size exceeded`
 - Minor bugfixes
 
 # v5.0.9 - 2022-01-17
 
 ## Other Changes
-- Videoanalysis: Improved log output (debug level) (camera.ui)
-- Videoanalysis: Dwell time is now configurable within interface (minimum 15s) (camera.ui)
-- SMTP: It is now possible to modify the email adress for a camera (Settings > Cameras > Camera > Alarm > SMTP) (camera.ui)
+- Videoanalysis: Improved log output (debug level)
+- Videoanalysis: Dwell time is now configurable within interface (minimum 15s)
+- SMTP: It is now possible to modify the email adress for a camera (Settings > Cameras > Camera > Alarm > SMTP)
 - Added `"smtp.email"` to config.schema.json in `cameras` block
   - The email address (without everything after @) to be assigned to this camera (e.g. "my test camera". If not defined, the camera name will be used)
 - Improved config.schema.json (@grzegorz914)
-- Telegram: Switched to `node-telegram-bot-api` (camera.ui)
-- Minor UI improvements (camera.ui)
+- Telegram: Switched to `node-telegram-bot-api`
+- Minor UI improvements
 
 ## Bugfixes
-- Fixed an issue that sometimes prevented the interface from loading (camera.ui)
-- Fixed an issue where the profile picture did not update immediately after uploaded a new one (camera.ui)
-- Fixed translation issues on `/start` page (camera.ui)
-- Fixed an issue where the MQTT messages could not be mapped correctly (camera.ui)
+- Fixed an issue that sometimes prevented the interface from loading
+- Fixed an issue where the profile picture did not update immediately after uploaded a new one
+- Fixed translation issues on `/start` page
+- Fixed an issue where the MQTT messages could not be mapped correctly
 - Minor bugfixes
 
 ## Supporter
@@ -245,9 +265,9 @@ A big THANK YOU goes to everyone who supports this project. I could fix so many 
 # v5.0.8 - 2022-01-16
 
 ## Other changes
-- Videoanalysis: Using a default zone if none was created (camera.ui)
-- Videoanalysis: Increases default sensitivity (camera.ui)
-- Telegram: Stop Telegram bot after message is send (camera.ui)
+- Videoanalysis: Using a default zone if none was created
+- Videoanalysis: Increases default sensitivity
+- Telegram: Stop Telegram bot after message is send
 - Added default values to config.schema.json
 - Added `"useInterfaceTimer"` to config.schema.json
   - If enabled, the recording timer from camera.ui will be used for `"motionTimeout"`.
@@ -261,20 +281,20 @@ A big THANK YOU goes to everyone who supports this project. I could fix so many 
 # v5.0.7 - 2022-01-15
 
 ## Other Changes
-- Videoanalysis: Reduced the dwell time from 90s to 60s (camera.ui)
-- Videoanalysis: Removed `-hwaccel` from FFMPEG parameters (camera.ui)
-- Videoanalysis: Added `pixel/color difference` slider to be able to adjust the video analysis even more precisely within ui (camera.ui)
-- Prebuffering: Added `-preset:v ultrafast` if `forcePrebuffering` is enabled (camera.ui)
+- Videoanalysis: Reduced the dwell time from 90s to 60s
+- Videoanalysis: Removed `-hwaccel` from FFMPEG parameters
+- Videoanalysis: Added `pixel/color difference` slider to be able to adjust the video analysis even more precisely within ui
+- Prebuffering: Added `-preset:v ultrafast` if `forcePrebuffering` is enabled
 - Added the possibility to control the motion sensor (OFF state) via the camera instead of via motionTimeout (set `"motionTimeout": 0`, the camera must be able to send a `OFF` message e.g. via MQTT or Videoanalysis)
 - Removed motionTimeout for DOORBELLs
-- More translation added (camera.ui)
+- More translation added
 - Config.schema.json improvements
-- Minor improvements (camera.ui)
+- Minor improvements
 
 ## Bugfixes
-- Fixed an isue where crashing FFmpeg did not display an error message in the log (camera.ui)
-- Fixed an issue where the dwell time could start before the motion handler was initialized (camera.ui)
-- Fixed an issue where the restart timer for prebuffering and videoanalysis were calculated wrong (camera.ui)
+- Fixed an isue where crashing FFmpeg did not display an error message in the log
+- Fixed an issue where the dwell time could start before the motion handler was initialized
+- Fixed an issue where the restart timer for prebuffering and videoanalysis were calculated wrong
 - Fixed an issue where removing the camera through interface crashed the process
 - Fixed an issue where the interface link was not displayed in homebridge-config-ui-x if no port was set in config.json
 - Minor Bugfixes
@@ -282,29 +302,29 @@ A big THANK YOU goes to everyone who supports this project. I could fix so many 
 # v5.0.6 - 2022-01-14
 
 ## Other Changes
-- Videoanalysis: Reduced dwell time from 120s to 90s (camera.ui)
-- Videoanalysis: Minor improvements (camera.ui)
+- Videoanalysis: Reduced dwell time from 120s to 90s
+- Videoanalysis: Minor improvements
 - Refactored log output for better understanding of the flow of events
 - Refactored config.schema.json (@grzegorz914)
 
 ## Bugfixes
-- Fixed an issue where prebuffering/videoanalysis didnt work on cameras with mapped video/audio stream (camera.ui)
+- Fixed an issue where prebuffering/videoanalysis didnt work on cameras with mapped video/audio stream
 - Minor bugfixes
 
 # v5.0.5 - 2022-01-13
 
 ## Other Changes
-- Reduced default videoanalysis sensitivity to 25 (camera.ui)
-- Removed session control (camera.ui)
-- Videoanalysis improvements (camera.ui)
-- Refactored web stream (camera.ui)
+- Reduced default videoanalysis sensitivity to 25
+- Removed session control
+- Videoanalysis improvements
+- Refactored web stream
 - Improved camera pinging
-- Moved ENOENT messages to debug (eg. if recording not found) (camera.ui)
-- Minor UI improvements (camera.ui)
+- Moved ENOENT messages to debug (eg. if recording not found)
+- Minor UI improvements
 
 ## Bugfixes
-- Fixed an issue where resetting motion via MQTT didnt work (camera.ui)
-- Fixed an issue where the video analysis sensitivity does not work as desired (camera.ui)
+- Fixed an issue where resetting motion via MQTT didnt work
+- Fixed an issue where the video analysis sensitivity does not work as desired
 - Fixed an issue where camera source were taken instead of stillImageSource during fetching snapshot
 - Fixed an issue where mapping video/audio stream didnt work (ffmpeg)
 - Fixed an issue where starting the recording (HSV) with the doorbell ended immediately
@@ -314,35 +334,35 @@ A big THANK YOU goes to everyone who supports this project. I could fix so many 
 
 ## Other Changes
 - Interface:
-  - Limit max page size to 6 (camera.ui)
-  - Refactored Lightbox (camera.ui)
+  - Limit max page size to 6
+  - Refactored Lightbox
 - Homebridge UI (Config UI X)
   - Added link to camera.ui interface
 - Bump dependencies
 
 ## Bugfixes
-- Fixed an issue with pagination middleware, where the nextPage and prevPage attribute showed wrong path (camera.ui)
-- Fixed an isue where opening a recording or a notification (with recording) loaded all recordings in the background and caused the interface to crash (camera.ui)
-- Fixed an issue where the notification banner could not display a video (camera.ui)
-- Fixed an issue where utilization could not show process cpu load / memory usage (camera.ui)
+- Fixed an issue with pagination middleware, where the nextPage and prevPage attribute showed wrong path
+- Fixed an isue where opening a recording or a notification (with recording) loaded all recordings in the background and caused the interface to crash
+- Fixed an issue where the notification banner could not display a video
+- Fixed an issue where utilization could not show process cpu load / memory usage
 - Minor bugfixes
 
 # v5.0.3 - 2022-01-11
 
 ## Bugfixes
-- Fixed an issue where the sensitivity for video analysis was not applied (camera.ui)
-- Fixed an issue where building the ui failed if no test config.json found (camera.ui)
+- Fixed an issue where the sensitivity for video analysis was not applied
+- Fixed an issue where building the ui failed if no test config.json found
 
 # v5.0.2 - 2022-01-11
 
 ## Bugfix
-- Fixed an issue where the videoanalysis zones were not taken over (camera.ui)
-- Fixed an issue where the sensitivity for videoanalysis was reset after each reboot (camera.ui)
+- Fixed an issue where the videoanalysis zones were not taken over
+- Fixed an issue where the sensitivity for videoanalysis was reset after each reboot
 
 # v5.0.1 - 2022-01-10
 
 ## Bugfix
-- Fixed an issue where the status widget and the system page could not be displayed due to incorrect version checking (camera.ui)
+- Fixed an issue where the status widget and the system page could not be displayed due to incorrect version checking
 
 # v5.0.0 - 2022-01-10
 
