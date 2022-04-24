@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# v5.0.27 - 2022-04-24
+
+## Bugfixes
+- Several issues that caused the process to crash have been fixed
+
 # v5.0.26 - 2022-04-24
 
 ## Notable Changes
