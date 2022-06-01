@@ -46,12 +46,12 @@
       ]
     },
     "mqtt": {
-      "title": "MQTT Server",
+      "title": "MQTT Client",
       "type": "object",
       "properties": {
         "active": {
           "title": "Active",
-          "description": "Activates MQTT Broker for MQTT-based automation. If not set, MQTT support is not started.",
+          "description": "Activates MQTT Client for MQTT-based automation. If not set, MQTT support is not started.",
           "type": "boolean",
           "default": false
         },
