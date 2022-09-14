@@ -162,10 +162,10 @@ export default class RecordingDelegate {
 
     const profile =
       this.configuration.videoCodec.profile === this.api.hap.H264Profile.HIGH
-        ? 'high'
+        ? '100'
         : this.configuration.videoCodec.profile === this.api.hap.H264Profile.MAIN
-        ? 'main'
-        : 'baseline';
+        ? '77'
+        : '66';
 
     const level =
       this.configuration.videoCodec.level === this.api.hap.H264Level.LEVEL4_0
