@@ -20,7 +20,7 @@
     "pick-port": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.19.1",
     "@babel/eslint-parser": "7.17.0",
     "@babel/eslint-plugin": "7.17.7",
     "concurrently": "7.1.0",
