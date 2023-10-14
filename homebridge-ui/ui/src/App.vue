@@ -7,7 +7,7 @@ v-app.app.tw-p-4
     .tw-my-3.text-muted User Interface for RTSP capable cameras.
     a.github-link(href="https://github.com/SeydX/homebridge-camera-ui" target="_blank")
       v-icon.text-default.tw-mr-1(style="margin-top: -3px;") {{ icons['mdiGithub'] }} 
-      | Github
+      | GitHub
     .tw-mt-3
       router-link(to="/cameras") Cameras 
       span | 
