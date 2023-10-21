@@ -215,7 +215,7 @@
       }
     },
     "options": {
-      "title": "Options",
+      "title": "Video Processor",
       "type": "object",
       "properties": {
         "videoProcessor": {
@@ -330,7 +330,7 @@
           "unbridge": {
             "title": "Unbridge Camera (Recommended)",
             "type": "boolean",
-            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, the camera will need to be added to HomeKit manually.",
+            "description": "Bridged cameras can cause slowdowns of the entire Homebridge instance. If unbridged, each camera will need to be added to HomeKit manually.",
             "default": true,
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
@@ -348,7 +348,7 @@
           "prebuffering": {
             "title": "Prebuffering",
             "type": "boolean",
-            "description": "Enables camera video prebuffering.",
+            "description": "Enables camera video prebuffering. NOTE: It is recommended to enable this option for recording.",
             "default": true,
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
@@ -368,7 +368,7 @@
             "default": 4,
             "minimum": 4,
             "maximum": 8,
-            "description": "The length of the requested prebuffered video (s)",
+            "description": "The length of the requested prebuffered video (s).",
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].prebuffering === true && model.cameras[arrayIndices[0]].disable !== true;"
             }
@@ -451,19 +451,19 @@
               "source": {
                 "title": "Video Source",
                 "type": "string",
-                "placeholder": "-i rtsp://username:password@example.com:554",
+                "placeholder": "-i rtsp://username:password@example.com:554/Streaming/Channels/101",
                 "required": true,
-                "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL. Optimal settings: 1920 x 1080, FPS 30, Frame interval 120 (value always must be 4x higher than FPS)."
+                "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL. See examples: https://sunoo.github.io/homebridge-camera-ffmpeg/configs/ . Optimal settings for camera stream: 1920 x 1080, FPS 30, Frame interval 120 (value always must be 4x higher than FPS)."
               },
               "subSource": {
-                "title": "Video Substream Source",
+                "title": "Video Substream Source/Streaming/Channels/102",
                 "type": "string",
-                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis. Optimal settings: 640 x 480 or similar, FPS 15 and Frame interval 60 (value always must be 4x higher than FPS)."
+                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis. Optimal settings for camera stream: 640 x 480 or similar, FPS 15 and Frame interval 60 (value always must be 4x higher than FPS)."
               },
               "stillImageSource": {
                 "title": "Still Image Source",
                 "type": "string",
-                "placeholder": "-i rtsp://username:password@example.com:554/picture",
+                "placeholder": "-i rtsp://username:password@example.com:554/Streaming/Channels/101/picture",
                 "description": "If your camera also provides a URL for a still image, that can be defined here with the same syntax as 'source'. If not set, the plugin will grab one frame from 'source'."
               },
               "readRate": {
@@ -711,25 +711,6 @@
   "layout": [
     {
       "type": "section",
-      "title": "Interface",
-      "expandable": true,
-      "expanded": false,
-      "orderable": false,
-      "items": [
-        "port",
-        "logLevel",
-        "atHomeSwitch",
-        {
-          "key": "ssl",
-          "title": "SSL Certificate",
-          "type": "array",
-          "orderable": false,
-          "items": ["ssl.active", "ssl.key", "ssl.cert"]
-        }
-      ]
-    },
-    {
-      "type": "section",
       "title": "Cameras",
       "expandable": true,
       "expanded": false,
@@ -739,19 +720,17 @@
           "type": "tabarray",
           "title": "{{ value.name || 'new Camera' }}",
           "items": [
-            "cameras[].disable",
-            "cameras[].name",
-            "cameras[].unbridge",
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "Branding",
+              "title": "Basic settings",
               "expandable": true,
-              "expanded": false,
-              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"],
-              "condition": {
-                "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
-              }
+              "expanded": true,
+              "items": [
+                "cameras[].disable",
+                "cameras[].name",
+                "cameras[].unbridge"
+              ]
             },
             {
               "key": "cameras[]",
@@ -790,11 +769,32 @@
                 "cameras[].motionTimeout",
                 "cameras[].hsv",
                 "cameras[].prebuffering",
-                "cameras[].forcePrebuffering",
-                "cameras[].prebufferLength"
+                "cameras[].prebufferLength",
+                "cameras[].forcePrebuffering"
               ],
               "condition": {
                 "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
+              }
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "HKSV Configuration",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].hksvConfig.source",
+                "cameras[].hksvConfig.maxWidth",
+                "cameras[].hksvConfig.maxHeight",
+                "cameras[].hksvConfig.maxFPS",
+                "cameras[].hksvConfig.maxBitrate",
+                "cameras[].hksvConfig.acodec",
+                "cameras[].hksvConfig.vcodec",
+                "cameras[].hksvConfig.encoderOptions",
+                "cameras[].hksvConfig.audio"
+              ],
+              "condition": {
+                "functionBody": "return model.cameras[arrayIndices[0]].hsv === true && model.cameras[arrayIndices[0]].disable !== true;"
               }
             },
             {
@@ -826,27 +826,6 @@
             {
               "key": "cameras[]",
               "type": "section",
-              "title": "HKSV Configuration",
-              "expandable": true,
-              "expanded": false,
-              "items": [
-                "cameras[].hksvConfig.source",
-                "cameras[].hksvConfig.maxWidth",
-                "cameras[].hksvConfig.maxHeight",
-                "cameras[].hksvConfig.maxFPS",
-                "cameras[].hksvConfig.maxBitrate",
-                "cameras[].hksvConfig.acodec",
-                "cameras[].hksvConfig.vcodec",
-                "cameras[].hksvConfig.encoderOptions",
-                "cameras[].hksvConfig.audio"
-              ],
-              "condition": {
-                "functionBody": "return model.cameras[arrayIndices[0]].hsv === true && model.cameras[arrayIndices[0]].disable !== true;"
-              }
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
               "title": "Sensors and Switches",
               "expandable": true,
               "expanded": false,
@@ -859,6 +838,17 @@
                 "cameras[].excludeSwitch",
                 "cameras[].privacySwitch"
               ],
+              "condition": {
+                "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
+              }
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Branding",
+              "expandable": true,
+              "expanded": false,
+              "items": ["cameras[].manufacturer", "cameras[].model", "cameras[].serialNumber"],
               "condition": {
                 "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
               }
@@ -893,6 +883,25 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Interface",
+      "expandable": true,
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        "port",
+        "logLevel",
+        "atHomeSwitch",
+        {
+          "key": "ssl",
+          "title": "SSL Certificate",
+          "type": "array",
+          "orderable": false,
+          "items": ["ssl.active", "ssl.key", "ssl.cert"]
         }
       ]
     },
