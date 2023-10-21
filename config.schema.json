@@ -262,7 +262,7 @@
             "name": "Serial Number",
             "type": "string",
             "placeholder": "SerialNumber",
-            "description": "Set the serial number for display in the Home app."
+            "description": "Set the serial number for display in the Home app. Minimum 2 characters."
           },
           "excludeSwitch": {
             "title": "Exclude Switch",
@@ -339,7 +339,7 @@
           "hsv": {
             "title": "HomeKit Secure Video (HSV)",
             "type": "boolean",
-            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage.",
+            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage. NOTE: If you have problems with recordings (they start too late, or too quickly end or are not triggered at all), disable this option.",
             "default": true,
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
@@ -421,7 +421,7 @@
                 "typeahead": {
                   "source": ["libx264", "h264_omx", "h264_videotoolbox", "copy"]
                 },
-                "description": "Set the codec used for encoding video for HKSV, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available (-vcodec)."
+                "description": "Set the codec used for encoding video for HKSV, must be H.264-based. You can change to a hardware accelerated video codec with this option, if one is available (-vcodec). Options: copy, libx264, h264_omx, h264_videotoolbox ."
               },
               "acodec": {
                 "title": "Audio Codec",
@@ -453,16 +453,17 @@
                 "type": "string",
                 "placeholder": "-i rtsp://username:password@example.com:554",
                 "required": true,
-                "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL."
+                "description": "FFmpeg options on where to find and how to decode your camera's video stream. The most basic form is '-i' followed by your camera's URL. Optimal settings: 1920 x 1080, FPS 30, Frame interval 120 (value always must be 4x higher than FPS)."
               },
               "subSource": {
                 "title": "Video Substream Source",
                 "type": "string",
-                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis."
+                "description": "Low Resolution Substream. FFmpeg options on where to find and how to decode your camera's video substream. The most basic form is '-i' followed by your camera's URL. The substream will be used to probe the stream or for motion detection through video analysis. Optimal settings: 640 x 480 or similar, FPS 15 and Frame interval 60 (value always must be 4x higher than FPS)."
               },
               "stillImageSource": {
                 "title": "Still Image Source",
                 "type": "string",
+                "placeholder": "-i rtsp://username:password@example.com:554/picture",
                 "description": "If your camera also provides a URL for a still image, that can be defined here with the same syntax as 'source'. If not set, the plugin will grab one frame from 'source'."
               },
               "readRate": {
@@ -492,7 +493,7 @@
                     "enum": ["udp_multicast"]
                   }
                 ],
-                "description": "Set RTSP transport protocols (-rtsp_transport)"
+                "description": "Set RTSP transport protocols (-rtsp_transport)."
               },
               "analyzeDuration": {
                 "title": "Analyze Duration",
@@ -523,7 +524,7 @@
                 "title": "Maximum Concurrent Streams",
                 "type": "integer",
                 "minimum": 1,
-                "description": "The maximum number of streams that will be allowed at once to this camera."
+                "description": "The maximum number of streams that will be allowed at once to this camera. Recommended minimum: 2"
               },
               "maxWidth": {
                 "title": "Maximum Width",
@@ -556,7 +557,7 @@
                 "description": "The maximum bitrate used for video stream, in kbit/s. If not set, will use any bitrate HomeKit requests (-b:v)."
               },
               "forceMax": {
-                "title": "Force Maximums",
+                "title": "Override homekit requests",
                 "type": "boolean",
                 "description": "If set, the settings requested by HomeKit will be overridden with any 'maximum' values defined in this config."
               },
@@ -576,7 +577,7 @@
                 "typeahead": {
                   "source": ["libfdk_aac", "copy"]
                 },
-                "description": "Set the codec used for encoding audio sent to HomeKit for HSV, must be AAC-based (-acodec)."
+                "description": "Set the codec used for encoding audio sent to HomeKit for HSV, must be AAC-based (-acodec). Default: libfdk_aac ."
               },
               "packetSize": {
                 "title": "Packet Size",
@@ -584,7 +585,7 @@
                 "placeholder": 1316,
                 "multipleOf": 188,
                 "minimum": 188,
-                "description": "If audio or video is choppy try a smaller value."
+                "description": "If audio or video is choppy try a smaller value. It has to be multiple of 188."
               },
               "stimeout": {
                 "title": "Socket Timeout",
@@ -740,13 +741,12 @@
           "items": [
             "cameras[].disable",
             "cameras[].name",
-
             "cameras[].unbridge",
+            "cameras[].videoanalysis.active",
             "cameras[].hsv",
             "cameras[].prebuffering",
             "cameras[].forcePrebuffering",
             "cameras[].prebufferLength",
-
             {
               "key": "cameras[]",
               "type": "section",
@@ -768,14 +768,16 @@
                 "cameras[].videoConfig.source",
                 "cameras[].videoConfig.subSource",
                 "cameras[].videoConfig.stillImageSource",
+                "cameras[].videoConfig.vcodec",
+                "cameras[].videoConfig.rtspTransport",
+                "cameras[].videoConfig.audio",
+                "cameras[].videoConfig.acodec",
                 "cameras[].videoConfig.maxStreams",
                 "cameras[].videoConfig.maxWidth",
                 "cameras[].videoConfig.maxHeight",
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
-                "cameras[].videoConfig.audio",
-                "cameras[].videoConfig.forceMax",
-                "cameras[].videoConfig.debug"
+                "cameras[].videoConfig.forceMax"
               ],
               "condition": {
                 "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
@@ -789,9 +791,6 @@
               "expanded": false,
               "items": [
                 "cameras[].videoConfig.readRate",
-                "cameras[].videoConfig.acodec",
-                "cameras[].videoConfig.vcodec",
-                "cameras[].videoConfig.rtspTransport",
                 "cameras[].videoConfig.analyzeDuration",
                 "cameras[].videoConfig.probeSize",
                 "cameras[].videoConfig.reorderQueueSize",
@@ -803,6 +802,7 @@
                 "cameras[].videoConfig.videoFilter",
                 "cameras[].videoConfig.encoderOptions",
                 "cameras[].videoConfig.returnAudioTarget",
+                "cameras[].videoConfig.debug",
                 "cameras[].videoConfig.debugReturn"
               ],
               "condition": {
@@ -878,17 +878,6 @@
               "items": ["cameras[].smtp.email", "cameras[].smtp.from", "cameras[].smtp.body"],
               "condition": {
                 "functionBody": "return model.smtp.active === true && model.cameras[arrayIndices[0]].disable !== true;;"
-              }
-            },
-            {
-              "key": "cameras[]",
-              "type": "section",
-              "title": "Video Analysis",
-              "expandable": true,
-              "expanded": false,
-              "items": ["cameras[].videoanalysis.active"],
-              "condition": {
-                "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;;"
               }
             }
           ]
