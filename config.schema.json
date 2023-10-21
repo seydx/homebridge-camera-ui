@@ -105,7 +105,7 @@
       "properties": {
         "active": {
           "title": "Active",
-          "description": "Activates HTTP Server for HTTP-based automation. If not set, HTTP support is not started.",
+          "description": "Activates HTTP Server for HTTP-based automation. If not set, HTTP support is not started. To start recording: http://HOST:PORT/motion?CAMERA_NAME , to stop recording: http://HOST:PORT/reset?CAMERA_NAME .",
           "type": "boolean",
           "default": false
         },
@@ -339,7 +339,7 @@
           "hsv": {
             "title": "HomeKit Secure Video (HSV)",
             "type": "boolean",
-            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage. NOTE: If you have problems with recordings (they start too late, or too quickly end or are not triggered at all), disable this option.",
+            "description": "Enables HSV for the camera. This setting also affects the recording settings in the user interface. HSV requires a home hub and iCloud plan with at least 200GB of storage. NOTE: It may take several hours, or even days, before the HSV activates, so be patient.",
             "default": true,
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
