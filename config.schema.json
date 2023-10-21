@@ -697,8 +697,8 @@
             "type": "object",
             "properties": {
               "active": {
-                "title": "Active",
-                "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled)",
+                "title": "Videoanalysis",
+                "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled). NOTE: To record, one of the options must be active: Videoanalisys, HTTP server, SMTP server, FTP server lub MQTT server.",
                 "type": "boolean",
                 "default": true
               }
@@ -742,11 +742,6 @@
             "cameras[].disable",
             "cameras[].name",
             "cameras[].unbridge",
-            "cameras[].videoanalysis.active",
-            "cameras[].hsv",
-            "cameras[].prebuffering",
-            "cameras[].forcePrebuffering",
-            "cameras[].prebufferLength",
             {
               "key": "cameras[]",
               "type": "section",
@@ -778,6 +773,25 @@
                 "cameras[].videoConfig.maxFPS",
                 "cameras[].videoConfig.maxBitrate",
                 "cameras[].videoConfig.forceMax"
+              ],
+              "condition": {
+                "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
+              }
+            },
+            {
+              "key": "cameras[]",
+              "type": "section",
+              "title": "Recording",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "cameras[].videoanalysis.active",
+                "cameras[].useInterfaceTimer",
+                "cameras[].motionTimeout",
+                "cameras[].hsv",
+                "cameras[].prebuffering",
+                "cameras[].forcePrebuffering",
+                "cameras[].prebufferLength"
               ],
               "condition": {
                 "functionBody": "return model.cameras[arrayIndices[0]].disable !== true;"
@@ -840,8 +854,6 @@
                 "cameras[].motion",
                 "cameras[].doorbell",
                 "cameras[].switches",
-                "cameras[].useInterfaceTimer",
-                "cameras[].motionTimeout",
                 "cameras[].motionDelay",
                 "cameras[].motionDoorbell",
                 "cameras[].excludeSwitch",
