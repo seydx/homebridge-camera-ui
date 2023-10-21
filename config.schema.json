@@ -698,7 +698,7 @@
             "properties": {
               "active": {
                 "title": "Videoanalysis",
-                "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled). NOTE: To record, one of the options must be active: Videoanalisys, HTTP server, SMTP server, FTP server lub MQTT server.",
+                "description": "Activates Video Analysis for motion detection (a low resolution sub stream is preferred or prebuffering enabled). NOTE: To record, one of the options must be active: Videoanalisys, HTTP server, SMTP server, FTP server lub MQTT server. You can adjust sensitivity and other analysis settings in the Interface.",
                 "type": "boolean",
                 "default": true
               }
