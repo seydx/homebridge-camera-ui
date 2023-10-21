@@ -557,7 +557,7 @@
                 "description": "The maximum bitrate used for video stream, in kbit/s. If not set, will use any bitrate HomeKit requests (-b:v)."
               },
               "forceMax": {
-                "title": "Override homekit requests",
+                "title": "Override HomeKit requests",
                 "type": "boolean",
                 "description": "If set, the settings requested by HomeKit will be overridden with any 'maximum' values defined in this config."
               },
