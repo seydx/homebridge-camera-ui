@@ -304,7 +304,7 @@
             "placeholder": 34,
             "minimum": 0,
             "maximum": 170,
-            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This will also affect the interface timeout (when used with HKSV, this reflects the length of the recording). NOTE: Optimal value is = Local recording time + Prebuferring time.",
+            "description": "The number of seconds after triggering to reset the motion sensor. Set to 0 to disable resetting of motion trigger. This may also affect the interface timeout (when used with HKSV, this reflects the length of the recording) - if local recording is enabled and the time set there is longer than this value, the time from camera.ui will be used.",
             "condition": {
               "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === false"
             }
