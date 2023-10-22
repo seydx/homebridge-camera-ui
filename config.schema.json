@@ -310,14 +310,12 @@
             }
           },
           "motionDelay": {
-            "title": "Motion Delay",
+            "title": "Motion / Recording Delay",
             "type": "integer",
+            "default": 0,
             "minimum": 0,
             "maximum": 10,
-            "description": "The number of seconds to wait to trigger the motion sensor after a motion event is received from e.g. MQTT, SMTP, FTP or HTTP (this can be useful if you use an external motion sensor and the camera feed lags several seconds behind the event)",
-            "condition": {
-              "functionBody": "return model.cameras[arrayIndices[0]].useInterfaceTimer === false"
-            }
+            "description": "The number of seconds to wait to trigger the motion sensor and recording process, after a motion event is received from e.g. Videoanalisys, MQTT, SMTP, FTP or HTTP. This can be useful if you use an external motion sensor and the camera feed lags several seconds behind the event."
           },
           "motionDoorbell": {
             "title": "Trigger Doorbell with Motion",
@@ -767,6 +765,7 @@
                 "cameras[].videoanalysis.active",
                 "cameras[].useInterfaceTimer",
                 "cameras[].motionTimeout",
+                "cameras[].motionDelay",
                 "cameras[].hsv",
                 "cameras[].prebuffering",
                 "cameras[].prebufferLength",
@@ -833,7 +832,6 @@
                 "cameras[].motion",
                 "cameras[].doorbell",
                 "cameras[].switches",
-                "cameras[].motionDelay",
                 "cameras[].motionDoorbell",
                 "cameras[].excludeSwitch",
                 "cameras[].privacySwitch"
