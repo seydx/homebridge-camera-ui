@@ -1,5 +1,7 @@
 > [!IMPORTANT]
-> Completely new version of Camera UI comming soon.. 🎉
+> 🚀 New Version in Development 🚀
+>
+> A new version of camera.ui is currently under active development. An initial alpha/beta release and previews are coming soon. Stay tuned for exciting updates!
 
 <p align="center">
     <img src="https://github.com/SeydX/homebridge-camera-ui/blob/master/images/logo_hb.png" width="280">
